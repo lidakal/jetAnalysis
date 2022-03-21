@@ -233,9 +233,9 @@ void plot_par_zgVSrg()
 
         // Activate specific branches
         t->SetBranchStatus("*", 0);
-        for (auto activeBranchName : {"npar", "psjt1Pt", "psjt1Eta", "psjt1Phi", 
-                                     "psjt2Pt", "psjt2Eta", "psjt2Phi", "parpt", 
-                                      "parNb", "parNc", "pareta"}) {
+        for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc",
+                                      "psjt1Pt", "psjt1Eta", "psjt1Phi", 
+                                      "psjt2Pt", "psjt2Eta", "psjt2Phi"}) {
             //std::cout << "Activating branch " << activeBranchName << endl;
             t->SetBranchStatus(activeBranchName, 1);
         }
