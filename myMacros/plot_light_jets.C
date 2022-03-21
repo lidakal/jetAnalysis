@@ -225,8 +225,8 @@ void plot_light_jets(bool ktCut = true)
     
     // zg
     Int_t x1bins = 40;
-    Float_t x1min = 0.69;
-    Float_t x1max = 2.4;
+    Float_t x1min = 0.1;
+    Float_t x1max = 0.5;
     
     // rg
     Int_t x2bins = 40;
@@ -238,9 +238,9 @@ void plot_light_jets(bool ktCut = true)
     Float_t y1min = 30.;
     Float_t y1max = 300.;
     
-    TH2F *hL_zg_par = new TH2F("hL_zg_par", "logzg, parpt, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
-    TH2F *hL_zg_ref = new TH2F("hL_zg_ref", "logzg, refpt, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
-    TH2F *hL_zg_ref_dynKt = new TH2F("hL_zg_ref_dynKt", "logzg, refpt, dynKt only, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
+    TH2F *hL_zg_par = new TH2F("hL_zg_par", "zg, parpt, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
+    TH2F *hL_zg_ref = new TH2F("hL_zg_ref", "zg, refpt, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
+    TH2F *hL_zg_ref_dynKt = new TH2F("hL_zg_ref_dynKt", "zg, refpt, dynKt only, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
     
     TH2F *hL_rg_par = new TH2F("hL_rg_par", "logrg, parpt, light jets", x2bins, x2min, x2max, y1bins, y1min, y1max);
     TH2F *hL_rg_ref = new TH2F("hL_rg_ref", "logrg, refpt, light jets", x2bins, x2min, x2max, y1bins, y1min, y1max);
@@ -264,18 +264,17 @@ void plot_light_jets(bool ktCut = true)
                 continue;
             }
             
-            // Initialize zg, rg, kt, ln(1/rg), ln(1/zg), ln(kt)
+            // Initialize zg, rg, kt, ln(1/rg), ln(kt)
             Float_t zg = -1.;
             Float_t rg = -1.;
             Float_t kt = -1.;
             
             Float_t logrg = -1;
-            Float_t logzg = -1;
             Float_t logkt = -10;
             
             if (psjt2Pt[j] > 0.) {
                 // Calculate zg, rg, kt
-                zg = psjt2Pt[j] / (psjt2Pt[j]+psjt1Pt[j]);
+                zg = psjt2Pt[j] / (psjt2Pt[j] + psjt1Pt[j]);
 
                 Float_t deta = psjt1Eta[j] - psjt2Eta[j];
                 Float_t dphi = acos(cos(psjt1Phi[j] - psjt2Phi[j]));
@@ -285,7 +284,6 @@ void plot_light_jets(bool ktCut = true)
 
                 // Calculate logs
                 logrg = log(1/rg);
-                logzg = log(1/zg);
                 logkt = log(kt);
             }
         
@@ -293,14 +291,14 @@ void plot_light_jets(bool ktCut = true)
             // Cut on kt = 0.1
             if (ktCut) { 
                 if (logkt < 0.1) { 
-                    logrg = -1;
-                    logzg = -1;
+                    zg = -1.;
+                    logrg = -1.;
                 }
             }
 
             // Fill histograms : if not b and not c
             if ((!(parNb[j] > 0)) && (!(parNc[j] > 0))) {
-                hL_zg_par->Fill(logzg, parpt[j], weight);
+                hL_zg_par->Fill(zg, parpt[j], weight);
                 hL_rg_par->Fill(logrg, parpt[j], weight);
             }
         }
@@ -318,9 +316,8 @@ void plot_light_jets(bool ktCut = true)
             Float_t rg = -1.;
             Float_t kt = -1.;
             
-            Float_t logrg = -1;
-            Float_t logzg = -1;
-            Float_t logkt = -10;
+            Float_t logrg = -1.;
+            Float_t logkt = -10.;
             
             if (rsjt2Pt[j] > 0.) {
                 // Calculate zg, rg, kt
@@ -334,32 +331,31 @@ void plot_light_jets(bool ktCut = true)
 
                 // Calculate logs
                 logrg = log(1/rg);
-                logzg = log(1/zg);
                 logkt = log(kt);
             }
 
             // Cut on kt = 0.1
             if (ktCut) { 
                 if (logkt < 0.1) { 
-                    logrg = -1;
-                    logzg = -1;
+                    logrg = -1.;
+                    zg = -1.;
                 }
             }
             
             // Fill histograms : jtHadFlav == 0 -> light jets
             if (jtHadFlav[j] == 0) {
-                hL_zg_ref->Fill(logzg, refpt[j], weight);
+                hL_zg_ref->Fill(zg, refpt[j], weight);
                 hL_rg_ref->Fill(logrg, refpt[j], weight);
             }
 
             // Dynamical grooming
             if (!refIsHardest[j]) {
-                logrg = -1;
-                logzg = -1;
+                logrg = -1.;
+                zg = -1.;
             }
 
             if (jtHadFlav[j] == 0) {
-                hL_zg_ref_dynKt->Fill(logzg, refpt[j], weight);
+                hL_zg_ref_dynKt->Fill(zg, refpt[j], weight);
                 hL_rg_ref_dynKt->Fill(logrg, refpt[j], weight);
             }
         } 
