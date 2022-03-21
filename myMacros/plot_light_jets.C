@@ -1,10 +1,12 @@
+#include <initializer_list>
+
 void plot_light_jets(bool ktCut = false)
 {
     // Read data from file
     
-    std::string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
+    string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
     
-    std::cout << "\nReading from " << path_qcd << endl;
+    cout << "\nReading from " << path_qcd << endl;
     TFile *fin = new TFile(path_qcd.c_str());
     
     TTree *t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
@@ -229,22 +231,24 @@ void plot_light_jets(bool ktCut = false)
     // pt 
     Int_t y1bins = 27 * 2;
     Float_t y1min = 30.;
-    Float_t y2max = 300.;
+    Float_t y1max = 300.;
     
-    TH2F *hL_zg_par = new TH2F("hL_zg_par", "zg, parpt, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
-    TH2F *hL_zg_ref = new TH2F("hL_zg_ref", "zg, refpt, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
-    TH2F *hL_zg_ref_dynKt = new TH2F("hL_zg_ref_dynKt", "zg, refpt, dynKt only, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
+    TH2F *hL_zg_par = new TH2F("hL_zg_par", "logzg, parpt, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
+    TH2F *hL_zg_ref = new TH2F("hL_zg_ref", "logzg, refpt, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
+    TH2F *hL_zg_ref_dynKt = new TH2F("hL_zg_ref_dynKt", "logzg, refpt, dynKt only, light jets", x1bins, x1min, x1max, y1bins, y1min, y1max);
     
-    TH2F *hL_rg_par = new TH2F("hL_rg_par", "rg, parpt, light jets", x2bins, x2min, x2max, y1bins, y1min, y1max);
-    TH2F *hL_rg_ref = new TH2F("hL_rg_ref", "rg, refpt, light jets", x2bins, x2min, x2max, y1bins, y1min, y1max);
-    TH2F *hL_rg_ref_dynKt = new TH2F("hL_rg_ref_dynKt", "rg, refpt, dynKt only, light jets", x2bins, x2min, x2max, y1bins, y1min, y1max);
+    TH2F *hL_rg_par = new TH2F("hL_rg_par", "logrg, parpt, light jets", x2bins, x2min, x2max, y1bins, y1min, y1max);
+    TH2F *hL_rg_ref = new TH2F("hL_rg_ref", "logrg, refpt, light jets", x2bins, x2min, x2max, y1bins, y1min, y1max);
+    TH2F *hL_rg_ref_dynKt = new TH2F("hL_rg_ref_dynKt", "logrg, refpt, dynKt only, light jets", x2bins, x2min, x2max, y1bins, y1min, y1max);
     
     Long64_t nentries = t->GetEntries();
     
     for (Long64_t i = 0; i < nentries; i++) {
         t->GetEntry(i);
-        HiTree-?GetEntry(i);
+        HiTree->GetEntry(i);
         
+        // par jets
+
         for (int j = 0; j < npar[j]; j++) {
             // cut on eta = 2
             if (pareta[j] > 2.) { 
@@ -272,21 +276,107 @@ void plot_light_jets(bool ktCut = false)
                 // Calculate logs
                 logrg = log(1/rg);
                 logzg = log(1/zg);
-                
-                // Cut on kt = 0.1
-                if (ktCut) { 
-                    if (kt < 0.1) { 
-                        logrg = -1;
-                        logzg = -1;
-                    }
-                }
-                
-                // Fill histograms : if not b and not c
-                if ((!(parNb[j] > 0)) && (!(parNc[j] > 0))) {
-                    hL
+            }
+        }
+
+        // Cut on kt = 0.1
+        if (ktCut) { 
+            if (kt < 0.1) { 
+                logrg = -1;
+                logzg = -1;
+            }
+        }
+        
+        // Fill histograms : if not b and not c
+        if ((!(parNb[j] > 0)) && (!(parNc[j] > 0))) {
+            hL_zg_par->Fill(logzg, parpt[j], weight);
+            hL_rg_par->Fill(logrg, parpt[j], weight);
+        }
+
+        // ref jets
+
+        for (int j = 0; j < nref[j]; j++) {
+            // cut on eta = 2
+            if (refeta[j] > 2.) { 
+                continue;
+            }
+            
+            // Initialize zg, rg, kt, log(1/rg), log(1/zg)
+            Float_t zg = -1.;
+            Float_t rg = -1.;
+            Float_t kt = -1.;
+            
+            Float_t logrg = -1;
+            Float_t logzg = -1;
+            
+            if (rsjt2Pt[j] > 0.) {
+                // Calculate zg, rg, kt
+                zg = rsjt2Pt[j] / (rsjt2Pt[j] + rsjt1Pt[j]);
+
+                Float_t deta = rsjt1Eta[j] - rsjt2Eta[j];
+                Float_t dphi = acos(cos(rsjt1Phi[j] - rsjt2Phi[j]));
+                rg = sqrt(deta * deta + dphi * dphi);
+
+                kt = rsjt2Pt[j] * rg;
+
+                // Calculate logs
+                logrg = log(1/rg);
+                logzg = log(1/zg);
+            }
+
+            // Cut on kt = 0.1
+            if (ktCut) { 
+                if (kt < 0.1) { 
+                    logrg = -1;
+                    logzg = -1;
                 }
             }
             
+            // Fill histograms : jtHadFlav == 0 -> light jets
+            if (jtHadFlav[j] == 0) {
+                hL_zg_ref->Fill(logzg, refpt[j], weight);
+                hL_rg_ref->Fill(logrg, refpt[j], weight);
+            }
+
+            // Dynamical grooming
+            if (!refIsHardest[j]) {
+                logrg = -1;
+                logzg = -1;
+            }
+
+            if (jtHadFlav[j] == 0) {
+                hL_zg_ref_dynKt->Fill(logzg, refpt[j], weight);
+                hL_rg_ref_dynKt->Fill(logrg, refpt[j], weight);
+            }
+        } 
+    }
+
+    if (ktCut)  {
+        string path_out = "~/rootFiles/lightJetHistos_ktCut.root";
+        TFile *fout = new TFile(path_out.c_str(), "recreate");
+
+        hL_zg_par->Write();
+        hL_zg_ref->Write();
+        hL_zg_ref_dynKt->Write();
+
+        hL_rg_par->Write();
+        hL_rg_ref->Write();
+        hL_rg_ref_dynKt->Write();
+    } else {
+        string path_out = "~/rootFiles/lightJetHistos.root";
+        TFile *fout = new TFile(path_out.c_str(), "recreate");
+
+        hL_zg_par->Write();
+        hL_zg_ref->Write();
+        hL_zg_ref_dynKt->Write();
+
+        hL_rg_par->Write();
+        hL_rg_ref->Write();
+        hL_rg_ref_dynKt->Write();
+    }
+}
+
+
             
             
             
