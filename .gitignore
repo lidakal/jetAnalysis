@@ -40,3 +40,6 @@
 
 # EMACS lock files
 *.*#
+
+# VS Code 
+.vscode/
