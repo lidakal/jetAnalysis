@@ -1,13 +1,18 @@
 #include <initializer_list>
 
-void plot_light_jets(bool ktCut = false)
+void plot_light_jets(bool ktCut = true)
 {
     // Read data from file
-    
     string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
     
     cout << "\nReading from " << path_qcd << endl;
     TFile *fin = new TFile(path_qcd.c_str());
+    
+    if (ktCut) { 
+        cout << "Running with kt cut: lnkt > 0.1" << endl;
+    } else { 
+        cout << "Running without kt cut." << endl;
+    }
     
     TTree *t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
     TTree *HiTree = (TTree *) fin->Get("hiEvtAnalyzer/HiTree");
@@ -207,7 +212,7 @@ void plot_light_jets(bool ktCut = false)
     for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc",
                                   "psjt1Pt", "psjt1Eta", "psjt1Phi", 
                                   "psjt2Pt", "psjt2Eta", "psjt2Phi",
-                                  "nref", "refpt", "refeta", "jtHadFlav", "refIsHarderst",
+                                  "nref", "refpt", "refeta", "jtHadFlav", "refIsHardest",
                                   "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
                                   "rsjt2Pt", "rsjt2Eta", "rsjt2Phi"}) {
         //std::cout << "Activating branch " << activeBranchName << endl;
@@ -220,8 +225,8 @@ void plot_light_jets(bool ktCut = false)
     
     // zg
     Int_t x1bins = 40;
-    Float_t x1min = 0.1;
-    Float_t x1max = 0.5;
+    Float_t x1min = 0.69;
+    Float_t x1max = 2.4;
     
     // rg
     Int_t x2bins = 40;
@@ -244,24 +249,29 @@ void plot_light_jets(bool ktCut = false)
     Long64_t nentries = t->GetEntries();
     
     for (Long64_t i = 0; i < nentries; i++) {
+        if ((i % 1000000) == 0) { 
+            cout << "i = " << i << endl;
+        }        
+        
         t->GetEntry(i);
         HiTree->GetEntry(i);
         
         // par jets
 
-        for (int j = 0; j < npar[j]; j++) {
+        for (int j = 0; j < npar; j++) {
             // cut on eta = 2
             if (pareta[j] > 2.) { 
                 continue;
             }
             
-            // Initialize zg, rg, kt, log(1/rg), log(1/zg)
+            // Initialize zg, rg, kt, ln(1/rg), ln(1/zg), ln(kt)
             Float_t zg = -1.;
             Float_t rg = -1.;
             Float_t kt = -1.;
             
             Float_t logrg = -1;
             Float_t logzg = -1;
+            Float_t logkt = -10;
             
             if (psjt2Pt[j] > 0.) {
                 // Calculate zg, rg, kt
@@ -276,38 +286,41 @@ void plot_light_jets(bool ktCut = false)
                 // Calculate logs
                 logrg = log(1/rg);
                 logzg = log(1/zg);
+                logkt = log(kt);
             }
-        }
-
-        // Cut on kt = 0.1
-        if (ktCut) { 
-            if (kt < 0.1) { 
-                logrg = -1;
-                logzg = -1;
-            }
-        }
         
-        // Fill histograms : if not b and not c
-        if ((!(parNb[j] > 0)) && (!(parNc[j] > 0))) {
-            hL_zg_par->Fill(logzg, parpt[j], weight);
-            hL_rg_par->Fill(logrg, parpt[j], weight);
+
+            // Cut on kt = 0.1
+            if (ktCut) { 
+                if (logkt < 0.1) { 
+                    logrg = -1;
+                    logzg = -1;
+                }
+            }
+
+            // Fill histograms : if not b and not c
+            if ((!(parNb[j] > 0)) && (!(parNc[j] > 0))) {
+                hL_zg_par->Fill(logzg, parpt[j], weight);
+                hL_rg_par->Fill(logrg, parpt[j], weight);
+            }
         }
 
         // ref jets
 
-        for (int j = 0; j < nref[j]; j++) {
+        for (int j = 0; j < nref; j++) {
             // cut on eta = 2
             if (refeta[j] > 2.) { 
                 continue;
             }
             
-            // Initialize zg, rg, kt, log(1/rg), log(1/zg)
+            // Initialize zg, rg, kt, ln(1/rg), ln(1/zg), ln(kt)
             Float_t zg = -1.;
             Float_t rg = -1.;
             Float_t kt = -1.;
             
             Float_t logrg = -1;
             Float_t logzg = -1;
+            Float_t logkt = -10;
             
             if (rsjt2Pt[j] > 0.) {
                 // Calculate zg, rg, kt
@@ -322,11 +335,12 @@ void plot_light_jets(bool ktCut = false)
                 // Calculate logs
                 logrg = log(1/rg);
                 logzg = log(1/zg);
+                logkt = log(kt);
             }
 
             // Cut on kt = 0.1
             if (ktCut) { 
-                if (kt < 0.1) { 
+                if (logkt < 0.1) { 
                     logrg = -1;
                     logzg = -1;
                 }
@@ -353,6 +367,7 @@ void plot_light_jets(bool ktCut = false)
 
     if (ktCut)  {
         string path_out = "~/rootFiles/lightJetHistos_ktCut.root";
+        cout << "Saving histograms in " << path_out << endl;
         TFile *fout = new TFile(path_out.c_str(), "recreate");
 
         hL_zg_par->Write();
@@ -362,8 +377,11 @@ void plot_light_jets(bool ktCut = false)
         hL_rg_par->Write();
         hL_rg_ref->Write();
         hL_rg_ref_dynKt->Write();
+        
+        fout->Close();
     } else {
         string path_out = "~/rootFiles/lightJetHistos.root";
+        cout << "Saving histograms in " << path_out << endl;
         TFile *fout = new TFile(path_out.c_str(), "recreate");
 
         hL_zg_par->Write();
@@ -373,6 +391,8 @@ void plot_light_jets(bool ktCut = false)
         hL_rg_par->Write();
         hL_rg_ref->Write();
         hL_rg_ref_dynKt->Write();
+        
+        fout->Close();
     }
 }
 
