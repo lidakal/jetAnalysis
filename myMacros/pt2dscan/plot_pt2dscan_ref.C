@@ -286,11 +286,11 @@ void plot_pt2dscan_ref()
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         
         TH3F *h_ktL_dynKt = new TH3F((hname + "_ktL_dynKt").c_str(), "rg, kt, pt, dynKt, l jets", 
-                                     x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+                                     x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         TH3F *h_ktB_dynKt = new TH3F((hname + "_ktB_dynKt").c_str(), "rg, kt, pt, dynKt, b jets", 
-                                     x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+                                     x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         TH3F *h_ktC_dynKt = new TH3F((hname + "_ktC_dynKt").c_str(), "rg, kt, pt, dynKt, c jets", 
-                                     x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+                                     x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         
         // X = ln(1/rg), Y = zg, Z = refpt
         TH3F *h_rgzgL = new TH3F((hname + "_rgzgL").c_str(), "rg, zg, pt, l jets", 
