@@ -1,4 +1,10 @@
 #include <initializer_list>
+#include <iostream>
+#include "TFile.h"
+#include "TH2F.h"
+#include "TTree.h"
+
+using namespace std;
 
 void plot_light_jets(bool ktCut = true)
 {
