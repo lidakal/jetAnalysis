@@ -1,28 +1,32 @@
-// This functions creates histograms for the substructure variables zg and Rg
-// using the reference jet variables
+/*
+    2D pt scan of ln(kt) vs ln(1/rg) (Lund plane)
+    and zg vs ln(1/rg)
+*/
 
+#include <initializer_list>
 #include <iostream>
-#include "stdio.h"
-#include "TFile.h"
-#include "TH2.h"
-#include "TTree.h"
 #include <vector>
+#include "TFile.h"
+#include "TH3F.h"
+#include "TTree.h"
 
-void plot_ref_zgVSrg() 
+using namespace std;
+
+void plot_pt2dscan_ref() 
 {
     const int n = 2;
     
-    std::string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    std::string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
-    std::string fnames[n] = {path_qcd, path_bJet};
+    string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
+    string fnames[n] = {path_qcd, path_bJet};
     
-    std::string h_qcd = "h_qcd";
-    std::string h_bJet = "h_bJet";
-    std::string hnames[n] = {h_qcd, h_bJet};
+    string h_qcd = "h_qcd";
+    string h_bJet = "h_bJet";
+    string hnames[n] = {h_qcd, h_bJet};
     
     // Initialize histograms
     
-    // zg histograms
+    // kt vs ln(1/rg) histograms
     TH3F *hs_ktL[n];
     TH3F *hs_ktB[n];
     TH3F *hs_ktC[n];
@@ -31,7 +35,7 @@ void plot_ref_zgVSrg()
     TH3F *hs_ktB_dynKt[n];
     TH3F *hs_ktC_dynKt[n];
     
-    // Rg histograms
+    // zg vs ln(1/rg) histograms
     TH3F *hs_rgzgL[n];
     TH3F *hs_rgzgB[n];
     TH3F *hs_rgzgC[n];  
@@ -93,12 +97,12 @@ void plot_ref_zgVSrg()
         Float_t         jtDiscDeepFlavourC[30];
         Float_t         jtDiscProb[30];
         Int_t           nsvtx[30];
-        vector<vector<int> > svtxntrk;
-        vector<vector<float> > svtxdls;
-        vector<vector<float> > svtxdls2d;
-        vector<vector<float> > svtxm;
-        vector<vector<float> > svtxpt;
-        vector<vector<float> > svtxmcorr;
+        vector<vector<int>> svtxntrk;
+        vector<vector<float>> svtxdls;
+        vector<vector<float>> svtxdls2d;
+        vector<vector<float>> svtxm;
+        vector<vector<float>> svtxpt;
+        vector<vector<float>> svtxmcorr;
         Float_t         refpt[30];
         Float_t         refeta[30];
         Float_t         refphi[30];
@@ -263,45 +267,45 @@ void plot_ref_zgVSrg()
         float y1min = -5.; 
         float y1max = 5.;
         
-        // ln(1/zg)
+        // zg
         int y2bins = 40;
-        float y2min = 0.69;
-        float y2max = 2.4;
+        float y2min = 0.1;
+        float y2max = 0.5;
         
         // jetpt
         int z1bins = 27*2;
         float z1min = 30;
         float z1max = 300;
         
-        // X = ln(1/rg), Y = lnkt
+        // X = ln(1/rg), Y = lnkt, Z = refpt
         TH3F *h_ktL = new TH3F((hname + "_ktL").c_str(), "rg, kt, pt, l jets", 
-                               x1bins, x1min, x1max, y1bins, y1min, y1max, zbins, zmin, zmax);
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         TH3F *h_ktB = new TH3F((hname + "_ktB").c_str(), "rg, kt, pt, b jets", 
-                               xbins, xmin, xmax, y1bins, y1min, y1max, zbins, zmin, zmax);
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         TH3F *h_ktC = new TH3F((hname + "_ktC").c_str(), "rg, kt, pt, c jets", 
-                               xbins, xmin, xmax, y1bins, y1min, y1max, zbins, zmin, zmax);
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         
         TH3F *h_ktL_dynKt = new TH3F((hname + "_ktL_dynKt").c_str(), "rg, kt, pt, dynKt, l jets", 
-                                     xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                     x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         TH3F *h_ktB_dynKt = new TH3F((hname + "_ktB_dynKt").c_str(), "rg, kt, pt, dynKt, b jets", 
-                                     xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                     x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         TH3F *h_ktC_dynKt = new TH3F((hname + "_ktC_dynKt").c_str(), "rg, kt, pt, dynKt, c jets", 
-                                     xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                     x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         
-        // X = ln(1/rg), Y = ln(1/zg)
+        // X = ln(1/rg), Y = zg, Z = refpt
         TH3F *h_rgzgL = new TH3F((hname + "_rgzgL").c_str(), "rg, zg, pt, l jets", 
-                                 xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         TH3F *h_rgzgB = new TH3F((hname + "_rgzgB").c_str(), "rg, zg, pt, b jets", 
-                                 xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         TH3F *h_rgzgC = new TH3F((hname + "_rgzgC").c_str(), "rg, zg, pt, c jets", 
-                                 xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         
         TH3F *h_rgzgL_dynKt = new TH3F((hname + "_rgzgL_dynKt").c_str(), "rg, zg, pt, dynKt, l jets", 
-                                       xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                       x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         TH3F *h_rgzgB_dynKt = new TH3F((hname + "_rgzgB_dynKt").c_str(), "rg, zg, pt, dynKt, b jets", 
-                                       xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                       x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         TH3F *h_rgzgC_dynKt = new TH3F((hname + "_rgzgC_dynKt").c_str(), "rg, zg, pt, dynKt, c jets", 
-                                       xbins, xmin, xmax, y2bins, y2min, y2max, zbins, zmin, zmax);
+                                       x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         
         Long64_t nentries = t->GetEntries();
 
@@ -324,7 +328,6 @@ void plot_ref_zgVSrg()
                 
                 // Keep the log(1/Rg) = -1 for the underflowbin in the histogram
                 Float_t logrg = -1;
-                Float_t logzg = -1;
                 Float_t logkt = -10;
                 
                 if (refeta[j] > 2.) { 
@@ -343,42 +346,36 @@ void plot_ref_zgVSrg()
                     
                     // calculate logs
                     logrg = log(1/rg);
-                    logzg = log(1/zg);
                     logkt = log(kt);
                 }
-                /*
-                if (i%1000000 == 0) {
-                    std::cout << "j = " << j << ", logkt = " << logkt << endl;
-                }
-                */
                 
                 // Fill the histograms
                 if (jtHadFlav[j] == 5) {
                     h_ktB->Fill(logrg, logkt, refpt[j], weight);
-                    h_rgzgB->Fill(logrg, logzg, refpt[j], weight);
+                    h_rgzgB->Fill(logrg, zg, refpt[j], weight);
                 } else if (jtHadFlav[j] == 4) {
                     h_ktC->Fill(logrg, logkt, refpt[j], weight);
-                    h_rgzgC->Fill(logrg, logzg, refpt[j], weight);
+                    h_rgzgC->Fill(logrg, zg, refpt[j], weight);
                 } else {
                     h_ktL->Fill(logrg, logkt, refpt[j], weight);
-                    h_rgzgL->Fill(logrg, logzg, refpt[j], weight);
+                    h_rgzgL->Fill(logrg, zg, refpt[j], weight);
                 }
                 
                 // Fill dynKt histograms
                 if (!refIsHardest[j]) {
                     logrg = -1;
-                    logzg = -1;
+                    zg = -1;
                     logkt = -10;
                 }
                 if (jtHadFlav[j] == 5) {
                     h_ktB_dynKt->Fill(logrg, logkt, refpt[j], weight);
-                    h_rgzgB_dynKt->Fill(logrg, logzg, refpt[j], weight);
+                    h_rgzgB_dynKt->Fill(logrg, zg, refpt[j], weight);
                 } else if (jtHadFlav[j] == 4) {
                     h_ktC_dynKt->Fill(logrg, logkt, refpt[j], weight);
-                    h_rgzgC_dynKt->Fill(logrg, logzg, refpt[j], weight);
+                    h_rgzgC_dynKt->Fill(logrg, zg, refpt[j], weight);
                 } else {
                     h_ktL_dynKt->Fill(logrg, logkt, refpt[j], weight);
-                    h_rgzgL_dynKt->Fill(logrg, logzg, refpt[j], weight);
+                    h_rgzgL_dynKt->Fill(logrg, zg, refpt[j], weight);
                 }
             }
                 
@@ -401,7 +398,7 @@ void plot_ref_zgVSrg()
         hs_ktL_dynKt[ni] = h_ktL_dynKt;
         hs_rgzgL_dynKt[ni] = h_rgzgL_dynKt;
     }       
-    std::string foutname = "kt_rgzg_ref.root";
+    std::string foutname = "~/rootFiles/pt2dscan_ref.root";
     std::cout << "\n(Re)creating file " << foutname << endl;
     TFile *fout = new TFile(foutname.c_str(),  "recreate");
     std::cout << "Saving histograms." << endl;
