@@ -18,20 +18,24 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = false)
     string hname = "h";
     string xtitle = "ln(1/R_{g})";
     string ytitle = "";
+    string title = "";
 
     if (qtype == 'B'){
+        title += "B jets";
         if(ktORzgrg) {
             hname += "_bJet_ktB";
         } else {
             hname += "_bJet_rgzgB";
         }
     } else if (qtype == 'C'){
+        title += "C jets";
         if(ktORzgrg) {
             hname += "_qcd_ktC";
         } else {
             hname += "_qcd_rgzgC";
         }
     } else {
+        title += "Light jets";
         if(ktORzgrg) {
             hname += "_qcd_ktL";
         } else {
@@ -114,6 +118,19 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = false)
     righttitle->SetTextSize(30);
     righttitle->DrawLatexNDC(0.76, 0.96, Form("p_{T} in [%.0f, %.0f] GeV", highpt[0], highpt[1]));
 
+    TPaveText *text = new TPaveText(0.44, 0.46, 0.56, 0.54, "ndc");
+    text->AddText(title.c_str());
+    if (dynKt) {
+        text->AddText("dynKt only.");
+    } else {
+        text->AddText("No dynKt.");
+    }
+    text->Draw();
+
+    TPaveText *level_ref = new TPaveText(0.05, 0.1, 0.1, 0.2, "ndc");
+    TText *l1 = level_ref->AddText("hadron level");
+    l1->SetTextAngle(90);
+    level_ref->Draw();
 
     c->Draw();
     //c->Print();
