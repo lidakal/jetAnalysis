@@ -104,8 +104,9 @@ class TreeAnalyzer {
         void Init();
         void SetAnalysisLevel(bool parORref);
         void SetExcludeGSP(bool excl = true);
-        void CreateLocalTree();
-        void CreateParLocalTree();
+        void CreateLocalTrees();
+        void CreateParLocalTree(TFile *ftrees);
+        void CreateRefLocalTree(TFile *ftrees);
     
     private:
         bool exclGSP = false;
@@ -254,18 +255,22 @@ void TreeAnalyzer::Init()
     nentries = t->GetEntries();
 }
 
-void TreeAnalyzer::CreateLocalTree()
+void TreeAnalyzer::CreateLocalTrees()
 { 
-    CreateParLocalTree();
-    //CreateRefLocalTree();
-}
-    
-void TreeAnalyzer::CreateParLocalTree()
-{
-    std::string fname = "localTrees.root";
+    std::string fname = "~/rootFiles/localTrees.root";
+    TFile *ftrees = new TFile(fname.c_str(), "recreate");
     
     std::cout << "Creating partonTree in " << fname << endl;
+    CreateParLocalTree(ftrees);
     
+    //std::cout << "Creating refTree in " << fname << endl;
+    //CreateRefLocalTree();
+    
+    ftrees->Close();
+}
+    
+void TreeAnalyzer::CreateParLocalTree(TFile *ftrees)
+{       
     t->SetBranchStatus("*", 0);
     for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc",
                                   "psjt1Pt", "psjt1Eta", "psjt1Phi", 
@@ -276,7 +281,7 @@ void TreeAnalyzer::CreateParLocalTree()
     HiTree->SetBranchStatus("*", 0);
     HiTree->SetBranchStatus("weight", 1);
     
-    TFile *fout = new TFile(fname.c_str(), "recreate");
+    //ftrees->ReOpen();
     TTree *partonTree = (TTree *) t->CloneTree();
     partonTree->SetName("partonTree");
     partonTree->SetEntries(nentries);
@@ -289,7 +294,7 @@ void TreeAnalyzer::CreateParLocalTree()
     
     TBranch *bw = partonTree->Branch("weight", &w, "weight/F");
     TBranch *bzg = partonTree->Branch("zg", zg, "zg[npar]/F");
-    TBranch *zrg = partonTree->Branch("rg", rg, "rg[npar]/F");
+    TBranch *brg = partonTree->Branch("rg", rg, "rg[npar]/F");
     TBranch *bkt = partonTree->Branch("kt", kt, "kt[npar]/F");
     TBranch *bparFlav = partonTree->Branch("parFlav", parFlav, "parFlav[npar]/F");
     
@@ -331,15 +336,14 @@ void TreeAnalyzer::CreateParLocalTree()
         }
     }
     
+    partonTree->Write();
     // Rename branches
     
-    
-    fout->Close();
 }
 
-void TreeAnalyzer::CreateRefLocalTree()
+void TreeAnalyzer::CreateRefLocalTree(TFile *ftrees)
 {
-    std::string fname = "localTrees.root";
+    std::string fname = "~/rootFiles/localTrees.root";
     
     std::cout << "Creating hadronTree in " << fname << endl;
     

@@ -40,3 +40,9 @@
 
 # EMACS lock files
 *.*#
+
+# VS Code 
+.vscode/
+
+# Jupyter
+./ipynb_checkpoints/

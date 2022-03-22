@@ -242,9 +242,9 @@ void plot_ref_zgVSrg()
 
         // Activate specific branches
         t->SetBranchStatus("*", 0);
-        for (auto activeBranchName : {"nref", "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
-                                     "rsjt2Pt", "rsjt2Eta", "rsjt2Phi", "refpt", 
-                                      "jtHadFlav", "refIsHardest", "refeta"}) {
+        for (auto activeBranchName : {"nref", "refpt", "refeta", "jtHadFlav", "refIsHardest",
+                                      "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
+                                      "rsjt2Pt", "rsjt2Eta", "rsjt2Phi"}) {
             //std::cout << "Activating branch " << activeBranchName << endl;
             t->SetBranchStatus(activeBranchName, 1);
         }
@@ -254,9 +254,9 @@ void plot_ref_zgVSrg()
         // Create the new histograms
         
         // ln(1/rg)
-        int xbins = 40;
-        float xmin = 0.91;
-        float xmax = 5.;
+        int x1bins = 40;
+        float x1min = 0.91;
+        float x1max = 5.;
         
         // lnkt
         int y1bins = 40;
@@ -269,13 +269,13 @@ void plot_ref_zgVSrg()
         float y2max = 2.4;
         
         // jetpt
-        int zbins = 27*2;
-        float zmin = 30;
-        float zmax = 300;
+        int z1bins = 27*2;
+        float z1min = 30;
+        float z1max = 300;
         
         // X = ln(1/rg), Y = lnkt
         TH3F *h_ktL = new TH3F((hname + "_ktL").c_str(), "rg, kt, pt, l jets", 
-                               xbins, xmin, xmax, y1bins, y1min, y1max, zbins, zmin, zmax);
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, zbins, zmin, zmax);
         TH3F *h_ktB = new TH3F((hname + "_ktB").c_str(), "rg, kt, pt, b jets", 
                                xbins, xmin, xmax, y1bins, y1min, y1max, zbins, zmin, zmax);
         TH3F *h_ktC = new TH3F((hname + "_ktC").c_str(), "rg, kt, pt, c jets", 
