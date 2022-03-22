@@ -9,7 +9,7 @@ void plot_light_jets(bool ktCut = true)
     TFile *fin = new TFile(path_qcd.c_str());
     
     if (ktCut) { 
-        cout << "Running with kt cut: 1 GeV << endl;
+        cout << "Running with kt cut: 1 GeV" << endl;
     } else { 
         cout << "Running without kt cut." << endl;
     }
