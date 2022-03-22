@@ -299,7 +299,7 @@ void plot_pt2dscan_par()
             }
             
             // Calculate zg, Rg, kt
-            for (Long64_t j = 0; j < nref; j++)  {
+            for (Long64_t j = 0; j < npar; j++)  {
                 Float_t zg = -1.;
                 Float_t rg = -1.;
                 Float_t kt = -1.;
