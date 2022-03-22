@@ -1,59 +1,82 @@
-// L and C jets from qcdMC, B jets from bJetMC
+#include "TH2F.h"
+#include "TFile.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "TLatex.h"
+#include "TPaveText.h"
 
-void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
+using namespace std;
+
+void drawzgVSrg_ref(bool ktORzgrg = true, bool dynKt = false)
 {
     //gStyle->SetOptTitle(0);
     //gStyle->SetTitleFontSize(1);
-                        
+       
     // Change histfile if using subset
-    std::string histfile = "ref_sub.root";
-    //std::string histfile = "subset_ref_sub.root";
+    std::string histfile = "kt_rgzg_ref.root";
+    //std::string histfile = "subset_kt_rgzg_par.root";
     TFile *fin = new TFile(histfile.c_str());
     
     // h__1 = B jets, h__2 = C jets, h__3 = light jets
     std::string hname1 = "h_bJet";
     std::string hname2 = "h_qcd";
     std::string hname3 = "h_qcd";
-    std::string title1d = "";
+    //std::string title1d = "";
     std::string title2d = "";
-    std::string xtitle = "";
-    std::string ytitle2d = "refpt (GeV)";
-    std::string ytitle1d = "1/N dN/d";
+    std::string xtitle = "ln(1/R_{g})";
+    std::string ytitle2d = "";
+    //std::string ytitle1d = "1/N dN/d";
 
-    if (zgORrg) { 
-        hname1 += "_zgB";
-        hname2 += "_zgC";
-        hname3 += "_zgL";
-        title2d += "refpt vs z_{g}";
-        title1d += "z_{g}";
-        xtitle += "z_{g}";
-        ytitle1d += "z_{g}";
+    if (ktORzgrg) { 
+        hname1 += "_ktB";
+        hname2 += "_ktC";
+        hname3 += "_ktL";
+        title2d += "ln(k_{T}) vs ln(1/R_{g})";
+        //title1d += "z_{g}";
+        //xtitle += "z_{g}";
+        //ytitle1d += "z_{g}";
+        ytitle2d += "ln(k_{T}/GeV)";
     } else {
-        hname1 += "_rgB";
-        hname2 += "_rgC";
-        hname3 += "_rgL";
-        title2d += "refpt vs R_{g}";
-        title1d += "R_{g}";
-        xtitle += "ln(1/R_{g})";
-        ytitle1d += "ln(1/R_{g})";
+        hname1 += "_rgzgB";
+        hname2 += "_rgzgC";
+        hname3 += "_rgzgL";
+        title2d += "ln(1/z_{g}) vs ln(1/R_{g})";
+        //title1d += "R_{g}";
+        //xtitle += "ln(1/R_{g})";
+        //ytitle1d += "ln(1/R_{g})";
+        ytitle2d += "ln(z_{g})";
     }
-    if (dynKt) {
+    if (dynKt) { 
         hname1 += "_dynKt";
         hname2 += "_dynKt";
         hname3 += "_dynKt";
         title2d += ", dynKt only";
-        title1d += ", dynKt only";
     }
     
-
-    // Load 2D histograms
-    float minpt = 200;
-    float maxpt = 250;
+    // Load 3D histograms -- x = rg, y = zg / kt, z = pt  
+    TH3F *h3d1 = (TH3F *) fin->Get(hname1.c_str())->Clone();
+    TH3F *h3d2 = (TH3F *) fin->Get(hname2.c_str())->Clone();
+    TH3F *h3d3 = (TH3F *) fin->Get(hname3.c_str())->Clone();
     
-    TH2F *h2d1 = (TH2F *) fin->Get(hname1.c_str());
-    TH2F *h2d2 = (TH2F *) fin->Get(hname2.c_str());
-    TH2F *h2d3 = (TH2F *) fin->Get(hname3.c_str());
+    // Create 2d histograms - Projections
+    float lowpt[2] = {50, 80};
+    float midpt[2] = {100, 150};
+    float highpt[2] = {200, 250};
     
+    float ptmin = 30;
+    float ptmax = 300;
+    
+    title2d += Form(", p_{T} in [%.0f, %.0f] GeV", ptmin, ptmax);
+    
+    h3d1->GetZaxis()->SetRangeUser(ptmin, ptmax);
+    h3d2->GetZaxis()->SetRangeUser(ptmin, ptmax);
+    h3d3->GetZaxis()->SetRangeUser(ptmin, ptmax);
+    
+    TH2F *h2d1 = (TH2F *) h3d1->Project3D("yx");
+    TH2F *h2d2 = (TH2F *) h3d2->Project3D("yx");
+    TH2F *h2d3 = (TH2F *) h3d3->Project3D("yx");    
+    
+    /*
     // Create 1D histograms - Projections
     int firstbin = h2d1->GetYaxis()->FindBin(minpt);
     minpt = h2d1->GetYaxis()->GetBinLowEdge(firstbin);
@@ -61,12 +84,13 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     int lastbin = h2d1->GetYaxis()->FindBin(maxpt);
     maxpt = h2d1->GetYaxis()->GetBinUpEdge(lastbin);
     
-    TH1F *h1d1 =(TH1F *) h2d1->ProjectionX("h1d1", firstbin, lastbin, "e"); // want underflow in zg, rg not pt
+    TH1F *h1d1 =(TH1F *) h2d1->ProjectionX("h1d1", firstbin, lastbin, "e"); // We want underflow in zg, rg not pt
     TH1F *h1d2 =(TH1F *) h2d2->ProjectionX("h1d2", firstbin, lastbin, "e");
     TH1F *h1d3 =(TH1F *) h2d3->ProjectionX("h1d3", firstbin, lastbin, "e");
+    */
     
     // Draw 2D histograms    
-    TCanvas *c2d = new TCanvas("c2d", "", 1100, 500);
+    TCanvas *c2d = new TCanvas("c2d", "", 1300, 600);
     c2d->Divide(3, 1);
     
     title2d += ", hadron level";
@@ -80,7 +104,7 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     
     TLatex *ctitle = new TLatex();
     ctitle->SetTextSize(35);
-    ctitle->DrawLatexNDC(0.3, 0.94, title2d.c_str());
+    ctitle->DrawLatexNDC(0.2, 0.96, title2d.c_str());
     
     TLatex *lefttitle = new TLatex();
     lefttitle->SetTextSize(30);
@@ -93,8 +117,7 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     TLatex *righttitle = new TLatex();
     righttitle->SetTextSize(30);
     righttitle->DrawLatexNDC(0.85, 0.92, "light jets");
-    
-   
+  
     const int n = 3;
     TH2F *hs2d[n] = {h2d1, h2d2, h2d3};
     
@@ -103,9 +126,10 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
         c2d->cd(ni + 1)->SetLogz();
         
         TH2F *h = hs2d[ni];
+        h->Scale(100);
         h->GetXaxis()->SetCanExtend(true);
-        h->GetXaxis()->SetRange(0, h->GetXaxis()->GetNbins()); // include jets in zg/rg underflow bin
-        h->GetYaxis()->SetRange(h->GetYaxis()->FindBin(minpt), h->GetYaxis()->FindBin(maxpt));
+        //h->GetXaxis()->SetRange(0, h->GetXaxis()->GetNbins());
+        //h->GetYaxis()->SetRange(h->GetYaxis()->FindBin(minpt), h->GetYaxis()->FindBin(maxpt));
         h->SetXTitle(xtitle.c_str());
         h->SetYTitle(ytitle2d.c_str());
         h->Draw("COLZ");
@@ -113,7 +137,7 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     
     c2d->SetTitle(title2d.c_str());
     c2d->Draw();
-    c2d->Show();
+    c2d->Show();   
     
     // Change savename if using subset
     std::string savename2d = "/home/llr/cms/kalipoliti/myMacros/ref/bVSl/bVSl_" + title2d;
@@ -123,11 +147,11 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     savename2d = std::regex_replace(savename2d, std::regex("_\\{g\\}"), "g");
     savename2d += ".png";
     
-    c2d->Print(savename2d.c_str());
-    
+    //c2d->Print(savename2d.c_str());
+    /*
     // Draw 1D histograms - Projections
     
-    title1d += Form(", for p_{T} in [%.0f, %.0f] GeV, hadron level", minpt, maxpt);
+    title1d += Form(", for p_{T} in [%.0f, %.0f] GeV, parton level", minpt, maxpt);
     
     TH1F *hs1d[n] = {h1d1, h1d2, h1d3};
     
@@ -135,32 +159,28 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     
     float ymax = 0;
     
-    //Int_t counts;
+    Int_t counts;
     
     for (int ni = 0; ni < n; ni++) {
         TH1F *h = hs1d[ni];
-        /*
+        
         cout << "underflow: " << h->GetBinContent(0) << endl;
         counts = 0;
         for (int k = 1; k <= h->GetNbinsX(); k++) {
             counts += h->GetBinContent(k);
         }
         cout << "rest of the bins: " << counts << endl;
-        */
         
-        // Include underflow bin
+        
+        // Extend to include underflow bin in normalisation
         h->GetXaxis()->SetCanExtend(true);
         h->GetXaxis()->SetRange(0, h->GetXaxis()->GetNbins());
         
-        // Normalise
         h->Scale(1/h->Integral("width"));
+       
+        // Fix the range drawn (underflow too large to show)
+        h->GetXaxis()->SetRange(1, h->GetNbinsX());
         
-        // Remove underflow for dynKt (too large)
-        if (dynKt) {
-            h->GetXaxis()->SetRange(1, h->GetXaxis()->GetNbins());
-        }
-        
-        // Make pretty
         h->SetMarkerColor(ni + 2);
         h->SetMarkerSize(0.8);
         h->SetLineWidth(2);
@@ -181,7 +201,7 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     }
     
     // Fix Y range to see all histograms
-    h1d1->GetYaxis()->SetRangeUser(0, ymax + .5);
+    h1d1->GetYaxis()->SetRangeUser(0, ymax + 0.5);
     
     TLegend *leg = new TLegend(0.75, 0.7, 0.85, 0.9);
     leg->SetBorderSize(0);
@@ -191,23 +211,27 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     leg->AddEntry(h1d3, Form("#kern[-0.2]{ } l"), "pl");
     leg->Draw();
     
+    TLatex *c1dtitle = new TLatex();
+    c1dtitle->SetTextSize(25);
+    c1dtitle->DrawLatexNDC(0.15, 0.94, title1d.c_str());
+    
+    TLatex *txt1 = new TLatex();
+    txt1->SetTextSize(25);
+    //txt1->DrawLatexNDC(0.25, 0.6, "underflow: 15-54% of total entries");
+    
+    
     // Include if using subset
     TLatex *text = new TLatex();
     text->SetTextSize(25);
-    //text->DrawLatexNDC(0.5, 0.65, "only 1 b/c per jet");
-    //text->DrawLatexNDC(0.5, 0.3, "only 1 b/c per jet");
-    
-    TLatex *c1dtitle = new TLatex();
-    c1dtitle->SetTextSize(25);
-    c1dtitle->DrawLatexNDC(0.1, 0.94, title1d.c_str());
+    text->DrawLatexNDC(0.5, 0.5, "only 1 b/c per jet");
     
     c1d->SetTitle(title1d.c_str());
     c1d->Draw();
     c1d->Show();
     
     // Change savename if using subset
-    std::string savename1d = "/home/llr/cms/kalipoliti/myMacros/ref/bVSl/bVSl_" + title1d;
-    //std::string savename1d = "/home/llr/cms/kalipoliti/myMacros/ref/bVSl_subset/bVSl_sub_" + title1d;
+    //std::string savename1d = "/home/llr/cms/kalipoliti/myMacros/par/bVSl/bVSl_" + title1d;
+    std::string savename1d = "/home/llr/cms/kalipoliti/myMacros/par/bVSl_subset/bVSl_sub_" + title1d;
     savename1d = std::regex_replace(savename1d, std::regex(", "), "_");
     savename1d = std::regex_replace(savename1d, std::regex(" "), "_");
     savename1d = std::regex_replace(savename1d, std::regex("_\\{g\\}"), "g");
@@ -217,4 +241,5 @@ void drawBvsL_ref(bool zgORrg = false, bool dynKt = true)
     savename1d += ".png";
     
     c1d->Print(savename1d.c_str());
+    */
 }
