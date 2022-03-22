@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = false)
+void draw_pt2dscan(char qtype = 'L', bool ktORzgrg = true, bool dynKt = true)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
@@ -19,27 +19,34 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = false)
     string xtitle = "ln(1/R_{g})";
     string ytitle = "";
     string title = "";
+    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/";
 
     if (qtype == 'B'){
-        title += "B jets";
+        title += "b-jets";
         if(ktORzgrg) {
             hname += "_bJet_ktB";
+            savename += "pt2dscan_bjets_rgkt";
         } else {
             hname += "_bJet_rgzgB";
+            savename += "pt2dscan_bjets_rgzg";
         }
     } else if (qtype == 'C'){
-        title += "C jets";
+        title += "c-jets";
         if(ktORzgrg) {
             hname += "_qcd_ktC";
+            savename += "pt2dscan_cjets_rgkt";
         } else {
             hname += "_qcd_rgzgC";
+            savename += "pt2dscan_cjets_rgzg";
         }
     } else {
-        title += "Light jets";
+        title += "light jets";
         if(ktORzgrg) {
             hname += "_qcd_ktL";
+            savename += "pt2dscan_ljets_rgkt";
         } else {
             hname += "_qcd_rgzgL";
+            savename += "pt2dscan_ljets_rgkt";
         }
     }
     if (ktORzgrg) { 
@@ -50,6 +57,7 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = false)
     string hname_par = hname;
     if (dynKt) { 
         hname += "_dynKt";
+        savename += "_dynKt";
     }
 
     // Load ref 3D histogram -- X = rg, Y = zg / kt, Z = pt 
@@ -121,19 +129,29 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = false)
     TPaveText *text = new TPaveText(0.44, 0.46, 0.56, 0.54, "ndc");
     text->AddText(title.c_str());
     if (dynKt) {
-        text->AddText("dynKt only.");
+        text->AddText("dynKt only");
     } else {
-        text->AddText("No dynKt.");
+        text->AddText("no dynKt");
     }
+    text->SetTextSize(30);
     text->Draw();
 
-    TPaveText *level_ref = new TPaveText(0.05, 0.1, 0.1, 0.2, "ndc");
+    TPaveText *level_ref = new TPaveText(0.01, 0.14, 0.04, 0.31, "ndc");
     TText *l1 = level_ref->AddText("hadron level");
     l1->SetTextAngle(90);
+    level_ref->SetTextSize(30);
     level_ref->Draw();
 
+    TPaveText *level_par = new TPaveText(0.01, 0.64, 0.04, 0.81, "ndc");
+    TText *l2 = level_par->AddText("parton level");
+    l2->SetTextAngle(90);
+    level_par->SetTextSize(30);
+    level_par->Draw();
+
+    savename += ".png";
+
     c->Draw();
-    //c->Print();
+    c->Print(savename.c_str());
 
     c->Show();
 }
