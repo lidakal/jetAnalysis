@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void draw_pt2dscan(char qtype = 'L', bool ktORzgrg = true, bool dynKt = true)
+void draw_pt2dscan(char qtype = 'L', bool ktORzgrg = false, bool dynKt = false)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
@@ -46,7 +46,7 @@ void draw_pt2dscan(char qtype = 'L', bool ktORzgrg = true, bool dynKt = true)
             savename += "pt2dscan_ljets_rgkt";
         } else {
             hname += "_qcd_rgzgL";
-            savename += "pt2dscan_ljets_rgkt";
+            savename += "pt2dscan_ljets_rgzg";
         }
     }
     if (ktORzgrg) { 
