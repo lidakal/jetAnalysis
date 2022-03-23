@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void plot_pt()
+void plot_pt_par()
 {
     const int n = 2;
     
@@ -23,6 +23,9 @@ void plot_pt()
     TH1F *hs_ptB[n];
     TH1F *hs_ptC[n];
     TH1F *hs_ptL[n];
+
+    TH1F *hs_zgL[n];
+    TH2F *hs_zgptL[n];
 
     for (int ni = 0; ni < n; ni++) {
         
@@ -225,7 +228,8 @@ void plot_pt()
 
         // Activate specific branches
         t->SetBranchStatus("*", 0);
-        for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc"}) {
+        for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc",
+	      "psjt1Pt", "psjt2Pt"}) {
             t->SetBranchStatus(activeBranchName, 1);
         }
         HiTree->SetBranchStatus("*", 0);
@@ -242,6 +246,15 @@ void plot_pt()
         TH1F *h_ptC = new TH1F((hname + "_ptC").c_str(), "parpt, c jets", x1bins, x1min, x1max);
         TH1F *h_ptL = new TH1F((hname + "_ptL").c_str(), "parpt, l jets", x1bins, x1min, x1max);
 
+        // zg
+        int x2bins = 40;
+        float x2min = 0.1;
+        float x2max = 0.5;
+
+        TH1F *h_zgL = new TH1F((hname + "_zgL").c_str(), "zg, l jets", x2bins, x2min, x2max);
+
+        TH2F *h_zgptL = new TH2F((hname + "_zgptL").c_str(), "zg, pt, ljets", x2bins, x2min, x2max, x1bins, x1min, x1max);
+
         Long64_t nentries = t->GetEntries();
 
         cout << "Creating histograms..." << endl;
@@ -256,8 +269,14 @@ void plot_pt()
             }
 
             for (Long64_t j = 0; j < npar; j++)  {
+	        Float_t zg = -1;
+
                 if (pareta[j] > 2.) { 
                     continue;
+                }
+
+                if (psjt2Pt[j] > 0.) {
+		  zg = psjt2Pt[j] / (psjt1Pt[j] + psjt2Pt[j]);
                 }
 
                 if (parNb[j] > 0) {
@@ -266,15 +285,20 @@ void plot_pt()
                     h_ptC->Fill(parpt[j], weight);
                 } else {
                     h_ptL->Fill(parpt[j], weight);
+                    h_zgL->Fill(zg, weight);
+                    h_zgptL->Fill(zg, parpt[j], weight);
                 }
             }
         }
         hs_ptB[ni] = h_ptB;
         hs_ptC[ni] = h_ptC;
         hs_ptL[ni] = h_ptL;
+        hs_zgL[ni] = h_zgL;
+        hs_zgptL[ni] = h_zgptL;
+
     }
 
-    string foutname = "~/rootFiles/pt2dscan_par.root";
+    string foutname = "~/rootFiles/pt_par.root";
     cout << "\n(Re)creating file " << foutname << endl;
     TFile *fout = new TFile(foutname.c_str(),  "recreate");
     cout << "Saving histograms." << endl;
@@ -283,6 +307,9 @@ void plot_pt()
         hs_ptB[ni]->Write();
         hs_ptC[ni]->Write();
         hs_ptL[ni]->Write();
+        hs_zgL[ni]->Write();
+        hs_zgptL[ni]->Write();
+
     }
     fout->Close();
 }
