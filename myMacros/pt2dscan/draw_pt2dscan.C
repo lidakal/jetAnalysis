@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void draw_pt2dscan(char qtype = 'L', bool ktORzgrg = false, bool dynKt = false)
+void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
@@ -19,7 +19,7 @@ void draw_pt2dscan(char qtype = 'L', bool ktORzgrg = false, bool dynKt = false)
     string xtitle = "ln(1/R_{g})";
     string ytitle = "";
     string title = "";
-    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/";
+    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/plots/";
 
     if (qtype == 'B'){
         title += "b-jets";
@@ -100,12 +100,17 @@ void draw_pt2dscan(char qtype = 'L', bool ktORzgrg = false, bool dynKt = false)
         h2d_par->GetYaxis()->SetTitleOffset(2.5);
         h2d_par->Draw("colz");
 
+        TLine *line = new TLine(0.91, 0, 5, 0);
+        line->SetLineWidth(2);
+        line->Draw();
+
         c->cd(i + 4);
         h2d_ref->SetYTitle(ytitle.c_str());
         h2d_ref->SetXTitle(xtitle.c_str());
         h2d_ref->GetXaxis()->SetTitleOffset(2.5);
         h2d_ref->GetYaxis()->SetTitleOffset(2.5);
         h2d_ref->Draw("colz");
+        line->Draw();
     }
     // Add pt ranges text on canvas
     c->cd(0);
