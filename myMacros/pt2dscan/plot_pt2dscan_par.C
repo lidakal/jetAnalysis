@@ -27,14 +27,26 @@ void plot_pt2dscan_par()
     // Initialize histograms
     
     // kt vs ln(1/rg) histograms
-    TH3F *hs_ktL[n];
-    TH3F *hs_ktB[n];
-    TH3F *hs_ktC[n];
+    TH3F *hs_rgktL[n];
+    TH3F *hs_rgktB[n];
+    TH3F *hs_rgktC[n];
+    
+    TH3F *hs_rgktB_GSPB[n];
+    TH3F *hs_rgktC_GSPC[n];
+    
+    TH3F *hs_rgktB_noGSPB[n];
+    TH3F *hs_rgktC_noGSPC[n];
     
     // zg vs ln(1/rg) histograms
     TH3F *hs_rgzgL[n];
     TH3F *hs_rgzgB[n];
-    TH3F *hs_rgzgC[n];  
+    TH3F *hs_rgzgC[n]; 
+    
+    TH3F *hs_rgzgB_GSPB[n];
+    TH3F *hs_rgzgC_GSPC[n];
+    
+    TH3F *hs_rgzgB_noGSPB[n];
+    TH3F *hs_rgzgC_noGSPC[n];
 
     for (int ni = 0; ni < n; ni++) {
         
@@ -270,11 +282,21 @@ void plot_pt2dscan_par()
         float z1max = 300;
         
         // X = ln(1/rg), Y = lnkt, Z = refpt
-        TH3F *h_ktL = new TH3F((hname + "_ktL").c_str(), "rg, kt, pt, l jets", 
+        TH3F *h_rgktL = new TH3F((hname + "_rgktL").c_str(), "rg, kt, pt, l jets", 
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-        TH3F *h_ktB = new TH3F((hname + "_ktB").c_str(), "rg, kt, pt, b jets", 
+        TH3F *h_rgktB = new TH3F((hname + "_rgktB").c_str(), "rg, kt, pt, b jets", 
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-        TH3F *h_ktC = new TH3F((hname + "_ktC").c_str(), "rg, kt, pt, c jets", 
+        TH3F *h_rgktC = new TH3F((hname + "_rgktC").c_str(), "rg, kt, pt, c jets", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        /***** GSP events *****/
+        TH3F *h_rgktB_GSPB = new TH3F((hname + "_rgktB_GSPB").c_str(), "rg, kt, pt, b jets, GSPB", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        TH3F *h_rgktC_GSPC = new TH3F((hname + "_rgktC_GSPC").c_str(), "rg, kt, pt, c jets, GSPC", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        /***** no GSP events *****/
+        TH3F *h_rgktB_noGSPB = new TH3F((hname + "_rgktB_noGSPB").c_str(), "rg, kt, pt, b jets, no GSPB", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        TH3F *h_rgktC_noGSPC = new TH3F((hname + "_rgktC_noGSPC").c_str(), "rg, kt, pt, c jets, no GSPC", 
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         
         // X = ln(1/rg), Y = zg, Z = refpt
@@ -284,6 +306,17 @@ void plot_pt2dscan_par()
                                  x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         TH3F *h_rgzgC = new TH3F((hname + "_rgzgC").c_str(), "rg, zg, pt, c jets", 
                                  x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        /***** GSP events *****/
+        TH3F *h_rgzgB_GSPB = new TH3F((hname + "_rgzgB_GSPB").c_str(), "rg, zg, pt, b jets, GSPB", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        TH3F *h_rgzgC_GSPC = new TH3F((hname + "_rgzgC_GSPC").c_str(), "rg, zg, pt, c jets, GSPC", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        /***** no GSP events *****/
+        TH3F *h_rgzgB_noGSPB = new TH3F((hname + "_rgzgB_noGSPB").c_str(), "rg, zg, pt, b jets, no GSPB", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        TH3F *h_rgzgC_noGSPC = new TH3F((hname + "_rgzgC_noGSPC").c_str(), "rg, zg, pt, c jets, no GSPC", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        
         
         Long64_t nentries = t->GetEntries();
 
@@ -329,26 +362,53 @@ void plot_pt2dscan_par()
                 
                 // Fill the histograms
                 if (parNb[j] > 0) {
-                    h_ktB->Fill(logrg, logkt, parpt[j], weight);
+                    h_rgktB->Fill(logrg, logkt, parpt[j], weight);
                     h_rgzgB->Fill(logrg, zg, parpt[j], weight);
+                    if (parNb[j] == 1) {
+                        h_rgktB_noGSPB->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgB_noGSPB->Fill(logrg, zg, parpt[j], weight);
+                    } else {
+                        h_rgktB_GSPB->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgB_GSPB->Fill(logrg, zg, parpt[j], weight);
+                    }
                 } else if (parNc[j] > 0) {
-                    h_ktC->Fill(logrg, logkt, parpt[j], weight);
+                    h_rgktC->Fill(logrg, logkt, parpt[j], weight);
                     h_rgzgC->Fill(logrg, zg, parpt[j], weight);
+                    if (parNc[j] == 1) {
+                        h_rgktC_noGSPC->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgC_noGSPC->Fill(logrg, zg, parpt[j], weight);
+                    } else {
+                        h_rgktC_GSPC->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgC_GSPC->Fill(logrg, zg, parpt[j], weight);
+                    }
                 } else {
-                    h_ktL->Fill(logrg, logkt, parpt[j], weight);
+                    h_rgktL->Fill(logrg, logkt, parpt[j], weight);
                     h_rgzgL->Fill(logrg, zg, parpt[j], weight);
                 }
             }
                 
         }
-        hs_ktB[ni] = h_ktB;
+        hs_rgktB[ni] = h_rgktB;
         hs_rgzgB[ni] = h_rgzgB;
         
-        hs_ktC[ni] = h_ktC;
+        hs_rgktC[ni] = h_rgktC;
         hs_rgzgC[ni] = h_rgzgC;
         
-        hs_ktL[ni] = h_ktL;
+        hs_rgktL[ni] = h_rgktL;
         hs_rgzgL[ni] = h_rgzgL;
+        
+        hs_rgktB_GSPB[ni] = h_rgktB_GSPB;
+        hs_rgktC_GSPC[ni] = h_rgktC_GSPC;
+        
+        hs_rgktB_noGSPB[ni] = h_rgktB_noGSPB;
+        hs_rgktC_noGSPC[ni] = h_rgktC_noGSPC;
+        
+        hs_rgzgB_GSPB[ni] = h_rgzgB_GSPB;
+        hs_rgzgC_GSPC[ni] = h_rgzgC_GSPC;
+        
+        hs_rgzgB_noGSPB[ni] = h_rgzgB_noGSPB;
+        hs_rgzgC_noGSPC[ni] = h_rgzgC_noGSPC;
+        
     }       
 
     string foutname = "~/rootFiles/pt2dscan_par.root";
@@ -357,14 +417,26 @@ void plot_pt2dscan_par()
     cout << "Saving histograms." << endl;
     
     for (int ni = 0; ni < n; ni++) {
-        hs_ktB[ni]->Write();
+        hs_rgktB[ni]->Write();
         hs_rgzgB[ni]->Write();
         
-        hs_ktC[ni]->Write();
+        hs_rgktC[ni]->Write();
         hs_rgzgC[ni]->Write();
         
-        hs_ktL[ni]->Write();
+        hs_rgktL[ni]->Write();
         hs_rgzgL[ni]->Write();
+        
+        hs_rgktB_GSPB[ni]->Write();
+        hs_rgktC_GSPC[ni]->Write();
+        
+        hs_rgktB_noGSPB[ni]->Write();
+        hs_rgktC_noGSPC[ni]->Write();
+        
+        hs_rgzgB_GSPB[ni]->Write();
+        hs_rgzgC_GSPC[ni]->Write();
+        
+        hs_rgzgB_noGSPB[ni]->Write();
+        hs_rgzgC_noGSPC[ni]->Write();
     }
     fout->Close();
 }

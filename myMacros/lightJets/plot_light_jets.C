@@ -266,7 +266,7 @@ void plot_light_jets(bool ktCut = true)
 
         for (int j = 0; j < npar; j++) {
             // cut on eta = 2
-            if (pareta[j] > 2.) { 
+	  if (abs(pareta[j]) > 2.) { 
                 continue;
             }
             

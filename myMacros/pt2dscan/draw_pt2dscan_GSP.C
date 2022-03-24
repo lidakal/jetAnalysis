@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
+void draw_pt2dscan_GSP(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
@@ -24,7 +24,7 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
     if (qtype == 'B'){
         title += "b-jets";
         if(ktORzgrg) {
-            hname += "_bJet_rgktB";
+            hname += "_bJet_rgktB_GSPB";
             savename += "pt2dscan_bjets_rgkt";
         } else {
             hname += "_bJet_rgzgB";
@@ -33,21 +33,14 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
     } else if (qtype == 'C'){
         title += "c-jets";
         if(ktORzgrg) {
-            hname += "_qcd_rgktC";
+            hname += "_qcd_rgktC_GSPC";
             savename += "pt2dscan_cjets_rgkt";
         } else {
             hname += "_qcd_rgzgC";
             savename += "pt2dscan_cjets_rgzg";
         }
     } else {
-        title += "light jets";
-        if(ktORzgrg) {
-            hname += "_qcd_rgktL";
-            savename += "pt2dscan_ljets_rgkt";
-        } else {
-            hname += "_qcd_rgzgL";
-            savename += "pt2dscan_ljets_rgzg";
-        }
+        cout << "Please specify qtype as 'B' or 'C'. No 'L' option allowed." << endl;
     }
     if (ktORzgrg) { 
         ytitle += "ln(k_{T}/GeV)";
