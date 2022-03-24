@@ -3,6 +3,7 @@
 #include <vector>
 #include "TFile.h"
 #include "TH1F.h"
+#include "TH1D.h"
 #include "TH2F.h"
 #include "TTree.h"
 
@@ -245,25 +246,25 @@ void plot_pt_par()
         float x1min = 30;
         float x1max = 300;
 
-        TH1D *h_ptB = new TH1F((hname + "_ptB").c_str(), "parpt, b jets", x1bins, x1min, x1max);
-        TH1D *h_ptC = new TH1F((hname + "_ptC").c_str(), "parpt, c jets", x1bins, x1min, x1max);
-        TH1D *h_ptL = new TH1F((hname + "_ptL").c_str(), "parpt, l jets", x1bins, x1min, x1max);
+        TH1D *h_ptB = new TH1D((hname + "_ptB").c_str(), "parpt, b jets", x1bins, x1min, x1max);
+        TH1D *h_ptC = new TH1D((hname + "_ptC").c_str(), "parpt, c jets", x1bins, x1min, x1max);
+        TH1D *h_ptL = new TH1D((hname + "_ptL").c_str(), "parpt, l jets", x1bins, x1min, x1max);
 
         // zg
         int x2bins = 40;
         float x2min = 0.1;
         float x2max = 0.5;
 
-        TH1D *h_zgL = new TH1F((hname + "_zgL").c_str(), "zg, l jets", x2bins, x2min, x2max);
+        TH1D *h_zgL = new TH1D((hname + "_zgL").c_str(), "zg, l jets", x2bins, x2min, x2max);
 
-        TH2D *h_zgptL = new TH2F((hname + "_zgptL").c_str(), "zg, pt, ljets", x2bins, x2min, x2max, x1bins, x1min, x1max);
+        TH2D *h_zgptL = new TH2D((hname + "_zgptL").c_str(), "zg, pt, ljets", x2bins, x2min, x2max, x1bins, x1min, x1max);
         
         // pareta
         int x3bins = 40;
         float x3min = -2.;
         float x3max = 2.;
 
-        TH1D *h_etaL = new TH1F((hname + "_etaL").c_str(), "eta, l jets", x3bins, x3min, x3max);
+        TH1D *h_etaL = new TH1D((hname + "_etaL").c_str(), "eta, l jets", x3bins, x3min, x3max);
 
         Long64_t nentries = t->GetEntries();
 
