@@ -3,6 +3,7 @@
 #include <vector>
 #include "TFile.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TTree.h"
 
 using namespace std;

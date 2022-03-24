@@ -8,17 +8,19 @@
 #include "TTree.h"
 #include <vector>
 
+using namespace std;
+
 void plot_ref_sub() 
 {
     const int n = 2;
     
-    std::string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    std::string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
-    std::string fnames[n] = {path_qcd, path_bJet};
+    string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
+    string fnames[n] = {path_qcd, path_bJet};
     
-    std::string h_qcd = "h_qcd";
-    std::string h_bJet = "h_bJet";
-    std::string hnames[n] = {h_qcd, h_bJet};
+    string h_qcd = "h_qcd";
+    string h_bJet = "h_bJet";
+    string hnames[n] = {h_qcd, h_bJet};
     
     
     // zg histograms
@@ -45,7 +47,7 @@ void plot_ref_sub()
         auto finname = fnames[ni];
         auto hname = hnames[ni];
 
-        std::cout << "\nReading from " << finname << endl;
+        cout << "\nReading from " << finname << endl;
         TFile *fin = new TFile(finname.c_str());
         TTree *t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
         TTree *HiTree = (TTree *) fin->Get("hiEvtAnalyzer/HiTree");
@@ -245,7 +247,7 @@ void plot_ref_sub()
         for (auto activeBranchName : {"nref", "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
                                      "rsjt2Pt", "rsjt2Eta", "rsjt2Phi", "refpt", 
                                       "jtHadFlav", "refIsHardest", "refeta"}) {
-            //std::cout << "Activating branch " << activeBranchName << endl;
+            //cout << "Activating branch " << activeBranchName << endl;
             t->SetBranchStatus(activeBranchName, 1);
         }
         HiTree->SetBranchStatus("*", 0);
@@ -285,7 +287,7 @@ void plot_ref_sub()
 
         Long64_t nentries = t->GetEntries();
 
-        std::cout << "Creating histograms..." << endl;
+        cout << "Creating histograms..." << endl;
         
         for (Long64_t i = 0; i < nentries; i++) {
             t->GetEntry(i);
@@ -293,7 +295,7 @@ void plot_ref_sub()
 
             // Print progress
             if (i%1000000 == 0) {
-                std::cout << "i = " << i << endl;
+                cout << "i = " << i << endl;
             }
             
             // Calculate zg, Rg
@@ -303,7 +305,7 @@ void plot_ref_sub()
                 Float_t logrg = -1;
                 
                 
-                if (refeta[j] > 2.) { 
+                if (abs(refeta[j]) > 2.) { 
                     continue;
                 }
                 
@@ -363,10 +365,10 @@ void plot_ref_sub()
         hs_zgL_dynKt[ni] = h_zgL_dynKt;
         hs_rgL_dynKt[ni] = h_rgL_dynKt;
     }       
-    std::string foutname = "ref_sub.root";
-    std::cout << "\n(Re)creating file " << foutname << endl;
+    string foutname = "ref_sub.root";
+    cout << "\n(Re)creating file " << foutname << endl;
     TFile *fout = new TFile(foutname.c_str(),  "recreate");
-    std::cout << "Saving histograms." << endl;
+    cout << "Saving histograms." << endl;
     
     for (int ni = 0; ni < n; ni++) {
         hs_zgB[ni]->Write();

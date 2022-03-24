@@ -308,7 +308,7 @@ void plot_pt2dscan_par()
                 Float_t logrg = -1;
                 Float_t logkt = -10;
                 
-                if (pareta[j] > 2.) { 
+                if (abs(pareta[j]) > 2.) { 
                     continue;
                 }
                 

@@ -330,7 +330,7 @@ void plot_pt2dscan_ref()
                 Float_t logrg = -1;
                 Float_t logkt = -10;
                 
-                if (refeta[j] > 2.) { 
+                if (abs(refeta[j]) > 2.) { 
                     continue;
                 }
                 

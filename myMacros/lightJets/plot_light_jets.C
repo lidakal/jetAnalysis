@@ -313,7 +313,7 @@ void plot_light_jets(bool ktCut = true)
 
         for (int j = 0; j < nref; j++) {
             // cut on eta = 2
-            if (refeta[j] > 2.) { 
+            if (abs(refeta[j]) > 2.) { 
                 continue;
             }
             
