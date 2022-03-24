@@ -56,9 +56,11 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = tr
     if (gspORno) { 
         hname += "_GSP";
         savename += "_GSP";
+        title += ", GSP only";
     } else {
         hname += "_noGSP";
         savename += "_noGSP";
+        title += ", no GSP";
     }
 
     string hname_par = hname;
@@ -109,6 +111,9 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = tr
         h2d_par->GetXaxis()->SetRange(0, h2d_par->GetNbinsX()+1);
         h2d_par->GetYaxis()->SetRange(0, h2d_par->GetNbinsY()+1);
         h2d_par->Scale(1/h2d_par->Integral("width"));
+        // Hide the under/overflow again
+        h2d_par->GetXaxis()->SetRange(1, h2d_par->GetNbinsX());
+        h2d_par->GetYaxis()->SetRange(1, h2d_par->GetNbinsY());
 
         h2d_par->Draw("colz");
         // Add line at lnkt = 0
@@ -125,6 +130,9 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = tr
         h2d_ref->GetXaxis()->SetRange(0, h2d_ref->GetNbinsX()+1);
         h2d_ref->GetYaxis()->SetRange(0, h2d_ref->GetNbinsY()+1);
         h2d_ref->Scale(1/h2d_ref->Integral("width"));
+        // Hide the under/overflow again
+        h2d_ref->GetXaxis()->SetRange(1, h2d_ref->GetNbinsX());
+        h2d_ref->GetYaxis()->SetRange(1, h2d_ref->GetNbinsY());
 
         h2d_ref->Draw("colz");
         line->Draw();
@@ -175,5 +183,5 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = tr
     c->Draw();
     c->Print(savename.c_str());
 
-    c->Show();
+    //c->Show();
 }

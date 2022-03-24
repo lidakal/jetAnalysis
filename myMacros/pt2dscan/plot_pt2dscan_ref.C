@@ -92,8 +92,8 @@ void plot_pt2dscan_ref()
         Int_t           jtNcHad[30];
         Int_t           jtNbPar[30];
         Int_t           jtNcPar[30];
-        Bool_t          jtHasGSP[30];
-        Bool_t          jtHasGSP[30];
+        Bool_t          jtHasGSPB[30];
+        Bool_t          jtHasGSPC[30];
         Bool_t          jtIsHardest[30];
         Float_t         sjt1Pt[30];
         Float_t         sjt1Eta[30];
@@ -146,8 +146,8 @@ void plot_pt2dscan_ref()
         Float_t         parphi[30];
         Int_t           parNb[30];
         Int_t           parNc[30];
-        Bool_t          parHasGSP[30];
-        Bool_t          parHasGSP[30];
+        Bool_t          parHasGSPB[30];
+        Bool_t          parHasGSPC[30];
         Bool_t          genIsHardest[30];
         Float_t         gsjt1Pt[30];
         Float_t         gsjt1Eta[30];
@@ -186,8 +186,8 @@ void plot_pt2dscan_ref()
         t->SetBranchAddress("jtNcHad", jtNcHad);
         t->SetBranchAddress("jtNbPar", jtNbPar);
         t->SetBranchAddress("jtNcPar", jtNcPar);
-        t->SetBranchAddress("jtHasGSP", jtHasGSP);
-        t->SetBranchAddress("jtHasGSP", jtHasGSP);
+        t->SetBranchAddress("jtHasGSPB", jtHasGSPB);
+        t->SetBranchAddress("jtHasGSPC", jtHasGSPC);
         t->SetBranchAddress("jtIsHardest", jtIsHardest);
         t->SetBranchAddress("sjt1Pt", sjt1Pt);
         t->SetBranchAddress("sjt1Eta", sjt1Eta);
@@ -242,8 +242,8 @@ void plot_pt2dscan_ref()
         t->SetBranchAddress("parphi", parphi);
         t->SetBranchAddress("parNb", parNb);
         t->SetBranchAddress("parNc", parNc);
-        t->SetBranchAddress("parHasGSP", parHasGSP);
-        t->SetBranchAddress("parHasGSP", parHasGSP);
+        t->SetBranchAddress("parHasGSPB", parHasGSPB);
+        t->SetBranchAddress("parHasGSPC", parHasGSPC);
         t->SetBranchAddress("genIsHardest", genIsHardest);
         t->SetBranchAddress("gsjt1Pt", gsjt1Pt);
         t->SetBranchAddress("gsjt1Eta", gsjt1Eta);

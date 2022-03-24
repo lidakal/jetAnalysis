@@ -19,42 +19,42 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
     string xtitle = "ln(1/R_{g})";
     string ytitle = "";
     string title = "";
-    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/plots/";
+    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/plots/pt2dscan";
 
-    if (qtype == 'B'){
-        title += "b-jets";
-        if(ktORzgrg) {
-            hname += "_bJet_rgktB";
-            savename += "pt2dscan_bjets_rgkt";
-        } else {
-            hname += "_bJet_rgzgB";
-            savename += "pt2dscan_bjets_rgzg";
-        }
-    } else if (qtype == 'C'){
-        title += "c-jets";
-        if(ktORzgrg) {
-            hname += "_qcd_rgktC";
-            savename += "pt2dscan_cjets_rgkt";
-        } else {
-            hname += "_qcd_rgzgC";
-            savename += "pt2dscan_cjets_rgzg";
-        }
+   // MC set
+    if (qtype == 'B') {
+        hname += "_bJet";
     } else {
-        title += "light jets";
-        if(ktORzgrg) {
-            hname += "_qcd_rgktL";
-            savename += "pt2dscan_ljets_rgkt";
-        } else {
-            hname += "_qcd_rgzgL";
-            savename += "pt2dscan_ljets_rgzg";
-        }
+        hname += "_qcd";
     }
-    if (ktORzgrg) { 
+    // Variables
+    if (ktORzgrg) {
+        hname += "_rgkt";
+        savename += "_rgkt";
         ytitle += "ln(k_{T}/GeV)";
     } else {
+        hname += "_rgzg";
+        savename += "_rgzg";
         ytitle += "z_{g}";
     }
+    // Jet Flavour
+    if (qtype == 'B') {
+        hname += "B";
+        title += "b-jets";
+        savename += "_bjets";
+    } else if (qtype == 'C') {
+        hname += "C";
+        title += "c-jets";
+        savename += "_cjets";
+    } else {
+        hname += "L";
+        title += "l-jets";
+        savename += "_ljets";
+    }
+
     string hname_par = hname;
+    title += ", all events";
+
     if (dynKt) { 
         hname += "_dynKt";
         savename += "_dynKt";
@@ -98,6 +98,13 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
         h2d_par->SetXTitle(xtitle.c_str());
         h2d_par->GetXaxis()->SetTitleOffset(2.5);
         h2d_par->GetYaxis()->SetTitleOffset(2.5);
+        // Normalise the histogram
+        h2d_par->GetXaxis()->SetRange(0, h2d_par->GetNbinsX()+1);
+        h2d_par->GetYaxis()->SetRange(0, h2d_par->GetNbinsY()+1);
+        h2d_par->Scale(1/h2d_par->Integral("width"));
+        // Hide the under/overflow again
+        h2d_par->GetXaxis()->SetRange(1, h2d_par->GetNbinsX());
+        h2d_par->GetYaxis()->SetRange(1, h2d_par->GetNbinsY());
         h2d_par->Draw("colz");
 
         TLine *line = new TLine(0.91, 0, 5, 0);
@@ -109,6 +116,14 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
         h2d_ref->SetXTitle(xtitle.c_str());
         h2d_ref->GetXaxis()->SetTitleOffset(2.5);
         h2d_ref->GetYaxis()->SetTitleOffset(2.5);
+        // Normalise the histogram
+        h2d_ref->GetXaxis()->SetRange(0, h2d_ref->GetNbinsX()+1);
+        h2d_ref->GetYaxis()->SetRange(0, h2d_ref->GetNbinsY()+1);
+        h2d_ref->Scale(1/h2d_ref->Integral("width"));
+        // Hide the under/overflow again
+        h2d_ref->GetXaxis()->SetRange(1, h2d_ref->GetNbinsX());
+        h2d_ref->GetYaxis()->SetRange(1, h2d_ref->GetNbinsY());
+        
         h2d_ref->Draw("colz");
         line->Draw();
     }
@@ -158,5 +173,5 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
     c->Draw();
     c->Print(savename.c_str());
 
-    c->Show();
+    //c->Show();
 }
