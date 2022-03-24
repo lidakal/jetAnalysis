@@ -31,22 +31,22 @@ void plot_pt2dscan_par()
     TH3F *hs_rgktB[n];
     TH3F *hs_rgktC[n];
     
-    TH3F *hs_rgktB_GSPB[n];
-    TH3F *hs_rgktC_GSPC[n];
+    TH3F *hs_rgktB_GSP[n];
+    TH3F *hs_rgktC_GSP[n];
     
-    TH3F *hs_rgktB_noGSPB[n];
-    TH3F *hs_rgktC_noGSPC[n];
+    TH3F *hs_rgktB_noGSP[n];
+    TH3F *hs_rgktC_noGSP[n];
     
     // zg vs ln(1/rg) histograms
     TH3F *hs_rgzgL[n];
     TH3F *hs_rgzgB[n];
     TH3F *hs_rgzgC[n]; 
     
-    TH3F *hs_rgzgB_GSPB[n];
-    TH3F *hs_rgzgC_GSPC[n];
+    TH3F *hs_rgzgB_GSP[n];
+    TH3F *hs_rgzgC_GSP[n];
     
-    TH3F *hs_rgzgB_noGSPB[n];
-    TH3F *hs_rgzgC_noGSPC[n];
+    TH3F *hs_rgzgB_noGSP[n];
+    TH3F *hs_rgzgC_noGSP[n];
 
     for (int ni = 0; ni < n; ni++) {
         
@@ -72,8 +72,8 @@ void plot_pt2dscan_par()
         Int_t           jtNcHad[30];
         Int_t           jtNbPar[30];
         Int_t           jtNcPar[30];
-        Bool_t          jtHasGSPB[30];
-        Bool_t          jtHasGSPC[30];
+        Bool_t          jtHasGSP[30];
+        Bool_t          jtHasGSP[30];
         Bool_t          jtIsHardest[30];
         Float_t         sjt1Pt[30];
         Float_t         sjt1Eta[30];
@@ -126,8 +126,8 @@ void plot_pt2dscan_par()
         Float_t         parphi[30];
         Int_t           parNb[30];
         Int_t           parNc[30];
-        Bool_t          parHasGSPB[30];
-        Bool_t          parHasGSPC[30];
+        Bool_t          parHasGSP[30];
+        Bool_t          parHasGSP[30];
         Bool_t          genIsHardest[30];
         Float_t         gsjt1Pt[30];
         Float_t         gsjt1Eta[30];
@@ -166,8 +166,8 @@ void plot_pt2dscan_par()
         t->SetBranchAddress("jtNcHad", jtNcHad);
         t->SetBranchAddress("jtNbPar", jtNbPar);
         t->SetBranchAddress("jtNcPar", jtNcPar);
-        t->SetBranchAddress("jtHasGSPB", jtHasGSPB);
-        t->SetBranchAddress("jtHasGSPC", jtHasGSPC);
+        t->SetBranchAddress("jtHasGSP", jtHasGSP);
+        t->SetBranchAddress("jtHasGSP", jtHasGSP);
         t->SetBranchAddress("jtIsHardest", jtIsHardest);
         t->SetBranchAddress("sjt1Pt", sjt1Pt);
         t->SetBranchAddress("sjt1Eta", sjt1Eta);
@@ -222,8 +222,8 @@ void plot_pt2dscan_par()
         t->SetBranchAddress("parphi", parphi);
         t->SetBranchAddress("parNb", parNb);
         t->SetBranchAddress("parNc", parNc);
-        t->SetBranchAddress("parHasGSPB", parHasGSPB);
-        t->SetBranchAddress("parHasGSPC", parHasGSPC);
+        t->SetBranchAddress("parHasGSP", parHasGSP);
+        t->SetBranchAddress("parHasGSP", parHasGSP);
         t->SetBranchAddress("genIsHardest", genIsHardest);
         t->SetBranchAddress("gsjt1Pt", gsjt1Pt);
         t->SetBranchAddress("gsjt1Eta", gsjt1Eta);
@@ -289,14 +289,14 @@ void plot_pt2dscan_par()
         TH3F *h_rgktC = new TH3F((hname + "_rgktC").c_str(), "rg, kt, pt, c jets", 
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         /***** GSP events *****/
-        TH3F *h_rgktB_GSPB = new TH3F((hname + "_rgktB_GSPB").c_str(), "rg, kt, pt, b jets, GSPB", 
+        TH3F *h_rgktB_GSP = new TH3F((hname + "_rgktB_GSP").c_str(), "rg, kt, pt, b jets, GSP", 
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-        TH3F *h_rgktC_GSPC = new TH3F((hname + "_rgktC_GSPC").c_str(), "rg, kt, pt, c jets, GSPC", 
+        TH3F *h_rgktC_GSP = new TH3F((hname + "_rgktC_GSP").c_str(), "rg, kt, pt, c jets, GSP", 
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         /***** no GSP events *****/
-        TH3F *h_rgktB_noGSPB = new TH3F((hname + "_rgktB_noGSPB").c_str(), "rg, kt, pt, b jets, no GSPB", 
+        TH3F *h_rgktB_noGSP = new TH3F((hname + "_rgktB_noGSP").c_str(), "rg, kt, pt, b jets, no GSP", 
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-        TH3F *h_rgktC_noGSPC = new TH3F((hname + "_rgktC_noGSPC").c_str(), "rg, kt, pt, c jets, no GSPC", 
+        TH3F *h_rgktC_noGSP = new TH3F((hname + "_rgktC_noGSP").c_str(), "rg, kt, pt, c jets, no GSP", 
                                x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
         
         // X = ln(1/rg), Y = zg, Z = refpt
@@ -307,14 +307,14 @@ void plot_pt2dscan_par()
         TH3F *h_rgzgC = new TH3F((hname + "_rgzgC").c_str(), "rg, zg, pt, c jets", 
                                  x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         /***** GSP events *****/
-        TH3F *h_rgzgB_GSPB = new TH3F((hname + "_rgzgB_GSPB").c_str(), "rg, zg, pt, b jets, GSPB", 
+        TH3F *h_rgzgB_GSP = new TH3F((hname + "_rgzgB_GSP").c_str(), "rg, zg, pt, b jets, GSP", 
                                  x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-        TH3F *h_rgzgC_GSPC = new TH3F((hname + "_rgzgC_GSPC").c_str(), "rg, zg, pt, c jets, GSPC", 
+        TH3F *h_rgzgC_GSP = new TH3F((hname + "_rgzgC_GSP").c_str(), "rg, zg, pt, c jets, GSP", 
                                  x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         /***** no GSP events *****/
-        TH3F *h_rgzgB_noGSPB = new TH3F((hname + "_rgzgB_noGSPB").c_str(), "rg, zg, pt, b jets, no GSPB", 
+        TH3F *h_rgzgB_noGSP = new TH3F((hname + "_rgzgB_noGSP").c_str(), "rg, zg, pt, b jets, no GSP", 
                                  x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-        TH3F *h_rgzgC_noGSPC = new TH3F((hname + "_rgzgC_noGSPC").c_str(), "rg, zg, pt, c jets, no GSPC", 
+        TH3F *h_rgzgC_noGSP = new TH3F((hname + "_rgzgC_noGSP").c_str(), "rg, zg, pt, c jets, no GSP", 
                                  x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
         
         
@@ -365,21 +365,21 @@ void plot_pt2dscan_par()
                     h_rgktB->Fill(logrg, logkt, parpt[j], weight);
                     h_rgzgB->Fill(logrg, zg, parpt[j], weight);
                     if (parNb[j] == 1) {
-                        h_rgktB_noGSPB->Fill(logrg, logkt, parpt[j], weight);
-                        h_rgzgB_noGSPB->Fill(logrg, zg, parpt[j], weight);
+                        h_rgktB_noGSP->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgB_noGSP->Fill(logrg, zg, parpt[j], weight);
                     } else {
-                        h_rgktB_GSPB->Fill(logrg, logkt, parpt[j], weight);
-                        h_rgzgB_GSPB->Fill(logrg, zg, parpt[j], weight);
+                        h_rgktB_GSP->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgB_GSP->Fill(logrg, zg, parpt[j], weight);
                     }
                 } else if (parNc[j] > 0) {
                     h_rgktC->Fill(logrg, logkt, parpt[j], weight);
                     h_rgzgC->Fill(logrg, zg, parpt[j], weight);
                     if (parNc[j] == 1) {
-                        h_rgktC_noGSPC->Fill(logrg, logkt, parpt[j], weight);
-                        h_rgzgC_noGSPC->Fill(logrg, zg, parpt[j], weight);
+                        h_rgktC_noGSP->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgC_noGSP->Fill(logrg, zg, parpt[j], weight);
                     } else {
-                        h_rgktC_GSPC->Fill(logrg, logkt, parpt[j], weight);
-                        h_rgzgC_GSPC->Fill(logrg, zg, parpt[j], weight);
+                        h_rgktC_GSP->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgC_GSP->Fill(logrg, zg, parpt[j], weight);
                     }
                 } else {
                     h_rgktL->Fill(logrg, logkt, parpt[j], weight);
@@ -397,17 +397,17 @@ void plot_pt2dscan_par()
         hs_rgktL[ni] = h_rgktL;
         hs_rgzgL[ni] = h_rgzgL;
         
-        hs_rgktB_GSPB[ni] = h_rgktB_GSPB;
-        hs_rgktC_GSPC[ni] = h_rgktC_GSPC;
+        hs_rgktB_GSP[ni] = h_rgktB_GSP;
+        hs_rgktC_GSP[ni] = h_rgktC_GSP;
         
-        hs_rgktB_noGSPB[ni] = h_rgktB_noGSPB;
-        hs_rgktC_noGSPC[ni] = h_rgktC_noGSPC;
+        hs_rgktB_noGSP[ni] = h_rgktB_noGSP;
+        hs_rgktC_noGSP[ni] = h_rgktC_noGSP;
         
-        hs_rgzgB_GSPB[ni] = h_rgzgB_GSPB;
-        hs_rgzgC_GSPC[ni] = h_rgzgC_GSPC;
+        hs_rgzgB_GSP[ni] = h_rgzgB_GSP;
+        hs_rgzgC_GSP[ni] = h_rgzgC_GSP;
         
-        hs_rgzgB_noGSPB[ni] = h_rgzgB_noGSPB;
-        hs_rgzgC_noGSPC[ni] = h_rgzgC_noGSPC;
+        hs_rgzgB_noGSP[ni] = h_rgzgB_noGSP;
+        hs_rgzgC_noGSP[ni] = h_rgzgC_noGSP;
         
     }       
 
@@ -426,17 +426,17 @@ void plot_pt2dscan_par()
         hs_rgktL[ni]->Write();
         hs_rgzgL[ni]->Write();
         
-        hs_rgktB_GSPB[ni]->Write();
-        hs_rgktC_GSPC[ni]->Write();
+        hs_rgktB_GSP[ni]->Write();
+        hs_rgktC_GSP[ni]->Write();
         
-        hs_rgktB_noGSPB[ni]->Write();
-        hs_rgktC_noGSPC[ni]->Write();
+        hs_rgktB_noGSP[ni]->Write();
+        hs_rgktC_noGSP[ni]->Write();
         
-        hs_rgzgB_GSPB[ni]->Write();
-        hs_rgzgC_GSPC[ni]->Write();
+        hs_rgzgB_GSP[ni]->Write();
+        hs_rgzgC_GSP[ni]->Write();
         
-        hs_rgzgB_noGSPB[ni]->Write();
-        hs_rgzgC_noGSPC[ni]->Write();
+        hs_rgzgB_noGSP[ni]->Write();
+        hs_rgzgC_noGSP[ni]->Write();
     }
     fout->Close();
 }

@@ -5,11 +5,13 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TPaveText.h"
+#include "TLine.h"
 #include <regex>
+#include <iostream>
 
 using namespace std;
 
-void draw_pt2dscan_GSP(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
+void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = true, bool dynKt = true)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
@@ -19,35 +21,48 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true
     string xtitle = "ln(1/R_{g})";
     string ytitle = "";
     string title = "";
-    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/plots/";
+    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/plots/pt2dscan";
 
-    if (qtype == 'B'){
-        title += "b-jets";
-        if(ktORzgrg) {
-            hname += "_bJet_rgktB_GSPB";
-            savename += "pt2dscan_bjets_rgkt";
-        } else {
-            hname += "_bJet_rgzgB";
-            savename += "pt2dscan_bjets_rgzg";
-        }
-    } else if (qtype == 'C'){
-        title += "c-jets";
-        if(ktORzgrg) {
-            hname += "_qcd_rgktC_GSPC";
-            savename += "pt2dscan_cjets_rgkt";
-        } else {
-            hname += "_qcd_rgzgC";
-            savename += "pt2dscan_cjets_rgzg";
-        }
+    // MC set
+    if (qtype == 'B') {
+        hname += "_bJet";
     } else {
-        cout << "Please specify qtype as 'B' or 'C'. No 'L' option allowed." << endl;
+        hname += "_qcd";
     }
-    if (ktORzgrg) { 
+    // Variables
+    if (ktORzgrg) {
+        hname += "_rgkt";
+        savename += "_rgkt";
         ytitle += "ln(k_{T}/GeV)";
     } else {
+        hname += "_rgzg";
+        savename += "_rgzg";
         ytitle += "z_{g}";
     }
+    // Jet Flavour
+    if (qtype == 'B') {
+        hname += "B";
+        title += "b-jets";
+        savename += "_bjets";
+    } else if (qtype == 'C') {
+        hname += "C";
+        title += "c-jets";
+        savename += "_cjets";
+    } else {
+        cout << "Please specify qtype as 'B' or 'C'. No 'L' option allowed." << endl;
+        exit(1);
+    }
+    // GSP or not? 
+    if (gspORno) { 
+        hname += "_GSP";
+        savename += "_GSP";
+    } else {
+        hname += "_noGSP";
+        savename += "_noGSP";
+    }
+
     string hname_par = hname;
+
     if (dynKt) { 
         hname += "_dynKt";
         savename += "_dynKt";
@@ -75,7 +90,6 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true
     for (int i = 0; i < npt; i ++){
         Float_t ptmin = ptrange[i][0];
         Float_t ptmax = ptrange[i][1];
-        //cout << "pt range: " << ptmin << ", " << ptmax << endl;
 
         TH3F *h3d_ref_clone = (TH3F *) h3d_ref->Clone();
         TH3F *h3d_par_clone = (TH3F *) h3d_par->Clone();
@@ -91,8 +105,13 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true
         h2d_par->SetXTitle(xtitle.c_str());
         h2d_par->GetXaxis()->SetTitleOffset(2.5);
         h2d_par->GetYaxis()->SetTitleOffset(2.5);
-        h2d_par->Draw("colz");
+        // Normalise the histogram
+        h2d_par->GetXaxis()->SetRange(0, h2d_par->GetNbinsX()+1);
+        h2d_par->GetYaxis()->SetRange(0, h2d_par->GetNbinsY()+1);
+        h2d_par->Scale(1/h2d_par->Integral("width"));
 
+        h2d_par->Draw("colz");
+        // Add line at lnkt = 0
         TLine *line = new TLine(0.91, 0, 5, 0);
         line->SetLineWidth(2);
         line->Draw();
@@ -102,6 +121,11 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true
         h2d_ref->SetXTitle(xtitle.c_str());
         h2d_ref->GetXaxis()->SetTitleOffset(2.5);
         h2d_ref->GetYaxis()->SetTitleOffset(2.5);
+        // Normalise the histogram
+        h2d_ref->GetXaxis()->SetRange(0, h2d_ref->GetNbinsX()+1);
+        h2d_ref->GetYaxis()->SetRange(0, h2d_ref->GetNbinsY()+1);
+        h2d_ref->Scale(1/h2d_ref->Integral("width"));
+
         h2d_ref->Draw("colz");
         line->Draw();
     }
