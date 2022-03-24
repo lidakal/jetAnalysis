@@ -26,6 +26,8 @@ void plot_pt_par()
 
     TH1F *hs_zgL[n];
     TH2F *hs_zgptL[n];
+    
+    TH1F *hs_etaL[n];
 
     for (int ni = 0; ni < n; ni++) {
         
@@ -254,6 +256,13 @@ void plot_pt_par()
         TH1F *h_zgL = new TH1F((hname + "_zgL").c_str(), "zg, l jets", x2bins, x2min, x2max);
 
         TH2F *h_zgptL = new TH2F((hname + "_zgptL").c_str(), "zg, pt, ljets", x2bins, x2min, x2max, x1bins, x1min, x1max);
+        
+        // pareta
+        int x3bins = 40;
+        float x3min = -2.;
+        float x3max = 2.;
+
+        TH1F *h_etaL = new TH1F((hname + "_etaL").c_str(), "eta, l jets", x3bins, x3min, x3max);
 
         Long64_t nentries = t->GetEntries();
 
@@ -269,14 +278,14 @@ void plot_pt_par()
             }
 
             for (Long64_t j = 0; j < npar; j++)  {
-	        Float_t zg = -1;
-
-                if (pareta[j] > 2.) { 
+                if (abs(pareta[j]) > 2.) { 
                     continue;
                 }
+                
+                Float_t zg = -1;
 
                 if (psjt2Pt[j] > 0.) {
-		  zg = psjt2Pt[j] / (psjt1Pt[j] + psjt2Pt[j]);
+                    zg = psjt2Pt[j] / (psjt1Pt[j] + psjt2Pt[j]);
                 }
 
                 if (parNb[j] > 0) {
@@ -287,6 +296,7 @@ void plot_pt_par()
                     h_ptL->Fill(parpt[j], weight);
                     h_zgL->Fill(zg, weight);
                     h_zgptL->Fill(zg, parpt[j], weight);
+                    h_etaL->Fill(pareta[j], weight);
                 }
             }
         }
@@ -295,6 +305,7 @@ void plot_pt_par()
         hs_ptL[ni] = h_ptL;
         hs_zgL[ni] = h_zgL;
         hs_zgptL[ni] = h_zgptL;
+        hs_etaL[ni] = h_etaL;
 
     }
 
@@ -309,6 +320,7 @@ void plot_pt_par()
         hs_ptL[ni]->Write();
         hs_zgL[ni]->Write();
         hs_zgptL[ni]->Write();
+        hs_etaL[ni]->Write();
 
     }
     fout->Close();
