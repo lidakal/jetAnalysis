@@ -1,4 +1,10 @@
 #include <initializer_list>
+#include <iostream>
+#include "TFile.h"
+#include "TH2F.h"
+#include "TTree.h"
+
+using namespace std;
 
 void plot_light_jets(bool ktCut = true)
 {
@@ -9,7 +15,7 @@ void plot_light_jets(bool ktCut = true)
     TFile *fin = new TFile(path_qcd.c_str());
     
     if (ktCut) { 
-        cout << "Running with kt cut: 1 GeV << endl;
+        cout << "Running with kt cut: 1 GeV" << endl;
     } else { 
         cout << "Running without kt cut." << endl;
     }
@@ -260,7 +266,7 @@ void plot_light_jets(bool ktCut = true)
 
         for (int j = 0; j < npar; j++) {
             // cut on eta = 2
-            if (pareta[j] > 2.) { 
+	  if (abs(pareta[j]) > 2.) { 
                 continue;
             }
             
@@ -307,7 +313,7 @@ void plot_light_jets(bool ktCut = true)
 
         for (int j = 0; j < nref; j++) {
             // cut on eta = 2
-            if (refeta[j] > 2.) { 
+            if (abs(refeta[j]) > 2.) { 
                 continue;
             }
             

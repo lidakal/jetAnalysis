@@ -1,3 +1,12 @@
+#include "TH2F.h"
+#include "TFile.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "TLatex.h"
+#include "TPaveText.h"
+
+using namespace std;
+
 void draw_light_jets(bool ktCut = false) 
 {
     // Load histograms from file

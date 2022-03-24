@@ -1,42 +1,59 @@
-// This functions creates histograms for the substructure variables zg and Rg
-// using the reference jet variables
+/*
+    2D pt scan of ln(kt) vs ln(1/rg) (Lund plane)
+    and zg vs ln(1/rg)
+*/
 
+#include <initializer_list>
 #include <iostream>
-#include "stdio.h"
-#include "TFile.h"
-#include "TH2.h"
-#include "TTree.h"
 #include <vector>
+#include "TFile.h"
+#include "TH3F.h"
+#include "TTree.h"
 
-void plot_par_zgVSrg() 
+using namespace std;
+
+void plot_pt2dscan_par() 
 {
     const int n = 2;
     
-    std::string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    std::string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
-    std::string fnames[n] = {path_qcd, path_bJet};
+    string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
+    string fnames[n] = {path_qcd, path_bJet};
     
-    std::string h_qcd = "h_qcd";
-    std::string h_bJet = "h_bJet";
-    std::string hnames[n] = {h_qcd, h_bJet};
+    string h_qcd = "h_qcd";
+    string h_bJet = "h_bJet";
+    string hnames[n] = {h_qcd, h_bJet};
     
+    // Initialize histograms
     
-    // zg histograms
-    TH2F *hs_ktL[n];
-    TH2F *hs_ktB[n];
-    TH2F *hs_ktC[n];
+    // kt vs ln(1/rg) histograms
+    TH3F *hs_rgktL[n];
+    TH3F *hs_rgktB[n];
+    TH3F *hs_rgktC[n];
     
-    // Rg histograms
-    TH2F *hs_rgzgL[n];
-    TH2F *hs_rgzgB[n];
-    TH2F *hs_rgzgC[n];    
+    TH3F *hs_rgktB_GSP[n];
+    TH3F *hs_rgktC_GSP[n];
+    
+    TH3F *hs_rgktB_noGSP[n];
+    TH3F *hs_rgktC_noGSP[n];
+    
+    // zg vs ln(1/rg) histograms
+    TH3F *hs_rgzgL[n];
+    TH3F *hs_rgzgB[n];
+    TH3F *hs_rgzgC[n]; 
+    
+    TH3F *hs_rgzgB_GSP[n];
+    TH3F *hs_rgzgC_GSP[n];
+    
+    TH3F *hs_rgzgB_noGSP[n];
+    TH3F *hs_rgzgC_noGSP[n];
 
     for (int ni = 0; ni < n; ni++) {
         
         auto finname = fnames[ni];
         auto hname = hnames[ni];
 
-        std::cout << "\nReading from " << finname << endl;
+        cout << "\nReading from " << finname << endl;
         TFile *fin = new TFile(finname.c_str());
         TTree *t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
         TTree *HiTree = (TTree *) fin->Get("hiEvtAnalyzer/HiTree");
@@ -84,12 +101,12 @@ void plot_par_zgVSrg()
         Float_t         jtDiscDeepFlavourC[30];
         Float_t         jtDiscProb[30];
         Int_t           nsvtx[30];
-        vector<vector<int> > svtxntrk;
-        vector<vector<float> > svtxdls;
-        vector<vector<float> > svtxdls2d;
-        vector<vector<float> > svtxm;
-        vector<vector<float> > svtxpt;
-        vector<vector<float> > svtxmcorr;
+        vector<vector<int>> svtxntrk;
+        vector<vector<float>> svtxdls;
+        vector<vector<float>> svtxdls2d;
+        vector<vector<float>> svtxm;
+        vector<vector<float>> svtxpt;
+        vector<vector<float>> svtxmcorr;
         Float_t         refpt[30];
         Float_t         refeta[30];
         Float_t         refphi[30];
@@ -236,7 +253,7 @@ void plot_par_zgVSrg()
         for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc",
                                       "psjt1Pt", "psjt1Eta", "psjt1Phi", 
                                       "psjt2Pt", "psjt2Eta", "psjt2Phi"}) {
-            //std::cout << "Activating branch " << activeBranchName << endl;
+            //cout << "Activating branch " << activeBranchName << endl;
             t->SetBranchStatus(activeBranchName, 1);
         }
         HiTree->SetBranchStatus("*", 0);
@@ -245,41 +262,73 @@ void plot_par_zgVSrg()
         // Create the new histograms
         
         // ln(1/rg)
-        int xbins = 40;
-        float xmin = 0.;
-        float xmax = 5.;
+        int x1bins = 40;
+        float x1min = 0.91;
+        float x1max = 5.;
         
         // lnkt
-        int ybins = 40;
-        float ymin = -5.; // log(1/Rg)
-        float ymax = 5.;
+        int y1bins = 40;
+        float y1min = -5.; 
+        float y1max = 5.;
         
-        // ln(1/zg)
-        int zbins = 40;
-        float zmin = 0.69;
-        float zmax = 2.4;
+        // zg
+        int y2bins = 40;
+        float y2min = 0.1;
+        float y2max = 0.5;
         
-        // X = ln(1/rg), Y = lnkt
-        TH2F *h_ktL = new TH2F((hname + "_ktL").c_str(), "kt vs rg, l jets", xbins, xmin, xmax, ybins, ymin, ymax);
-        TH2F *h_ktB = new TH2F((hname + "_ktB").c_str(), "kt vs rg, b jets", xbins, xmin, xmax, ybins, ymin, ymax);
-        TH2F *h_ktC = new TH2F((hname + "_ktC").c_str(), "kt vs rg, c jets", xbins, xmin, xmax, ybins, ymin, ymax);
+        // jetpt
+        int z1bins = 27*2;
+        float z1min = 30;
+        float z1max = 300;
         
-        // X = ln(1/rg), Y = ln(1/zg)
-        TH2F *h_rgzgL = new TH2F((hname + "_rgzgL").c_str(), "zg vs rg, l jets", xbins, xmin, xmax, zbins, zmin, zmax);
-        TH2F *h_rgzgB = new TH2F((hname + "_rgzgB").c_str(), "zg vs rg, b jets", xbins, xmin, xmax, zbins, zmin, zmax);
-        TH2F *h_rgzgC = new TH2F((hname + "_rgzgC").c_str(), "zg vs rg, c jets", xbins, xmin, xmax, zbins, zmin, zmax);
+        // X = ln(1/rg), Y = lnkt, Z = refpt
+        TH3F *h_rgktL = new TH3F((hname + "_rgktL").c_str(), "rg, kt, pt, l jets", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        TH3F *h_rgktB = new TH3F((hname + "_rgktB").c_str(), "rg, kt, pt, b jets", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        TH3F *h_rgktC = new TH3F((hname + "_rgktC").c_str(), "rg, kt, pt, c jets", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        /***** GSP events *****/
+        TH3F *h_rgktB_GSP = new TH3F((hname + "_rgktB_GSP").c_str(), "rg, kt, pt, b jets, GSP", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        TH3F *h_rgktC_GSP = new TH3F((hname + "_rgktC_GSP").c_str(), "rg, kt, pt, c jets, GSP", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        /***** no GSP events *****/
+        TH3F *h_rgktB_noGSP = new TH3F((hname + "_rgktB_noGSP").c_str(), "rg, kt, pt, b jets, no GSP", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        TH3F *h_rgktC_noGSP = new TH3F((hname + "_rgktC_noGSP").c_str(), "rg, kt, pt, c jets, no GSP", 
+                               x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+        
+        // X = ln(1/rg), Y = zg, Z = refpt
+        TH3F *h_rgzgL = new TH3F((hname + "_rgzgL").c_str(), "rg, zg, pt, l jets", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        TH3F *h_rgzgB = new TH3F((hname + "_rgzgB").c_str(), "rg, zg, pt, b jets", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        TH3F *h_rgzgC = new TH3F((hname + "_rgzgC").c_str(), "rg, zg, pt, c jets", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        /***** GSP events *****/
+        TH3F *h_rgzgB_GSP = new TH3F((hname + "_rgzgB_GSP").c_str(), "rg, zg, pt, b jets, GSP", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        TH3F *h_rgzgC_GSP = new TH3F((hname + "_rgzgC_GSP").c_str(), "rg, zg, pt, c jets, GSP", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        /***** no GSP events *****/
+        TH3F *h_rgzgB_noGSP = new TH3F((hname + "_rgzgB_noGSP").c_str(), "rg, zg, pt, b jets, no GSP", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        TH3F *h_rgzgC_noGSP = new TH3F((hname + "_rgzgC_noGSP").c_str(), "rg, zg, pt, c jets, no GSP", 
+                                 x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+        
         
         Long64_t nentries = t->GetEntries();
 
-        std::cout << "Creating histograms..." << endl;
+        cout << "Creating histograms..." << endl;
         
         for (Long64_t i = 0; i < nentries; i++) {
             t->GetEntry(i);
             HiTree->GetEntry(i);
 
             // Print progress
-            if (i%1000000 == 0) {
-                std::cout << "i = " << i << endl;
+            if (i % 1000000 == 0) {
+                cout << "i = " << i << endl;
             }
             
             // Calculate zg, Rg, kt
@@ -290,14 +339,11 @@ void plot_par_zgVSrg()
                 
                 // Keep the log(1/Rg) = -1 for the underflowbin in the histogram
                 Float_t logrg = -1;
-                Float_t logzg = -1;
                 Float_t logkt = -10;
                 
-                if (pareta[j] > 2.) { 
+                if (abs(pareta[j]) > 2.) { 
                     continue;
                 }
-                
-                
                 
                 // Calculate zg, rg for jets with proper substructure
                 if (psjt2Pt[j] > 0.) {
@@ -311,46 +357,86 @@ void plot_par_zgVSrg()
                     
                     // calculate logs
                     logrg = log(1/rg);
-                    logzg = log(1/zg);
                     logkt = log(kt);
                 }
                 
                 // Fill the histograms
                 if (parNb[j] > 0) {
-                    h_ktB->Fill(logrg, logkt, weight);
-                    h_rgzgB->Fill(logrg, logzg, weight);
+                    h_rgktB->Fill(logrg, logkt, parpt[j], weight);
+                    h_rgzgB->Fill(logrg, zg, parpt[j], weight);
+                    if (parNb[j] == 1) {
+                        h_rgktB_noGSP->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgB_noGSP->Fill(logrg, zg, parpt[j], weight);
+                    } else {
+                        h_rgktB_GSP->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgB_GSP->Fill(logrg, zg, parpt[j], weight);
+                    }
                 } else if (parNc[j] > 0) {
-                    h_ktC->Fill(logrg, logkt, weight);
-                    h_rgzgC->Fill(logrg, logzg, weight);
+                    h_rgktC->Fill(logrg, logkt, parpt[j], weight);
+                    h_rgzgC->Fill(logrg, zg, parpt[j], weight);
+                    if (parNc[j] == 1) {
+                        h_rgktC_noGSP->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgC_noGSP->Fill(logrg, zg, parpt[j], weight);
+                    } else {
+                        h_rgktC_GSP->Fill(logrg, logkt, parpt[j], weight);
+                        h_rgzgC_GSP->Fill(logrg, zg, parpt[j], weight);
+                    }
                 } else {
-                    h_ktL->Fill(logrg, logkt, weight);
-                    h_rgzgL->Fill(logrg, logzg, weight);
+                    h_rgktL->Fill(logrg, logkt, parpt[j], weight);
+                    h_rgzgL->Fill(logrg, zg, parpt[j], weight);
                 }
             }
+                
         }
-        hs_ktB[ni] = h_ktB;
+        hs_rgktB[ni] = h_rgktB;
         hs_rgzgB[ni] = h_rgzgB;
         
-        hs_ktC[ni] = h_ktC;
+        hs_rgktC[ni] = h_rgktC;
         hs_rgzgC[ni] = h_rgzgC;
         
-        hs_ktL[ni] = h_ktL;
+        hs_rgktL[ni] = h_rgktL;
         hs_rgzgL[ni] = h_rgzgL;
+        
+        hs_rgktB_GSP[ni] = h_rgktB_GSP;
+        hs_rgktC_GSP[ni] = h_rgktC_GSP;
+        
+        hs_rgktB_noGSP[ni] = h_rgktB_noGSP;
+        hs_rgktC_noGSP[ni] = h_rgktC_noGSP;
+        
+        hs_rgzgB_GSP[ni] = h_rgzgB_GSP;
+        hs_rgzgC_GSP[ni] = h_rgzgC_GSP;
+        
+        hs_rgzgB_noGSP[ni] = h_rgzgB_noGSP;
+        hs_rgzgC_noGSP[ni] = h_rgzgC_noGSP;
+        
     }       
-    std::string foutname = "kt_rgzg_par.root";
-    std::cout << "\n(Re)creating file " << foutname << endl;
+
+    string foutname = "~/rootFiles/pt2dscan_par.root";
+    cout << "\n(Re)creating file " << foutname << endl;
     TFile *fout = new TFile(foutname.c_str(),  "recreate");
-    std::cout << "Saving histograms." << endl;
+    cout << "Saving histograms." << endl;
     
     for (int ni = 0; ni < n; ni++) {
-        hs_ktB[ni]->Write();
+        hs_rgktB[ni]->Write();
         hs_rgzgB[ni]->Write();
         
-        hs_ktC[ni]->Write();
+        hs_rgktC[ni]->Write();
         hs_rgzgC[ni]->Write();
         
-        hs_ktL[ni]->Write();
+        hs_rgktL[ni]->Write();
         hs_rgzgL[ni]->Write();
+        
+        hs_rgktB_GSP[ni]->Write();
+        hs_rgktC_GSP[ni]->Write();
+        
+        hs_rgktB_noGSP[ni]->Write();
+        hs_rgktC_noGSP[ni]->Write();
+        
+        hs_rgzgB_GSP[ni]->Write();
+        hs_rgzgC_GSP[ni]->Write();
+        
+        hs_rgzgB_noGSP[ni]->Write();
+        hs_rgzgC_noGSP[ni]->Write();
     }
     fout->Close();
 }
