@@ -103,17 +103,32 @@ class TreeAnalyzer {
         // Class methods
         void Init();
         void SetAnalysisLevel(bool parORref);
+        /*
         void SetExcludeGSP(bool excl = true);
         void CreateLocalTrees();
         void CreateParLocalTree(TFile *ftrees);
         void CreateRefLocalTree(TFile *ftrees);
+        */
+        void TreeAnalyzer::GetEntry(Long64_t i);
     
-    private:
-        bool exclGSP = false;
-        Int_t *njets;
+        //bool exclGSP = false;
+    
+        // Fat jet properties
+        Int_t *njet;
         Float_t *jetpt;
         Float_t *jeteta;
-        Float_t *jetFlav;
+        Float_t *jetNb;
+        Float_t *jetNc;
+        
+        // Subjet properties
+        Float_t *subjet1pt;
+        Float_t *subjet1eta;
+        Float_t *subjet1phi;
+    
+        Float_t *subjet2pt;
+        Float_t *subjet2eta;
+        Float_t *subjet2phi;
+    
         Long64_t nentries;
 };
 
@@ -255,6 +270,51 @@ void TreeAnalyzer::Init()
     nentries = t->GetEntries();
 }
 
+void TreeAnalyzer::GetEntry(Long64_t i) 
+{
+    t->GetEntry(i);
+    HiTree->GetEntry(i);
+}
+
+void TreeAnalyzer::SetAnalysisLevel(bool parORref)
+{
+    if (parORref) {
+        // fat jet properties
+        njet = &npar;
+        jetpt = parpt;
+        jeteta = pareta;
+        jetNb = parNb;
+        jetNc = parNc;
+        
+        // Subjet properties
+        subjet1pt = psjt1Pt;
+        subjet1eta = psjt1Eta;
+        subjet1phi = psjt1Phi;
+        
+        subjet2pt = psjt2Pt;
+        subjet2eta = psjt2Eta;
+        subjet2phi = psjt2Phi;
+    } else {
+        // fat jet properties
+        njet = &ref;
+        jetpt = refpt;
+        jeteta = refeta;
+        jetNb = jtNbHad;
+        jetNc = jtNcHad;
+        
+        // Subjet properties
+        subjet1pt = rsjt1Pt;
+        subjet1eta = rsjt1Eta;
+        subjet1phi = rsjt1Phi;
+        
+        subjet2pt = rsjt2Pt;
+        subjet2eta = rsjt2Eta;
+        subjet2phi = rsjt2Phi;
+    }
+}
+        
+
+/*
 void TreeAnalyzer::CreateLocalTrees()
 { 
     std::string fname = "~/rootFiles/localTrees.root";
@@ -402,6 +462,7 @@ void TreeAnalyzer::CreateRefLocalTree(TFile *ftrees)
     }
     fout->Close();
 }
+*/
             
             
     

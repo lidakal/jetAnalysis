@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void plot_light_jets(bool ktCut = true)
+void plot_light_jets(bool ktCut = false)
 {
     // Read data from file
     string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
