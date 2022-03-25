@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
+void draw_pt2dscan(char qtype = 'B', bool ktORzg = true, bool dynKt = false)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
@@ -28,7 +28,7 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
         hname += "_qcd";
     }
     // Variables
-    if (ktORzgrg) {
+    if (ktORzg) {
         hname += "_rgkt";
         savename += "_rgkt";
         ytitle += "ln(k_{T}/GeV)";
@@ -82,7 +82,17 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
     for (int i = 0; i < npt; i ++){
         Float_t ptmin = ptrange[i][0];
         Float_t ptmax = ptrange[i][1];
-        //cout << "pt range: " << ptmin << ", " << ptmax << endl;
+        
+        Float_t zmin = 0.;
+        Float_t zmax = 0.4;
+        
+        if (dynKt) {
+            zmax = 0.3;
+        }
+        
+        if (!ktORzg) {
+            zmax = 4.;
+        }
 
         TH3F *h3d_ref_clone = (TH3F *) h3d_ref->Clone();
         TH3F *h3d_par_clone = (TH3F *) h3d_par->Clone();
@@ -105,6 +115,9 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
         // Hide the under/overflow again
         h2d_par->GetXaxis()->SetRange(1, h2d_par->GetNbinsX());
         h2d_par->GetYaxis()->SetRange(1, h2d_par->GetNbinsY());
+        // Fix colormap (Z) range
+        h2d_par->GetZaxis()->SetRangeUser(zmin, zmax);
+        
         h2d_par->Draw("colz");
 
         TLine *line = new TLine(0.91, 0, 5, 0);
@@ -123,6 +136,8 @@ void draw_pt2dscan(char qtype = 'B', bool ktORzgrg = true, bool dynKt = true)
         // Hide the under/overflow again
         h2d_ref->GetXaxis()->SetRange(1, h2d_ref->GetNbinsX());
         h2d_ref->GetYaxis()->SetRange(1, h2d_ref->GetNbinsY());
+        // Fix colormap (Z) range
+        h2d_ref->GetZaxis()->SetRangeUser(zmin, zmax);
         
         h2d_ref->Draw("colz");
         line->Draw();

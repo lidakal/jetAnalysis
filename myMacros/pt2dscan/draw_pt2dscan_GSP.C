@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = true, bool dynKt = true)
+void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = false, bool ktORzg = true, bool dynKt = true)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
@@ -30,7 +30,7 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = tr
         hname += "_qcd";
     }
     // Variables
-    if (ktORzgrg) {
+    if (ktORzg) {
         hname += "_rgkt";
         savename += "_rgkt";
         ytitle += "ln(k_{T}/GeV)";
@@ -92,6 +92,21 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = tr
     for (int i = 0; i < npt; i ++){
         Float_t ptmin = ptrange[i][0];
         Float_t ptmax = ptrange[i][1];
+        
+        Float_t zmin = 0.;
+        Float_t zmax = 0.4;
+        
+        if (gspORno) {
+            zmax = 0.8;
+        }
+        
+        if (!ktORzg) {
+            if (gspORno) {
+                zmax = 4.;
+            } else {
+                zmax = 2.5;
+            }
+        }                 
 
         TH3F *h3d_ref_clone = (TH3F *) h3d_ref->Clone();
         TH3F *h3d_par_clone = (TH3F *) h3d_par->Clone();
@@ -114,6 +129,8 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = tr
         // Hide the under/overflow again
         h2d_par->GetXaxis()->SetRange(1, h2d_par->GetNbinsX());
         h2d_par->GetYaxis()->SetRange(1, h2d_par->GetNbinsY());
+        // Fix colormap (Z) range
+        h2d_par->GetZaxis()->SetRangeUser(zmin, zmax);
 
         h2d_par->Draw("colz");
         // Add line at lnkt = 0
@@ -133,6 +150,8 @@ void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = true, bool ktORzgrg = tr
         // Hide the under/overflow again
         h2d_ref->GetXaxis()->SetRange(1, h2d_ref->GetNbinsX());
         h2d_ref->GetYaxis()->SetRange(1, h2d_ref->GetNbinsY());
+        // Fix colormap (Z) range
+        h2d_ref->GetZaxis()->SetRangeUser(zmin, zmax);
 
         h2d_ref->Draw("colz");
         line->Draw();
