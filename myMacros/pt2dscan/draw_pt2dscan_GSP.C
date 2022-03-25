@@ -12,7 +12,7 @@
 using namespace std;
 
 void draw_pt2dscan_GSP(char qtype = 'B', bool gspORno = false, bool ktORzg = true, bool dynKt = true)
-{       
+{           
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
 

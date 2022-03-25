@@ -61,6 +61,7 @@ void draw_pt2dscan_ratio(char qtype = 'B', bool ktORzg = false, bool dynKt = fal
     }
     
     savename += "_ratio";
+    
 
     // Load ref 3D histogram -- X = rg, Y = zg / kt, Z = pt 
     TFile *fin_ref = new TFile(histfile_ref.c_str());

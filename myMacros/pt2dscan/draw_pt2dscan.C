@@ -10,7 +10,7 @@
 using namespace std;
 
 void draw_pt2dscan(char qtype = 'B', bool ktORzg = true, bool dynKt = false)
-{       
+{           
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
 
