@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void draw_pt2dscan_GSP_ratio_undecayed(char qtype = 'B', bool gspORno = true, bool ktORzg = false, bool dynKt = false)
+void draw_pt2dscan_GSP_ratio_undecayed(char qtype = 'B', bool gspORno = false, bool ktORzg = true, bool dynKt = false)
 {          
     string histfile_ref = "~/rootFiles/pt2dscan_ref_undecayed.root";
     string histfile_par = "~/rootFiles/pt2dscan_par_undecayed.root";
@@ -97,7 +97,7 @@ void draw_pt2dscan_GSP_ratio_undecayed(char qtype = 'B', bool gspORno = true, bo
         Float_t ptmax = ptrange[i][1];
         
         Float_t zmin = 0.;
-        Float_t zmax = 18.;
+        Float_t zmax = 30.;
         
         if (gspORno) {
             if (dynKt) { 
@@ -206,6 +206,6 @@ void draw_pt2dscan_GSP_ratio_undecayed(char qtype = 'B', bool gspORno = true, bo
         delete c; 
         c = 0; 
     }
-
+    
     //c->Show();
 }
