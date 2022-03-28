@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void draw_pt2dscan_ratio_undecayed(char qtype = 'B', bool ktORzg = true, bool dynKt = false)
+void draw_pt2dscan_ratio_undecayed(char qtype = 'B', bool ktORzg = true, bool dynKt = true)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref_undecayed.root";
     string histfile_par = "~/rootFiles/pt2dscan_par_undecayed.root";
@@ -92,11 +92,7 @@ void draw_pt2dscan_ratio_undecayed(char qtype = 'B', bool ktORzg = true, bool dy
         if (qtype == 'C') { 
             zmax = 20.;
         } else if (qtype == 'L') {
-            if (dynKt) {
-                zmax = 3.;
-            } else {
-                zmax = 5.;
-            }
+            zmax = 5.;
         }
         
         if (!ktORzg) {
@@ -112,7 +108,7 @@ void draw_pt2dscan_ratio_undecayed(char qtype = 'B', bool ktORzg = true, bool dy
         TH2F *h2d_par = (TH2F *) h3d_par_clone->Project3D(Form("yx%d_par", i)); 
 
         c->cd(i + 1);
-        
+        //c->cd(i + 1)->SetLogz();
         // Normalise the histogram
         h2d_par->GetXaxis()->SetRange(0, h2d_par->GetNbinsX()+1);
         h2d_par->GetYaxis()->SetRange(0, h2d_par->GetNbinsY()+1);
@@ -183,6 +179,7 @@ void draw_pt2dscan_ratio_undecayed(char qtype = 'B', bool ktORzg = true, bool dy
     savename += ".png";
 
     c->Draw();
+    /*
     c->Print(savename.c_str());
     
     if (c) { 
@@ -191,6 +188,7 @@ void draw_pt2dscan_ratio_undecayed(char qtype = 'B', bool ktORzg = true, bool dy
         delete c; 
         c = 0; 
     }
+    */
     
     //c->Show();
 }
