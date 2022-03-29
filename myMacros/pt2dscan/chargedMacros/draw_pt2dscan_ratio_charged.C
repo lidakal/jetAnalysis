@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = true)
+void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = false)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref_charged.root";
     string histfile_par = "~/rootFiles/pt2dscan_par_charged.root";
@@ -89,8 +89,8 @@ void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynK
         Float_t ptmax = ptrange[i][1];
         
         Float_t zmin = 0.;
-        Float_t zmax = 25.;
-        
+        Float_t zmax = 15.;
+        /*
         if (qtype == 'C') { 
             zmax = 20.;
         } else if (qtype == 'L') {
@@ -99,7 +99,7 @@ void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynK
         
         if (!ktORzg) {
         }  
-        
+        */
         TPaveText *text = new TPaveText(0.53, 0.68, 0.81, 0.87, "ndc");
         text->AddText(title.c_str());
         if (dynKt) {
@@ -121,7 +121,7 @@ void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynK
         TH2F *h2d_par = (TH2F *) h3d_par_clone->Project3D(Form("yx%d_par", i)); 
 
         c->cd(i + 1);
-        //c->cd(i + 1)->SetLogz();
+        c->cd(i + 1)->SetLogz();
         // Normalise the histogram
         h2d_par->GetXaxis()->SetRange(0, h2d_par->GetNbinsX()+1);
         h2d_par->GetYaxis()->SetRange(0, h2d_par->GetNbinsY()+1);

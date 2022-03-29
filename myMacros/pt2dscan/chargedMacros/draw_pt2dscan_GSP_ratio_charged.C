@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = false, bool ktORzg = true, bool dynKt = false)
+void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = true, bool ktORzg = true, bool dynKt = false)
 {          
     string histfile_ref = "~/rootFiles/pt2dscan_ref_charged.root";
     string histfile_par = "~/rootFiles/pt2dscan_par_charged.root";
@@ -98,8 +98,8 @@ void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = false, boo
         Float_t ptmax = ptrange[i][1];
         
         Float_t zmin = 0.;
-        Float_t zmax = 30.;
-        
+        Float_t zmax = 10.;
+        /*
         if (gspORno) {
             if (dynKt) { 
                 zmax = 2.;
@@ -107,7 +107,7 @@ void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = false, boo
                 zmax = 9.;
             }
         }
-        
+        */
         if (!ktORzg) {
             if (gspORno) {
                 zmax = 3.;
@@ -137,7 +137,7 @@ void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = false, boo
         TH2F *h2d_par = (TH2F *) h3d_par_clone->Project3D(Form("yx%d_par", i)); 
 
         c->cd(i + 1);
-        
+        c->cd(i + 1)->SetLogz();
         // Normalise the parton histogram
         h2d_par->GetXaxis()->SetRange(0, h2d_par->GetNbinsX()+1);
         h2d_par->GetYaxis()->SetRange(0, h2d_par->GetNbinsY()+1);
@@ -211,6 +211,7 @@ void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = false, boo
     savename += ".png";
 
     c->Draw();
+    
     c->Print(savename.c_str());
     
     if (c) { 
