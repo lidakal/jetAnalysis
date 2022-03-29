@@ -162,7 +162,7 @@ void draw_light_jets(bool ktCut = false)
         leg->Draw();
         
         c->cd(i + 4);
-        leg = new TLegend(0.2, 0.2, 0.6, 0.4);
+        
         leg->SetBorderSize(0);
         leg->SetFillStyle(0);
         leg->AddEntry(hpar_zg, Form("#kern[-0.2]{ } parton"), "pl");
