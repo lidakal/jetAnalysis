@@ -1,5 +1,5 @@
 /*
-    2D pt scan of ln(kt) vs ln(1/rg) (Lund plane)
+    2D pt scan of ln(kt) vs ln(1/rg) 
     and zg vs ln(1/rg)
 */
 
@@ -16,8 +16,8 @@ void plot_pt2dscan_par()
 {
     const int n = 2;
     
-    string path_qcd = "/data_CMS/cms/mnguyen/bJet2022/qcdMC/undecayHF_SD/merged_HiForestAOD.root";
-    string path_bJet = "/data_CMS/cms/mnguyen/bJet2022/bJetMC/undecayHF_SD/merged_HiForestAOD.root";
+    string path_qcd = "/data_CMS/cms/mnguyen/bJet2022/qcdMC/chargedSJ/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/mnguyen/bJet2022/bJetMC/chargedSJ/merged_HiForestAOD.root";
     string fnames[n] = {path_qcd, path_bJet};
     
     string h_qcd = "h_qcd";
@@ -411,7 +411,7 @@ void plot_pt2dscan_par()
         
     }       
 
-    string foutname = "~/rootFiles/pt2dscan_par_undecayed.root";
+    string foutname = "~/rootFiles/pt2dscan_par_charged.root";
     cout << "\n(Re)creating file " << foutname << endl;
     TFile *fout = new TFile(foutname.c_str(),  "recreate");
     cout << "Saving histograms." << endl;
