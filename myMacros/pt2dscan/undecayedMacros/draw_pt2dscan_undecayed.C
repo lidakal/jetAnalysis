@@ -5,6 +5,8 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TPaveText.h"
+#include "TLine.h"
+#include "TSystem.h"
 #include <regex>
 
 using namespace std;
@@ -96,6 +98,18 @@ void draw_pt2dscan_undecayed(char qtype = 'B', bool ktORzg = true, bool dynKt = 
             zmax = 4.;
         }
 
+        TPaveText *text_par = new TPaveText(0.53, 0.68, 0.81, 0.87, "ndc");
+        text_par->AddText(title.c_str());
+        if (dynKt) {
+            text_par->AddText("dynKt only");
+        } else {
+            text_par->AddText("no dynKt");
+        }
+        text_par->AddText("undecayed only");
+        text_par->SetTextSize(20);
+        
+        TPaveText *text_ref = (TPaveText *) text_par->Clone();
+
         TH3F *h3d_ref_clone = (TH3F *) h3d_ref->Clone();
         TH3F *h3d_par_clone = (TH3F *) h3d_par->Clone();
 
@@ -125,6 +139,8 @@ void draw_pt2dscan_undecayed(char qtype = 'B', bool ktORzg = true, bool dynKt = 
         TLine *line = new TLine(0.91, 0, 5, 0);
         line->SetLineWidth(2);
         line->Draw();
+        text_par->AddText("parton level");
+        text_par->Draw();
 
         c->cd(i + 4);
         h2d_ref->SetYTitle(ytitle.c_str());
@@ -143,6 +159,8 @@ void draw_pt2dscan_undecayed(char qtype = 'B', bool ktORzg = true, bool dynKt = 
         
         h2d_ref->Draw("colz");
         line->Draw();
+        text_ref->AddText("truth level");
+        text_ref->Draw();
     }
     // Add pt ranges text on canvas
     c->cd(0);

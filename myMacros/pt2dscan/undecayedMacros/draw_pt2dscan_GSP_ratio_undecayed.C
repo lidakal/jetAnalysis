@@ -6,6 +6,7 @@
 #include "TLatex.h"
 #include "TPaveText.h"
 #include "TLine.h"
+#include "TSystem.h"
 #include <regex>
 #include <iostream>
 
@@ -115,6 +116,16 @@ void draw_pt2dscan_GSP_ratio_undecayed(char qtype = 'B', bool gspORno = false, b
             }
         }  
         
+        TPaveText *text = new TPaveText(0.53, 0.68, 0.81, 0.87, "ndc");
+        text->AddText(title.c_str());
+        if (dynKt) {
+            text->AddText("dynKt only");
+        } else {
+            text->AddText("no dynKt");
+        }
+        text->AddText("undecayed only");
+        text->AddText("ratio truth/parton");
+        text->SetTextSize(20);
 
         TH3F *h3d_ref_clone = (TH3F *) h3d_ref->Clone();
         TH3F *h3d_par_clone = (TH3F *) h3d_par->Clone();
@@ -159,6 +170,7 @@ void draw_pt2dscan_GSP_ratio_undecayed(char qtype = 'B', bool gspORno = false, b
         TLine *line = new TLine(0.91, 0, 5, 0);
         line->SetLineWidth(2);
         line->Draw();
+        text->Draw();
     }
     // Add pt ranges text on canvas
     c->cd(0);
