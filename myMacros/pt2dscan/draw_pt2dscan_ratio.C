@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void draw_pt2dscan_ratio(char qtype = 'Β', bool ktORzg = true, bool dynKt = true)
+void draw_pt2dscan_ratio(char qtype = 'L', bool ktORzg = true, bool dynKt = true)
 {       
     string histfile_ref = "~/rootFiles/pt2dscan_ref.root";
     string histfile_par = "~/rootFiles/pt2dscan_par.root";
@@ -87,22 +87,22 @@ void draw_pt2dscan_ratio(char qtype = 'Β', bool ktORzg = true, bool dynKt = tru
         Float_t ptmax = ptrange[i][1];
         
         Float_t zmin = 0.;
-        Float_t zmax = 10.;
-        /*
+        Float_t zmax = 20.;
+        
         if (qtype == 'C') { 
             if (dynKt) {
-                zmax = 4.;
+                zmax = 10.;
             } else {
                 zmax = 10.;
             }
         } else if (qtype == 'L') {
             if (dynKt) {
-                zmax = 5.;
+                zmax = 10.;
             } else {
                 zmax = 7.;
             }
         }
-        */
+        
         
         if (!ktORzg) {
         }  
@@ -200,7 +200,7 @@ void draw_pt2dscan_ratio(char qtype = 'Β', bool ktORzg = true, bool dynKt = tru
     savename += ".png";
 
     c->Draw();
-    //c->Print(savename.c_str());
+    c->Print(savename.c_str());
 
     //c->Show();
 }
