@@ -5,21 +5,23 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TPaveText.h"
+#include "TLine.h"
+#include "TSystem.h"
 #include <regex>
 
 using namespace std;
 
-void draw_pt2dscan_ratio_undecayed(char qtype = 'B', bool ktORzg = true, bool dynKt = true)
+void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = true)
 {       
-    string histfile_ref = "~/rootFiles/pt2dscan_ref_undecayed.root";
-    string histfile_par = "~/rootFiles/pt2dscan_par_undecayed.root";
+    string histfile_ref = "~/rootFiles/pt2dscan_ref_charged.root";
+    string histfile_par = "~/rootFiles/pt2dscan_par_charged.root";
 
     // Create names / titles / labels based on settings
     string hname = "h";
     string xtitle = "ln(1/R_{g})";
     string ytitle = "";
     string title = "";
-    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/undecayedPlots/ratio/pt2dscan";
+    string savename = "~/gitRepos/jetAnalysis/myMacros/pt2dscan/chargedPlots/ratio/pt2dscan";
 
    // MC set
     if (qtype == 'B') {
@@ -61,7 +63,7 @@ void draw_pt2dscan_ratio_undecayed(char qtype = 'B', bool ktORzg = true, bool dy
     }
     
     savename += "_ratio";
-    savename += "_undecayed";
+    savename += "_charged";
 
     // Load ref 3D histogram -- X = rg, Y = zg / kt, Z = pt 
     TFile *fin_ref = new TFile(histfile_ref.c_str());
