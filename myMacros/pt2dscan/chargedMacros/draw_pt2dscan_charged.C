@@ -97,6 +97,18 @@ void draw_pt2dscan_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = fa
         if (!ktORzg) {
             zmax = 4.;
         }
+        
+        TPaveText *text_par = new TPaveText(0.53, 0.68, 0.81, 0.87, "ndc");
+        text_par->AddText(title.c_str());
+        if (dynKt) {
+            text_par->AddText("dynKt only");
+        } else {
+            text_par->AddText("no dynKt");
+        }
+        text_par->AddText("charged only");
+        text_par->SetTextSize(20);
+        
+        TPaveText *text_ref = (TPaveText *) text_par->Clone();
 
         TH3F *h3d_ref_clone = (TH3F *) h3d_ref->Clone();
         TH3F *h3d_par_clone = (TH3F *) h3d_par->Clone();
@@ -127,8 +139,11 @@ void draw_pt2dscan_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = fa
         TLine *line = new TLine(0.91, 0, 5, 0);
         line->SetLineWidth(2);
         line->Draw();
+        text_par->AddText("parton level");
+        text_par->Draw();
 
         c->cd(i + 4);
+        
         h2d_ref->SetYTitle(ytitle.c_str());
         h2d_ref->SetXTitle(xtitle.c_str());
         h2d_ref->GetXaxis()->SetTitleOffset(2.5);
@@ -145,6 +160,9 @@ void draw_pt2dscan_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = fa
         
         h2d_ref->Draw("colz");
         line->Draw();
+        text_ref->AddText("truth level");
+        text_ref->Draw();
+        
     }
     // Add pt ranges text on canvas
     c->cd(0);
@@ -190,6 +208,7 @@ void draw_pt2dscan_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = fa
     savename += ".png";
 
     c->Draw();
+    
     c->Print(savename.c_str());
     
     if (c) { 
@@ -198,6 +217,6 @@ void draw_pt2dscan_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = fa
         delete c; 
         c = 0; 
     }
-
+    
     //c->Show();
 }

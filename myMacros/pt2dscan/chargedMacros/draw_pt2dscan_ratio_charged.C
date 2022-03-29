@@ -99,6 +99,17 @@ void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynK
         
         if (!ktORzg) {
         }  
+        
+        TPaveText *text = new TPaveText(0.53, 0.68, 0.81, 0.87, "ndc");
+        text->AddText(title.c_str());
+        if (dynKt) {
+            text->AddText("dynKt only");
+        } else {
+            text->AddText("no dynKt");
+        }
+        text->AddText("ratio truth/parton");
+        text->AddText("charged only");
+        text->SetTextSize(20);
 
         TH3F *h3d_ref_clone = (TH3F *) h3d_ref->Clone();
         TH3F *h3d_par_clone = (TH3F *) h3d_par->Clone();
@@ -142,6 +153,7 @@ void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynK
         TLine *line = new TLine(0.91, 0, 5, 0);
         line->SetLineWidth(2);
         line->Draw();
+        text->Draw();
     }
     // Add pt ranges text on canvas
     c->cd(0);
@@ -181,7 +193,7 @@ void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynK
     savename += ".png";
 
     c->Draw();
-    /*
+    
     c->Print(savename.c_str());
     
     if (c) { 
@@ -190,7 +202,7 @@ void draw_pt2dscan_ratio_charged(char qtype = 'B', bool ktORzg = true, bool dynK
         delete c; 
         c = 0; 
     }
-    */
+    
     
     //c->Show();
 }
