@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = true, bool ktORzg = true, bool dynKt = false)
+void draw_pt2dscan_GSP_ratio_charged(char qtype = 'C', bool gspORno = false, bool ktORzg = true, bool dynKt = false)
 {          
     string histfile_ref = "~/rootFiles/pt2dscan_ref_charged.root";
     string histfile_par = "~/rootFiles/pt2dscan_par_charged.root";
@@ -99,21 +99,13 @@ void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = true, bool
         
         Float_t zmin = 0.;
         Float_t zmax = 10.;
-        /*
-        if (gspORno) {
-            if (dynKt) { 
-                zmax = 2.;
-            } else {
-                zmax = 9.;
-            }
+        
+        if (!gspORno) {
+            zmax = 20.;
         }
-        */
+        
         if (!ktORzg) {
-            if (gspORno) {
-                zmax = 3.;
-            } else {
-                zmax = 30.;
-            }
+            zmax = 20.;
         }  
         
         TPaveText *text = new TPaveText(0.53, 0.68, 0.81, 0.87, "ndc");
@@ -213,13 +205,13 @@ void draw_pt2dscan_GSP_ratio_charged(char qtype = 'B', bool gspORno = true, bool
     c->Draw();
     
     c->Print(savename.c_str());
-    
+    /*
     if (c) { 
         c->Close(); 
         gSystem->ProcessEvents(); 
         delete c; 
         c = 0; 
     }
-    
+    */
     //c->Show();
 }
