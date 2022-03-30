@@ -5,7 +5,7 @@
 using namespace std;
     
 // Count how many of the actual b's are tagged as b's
-Float_t ** bTagEff() 
+vector<vector<Float_t>> bTagEff() 
 {
     string path_incl = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/chargedSJ/merged_HiForestAOD.root";
     string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/chargedSJ/merged_HiForestAOD.root";
@@ -118,16 +118,16 @@ Float_t ** bTagEff()
         }
     }
     
-    static Float_t efficiencies[ntaggers][nwps];
+    vector<vector<Float_t>> efficiencies(ntaggers);
 
     for (Int_t k = 0; k < nwps; k ++) { 
         Float_t efficiencyCSVV2 = taggedBsCSVV2[k] / actualBs;
         Float_t efficiencyDeepCSV = taggedBsDeepCSV[k] / actualBs;
         Float_t efficiencyDeepFlavour = taggedBsDeepFlavour[k] / actualBs;
 
-        efficiencies[0][k] = efficiencyCSVV2;
-        efficiencies[1][k] = efficiencyDeepCSV;
-        efficiencies[2][k] = efficiencyDeepFlavour;
+        efficiencies[0].push_back(efficiencyCSVV2);
+        efficiencies[1].push_back(efficiencyDeepCSV);
+        efficiencies[2].push_back(efficiencyDeepFlavour);
     }
     
     return efficiencies;
