@@ -5,7 +5,7 @@
 using namespace std;
     
 // Count how many of the actual b's are tagged as b's
-Float_t * bTagEff(Float_t wp_prob, Float_t wp_jetpt) 
+Float_t ** bTagEff() 
 {
     string path_incl = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/chargedSJ/merged_HiForestAOD.root";
     string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/chargedSJ/merged_HiForestAOD.root";
@@ -65,11 +65,18 @@ Float_t * bTagEff(Float_t wp_prob, Float_t wp_jetpt)
     t->SetBranchStatus("jtDiscDeepFlavourLEPB", 1);
     t->SetBranchStatus("jtDiscDeepFlavourC", 1);
     t->SetBranchStatus("jtDiscProb", 1);
+
+    const Int_t ntaggers = 3;
+    const Int_t nwps = 9;
+
+    Float_t wp_probs[nwps] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+    Float_t wp_jetpt = 100.;
     
     Float_t actualBs = 0;
-    Float_t taggedBsCSVV2 = 0;
-    Float_t taggedBsDeepCSV = 0;
-    Float_t taggedBsDeepFlavour = 0;
+
+    Float_t taggedBsCSVV2[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    Float_t taggedBsDeepCSV[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    Float_t taggedBsDeepFlavour[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     for (Long64_t i = 0; i < nentries; i++) {
         // Print progress
@@ -94,39 +101,36 @@ Float_t * bTagEff(Float_t wp_prob, Float_t wp_jetpt)
             Float_t probDeepCSV_B = jtDiscDeepCSVB[j] + jtDiscDeepCSVBB[j];
             Float_t probDeepFlavour_B = jtDiscDeepFlavourB[j] + jtDiscDeepFlavourBB[j] + jtDiscDeepFlavourLEPB[j];
             
-            // count how many jets pass the wp for each tagger
-            if (probCSVV2_B >= wp_prob) {
-                taggedBsCSVV2 += 1;
-            }
-            
-            if (probDeepCSV_B >= wp_prob) {
-                taggedBsDeepCSV += 1;
-            }
-            
-            if (probDeepFlavour_B >= wp_prob) {
-                taggedBsDeepFlavour += 1;
+            // count how many jets pass each wp for each tagger
+            for (Int_t k = 0; k < nwps; k++) {
+                if (probCSVV2_B >= wp_probs[k]) {
+                    taggedBsCSVV2[k] += 1;
+                }
+                
+                if (probDeepCSV_B >= wp_probs[k]) {
+                    taggedBsDeepCSV[k] += 1;
+                }
+                
+                if (probDeepFlavour_B >= wp_probs[k]) {
+                    taggedBsDeepFlavour[k] += 1;
+                }
             }
         }
     }
     
-    Float_t efficiencyCSVV2 = 0;
-    Float_t efficiencyDeepCSV = 0;
-    Float_t efficiencyDeepFlavour = 0;
+    static Float_t efficiencies[ntaggers][nwps];
+
+    for (Int_t k = 0; k < nwps; k ++) { 
+        Float_t efficiencyCSVV2 = taggedBsCSVV2[k] / actualBs;
+        Float_t efficiencyDeepCSV = taggedBsDeepCSV[k] / actualBs;
+        Float_t efficiencyDeepFlavour = taggedBsDeepFlavour[k] / actualBs;
+
+        efficiencies[0][k] = efficiencyCSVV2;
+        efficiencies[1][k] = efficiencyDeepCSV;
+        efficiencies[2][k] = efficiencyDeepFlavour;
+    }
     
-    cout << "For working point p > " << wp_prob << " and jet pt > " << wp_jetpt << ":\n" << endl; 
-    
-    efficiencyCSVV2 = taggedBsCSVV2 / actualBs;
-    cout << "CSVV2 b tag efficiency: " << efficiencyCSVV2 << endl;
-    
-    efficiencyDeepCSV = taggedBsDeepCSV / actualBs;
-    cout << "DeepCSV b tag efficiency: " << efficiencyDeepCSV << endl;
-    
-    efficiencyDeepFlavour = taggedBsDeepFlavour / actualBs;
-    cout << "DeepFlavour b tag efficiency: " << efficiencyDeepFlavour << endl;
-    
-    static Float_t effs[3] = {efficiencyCSVV2, efficiencyDeepCSV, efficiencyDeepFlavour};
-    
-    return effs;
+    return efficiencies;
 }
 
 // count how many of the actual C's are tagged as B's
