@@ -1,100 +1,13 @@
+// TreeAnalyzer class for b-jets
+// Looking to include l, c-jets next
+
 class TreeAnalyzer {
     public:
-        bool qcdMC = false;
         TFile *fin; 
         TTree *t;
-        TTree *HiTree;
     
-        Int_t           nref;
-        Float_t         rawpt[30];
-        Float_t         jtpt[30];
-        Float_t         jteta[30];
-        Float_t         jtphi[30];
-        Float_t         jtHadFlav[30];
-        Float_t         jtParFlav[30];
-        Int_t           jtNbHad[30];
-        Int_t           jtNcHad[30];
-        Int_t           jtNbPar[30];
-        Int_t           jtNcPar[30];
-        Bool_t          jtHasGSPB[30];
-        Bool_t          jtHasGSPC[30];
-        Bool_t          jtIsHardest[30];
-        Float_t         sjt1Pt[30];
-        Float_t         sjt1Eta[30];
-        Float_t         sjt1Phi[30];
-        Float_t         sjt1HadFlav[30];
-        Float_t         sjt1ParFlav[30];
-        Float_t         sjt2Pt[30];
-        Float_t         sjt2Eta[30];
-        Float_t         sjt2Phi[30];
-        Float_t         sjt2HadFlav[30];
-        Float_t         sjt2ParFlav[30];
-        Float_t         rsjt1Pt[30]; //ref
-        Float_t         rsjt1Eta[30];
-        Float_t         rsjt1Phi[30];
-        Float_t         rsjt2Pt[30];
-        Float_t         rsjt2Eta[30];
-        Float_t         rsjt2Phi[30];
-        Float_t         jtDiscCSVV2[30];
-        Float_t         jtDiscDeepCSVB[30];
-        Float_t         jtDiscDeepCSVBB[30];
-        Float_t         jtDiscDeepCSVC[30];
-        Float_t         jtDiscDeepFlavourB[30];
-        Float_t         jtDiscDeepFlavourBB[30];
-        Float_t         jtDiscDeepFlavourLEPB[30];
-        Float_t         jtDiscDeepFlavourC[30];
-        Float_t         jtDiscProb[30];
-        Int_t           nsvtx[30];
-        vector<vector<int> > svtxntrk;
-        vector<vector<float> > svtxdls;
-        vector<vector<float> > svtxdls2d;
-        vector<vector<float> > svtxm;
-        vector<vector<float> > svtxpt;
-        vector<vector<float> > svtxmcorr;
-        Float_t         refpt[30];
-        Float_t         refeta[30];
-        Float_t         refphi[30];
-        Float_t         refdphijt[30];
-        Float_t         refdrjt[30];
-        Float_t         refparton_pt[30];
-        Int_t           refparton_flavor[30];
-        Bool_t          refIsHardest[30];
-        Int_t           ngen;
-        Int_t           genmatchindex[30];
-        Float_t         genpt[30];
-        Float_t         geneta[30];
-        Float_t         genphi[30];
-        Int_t           npar;
-        Float_t         parpt[30];
-        Float_t         pareta[30];
-        Float_t         parphi[30];
-        Int_t           parNb[30];
-        Int_t           parNc[30];
-        Bool_t          parHasGSPB[30];
-        Bool_t          parHasGSPC[30];
-        Bool_t          genIsHardest[30];
-        Float_t         gsjt1Pt[30];
-        Float_t         gsjt1Eta[30];
-        Float_t         gsjt1Phi[30];
-        Float_t         gsjt2Pt[30];
-        Float_t         gsjt2Eta[30];
-        Float_t         gsjt2Phi[30];
-        Float_t         psjt1Pt[30];
-        Float_t         psjt1Eta[30];
-        Float_t         psjt1Phi[30];
-        Float_t         psjt2Pt[30];
-        Float_t         psjt2Eta[30];
-        Float_t         psjt2Phi[30];
-    
-        // For EvtAnalyzer tree
-        UInt_t          run;
-        ULong64_t       evt;
-        UInt_t          lumi;
-        Float_t         vx;
-        Float_t         vy;
-        Float_t         vz;
-        Float_t         pthat;
-        Float_t         weight;   
+        // 
+            Float_tweight;   
 
         // Constructors
         TreeAnalyzer(bool qcd = true, bool init = true);
