@@ -1,5 +1,4 @@
-// TreeAnalyzer class for b-jets
-// Looking to include l, c-jets next
+// TreeAnalyzer class for .../SD/mergedHiForestAOD.root
 
 #include "TFile.h"
 #include "TTree.h"
@@ -115,7 +114,7 @@ class TreeAnalyzer
         Float_t         subjet2phi[30];
 
         // Constructors
-        TreeAnalyzer(bool bJetORqcd, bool init = true);
+        TreeAnalyzer(bool bJetORqcd = true, bool init = true);
     
         // Class methods
         void Init();
@@ -124,8 +123,7 @@ class TreeAnalyzer
         void SetAnalysisLevelReco(bool activBranches = true);
 };
 
-// qcd = true for qcdMC, qcd = false for bJetMC
-TreeAnalyzer::TreeAnalyzer(bool bJetORqcd, bool init = true) 
+TreeAnalyzer::TreeAnalyzer(bool bJetORqcd = true, bool init = true) 
 {
     string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
     string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
