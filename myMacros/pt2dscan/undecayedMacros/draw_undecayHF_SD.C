@@ -196,5 +196,5 @@ void draw_undecayHF_SD()
     
     c->Print(savename_c.c_str());
     c_dynKt->Print(savename_c_dynKt.c_str());
-    c->Print(savename_c_ratio.c_str());
+    c_ratio->Print(savename_c_ratio.c_str());
 }
