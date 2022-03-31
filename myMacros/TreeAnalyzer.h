@@ -4,6 +4,8 @@
 #include "TFile.h"
 #include "TTree.h"
 
+using namespace std;
+
 class TreeAnalyzer 
 {
     public:
@@ -113,22 +115,26 @@ class TreeAnalyzer
         Float_t         subjet2phi[30];
 
         // Constructors
-        TreeAnalyzer(bool init = true);
+        TreeAnalyzer(bool bJetORqcd, bool init = true);
     
         // Class methods
         void Init();
-        void SetAnalysisLevelParton();
-        void SetAnalysisLevelTruth();
-        void SetAnalysisLevelReco();
+        void SetAnalysisLevelParton(bool activBranches = true);
+        void SetAnalysisLevelTruth(bool activBranches = true);
+        void SetAnalysisLevelReco(bool activBranches = true);
 };
 
 // qcd = true for qcdMC, qcd = false for bJetMC
-TreeAnalyzer::TreeAnalyzer(bool init = true) 
+TreeAnalyzer::TreeAnalyzer(bool bJetORqcd, bool init = true) 
 {
-    //std::string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    std::string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
+    string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
     
-    fin = new TFile(path_bJet.c_str());
+    if (bJetORqcd) {
+        fin = new TFile(path_bJet.c_str());
+    } else {
+        fin = new TFile(path_qcd.c_str());
+    }
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
     t->AddFriend("hi=hiEvtAnalyzer/HiTree");
@@ -229,7 +235,7 @@ void TreeAnalyzer::Init()
     nentries = t->GetEntries();
 }
 
-void TreeAnalyzer::SetAnalysisLevelParton()
+void TreeAnalyzer::SetAnalysisLevelParton(bool activBranches = true)
 {
     // Set branch addresses of class attributes to parton level branches
     t->SetBranchAddress("weight", &weight);
@@ -247,11 +253,21 @@ void TreeAnalyzer::SetAnalysisLevelParton()
     t->SetBranchAddress("psjt2Pt", subjet2pt);
     t->SetBranchAddress("psjt2Eta", subjet2eta);
     t->SetBranchAddress("psjt2Phi", subjet2phi);
+
+    if (activBranches) {
+        t->SetBranchStatus("*", 0);
+        for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc",
+                                      "psjt1Pt", "psjt1Eta", "psjt1Phi", 
+                                      "psjt2Pt", "psjt2Eta", "psjt2Phi",
+                                      "weight"}) {
+            t->SetBranchStatus(activeBranchName, 1);
+        }
+    }
 }
 
-void TreeAnalyzer::SetAnalysisLevelTruth()
+void TreeAnalyzer::SetAnalysisLevelTruth(bool activBranches = true)
 {
-// Set branch addresses of class attributes to truth level branches
+    // Set branch addresses of class attributes to truth level branches
     t->SetBranchAddress("weight", &weight);
 
     t->SetBranchAddress("nref", &njet);
@@ -267,9 +283,20 @@ void TreeAnalyzer::SetAnalysisLevelTruth()
     t->SetBranchAddress("rsjt2Pt", subjet2pt);
     t->SetBranchAddress("rsjt2Eta", subjet2eta);
     t->SetBranchAddress("rsjt2Phi", subjet2phi);
+
+    if (activBranches) {
+        t->SetBranchStatus("*", 0);
+        for (auto activeBranchName : {"nref", "refpt", "refeta", "jtHadFlav", "refIsHardest",
+                                      "jtNbHad", "jtNcHad",
+                                      "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
+                                      "rsjt2Pt", "rsjt2Eta", "rsjt2Phi",
+                                      "weight"}) {
+            t->SetBranchStatus(activeBranchName, 1);
+        }
+    }
 }
 
-void TreeAnalyzer::SetAnalysisLevelReco()
+void TreeAnalyzer::SetAnalysisLevelReco(bool activBranches = true)
 {
 // Set branch addresses of class attributes to reco level branches
     t->SetBranchAddress("weight", &weight);
@@ -287,4 +314,6 @@ void TreeAnalyzer::SetAnalysisLevelReco()
     t->SetBranchAddress("sjt2Pt", subjet2pt);
     t->SetBranchAddress("sjt2Eta", subjet2eta);
     t->SetBranchAddress("sjt2Phi", subjet2phi);
+
+    // TODO activate branches
 }
