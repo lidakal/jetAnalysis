@@ -1,13 +1,13 @@
-#include "TreeAnalyzer.h"
+#include "TreeAnalyzer_chargedSJ_partialB.h"
 #include "TH3.h"
 #include <iostream>
 
 using namespace std;
 
-void plot_chargedSJ_partialB(bool parORref)
+void plot_chargedSJ_partialB(bool parORref = true)
 {
-    TreeAnalyzer TAb(true, true);
-    TreeAnalyzer TAqcd(false, true);
+    TreeAnalyzer_chargedSJ_partialB TAb(true, true);
+    TreeAnalyzer_chargedSJ_partialB TAqcd(false, true);
     
     // Create output file name
     string foutname = "charged_partialB";
