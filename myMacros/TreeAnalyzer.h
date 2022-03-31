@@ -97,11 +97,11 @@ class TreeAnalyzer
         Float_t         psjt2Phi[30];
 
         // Fat jet properties
-        Int_t           njet[30];
+        Int_t           njet;
         Float_t         jetpt[30];
         Float_t         jeteta[30];
-        Float_t         jetNb[30];
-        Float_t         jetNc[30];
+        Int_t           jetNb[30];
+        Int_t           jetNc[30];
         
         // Subjet properties
         Float_t         subjet1pt[30];
@@ -116,6 +116,7 @@ class TreeAnalyzer
         TreeAnalyzer(bool init = true);
     
         // Class methods
+        void Init();
         void SetAnalysisLevelParton();
         void SetAnalysisLevelTruth();
         void SetAnalysisLevelReco();
