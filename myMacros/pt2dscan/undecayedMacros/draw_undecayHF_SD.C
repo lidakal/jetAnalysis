@@ -9,22 +9,22 @@
 
 using namespace std;
 
-void draw_chargedSJ_partialB()
+void draw_undecayHF_SD()
 {      
-    string histfile_ref = "charged_partialB_ref.root";
-    string histfile_par = "charged_partialB_par.root";
+    string histfile_ref = "~/rootFiles/pt2dscan_ref_undecayed.root";
+    string histfile_par = "~/rootFiles/pt2dscan_par_undecayed.root";
 
     string xtitle = "ln(1/R_{g})";
     string ytitle = "ln(kt/GeV)";
 
     // Load ref 3D histogram -- X = rg, Y = zg / kt, Z = pt 
     TFile *fin_ref = new TFile(histfile_ref.c_str());
-    TH3F *h3d_ref = (TH3F *) fin_ref->Get("hB_rgkt")->Clone();
-    TH3F *h3d_ref_dynKt = (TH3F *) fin_ref->Get("hB_rgkt_dynKt")->Clone();
+    TH3F *h3d_ref = (TH3F *) fin_ref->Get("h_bJet_rgktB")->Clone();
+    TH3F *h3d_ref_dynKt = (TH3F *) fin_ref->Get("h_bJet_rgktB_dynKt")->Clone();
 
     // Load par 3D histogram -- X = rg, Y = zg / kt, Z = pt 
     TFile *fin_par = new TFile(histfile_par.c_str());
-    TH3F *h3d_par = (TH3F *) fin_par->Get("hB_rgkt")->Clone();
+    TH3F *h3d_par = (TH3F *) fin_par->Get("h_bJet_rgktB")->Clone();
 
     // Create / Draw 2D histograms - Projections
     Float_t lowpt[2] = {50., 80.};
@@ -63,7 +63,7 @@ void draw_chargedSJ_partialB()
         line->SetLineWidth(2);
 
         TPaveText *info = new TPaveText(0.45, 0.7, 0.8, 0.85, "ndc");
-        info->AddText("chargedSJ partialB b-jets");
+        info->AddText("undecayHF_SD b-jets");
         info->AddLine(0., 0.7, 1., 0.7);
         info->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
         info->SetFillColor(0);
@@ -189,7 +189,7 @@ void draw_chargedSJ_partialB()
     c_dynKt->Draw();
     c_ratio->Draw();
     
-    string savename_c = "chargedSJ_partialB_bjets_par_vs_had";
+    string savename_c = "undecayHF_SD_bjets_par_vs_had";
     string savename_c_dynKt = savename_c + "_dynKt.png";
     string savename_c_ratio = savename_c + "_ratio.png";
     savename_c += ".png";
