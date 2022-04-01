@@ -5,6 +5,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TPaveText.h"
+#include "TLine.h"
 #include <regex>
 
 using namespace std;
@@ -85,7 +86,7 @@ void draw_chargedSJ_partialB()
         TPaveText *info_ratio_dynKt = (TPaveText *) info->Clone();
         info_ratio_dynKt->AddText("hadron / parton ratio, dynKt");
 
-        // c: par, ref
+        // c : par, ref
         Float_t zmin = 0.;
         Float_t zmax = 0.4;
 
@@ -127,7 +128,7 @@ void draw_chargedSJ_partialB()
         line->Draw();
         info_ref->Draw();
 
-        // c_dynKt: par, ref dynKt
+        // c_dynKt : par, ref dynKt
         Float_t zmin_dynKt = 0.;
         Float_t zmax_dynKt = 0.3;
 
@@ -158,7 +159,7 @@ void draw_chargedSJ_partialB()
         line->Draw();
         info_ref_dynKt->Draw();
 
-        // c_ratio: ref/par, ref dynKt/par
+        // c_ratio : ref/par, ref dynKt/par
         Float_t zmin_ratio = 0.;
         Float_t zmax_ratio = 50.;
 
