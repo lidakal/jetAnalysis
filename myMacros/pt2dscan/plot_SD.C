@@ -4,13 +4,17 @@
 
 using namespace std;
 
-void plot_SD(bool parORref = true)
+void plot_SD(bool parORref = true, bool GSPincl = false)
 {
     TreeAnalyzer TAb(true, true);
     TreeAnalyzer TAqcd(false, true);
     
     // Create output file name
     string foutname = "~/rootFiles/SD";
+    if (!GSPincl) {
+        foutname += "_noGSP";
+    }
+
     // Set analysis level
     if (parORref) {
         TAb.SetAnalysisLevelParton();
@@ -81,6 +85,9 @@ void plot_SD(bool parORref = true)
 
             // Fill the histograms
             if (TAb.jetNb[j] > 0) {
+                if ((!GSPincl) && TAb.jetNb[j] > 1) {
+                    continue;
+                }
                 hB_rgkt->Fill(logrg, logkt, TAb.jetpt[j], TAb.weight);
             }
 
@@ -145,6 +152,9 @@ void plot_SD(bool parORref = true)
 
             if ((TAqcd.jetNc[j] > 0) && (!(TAqcd.jetNb[j] > 0))) {
                 hC_rgkt_dynKt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
+                if ((!GSPincl) && TAb.jetNc[j] > 1) {
+                    continue;
+                }
             } else { 
                 hL_rgkt_dynKt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
             }

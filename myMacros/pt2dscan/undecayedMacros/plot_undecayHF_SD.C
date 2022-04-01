@@ -4,13 +4,17 @@
 
 using namespace std;
 
-void plot_undecayHF_SD(bool parORref = false)
+void plot_undecayHF_SD(bool parORref = false, bool GSPincl = false)
 {
     TreeAnalyzer_undecayHF_SD TAb(true, true);
     TreeAnalyzer_undecayHF_SD TAqcd(false, true);
     
     // Create output file name
     string foutname = "~/rootFiles/undecayHF_SD";
+    if (!GSPincl) {
+        foutname += "_noGSP";
+    }
+
     // Set analysis level
     if (parORref) {
         TAb.SetAnalysisLevelParton();
@@ -81,6 +85,11 @@ void plot_undecayHF_SD(bool parORref = false)
 
             // Fill the histograms
             if (TAb.jetNb[j] > 0) {
+                // Skip jet if it comes from GSP (and we don't want it)
+                if ((!GSPincl) && TAb.jetNb[j] > 1) {
+                    continue;
+                }
+                
                 hB_rgkt->Fill(logrg, logkt, TAb.jetpt[j], TAb.weight);
             }
 
@@ -145,6 +154,9 @@ void plot_undecayHF_SD(bool parORref = false)
 
             if ((TAqcd.jetNc[j] > 0) && (!(TAqcd.jetNb[j] > 0))) {
                 hC_rgkt_dynKt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
+                if ((!GSPincl) && TAb.jetNc[j] > 1) {
+                    continue;
+                }
             } else { 
                 hL_rgkt_dynKt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
             }

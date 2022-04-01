@@ -4,13 +4,18 @@
 
 using namespace std;
 
-void plot_chargedSJ(bool parORref = true)
+void plot_chargedSJ(bool parORref = true, bool GSPincl = false)
 {
     TreeAnalyzer_chargedSJ TAb(true, true);
     TreeAnalyzer_chargedSJ TAqcd(false, true);
     
     // Create output file name
     string foutname = "~/rootFiles/chargedSJ";
+
+    if (!GSPincl) {
+        foutname += "_noGSP";
+    }
+
     // Set analysis level
     if (parORref) {
         TAb.SetAnalysisLevelParton();
@@ -81,6 +86,11 @@ void plot_chargedSJ(bool parORref = true)
 
             // Fill the histograms
             if (TAb.jetNb[j] > 0) {
+                // Skip jet if it comes from GSP (and we don't want it)
+                if ((!GSPincl) && TAb.jetNb[j] > 1) {
+                    continue;
+                }
+
                 hB_rgkt->Fill(logrg, logkt, TAb.jetpt[j], TAb.weight);
             }
 
@@ -132,6 +142,10 @@ void plot_chargedSJ(bool parORref = true)
 
             // Fill the histograms
             if ((TAqcd.jetNc[j] > 0) && (!(TAqcd.jetNb[j] > 0))) {
+                if ((!GSPincl) && TAb.jetNc[j] > 1) {
+                    continue;
+                }
+                
                 hC_rgkt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
             } else { 
                 hL_rgkt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
