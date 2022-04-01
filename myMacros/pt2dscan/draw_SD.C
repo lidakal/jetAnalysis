@@ -132,7 +132,7 @@ void draw_SD()
 
         // c_ratio : ref/par, ref dynKt/par
         Float_t zmin_ratio = 0.;
-        Float_t zmax_ratio = 50.;
+        Float_t zmax_ratio = 20.;
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();
