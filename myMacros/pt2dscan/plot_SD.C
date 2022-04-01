@@ -1,4 +1,4 @@
-#include "TreeAnalyzer_chargedSJ_partialB.h"
+#include "TreeAnalyzer.h"
 #include "TH3.h"
 #include <iostream>
 
@@ -6,19 +6,19 @@ using namespace std;
 
 void plot_chargedSJ_partialB(bool parORref = false)
 {
-    TreeAnalyzer_chargedSJ_partialB TAb(true, true);
-    //TreeAnalyzer_chargedSJ_partialB TAqcd(false, true);
+    TreeAnalyzer TAb(true, true);
+    TreeAnalyzer TAqcd(false, true);
     
     // Create output file name
-    string foutname = "~/rootFiles/charged_partialB";
+    string foutname = "~/rootFiles/SD";
     // Set analysis level
     if (parORref) {
         TAb.SetAnalysisLevelParton();
-        //TAqcd.SetAnalysisLevelParton();
+        TAqcd.SetAnalysisLevelParton();
         foutname += "_par.root";
     } else {
         TAb.SetAnalysisLevelTruth();
-        //TAqcd.SetAnalysisLevelTruth();
+        TAqcd.SetAnalysisLevelTruth();
         foutname += "_ref.root";
     }
 
@@ -38,12 +38,12 @@ void plot_chargedSJ_partialB(bool parORref = false)
     Float_t z1max = 300.;
 
     TH3D *hB_rgkt = new TH3D("hB_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    //TH3D *hC_rgkt = new TH3D("hC_rgkt", "rg, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    //TH3D *hL_rgkt = new TH3D("hL_rgkt", "rg, kt, pt, ljets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hC_rgkt = new TH3D("hC_rgkt", "rg, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_rgkt = new TH3D("hL_rgkt", "rg, kt, pt, ljets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     TH3D *hB_rgkt_dynKt = new TH3D("hB_rgkt_dynKt", "rg, kt, pt, bjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    //TH3D *hC_rgkt_dynKt = new TH3D("hC_rgkt_dynKt", "rg, kt, pt, cjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    //TH3D *hL_rgkt_dynKt = new TH3D("hL_rgkt_dynKt", "rg, kt, pt, ljets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hC_rgkt_dynKt = new TH3D("hC_rgkt_dynKt", "rg, kt, pt, cjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_rgkt_dynKt = new TH3D("hL_rgkt_dynKt", "rg, kt, pt, ljets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     cout << "Creating B histograms..." << endl;
 
@@ -95,7 +95,7 @@ void plot_chargedSJ_partialB(bool parORref = false)
             }
         }
     }
-    /*
+    
     cout << "Creating C, L histograms..." << endl;
 
     for (Long64_t i = 0; i < TAqcd.nentries; i++) {
@@ -150,19 +150,19 @@ void plot_chargedSJ_partialB(bool parORref = false)
             }
         }
     }
-    */
+    
 
     cout << "\n(Re)creating file " << foutname << endl;
     TFile *fout = new TFile(foutname.c_str(), "recreate");
 
     cout << "Saving histograms..." << endl;
     hB_rgkt->Write();
-    //hC_rgkt->Write();
-    //hL_rgkt->Write();
+    hC_rgkt->Write();
+    hL_rgkt->Write();
 
     hB_rgkt_dynKt->Write();
-    //hC_rgkt_dynKt->Write();
-    //hL_rgkt_dynKt->Write();
+    hC_rgkt_dynKt->Write();
+    hL_rgkt_dynKt->Write();
 
     fout->Close();
 }
