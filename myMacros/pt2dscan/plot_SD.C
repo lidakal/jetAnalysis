@@ -1,10 +1,10 @@
-#include "TreeAnalyzer.h"
+#include "../TreeAnalyzer.h"
 #include "TH3.h"
 #include <iostream>
 
 using namespace std;
 
-void plot_chargedSJ_partialB(bool parORref = false)
+void plot_SD(bool parORref = false)
 {
     TreeAnalyzer TAb(true, true);
     TreeAnalyzer TAqcd(false, true);
