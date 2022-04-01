@@ -65,7 +65,7 @@ void draw_SD()
         line->SetLineWidth(2);
 
         TPaveText *info = new TPaveText(0.45, 0.7, 0.8, 0.85, "ndc");
-        info->AddText("chargedSJ partialB b-jets");
+        info->AddText("SD b-jets");
         info->AddLine(0., 0.7, 1., 0.7);
         info->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
         info->SetFillColor(0);
