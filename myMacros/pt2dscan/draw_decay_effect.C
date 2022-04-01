@@ -10,11 +10,11 @@
 
 using namespace std;
 
-void draw_decay_effect(bool chargedSJ = false)
+void draw_decay_effect(bool chargedSJ = true)
 {
-    string decayed_fname = "~/rootFiles/pt2dscan_ref.root";
-    string undecayed_fname = "~/rootFiles/pt2dscan_ref_undecayed.root";
-    string charged_decayed_fname = "~/rootFiles/pt2dscan_ref_charged.root";
+    string decayed_fname = "~/rootFiles/SD_ref.root";
+    string undecayed_fname = "~/rootFiles/undecayHF_SD_ref.root";
+    string charged_decayed_fname = "~/rootFiles/chargedSJ_ref.root";
     string charged_undecayed_fname = "~/rootFiles/charged_partialB_ref.root";    
 
     TFile *fin_decayed;
@@ -24,7 +24,7 @@ void draw_decay_effect(bool chargedSJ = false)
 
     // Load ref 3D histograms -- X = rg, Y = kt, Z = pt 
     if (chargedSJ) {
-        fin_decayed = new TFile(charged_undecayed_fname.c_str());
+        fin_decayed = new TFile(charged_decayed_fname.c_str());
         fin_undecayed = new TFile(charged_undecayed_fname.c_str());
         savename_c += "chargedSJ_dec_vs_nodec";
     } else {
@@ -39,10 +39,14 @@ void draw_decay_effect(bool chargedSJ = false)
 
     // decayed = normal final state particles
     TH3D *h3d_decayed = (TH3D *) fin_decayed->Get("hB_rgkt")->Clone();
+    h3d_decayed->SetName("decayed");
     TH3D *h3d_decayed_dynKt = (TH3D *) fin_decayed->Get("hB_rgkt_dynKt")->Clone();
-    //undecayed = clustered B decay products
+    h3d_decayed_dynKt->SetName("decayed_dynKt");
+    // undecayed = clustered B decay products
     TH3D *h3d_undecayed = (TH3D *) fin_undecayed->Get("hB_rgkt")->Clone();
+    h3d_undecayed->SetName("undecayed");
     TH3D *h3d_undecayed_dynKt = (TH3D *) fin_undecayed->Get("hB_rgkt_dynKt")->Clone();
+    h3d_undecayed_dynKt->SetName("undecayed_dynKt");
 
     // Create / Draw 2D histograms - Projections
     const int npt = 3;
@@ -81,25 +85,25 @@ void draw_decay_effect(bool chargedSJ = false)
 
         h3d_undecayed_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
         h3d_undecayed_dynKt_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
-
+        
         // Create 2D projections : X = ln(1/rg), Y = ln(kt)
-        TH2D *h2d_decayed = (TH2D *) h3d_decayed_clone->Project3D(Form("yx%d_ref", i)); // Need the i so it doesn't get overwritten
-        TH2D *h2d_decayed_dynKt = (TH2D *) h3d_decayed_dynKt_clone->Project3D(Form("yx%d_ref", i));
+        TH2D *h2d_decayed = (TH2D *) h3d_decayed_clone->Project3D(Form("yx%d", i)); // Need the i so it doesn't get overwritten
+        TH2D *h2d_decayed_dynKt = (TH2D *) h3d_decayed_dynKt_clone->Project3D(Form("yx%d", i));
 
-        TH2D *h2d_undecayed = (TH2D *) h3d_undecayed_clone->Project3D(Form("yx%d_ref", i));
-        TH2D *h2d_undecayed_dynKt = (TH2D *) h3d_undecayed_dynKt_clone->Project3D(Form("yx%d_ref", i));
+        TH2D *h2d_undecayed = (TH2D *) h3d_undecayed_clone->Project3D(Form("yx%d", i));
+        TH2D *h2d_undecayed_dynKt = (TH2D *) h3d_undecayed_dynKt_clone->Project3D(Form("yx%d", i));
 
         TLine *line = new TLine(0.91, 0, 5, 0);
         line->SetLineWidth(2);
 
         // Create information text boxes
-        TPaveText *info_decayed = new TPaveText(0.45, 0.7, 0.8, 0.85, "ndc");
+        TPaveText *info_decayed = new TPaveText(0.35, 0.7, 0.85, 0.85, "ndc");
         info_decayed->SetFillColor(0);
         info_decayed->SetBorderSize(1);
         info_decayed->SetTextSize(15);
+        
         TPaveText *info_undecayed = (TPaveText *) info_decayed->Clone();
-
-        TPaveText *info_ratio = new TPaveText(0.35, 0.7, 0.9, 0.85, "ndc");
+        TPaveText *info_ratio = (TPaveText *) info_decayed->Clone();
 
         if (chargedSJ) {
             info_decayed->AddText("chargedSJ b-jets");
@@ -113,9 +117,11 @@ void draw_decay_effect(bool chargedSJ = false)
 
         info_decayed->AddLine(0., 0.7, 1., 0.7);
         info_undecayed->AddLine(0., 0.7, 1., 0.7);
+        info_ratio->AddLine(0., 0.7, 1., 0.7);
 
         info_decayed->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
         info_undecayed->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
+        info_ratio->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
 
         TPaveText *info_decayed_dynKt = (TPaveText *) info_decayed->Clone();
         TPaveText *info_undecayed_dynKt = (TPaveText *) info_undecayed->Clone();
@@ -132,8 +138,9 @@ void draw_decay_effect(bool chargedSJ = false)
         // c : decayed, undecayed
         Float_t zmin = 0.;
         Float_t zmax = 0.4;
-
+        
         c->cd(i + 1);
+        
         h2d_decayed->SetYTitle(ytitle.c_str());
         h2d_decayed->SetXTitle(xtitle.c_str());
         h2d_decayed->GetXaxis()->SetTitleOffset(2.5);
@@ -151,8 +158,9 @@ void draw_decay_effect(bool chargedSJ = false)
         h2d_decayed->Draw("colz");
         line->Draw();
         info_decayed->Draw();
-
+        
         c->cd(i + 1 + npt);
+        
         h2d_undecayed->SetYTitle(ytitle.c_str());
         h2d_undecayed->SetXTitle(xtitle.c_str());
         h2d_undecayed->GetXaxis()->SetTitleOffset(2.5);
@@ -173,7 +181,7 @@ void draw_decay_effect(bool chargedSJ = false)
 
         // c_dynKt : decayed, undecayed dynKt
         Float_t zmin_dynKt = 0.;
-        Float_t zmax_dynKt = 0.4;
+        Float_t zmax_dynKt = 0.3;
 
         c_dynKt->cd(i + 1);
         h2d_decayed_dynKt->SetYTitle(ytitle.c_str());
@@ -188,7 +196,7 @@ void draw_decay_effect(bool chargedSJ = false)
         h2d_decayed_dynKt->GetXaxis()->SetRange(1, h2d_decayed_dynKt->GetNbinsX());
         h2d_decayed_dynKt->GetYaxis()->SetRange(1, h2d_decayed_dynKt->GetNbinsY());
         // Fix colormap (Z) range
-        h2d_decayed_dynKt->GetZaxis()->SetRangeUser(zmin, zmax);
+        h2d_decayed_dynKt->GetZaxis()->SetRangeUser(zmin_dynKt, zmax_dynKt);
 
         h2d_decayed_dynKt->Draw("colz");
         line->Draw();
@@ -207,7 +215,7 @@ void draw_decay_effect(bool chargedSJ = false)
         h2d_undecayed_dynKt->GetXaxis()->SetRange(1, h2d_undecayed_dynKt->GetNbinsX());
         h2d_undecayed_dynKt->GetYaxis()->SetRange(1, h2d_undecayed_dynKt->GetNbinsY());
         // Fix colormap (Z) range
-        h2d_undecayed_dynKt->GetZaxis()->SetRangeUser(zmin, zmax);
+        h2d_undecayed_dynKt->GetZaxis()->SetRangeUser(zmin_dynKt, zmax_dynKt);
         
         h2d_undecayed_dynKt->Draw("colz");
         line->Draw();
@@ -215,11 +223,11 @@ void draw_decay_effect(bool chargedSJ = false)
 
         // c_ratio : decayed / undecayed, decayed / undecayed dynKt
         Float_t zmin_ratio = 0.;
-        Float_t zmax_ratio = 50.;
+        Float_t zmax_ratio = 6.;
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();
-        TH2F *h2d_ratio = (TH2F *) h2d_decayed->Clone();
+        TH2D *h2d_ratio = (TH2D *) h2d_decayed->Clone();
         h2d_ratio->Divide(h2d_undecayed);
         // Fix the colormap (Z) axis
         h2d_ratio->GetZaxis()->SetRangeUser(zmin_ratio, zmax_ratio);
@@ -238,15 +246,16 @@ void draw_decay_effect(bool chargedSJ = false)
         h2d_ratio_dynKt->Draw("colz");
         line->Draw();
         info_ratio_dynKt->Draw();
+        
     }
 
     c->Draw();
     c_dynKt->Draw();
     c_ratio->Draw();  
 
-    /* 
+    
     c->Print(savename_c.c_str());
     c_dynKt->Print(savename_c_dynKt.c_str());
     c_ratio->Print(savename_c_ratio.c_str());
-    */
+
 }
