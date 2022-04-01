@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void plot_chargedSJ(bool parORref = true, bool GSPincl = false)
+void plot_chargedSJ(bool parORref = false, bool GSPincl = false)
 {
     TreeAnalyzer_chargedSJ TAb(true, true);
     TreeAnalyzer_chargedSJ TAqcd(false, true);

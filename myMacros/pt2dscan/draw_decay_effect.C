@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void draw_decay_effect(bool chargedSJ = true, bool GSPincl = false)
+void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
 {
     string decayed_fname = "";
     string undecayed_fname = "";
@@ -111,7 +111,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = false)
         line->SetLineWidth(2);
 
         // Create information text boxes
-        TPaveText *info_decayed = new TPaveText(0.35, 0.7, 0.85, 0.85, "ndc");
+        TPaveText *info_decayed = new TPaveText(0.35, 0.75, 0.85, 0.9, "ndc");
         info_decayed->SetFillColor(0);
         info_decayed->SetBorderSize(1);
         info_decayed->SetTextSize(15);
@@ -246,6 +246,10 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = false)
         // c_ratio : decayed / undecayed, decayed / undecayed dynKt
         Float_t zmin_ratio = 0.;
         Float_t zmax_ratio = 6.;
+        
+        if (!GSPincl) {
+            zmax_ratio = 20.;
+        }
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void plot_SD(bool parORref = true, bool GSPincl = false)
+void plot_SD(bool parORref = false, bool GSPincl = false)
 {
     TreeAnalyzer TAb(true, true);
     TreeAnalyzer TAqcd(false, true);
