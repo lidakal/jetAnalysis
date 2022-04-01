@@ -10,27 +10,41 @@
 
 using namespace std;
 
-void draw_decay_effect(bool chargedSJ = true)
+void draw_decay_effect(bool chargedSJ = true, bool GSPincl = false)
 {
-    string decayed_fname = "~/rootFiles/SD_ref.root";
-    string undecayed_fname = "~/rootFiles/undecayHF_SD_ref.root";
-    string charged_decayed_fname = "~/rootFiles/chargedSJ_ref.root";
-    string charged_undecayed_fname = "~/rootFiles/charged_partialB_ref.root";    
+    string decayed_fname = "";
+    string undecayed_fname = "";
+    string charged_decayed_fname = "";
+    string charged_undecayed_fname = "";    
+
+    string savename_c = "";
+
+    if (GSPincl) {
+        decayed_fname += "~/rootFiles/SD_ref.root";
+        undecayed_fname += "~/rootFiles/undecayHF_SD_ref.root";
+        charged_decayed_fname += "~/rootFiles/chargedSJ_ref.root";
+        charged_undecayed_fname += "~/rootFiles/charged_partialB_ref.root";    
+    } else {
+        decayed_fname += "~/rootFiles/SD_noGSP_ref.root";
+        undecayed_fname += "~/rootFiles/undecayHF_SD_noGSP_ref.root";
+        charged_decayed_fname += "~/rootFiles/chargedSJ_noGSP_ref.root";
+        charged_undecayed_fname += "~/rootFiles/charged_partialB_noGSP_ref.root";    
+        savename_c += "noGSP";
+    }
+
 
     TFile *fin_decayed;
     TFile *fin_undecayed;
-
-    string savename_c = "";
 
     // Load ref 3D histograms -- X = rg, Y = kt, Z = pt 
     if (chargedSJ) {
         fin_decayed = new TFile(charged_decayed_fname.c_str());
         fin_undecayed = new TFile(charged_undecayed_fname.c_str());
-        savename_c += "chargedSJ_dec_vs_nodec";
+        savename_c += "_chargedSJ_dec_vs_nodec";
     } else {
         fin_decayed = new TFile(decayed_fname.c_str());
         fin_undecayed = new TFile(undecayed_fname.c_str());
-        savename_c += "SD_dec_vs_nodec";
+        savename_c += "_SD_dec_vs_nodec";
     }
 
     string savename_c_dynKt = savename_c + "_dynKt.png";
@@ -127,13 +141,21 @@ void draw_decay_effect(bool chargedSJ = true)
         TPaveText *info_undecayed_dynKt = (TPaveText *) info_undecayed->Clone();
         TPaveText *info_ratio_dynKt = (TPaveText *) info_ratio->Clone();
 
-        info_decayed->AddText("hadron level");
-        info_undecayed->AddText("hadron level");
-        info_ratio->AddText("hadron level");
+        string level = "hadron level";
 
-        info_decayed_dynKt->AddText("hadron level, dynKt");
-        info_undecayed_dynKt->AddText("hadron level, dynKt");
-        info_ratio_dynKt->AddText("hadron level, dynKt");
+        if (!GSPincl) { 
+            level += ", noGSP";
+        }
+
+        string level_dynKt = level + ", dynKt";
+
+        info_decayed->AddText(level.c_str());
+        info_undecayed->AddText(level.c_str());
+        info_ratio->AddText(level.c_str());
+
+        info_decayed_dynKt->AddText(level_dynKt.c_str());
+        info_undecayed_dynKt->AddText(level_dynKt.c_str());
+        info_ratio_dynKt->AddText(level_dynKt.c_str());
 
         // c : decayed, undecayed
         Float_t zmin = 0.;
