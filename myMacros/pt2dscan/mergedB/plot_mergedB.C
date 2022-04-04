@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void plot_mergedB(bool parORref = false, bool GSPincl = false)
+void plot_mergedB(bool parORref = true, bool GSPincl = true)
 {
     cout << "Running with options: " << endl;
     cout << "parORref : " << parORref << endl;
