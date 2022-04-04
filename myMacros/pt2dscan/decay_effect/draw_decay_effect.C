@@ -13,7 +13,7 @@
 
 using namespace std;
 
-void draw_decay_effect(bool chargedSJ = false, bool GSPincl = true)
+void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
 {
     cout << "Running with options : " << endl;
     cout << "chargedSJ : " << chargedSJ << endl;
