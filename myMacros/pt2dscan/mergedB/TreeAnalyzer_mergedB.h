@@ -1,7 +1,7 @@
 // TreeAnalyzer_mergedB class for .../mergedB/mergedHiForestAOD.root
 // mergedB ntuples find jets using the full list of final state particles
 // and then perform SD with aggregated charged B and neutral B parts
-// (two separate particles), excluding neutrinos alltogether
+// (as one merged particle), excluding neutrinos alltogether
 
 #include "TFile.h"
 #include "TTree.h"
