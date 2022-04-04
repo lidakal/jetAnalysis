@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_mergedB(bool GSPincl = false)
+void draw_mergedB_mod(bool GSPincl = true)
 {      
     string histfile_ref = "";
     string histfile_par = "";
@@ -106,6 +106,7 @@ void draw_mergedB(bool GSPincl = false)
         Float_t zmax = 0.3;
 
         c->cd(i + 1);
+        c->cd(i + 1)->SetGrid();
         set_axes_labels(h2d_par, xtitle, ytitle);
         normalise_histo(h2d_par);
         set_zrange(h2d_par, zmin, zmax);
@@ -115,6 +116,7 @@ void draw_mergedB(bool GSPincl = false)
         info_par->Draw();
 
         c->cd(i + 1 + npt);
+        c->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_ref, xtitle, ytitle);
         normalise_histo(h2d_ref);
         set_zrange(h2d_ref, zmin, zmax);
@@ -128,6 +130,7 @@ void draw_mergedB(bool GSPincl = false)
         Float_t zmax_dynKt = 0.3;
 
         c_dynKt->cd(i + 1);
+        c_dynKt->cd(i + 1)->SetGrid();
         TH2D *h2d_par_clone = (TH2D *) h2d_par->Clone();
         set_zrange(h2d_par_clone, zmin_dynKt, zmax_dynKt);
 
@@ -136,6 +139,7 @@ void draw_mergedB(bool GSPincl = false)
         info_par->Draw();
 
         c_dynKt->cd(i + 1 + npt);
+        c_dynKt->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_ref_dynKt, xtitle, ytitle);
         normalise_histo(h2d_ref_dynKt);
         set_zrange(h2d_ref_dynKt, zmin_dynKt, zmax_dynKt);
@@ -153,6 +157,7 @@ void draw_mergedB(bool GSPincl = false)
 
         TCanvas *c_ratio = new TCanvas(Form("c_ratio%d", i), "c_ratio", 1600, 1000);
         c_ratio->SetLogz();
+        c_ratio->SetGrid();
 
         TH2D *h2d_ratio = (TH2D *) h2d_ref->Clone();
         h2d_ratio->Divide(h2d_par);
@@ -179,6 +184,9 @@ void draw_mergedB(bool GSPincl = false)
     c_dynKt->Draw();
     
     string savename_c = "mergedB_bjets_par_vs_had";
+    if (!GSPincl) {
+        savename_c += "_noGSP";
+    }
     string savename_c_dynKt = savename_c + "_dynKt.png";
     string savename_c_ratio = savename_c + "_ratio";
     savename_c += ".png";
