@@ -11,10 +11,18 @@
 
 using namespace std;
 
-void draw_SD()
+void draw_SD(bool GSPincl = false)
 {      
-    string histfile_ref = "~/rootFiles/SD_ref.root";
-    string histfile_par = "~/rootFiles/SD_par.root";
+    string histfile_ref = "";
+    string histfile_par = "";
+
+    if (GSPincl) {
+        histfile_ref += "~/rootFiles/SD_ref.root";
+        histfile_par += "~/rootFiles/SD_par.root";
+    } else {
+        histfile_ref += "~/rootFiles/SD_noGSP_ref.root";
+        histfile_par += "~/rootFiles/SD_noGSP_par.root";
+    }
 
     string xtitle = "ln(1/R_{g})";
     string ytitle = "ln(kt/GeV)";
@@ -168,6 +176,9 @@ void draw_SD()
     c_ratio->Draw();
     
     string savename_c = "SD_bjets_par_vs_had";
+    if (!GSPincl) {
+        savename_c += "_noGSP";
+    }
     string savename_c_dynKt = savename_c + "_dynKt.png";
     string savename_c_ratio = savename_c + "_ratio.png";
     savename_c += ".png";
