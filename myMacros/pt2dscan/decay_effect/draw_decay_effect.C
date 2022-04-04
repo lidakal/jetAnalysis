@@ -130,6 +130,15 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         TPaveText *info_undecayed = (TPaveText *) info_decayed->Clone();
         TPaveText *info_ratio = (TPaveText *) info_decayed->Clone();
         info_ratio->SetTextSize(25);
+        
+        TPaveText *gsptxt = new TPaveText(0., 0.0001, 0., 0.00001, "ndc");
+        if (!GSPincl) {
+            gsptxt = new TPaveText(0.2, 0.25, 0.35, 0.4, "ndc");
+            gsptxt->AddText("NO GSP");
+            gsptxt->SetFillColor(0);
+            gsptxt->SetBorderSize(0);
+            gsptxt->SetTextSize(20);
+        }
 
         if (chargedSJ) {
             info_decayed->AddText("chargedSJ b-jets");
@@ -155,10 +164,12 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
 
         string level = "hadron level";
 
+        /*
         if (!GSPincl) { 
             level += ", noGSP";
         }
-
+        */
+        
         string level_dynKt = level + ", dynKt";
 
         info_decayed->AddText(level.c_str());
@@ -183,6 +194,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         h2d_decayed->Draw("colz");
         line->Draw();
         info_decayed->Draw();
+        gsptxt->Draw();
         
         c->cd(i + 1 + npt);
         c->cd(i + 1 + npt)->SetGrid();
@@ -194,6 +206,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         h2d_undecayed->Draw("colz");
         line->Draw();
         info_undecayed->Draw();
+        gsptxt->Draw();
 
         // c_dynKt : decayed, undecayed dynKt
         Float_t zmin_dynKt = 0.;
@@ -208,6 +221,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         h2d_decayed_dynKt->Draw("colz");
         line->Draw();
         info_decayed_dynKt->Draw();
+        gsptxt->Draw();
 
         c_dynKt->cd(i + 1 + npt);
         c_dynKt->cd(i + 1 + npt)->SetGrid();
@@ -218,6 +232,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         h2d_undecayed_dynKt->Draw("colz");
         line->Draw();
         info_undecayed_dynKt->Draw();
+        gsptxt->Draw();
 
         // c_ratio : decayed / undecayed, decayed / undecayed dynKt
         Float_t zmin_ratio = 0.;
@@ -246,6 +261,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         h2d_ratio->Draw("text colz");
         line->Draw();
         info_ratio->Draw();
+        gsptxt->Draw();
 
         string name = savename_c_ratio + Form("_%.0f_to_%0.f_GeV.png", ptmin, ptmax);
         c_ratio->Draw();
@@ -265,6 +281,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         h2d_ratio_dynKt->Draw("text colz");
         line->Draw();
         info_ratio_dynKt->Draw();
+        gsptxt->Draw();
 
         string name_dynKt = savename_c_ratio + Form("_%.0f_to_%0.f_GeV_dynKt.png", ptmin, ptmax);
         c_ratio_dynKt->Draw();
