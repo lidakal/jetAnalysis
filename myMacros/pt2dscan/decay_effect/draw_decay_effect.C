@@ -6,6 +6,8 @@
 #include "TLatex.h"
 #include "TPaveText.h"
 #include "TLine.h"
+#include "TStyle.h"
+#include "../../utils.h"
 #include <regex>
 
 using namespace std;
@@ -166,19 +168,9 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         
         c->cd(i + 1);
         
-        h2d_decayed->SetYTitle(ytitle.c_str());
-        h2d_decayed->SetXTitle(xtitle.c_str());
-        h2d_decayed->GetXaxis()->SetTitleOffset(2.5);
-        h2d_decayed->GetYaxis()->SetTitleOffset(2.5);
-        // Normalise the histogram
-        h2d_decayed->GetXaxis()->SetRange(0, h2d_decayed->GetNbinsX()+1);
-        h2d_decayed->GetYaxis()->SetRange(0, h2d_decayed->GetNbinsY()+1);
-        h2d_decayed->Scale(1/h2d_decayed->Integral("width"));
-        // Hide the under/overflow again
-        h2d_decayed->GetXaxis()->SetRange(1, h2d_decayed->GetNbinsX());
-        h2d_decayed->GetYaxis()->SetRange(1, h2d_decayed->GetNbinsY());
-        // Fix colormap (Z) range
-        h2d_decayed->GetZaxis()->SetRangeUser(zmin, zmax);
+        set_axes_labels(h2d_decayed, xtitle, ytitle);
+        normalise_histo(h2d_decayed);
+        set_zrange(h2d_decayed, zmin, zmax);
 
         h2d_decayed->Draw("colz");
         line->Draw();
@@ -186,19 +178,9 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         
         c->cd(i + 1 + npt);
         
-        h2d_undecayed->SetYTitle(ytitle.c_str());
-        h2d_undecayed->SetXTitle(xtitle.c_str());
-        h2d_undecayed->GetXaxis()->SetTitleOffset(2.5);
-        h2d_undecayed->GetYaxis()->SetTitleOffset(2.5);
-        // Normalise the histogram
-        h2d_undecayed->GetXaxis()->SetRange(0, h2d_undecayed->GetNbinsX()+1);
-        h2d_undecayed->GetYaxis()->SetRange(0, h2d_undecayed->GetNbinsY()+1);
-        h2d_undecayed->Scale(1/h2d_undecayed->Integral("width"));
-        // Hide the under/overflow again
-        h2d_undecayed->GetXaxis()->SetRange(1, h2d_undecayed->GetNbinsX());
-        h2d_undecayed->GetYaxis()->SetRange(1, h2d_undecayed->GetNbinsY());
-        // Fix colormap (Z) range
-        h2d_undecayed->GetZaxis()->SetRangeUser(zmin, zmax);
+        set_axes_labels(h2d_undecayed, xtitle, ytitle);
+        normalise_histo(h2d_undecayed);
+        set_zrange(h2d_undecayed, zmin, zmax);
         
         h2d_undecayed->Draw("colz");
         line->Draw();
@@ -209,38 +191,18 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         Float_t zmax_dynKt = 0.3;
 
         c_dynKt->cd(i + 1);
-        h2d_decayed_dynKt->SetYTitle(ytitle.c_str());
-        h2d_decayed_dynKt->SetXTitle(xtitle.c_str());
-        h2d_decayed_dynKt->GetXaxis()->SetTitleOffset(2.5);
-        h2d_decayed_dynKt->GetYaxis()->SetTitleOffset(2.5);
-        // Normalise the histogram
-        h2d_decayed_dynKt->GetXaxis()->SetRange(0, h2d_decayed_dynKt->GetNbinsX()+1);
-        h2d_decayed_dynKt->GetYaxis()->SetRange(0, h2d_decayed_dynKt->GetNbinsY()+1);
-        h2d_decayed_dynKt->Scale(1/h2d_decayed_dynKt->Integral("width"));
-        // Hide the under/overflow again
-        h2d_decayed_dynKt->GetXaxis()->SetRange(1, h2d_decayed_dynKt->GetNbinsX());
-        h2d_decayed_dynKt->GetYaxis()->SetRange(1, h2d_decayed_dynKt->GetNbinsY());
-        // Fix colormap (Z) range
-        h2d_decayed_dynKt->GetZaxis()->SetRangeUser(zmin_dynKt, zmax_dynKt);
+        set_axes_labels(h2d_decayed_dynKt, xtitle, ytitle);
+        normalise_histo(h2d_decayed_dynKt);
+        set_zrange(h2d_decayed_dynKt, zmin_dynKt, zmax_dynKt);
 
         h2d_decayed_dynKt->Draw("colz");
         line->Draw();
         info_decayed_dynKt->Draw();
 
         c_dynKt->cd(i + 1 + npt);
-        h2d_undecayed_dynKt->SetYTitle(ytitle.c_str());
-        h2d_undecayed_dynKt->SetXTitle(xtitle.c_str());
-        h2d_undecayed_dynKt->GetXaxis()->SetTitleOffset(2.5);
-        h2d_undecayed_dynKt->GetYaxis()->SetTitleOffset(2.5);
-        // Normalise the histogram
-        h2d_undecayed_dynKt->GetXaxis()->SetRange(0, h2d_undecayed_dynKt->GetNbinsX()+1);
-        h2d_undecayed_dynKt->GetYaxis()->SetRange(0, h2d_undecayed_dynKt->GetNbinsY()+1);
-        h2d_undecayed_dynKt->Scale(1/h2d_undecayed_dynKt->Integral("width"));
-        // Hide the under/overflow again
-        h2d_undecayed_dynKt->GetXaxis()->SetRange(1, h2d_undecayed_dynKt->GetNbinsX());
-        h2d_undecayed_dynKt->GetYaxis()->SetRange(1, h2d_undecayed_dynKt->GetNbinsY());
-        // Fix colormap (Z) range
-        h2d_undecayed_dynKt->GetZaxis()->SetRangeUser(zmin_dynKt, zmax_dynKt);
+        set_axes_labels(h2d_undecayed_dynKt, xtitle, ytitle);
+        normalise_histo(h2d_undecayed_dynKt);
+        set_zrange(h2d_undecayed_dynKt, zmin_dynKt, zmax_dynKt);
         
         h2d_undecayed_dynKt->Draw("colz");
         line->Draw();
@@ -249,13 +211,17 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         // c_ratio : decayed / undecayed, decayed / undecayed dynKt
         Float_t zmin_ratio = 0.;
         Float_t zmax_ratio = 6.;
-        
+
         if (!GSPincl) {
             zmax_ratio = 20.;
         }
 
-        c_ratio->cd(i + 1);
-        c_ratio->cd(i + 1)->SetLogz();
+        // Change format of Draw text option
+        gStyle->SetPaintTextFormat(".2f");
+
+        TCanvas *c_ratio = new TCanvas(Form("c_ratio%d", i), "c_ratio", 1600, 1000);
+        c_ratio->SetLogz();
+
         TH2D *h2d_ratio = (TH2D *) h2d_decayed->Clone();
         h2d_ratio->Divide(h2d_undecayed);
         // Fix the colormap (Z) axis
@@ -265,8 +231,13 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         line->Draw();
         info_ratio->Draw();
 
-        c_ratio->cd(i + 1 + npt);
-        c_ratio->cd(i + 1 + npt)->SetLogz();
+        string name = savename_c_ratio + Form("_%.0f_to_%0.f_GeV.png", ptmin, ptmax);
+        c_ratio->Draw();
+        c_ratio->Print(name.c_str());
+
+        TCanvas *c_ratio_dynKt = new TCanvas(Form("c_ratio_dynKt%d", i), "c_ratio", 1600, 1000);
+        c_ratio_dynKt->SetLogz();
+
         TH2F *h2d_ratio_dynKt = (TH2F *) h2d_decayed_dynKt->Clone();
         h2d_ratio_dynKt->Divide(h2d_undecayed_dynKt);
         // Fix the colormap (Z) axis
@@ -275,16 +246,17 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         h2d_ratio_dynKt->Draw("colz");
         line->Draw();
         info_ratio_dynKt->Draw();
+
+        string name_dynKt = savename_c_ratio + Form("_%.0f_to_%0.f_GeV_dynKt.png", ptmin, ptmax);
+        c_ratio_dynKt->Draw();
+        c_ratio_dynKt->Print(name_dynKt.c_str());
         
     }
 
     c->Draw();
     c_dynKt->Draw();
-    c_ratio->Draw();  
 
     
     c->Print(savename_c.c_str());
     c_dynKt->Print(savename_c_dynKt.c_str());
-    c_ratio->Print(savename_c_ratio.c_str());
-
 }

@@ -6,6 +6,7 @@
 #include "TLatex.h"
 #include "TPaveText.h"
 #include "TLine.h"
+#include "TStyle.h"
 #include "../../utils.h"
 #include <regex>
 
