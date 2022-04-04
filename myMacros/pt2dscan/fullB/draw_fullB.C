@@ -6,7 +6,7 @@
 #include "TLatex.h"
 #include "TPaveText.h"
 #include "TLine.h"
-#include "../utils.h"
+#include "../../utils.h"
 #include <regex>
 
 using namespace std;
@@ -42,8 +42,10 @@ void draw_fullB()
     TCanvas *c_dynKt = new TCanvas("c_dynKt", "c_dynKt", 1800, 1000);
     c_dynKt->Divide(npt, 2); // 2 for parton, hadron dynKt
 
-    TCanvas *c_ratio = new TCanvas("c_ratio", "c_ratio", 1800, 1000);
-    c_ratio->Divide(npt, 2); // 2 for hadron/parton, hadron dynKt/parton
+    //TCanvas *c_ratio = new TCanvas("c_ratio", "c_ratio", 1800, 1000);
+    //c_ratio->Divide(npt, 2); // 2 for hadron/parton, hadron dynKt/parton
+    
+    TCanvas *c_ratios[npt];
 
     for (int i = 0; i < npt; i++) {
         Float_t ptmin = ptrange[i][0];
@@ -83,13 +85,16 @@ void draw_fullB()
         
         TPaveText *info_ratio = (TPaveText *) info->Clone();
         info_ratio->AddText("hadron / parton ratio");
+        info_ratio->SetTextSize(25);
         
+        /*
         TPaveText *info_ratio_dynKt = (TPaveText *) info->Clone();
         info_ratio_dynKt->AddText("hadron / parton ratio, dynKt");
+        */
 
         // c : par, ref
         Float_t zmin = 0.;
-        Float_t zmax = 0.4;
+        Float_t zmax = 0.3;
 
         c->cd(i + 1);
         set_axes_labels(h2d_par, xtitle, ytitle);
@@ -129,44 +134,53 @@ void draw_fullB()
         h2d_ref_dynKt->Draw("colz");
         line->Draw();
         info_ref_dynKt->Draw();
-
+        
         // c_ratio : ref/par, ref dynKt/par
         Float_t zmin_ratio = 0.;
-        Float_t zmax_ratio = 20.;
+        Float_t zmax_ratio = 100.;
+        
+        // Change format of Draw text option
+        gStyle->SetPaintTextFormat(".2f");
 
-        c_ratio->cd(i + 1);
-        c_ratio->cd(i + 1)->SetLogz();
+        TCanvas *c_ratio = new TCanvas(Form("c_ratio%d", i), "c_ratio", 1600, 1000);
+        c_ratio->SetLogz();
+
         TH2D *h2d_ratio = (TH2D *) h2d_ref->Clone();
         h2d_ratio->Divide(h2d_par);
+        
+        // Format ratio histogram
+        h2d_ratio->SetMarkerSize(500);
+        h2d_ratio->SetYTitle(ytitle.c_str());
+        h2d_ratio->SetXTitle(xtitle.c_str());
+        h2d_ratio->GetXaxis()->SetTitleOffset(1.5);
+        h2d_ratio->GetYaxis()->SetTitleOffset(1.);
         // Fix the colormap (Z) axis
         set_zrange(h2d_ratio, zmin_ratio, zmax_ratio);
 
-        h2d_ratio->Draw("colz");
+        h2d_ratio->Draw("colz text");
         line->Draw();
         info_ratio->Draw();
-
-        c_ratio->cd(i + 1 + npt);
-        c_ratio->cd(i + 1 + npt)->SetLogz();
-        TH2D *h2d_ratio_dynKt = (TH2D *) h2d_ref_dynKt->Clone();
-        h2d_ratio_dynKt->Divide(h2d_par);
-        // Fix the colormap (Z) axis
-        set_zrange(h2d_ratio_dynKt, zmin_ratio, zmax_ratio);
-
-        h2d_ratio_dynKt->Draw("colz");
-        line->Draw();
-        info_ratio_dynKt->Draw();
+        h2d_ratio->GetZaxis()->SetTitleSize(2.);
+        c_ratio->Draw();
+        
+        c_ratios[i] = c_ratio;
     }
 
     c->Draw();
     c_dynKt->Draw();
-    c_ratio->Draw();
     
     string savename_c = "fullB_bjets_par_vs_had";
     string savename_c_dynKt = savename_c + "_dynKt.png";
-    string savename_c_ratio = savename_c + "_ratio.png";
+    string savename_c_ratio = savename_c + "_ratio";
     savename_c += ".png";
     
     c->Print(savename_c.c_str());
     c_dynKt->Print(savename_c_dynKt.c_str());
-    c_ratio->Print(savename_c_ratio.c_str());
+    
+    for (int i = 0; i < npt; i++) {
+        Float_t ptmin = ptrange[i][0];
+        Float_t ptmax = ptrange[i][1];
+        string name = savename_c_ratio + Form("_%.0f_to_%0.f_GeV.png", ptmin, ptmax);
+        c_ratios[i]->Print(name.c_str());
+    }
 }
