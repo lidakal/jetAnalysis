@@ -9,6 +9,7 @@
 #include "TStyle.h"
 #include "../../utils.h"
 #include <regex>
+#include <iostream>
 
 using namespace std;
 
@@ -238,10 +239,6 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = true)
         // c_ratio : decayed / undecayed, decayed / undecayed dynKt
         Float_t zmin_ratio = 0.;
         Float_t zmax_ratio = 10.;
-        
-        if (chargedSJ) {
-            zmax_ratio = 10.;
-        }
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();
@@ -269,6 +266,7 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = true)
         info_ratio->Draw();
         gsptxt->Draw();
 
+        /*
         // c_ratio_large : draw one by one with text option 
 
         // Change format of Draw text option
@@ -313,7 +311,7 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = true)
         string name_dynKt = savename_c_ratio_large + Form("_%.0f_to_%0.f_GeV_dynKt.png", ptmin, ptmax);
         c_ratio_large_dynKt->Draw();
         c_ratio_large_dynKt->Print(name_dynKt.c_str());
-        
+        */
     }
 
     c->Draw();
