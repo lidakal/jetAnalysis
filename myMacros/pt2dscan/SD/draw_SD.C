@@ -94,6 +94,14 @@ void draw_SD(bool GSPincl = false)
         
         TPaveText *info_ratio_dynKt = (TPaveText *) info->Clone();
         info_ratio_dynKt->AddText("hadron / parton ratio, dynKt");
+        
+        TPaveText *gsptxt = new TPaveText(0.2, 0.25, 0.35, 0.4, "ndc");
+        gsptxt->SetFillColor(0);
+        gsptxt->SetBorderSize(0);
+        gsptxt->SetTextSize(20);
+        if (!GSPincl) {
+            gsptxt->AddText("NO GSP");
+        }
 
         // c : par, ref
         Float_t zmin = 0.;
@@ -108,6 +116,7 @@ void draw_SD(bool GSPincl = false)
         h2d_par->Draw("colz");
         line->Draw();
         info_par->Draw();
+        gsptxt->Draw();
 
         c->cd(i + 1 + npt);
         c->cd(i + 1 + npt)->SetGrid();
@@ -118,6 +127,7 @@ void draw_SD(bool GSPincl = false)
         h2d_ref->Draw("colz");
         line->Draw();
         info_ref->Draw();
+        gsptxt->Draw();
 
         // c_dynKt : par, ref dynKt
         Float_t zmin_dynKt = 0.;
@@ -131,6 +141,7 @@ void draw_SD(bool GSPincl = false)
         h2d_par_clone->Draw("colz");
         line->Draw();
         info_par->Draw();
+        gsptxt->Draw();
 
         c_dynKt->cd(i + 1 + npt);
         c_dynKt->cd(i + 1 + npt)->SetGrid();
@@ -141,6 +152,7 @@ void draw_SD(bool GSPincl = false)
         h2d_ref_dynKt->Draw("colz");
         line->Draw();
         info_ref_dynKt->Draw();
+        gsptxt->Draw();
 
         // c_ratio : ref/par, ref dynKt/par
         Float_t zmin_ratio = 0.;
@@ -157,6 +169,7 @@ void draw_SD(bool GSPincl = false)
         h2d_ratio->Draw("colz");
         line->Draw();
         info_ratio->Draw();
+        gsptxt->Draw();
 
         c_ratio->cd(i + 1 + npt);
         c_ratio->cd(i + 1 + npt)->SetGrid();
@@ -169,6 +182,7 @@ void draw_SD(bool GSPincl = false)
         h2d_ratio_dynKt->Draw("colz");
         line->Draw();
         info_ratio_dynKt->Draw();
+        gsptxt->Draw();
     }
 
     c->Draw();
