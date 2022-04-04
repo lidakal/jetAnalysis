@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
+void draw_decay_effect(bool chargedSJ = false, bool GSPincl = true)
 {
     cout << "Running with options : " << endl;
     cout << "chargedSJ : " << chargedSJ << endl;
@@ -128,8 +128,9 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         info_decayed->SetTextSize(15);
         
         TPaveText *info_undecayed = (TPaveText *) info_decayed->Clone();
-        TPaveText *info_ratio = (TPaveText *) info_decayed->Clone();
-        info_ratio->SetTextSize(25);
+        TPaveText *info_ratio = (TPaveText *) info_decayed->Clone();        
+        TPaveText *info_ratio_large = (TPaveText *) info_decayed->Clone();
+        info_ratio_large->SetTextSize(25);
         
         TPaveText *gsptxt = new TPaveText(0., 0.0001, 0., 0.00001, "ndc");
         if (!GSPincl) {
@@ -236,7 +237,11 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
 
         // c_ratio : decayed / undecayed, decayed / undecayed dynKt
         Float_t zmin_ratio = 0.;
-        Float_t zmax_ratio = 6.;
+        Float_t zmax_ratio = 10.;
+        
+        if (chargedSJ) {
+            zmax_ratio = 10.;
+        }
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();
@@ -246,7 +251,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         h2d_ratio->Divide(h2d_undecayed);
         set_zrange(h2d_ratio, zmin_ratio, zmax_ratio);
 
-        h2d_ratio->Draw("text colz");
+        h2d_ratio->Draw("colz");
         line->Draw();
         info_ratio->Draw();
         gsptxt->Draw();
@@ -259,7 +264,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         h2d_ratio_dynKt->Divide(h2d_undecayed_dynKt);
         set_zrange(h2d_ratio_dynKt, zmin_ratio, zmax_ratio);
 
-        h2d_ratio_dynKt->Draw("text colz");
+        h2d_ratio_dynKt->Draw("colz");
         line->Draw();
         info_ratio->Draw();
         gsptxt->Draw();
