@@ -11,10 +11,18 @@
 
 using namespace std;
 
-void draw_chargedSJ_partialB()
+void draw_chargedSJ_partialB(bool GSPincl = true)
 {      
-    string histfile_ref = "~/rootFiles/chargedSJ_partialB_ref.root";
-    string histfile_par = "~/rootFiles/chargedSJ_partialB_par.root";
+    string histfile_ref = "";
+    string histfile_par = "";
+
+    if (GSPincl) {
+        histfile_ref += "~/rootFiles/chargedSJ_partialB_ref.root";
+        histfile_par += "~/rootFiles/chargedSJ_partialB_par.root";
+    } else {
+        histfile_ref += "~/rootFiles/chargedSJ_partialB_noGSP_ref.root";
+        histfile_par += "~/rootFiles/chargedSJ_partialB_noGSP_par.root";
+    }
 
     string xtitle = "ln(1/R_{g})";
     string ytitle = "ln(kt/GeV)";
@@ -86,12 +94,21 @@ void draw_chargedSJ_partialB()
         
         TPaveText *info_ratio_dynKt = (TPaveText *) info->Clone();
         info_ratio_dynKt->AddText("hadron / parton ratio, dynKt");
+        
+        TPaveText *gsptxt = new TPaveText(0.2, 0.25, 0.35, 0.4, "ndc");
+        gsptxt->SetFillColor(0);
+        gsptxt->SetBorderSize(0);
+        gsptxt->SetTextSize(20);
+        if (!GSPincl) {
+            gsptxt->AddText("NO GSP");
+        }
 
         // c : par, ref
         Float_t zmin = 0.;
-        Float_t zmax = 0.4;
+        Float_t zmax = 0.3;
 
         c->cd(i + 1);
+        c->cd(i + 1)->SetGrid();
         set_axes_labels(h2d_par, xtitle, ytitle);
         normalise_histo(h2d_par);
         set_zrange(h2d_par, zmin, zmax);
@@ -99,8 +116,10 @@ void draw_chargedSJ_partialB()
         h2d_par->Draw("colz");
         line->Draw();
         info_par->Draw();
+        gsptxt->Draw();
 
         c->cd(i + 1 + npt);
+        c->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_ref, xtitle, ytitle);
         normalise_histo(h2d_ref);
         set_zrange(h2d_ref, zmin, zmax);
@@ -108,20 +127,24 @@ void draw_chargedSJ_partialB()
         h2d_ref->Draw("colz");
         line->Draw();
         info_ref->Draw();
+        gsptxt->Draw();
 
         // c_dynKt : par, ref dynKt
         Float_t zmin_dynKt = 0.;
         Float_t zmax_dynKt = 0.3;
 
         c_dynKt->cd(i + 1);
+        c_dynKt->cd(i + 1)->SetGrid();
         TH2D *h2d_par_clone = (TH2D *) h2d_par->Clone();
         set_zrange(h2d_par_clone, zmin_dynKt, zmax_dynKt);
 
         h2d_par_clone->Draw("colz");
         line->Draw();
         info_par->Draw();
+        gsptxt->Draw();
 
         c_dynKt->cd(i + 1 + npt);
+        c_dynKt->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_ref_dynKt, xtitle, ytitle);
         normalise_histo(h2d_ref_dynKt);
         set_zrange(h2d_ref_dynKt, zmin_dynKt, zmax_dynKt);
@@ -129,13 +152,15 @@ void draw_chargedSJ_partialB()
         h2d_ref_dynKt->Draw("colz");
         line->Draw();
         info_ref_dynKt->Draw();
+        gsptxt->Draw();
 
         // c_ratio : ref/par, ref dynKt/par
         Float_t zmin_ratio = 0.;
-        Float_t zmax_ratio = 20.;
+        Float_t zmax_ratio = 40.;
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();
+        c_ratio->cd(i + 1)->SetGrid();
         TH2D *h2d_ratio = (TH2D *) h2d_ref->Clone();
         h2d_ratio->Divide(h2d_par);
         // Fix the colormap (Z) axis
@@ -144,8 +169,10 @@ void draw_chargedSJ_partialB()
         h2d_ratio->Draw("colz");
         line->Draw();
         info_ratio->Draw();
+        gsptxt->Draw();
 
         c_ratio->cd(i + 1 + npt);
+        c_ratio->cd(i + 1 + npt)->SetGrid();
         c_ratio->cd(i + 1 + npt)->SetLogz();
         TH2D *h2d_ratio_dynKt = (TH2D *) h2d_ref_dynKt->Clone();
         h2d_ratio_dynKt->Divide(h2d_par);
@@ -155,6 +182,7 @@ void draw_chargedSJ_partialB()
         h2d_ratio_dynKt->Draw("colz");
         line->Draw();
         info_ratio_dynKt->Draw();
+        gsptxt->Draw();
     }
 
     c->Draw();
@@ -162,6 +190,9 @@ void draw_chargedSJ_partialB()
     c_ratio->Draw();
     
     string savename_c = "chargedSJ_partialB_bjets_par_vs_had";
+    if (!GSPincl) {
+        savename_c += "_noGSP";
+    }
     string savename_c_dynKt = savename_c + "_dynKt.png";
     string savename_c_ratio = savename_c + "_ratio.png";
     savename_c += ".png";
