@@ -105,7 +105,7 @@ void draw_mergedB(bool GSPincl = true)
 
         // c : par, ref
         Float_t zmin = 0.;
-        Float_t zmax = 0.4;
+        Float_t zmax = 0.3;
 
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
@@ -156,7 +156,7 @@ void draw_mergedB(bool GSPincl = true)
 
         // c_ratio : ref/par, ref dynKt/par
         Float_t zmin_ratio = 0.;
-        Float_t zmax_ratio = 20.;
+        Float_t zmax_ratio = 40.;
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();
