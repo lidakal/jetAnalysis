@@ -88,10 +88,10 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
     TCanvas *c_dynKt = new TCanvas("c_dynKt", "c_dynKt", 1800, 1000);
     c_dynKt->Divide(npt, 2); // 2 for decayed, undecayed with dynKt
 
-    /*
+    
     TCanvas *c_ratio = new TCanvas("c_ratio", "c_ratio", 1800, 1000);
     c_ratio->Divide(npt, 2); // 2 for decayed/undecayed, decayed/undecayed with dynKt
-    */
+    
     
 
     for (int i = 0; i < npt; i++) {
@@ -238,61 +238,86 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         Float_t zmin_ratio = 0.;
         Float_t zmax_ratio = 6.;
 
-        /*
-        if (!GSPincl) {
-            zmax_ratio = 20.;
-        }
-        */
-
-        // Change format of Draw text option
-        gStyle->SetPaintTextFormat(".2f");
-
-        TCanvas *c_ratio = new TCanvas(Form("c_ratio%d", i), "c_ratio", 1600, 1000);
-        c_ratio->SetLogz();
-        c_ratio->SetGrid();
+        c_ratio->cd(i + 1);
+        c_ratio->cd(i + 1)->SetLogz();
+        c_ratio->cd(i + 1)->SetGrid();
 
         TH2D *h2d_ratio = (TH2D *) h2d_decayed->Clone();
         h2d_ratio->Divide(h2d_undecayed);
-        h2d_ratio->SetMarkerSize(500);
-        h2d_ratio->GetXaxis()->SetTitleOffset(1.5);
-        h2d_ratio->GetYaxis()->SetTitleOffset(1.);
         set_zrange(h2d_ratio, zmin_ratio, zmax_ratio);
-        
+
         h2d_ratio->Draw("text colz");
         line->Draw();
         info_ratio->Draw();
         gsptxt->Draw();
 
-        string name = savename_c_ratio + Form("_%.0f_to_%0.f_GeV.png", ptmin, ptmax);
-        c_ratio->Draw();
-        c_ratio->Print(name.c_str());
-
-        TCanvas *c_ratio_dynKt = new TCanvas(Form("c_ratio_dynKt%d", i), "c_ratio", 1600, 1000);
-        c_ratio_dynKt->SetLogz();
-        c_ratio_dynKt->SetGrid();
+        c_ratio->cd(i + 1 + npt);
+        c_ratio->cd(i + 1 + npt)->SetLogz();
+        c_ratio->cd(i + 1 + npt)->SetGrid();
 
         TH2D *h2d_ratio_dynKt = (TH2D *) h2d_decayed_dynKt->Clone();
         h2d_ratio_dynKt->Divide(h2d_undecayed_dynKt);
-        h2d_ratio_dynKt->SetMarkerSize(500);
-        h2d_ratio_dynKt->GetXaxis()->SetTitleOffset(1.5);
-        h2d_ratio_dynKt->GetYaxis()->SetTitleOffset(1.);
         set_zrange(h2d_ratio_dynKt, zmin_ratio, zmax_ratio);
 
         h2d_ratio_dynKt->Draw("text colz");
         line->Draw();
+        info_ratio->Draw();
+        gsptxt->Draw();
+
+        // c_ratio_large : draw one by one with text option 
+
+        // Change format of Draw text option
+        gStyle->SetPaintTextFormat(".2f");
+
+        TCanvas *c_ratio_large = new TCanvas(Form("c_ratio_large%d", i), "c_ratio_large", 1600, 1000);
+        c_ratio_large->SetLogz();
+        c_ratio_large->SetGrid();
+
+        TH2D *h2d_ratio_large = (TH2D *) h2d_decayed->Clone();
+        h2d_ratio_large->Divide(h2d_undecayed);
+        h2d_ratio_large->SetMarkerSize(500);
+        h2d_ratio_large->GetXaxis()->SetTitleOffset(1.5);
+        h2d_ratio_large->GetYaxis()->SetTitleOffset(1.);
+        set_zrange(h2d_ratio_large, zmin_ratio, zmax_ratio);
+        
+        h2d_ratio_large->Draw("text colz");
+        line->Draw();
+        info_ratio->Draw();
+        gsptxt->Draw();
+
+        string savename_c_ratio_large = savename_c_ratio + Form("_%.0f_to_%0.f_GeV.png", ptmin, ptmax);
+        c_ratio_large->Draw();
+        c_ratio_large->Print(savename_c_ratio_large.c_str());
+
+        TCanvas *c_ratio_large_dynKt = new TCanvas(Form("c_ratio_large_dynKt%d", i), "c_ratio_large", 1600, 1000);
+        c_ratio_large_dynKt->SetLogz();
+        c_ratio_large_dynKt->SetGrid();
+
+        TH2D *h2d_ratio_large_dynKt = (TH2D *) h2d_decayed_dynKt->Clone();
+        h2d_ratio_large_dynKt->Divide(h2d_undecayed_dynKt);
+        h2d_ratio_large_dynKt->SetMarkerSize(500);
+        h2d_ratio_large_dynKt->GetXaxis()->SetTitleOffset(1.5);
+        h2d_ratio_large_dynKt->GetYaxis()->SetTitleOffset(1.);
+        set_zrange(h2d_ratio_large_dynKt, zmin_ratio, zmax_ratio);
+
+        h2d_ratio_large_dynKt->Draw("text colz");
+        line->Draw();
         info_ratio_dynKt->Draw();
         gsptxt->Draw();
 
-        string name_dynKt = savename_c_ratio + Form("_%.0f_to_%0.f_GeV_dynKt.png", ptmin, ptmax);
-        c_ratio_dynKt->Draw();
-        c_ratio_dynKt->Print(name_dynKt.c_str());
+        string name_dynKt = savename_c_ratio_large + Form("_%.0f_to_%0.f_GeV_dynKt.png", ptmin, ptmax);
+        c_ratio_large_dynKt->Draw();
+        c_ratio_large_dynKt->Print(name_dynKt.c_str());
         
     }
 
     c->Draw();
     c_dynKt->Draw();
-
+    c_ratio->Draw();
     
     c->Print(savename_c.c_str());
     c_dynKt->Print(savename_c_dynKt.c_str());
+
+    savename_c_ratio += ".png";
+    c_ratio->Print(savename_c_ratio.c_str());
 }
