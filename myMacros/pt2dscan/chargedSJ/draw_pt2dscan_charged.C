@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void draw_pt2dscan_charged(char qtype = 'B', bool ktORzg = true, bool dynKt = false)
+void draw_pt2dscan_charged(char qtype = 'L', bool ktORzg = true, bool dynKt = false)
 {           
     string histfile_ref = "~/rootFiles/pt2dscan_ref_charged.root";
     string histfile_par = "~/rootFiles/pt2dscan_par_charged.root";

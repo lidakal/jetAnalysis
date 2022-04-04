@@ -12,10 +12,18 @@
 
 using namespace std;
 
-void draw_mergedB()
+void draw_mergedB(bool GSPincl = false)
 {      
-    string histfile_ref = "~/rootFiles/mergedB_ref.root";
-    string histfile_par = "~/rootFiles/mergedB_par.root";
+    string histfile_ref = "";
+    string histfile_par = "";
+    
+    if (GSPincl) {
+        histfile_ref += "~/rootFiles/mergedB_ref.root";
+        histfile_par += "~/rootFiles/mergedB_par.root";
+    } else {
+        histfile_ref += "~/rootFiles/mergedB_noGSP_ref.root";
+        histfile_par += "~/rootFiles/mergedB_noGSP_par.root";
+    }
 
     string xtitle = "ln(1/R_{g})";
     string ytitle = "ln(kt/GeV)";

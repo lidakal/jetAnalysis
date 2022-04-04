@@ -12,8 +12,14 @@
 
 using namespace std;
 
-void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
+void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
 {
+    cout << "Running with options : " << endl;
+    cout << "chargedSJ : " << chargedSJ << endl;
+    cout << "GSPincl : " << GSPincl << endl;
+    
+    cout << "\n" << endl;
+    
     string decayed_fname = "";
     string undecayed_fname = "";
     string charged_decayed_fname = "";
@@ -23,15 +29,15 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
 
     if (GSPincl) {
         decayed_fname += "~/rootFiles/SD_ref.root";
-        undecayed_fname += "~/rootFiles/fullB_ref.root";
+        undecayed_fname += "~/rootFiles/mergedB_ref.root";
         charged_decayed_fname += "~/rootFiles/chargedSJ_ref.root";
-        charged_undecayed_fname += "~/rootFiles/charged_partialB_ref.root";    
+        charged_undecayed_fname += "~/rootFiles/chargedSJ_partialB_ref.root";    
     } else {
         decayed_fname += "~/rootFiles/SD_noGSP_ref.root";
-        undecayed_fname += "~/rootFiles/fullB_SD_noGSP_ref.root";
+        undecayed_fname += "~/rootFiles/mergedB_noGSP_ref.root";
         charged_decayed_fname += "~/rootFiles/chargedSJ_noGSP_ref.root";
-        charged_undecayed_fname += "~/rootFiles/charged_partialB_noGSP_ref.root";    
-        savename_c += "noGSP";
+        charged_undecayed_fname += "~/rootFiles/chargedSJ_partialB_noGSP_ref.root";    
+        savename_c += "noGSP_";
     }
 
 
@@ -42,11 +48,11 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
     if (chargedSJ) {
         fin_decayed = new TFile(charged_decayed_fname.c_str());
         fin_undecayed = new TFile(charged_undecayed_fname.c_str());
-        savename_c += "_chargedSJ_dec_vs_nodec";
+        savename_c += "chargedSJ_dec_vs_nodec";
     } else {
         fin_decayed = new TFile(decayed_fname.c_str());
         fin_undecayed = new TFile(undecayed_fname.c_str());
-        savename_c += "_SD_dec_vs_nodec";
+        savename_c += "SD_dec_vs_nodec_mergedB";
     }
 
     string savename_c_dynKt = savename_c + "_dynKt.png";
@@ -123,6 +129,7 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         
         TPaveText *info_undecayed = (TPaveText *) info_decayed->Clone();
         TPaveText *info_ratio = (TPaveText *) info_decayed->Clone();
+        info_ratio->SetTextSize(25);
 
         if (chargedSJ) {
             info_decayed->AddText("chargedSJ b-jets");
@@ -167,6 +174,7 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         Float_t zmax = 0.4;
         
         c->cd(i + 1);
+        c->cd(i + 1)->SetGrid();
         
         set_axes_labels(h2d_decayed, xtitle, ytitle);
         normalise_histo(h2d_decayed);
@@ -177,6 +185,7 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         info_decayed->Draw();
         
         c->cd(i + 1 + npt);
+        c->cd(i + 1 + npt)->SetGrid();
         
         set_axes_labels(h2d_undecayed, xtitle, ytitle);
         normalise_histo(h2d_undecayed);
@@ -191,6 +200,7 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         Float_t zmax_dynKt = 0.3;
 
         c_dynKt->cd(i + 1);
+        c_dynKt->cd(i + 1)->SetGrid();
         set_axes_labels(h2d_decayed_dynKt, xtitle, ytitle);
         normalise_histo(h2d_decayed_dynKt);
         set_zrange(h2d_decayed_dynKt, zmin_dynKt, zmax_dynKt);
@@ -200,6 +210,7 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         info_decayed_dynKt->Draw();
 
         c_dynKt->cd(i + 1 + npt);
+        c_dynKt->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_undecayed_dynKt, xtitle, ytitle);
         normalise_histo(h2d_undecayed_dynKt);
         set_zrange(h2d_undecayed_dynKt, zmin_dynKt, zmax_dynKt);
@@ -212,22 +223,27 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
         Float_t zmin_ratio = 0.;
         Float_t zmax_ratio = 6.;
 
+        /*
         if (!GSPincl) {
             zmax_ratio = 20.;
         }
+        */
 
         // Change format of Draw text option
         gStyle->SetPaintTextFormat(".2f");
 
         TCanvas *c_ratio = new TCanvas(Form("c_ratio%d", i), "c_ratio", 1600, 1000);
         c_ratio->SetLogz();
+        c_ratio->SetGrid();
 
         TH2D *h2d_ratio = (TH2D *) h2d_decayed->Clone();
         h2d_ratio->Divide(h2d_undecayed);
-        // Fix the colormap (Z) axis
-        h2d_ratio->GetZaxis()->SetRangeUser(zmin_ratio, zmax_ratio);
-
-        h2d_ratio->Draw("colz");
+        h2d_ratio->SetMarkerSize(500);
+        h2d_ratio->GetXaxis()->SetTitleOffset(1.5);
+        h2d_ratio->GetYaxis()->SetTitleOffset(1.);
+        set_zrange(h2d_ratio, zmin_ratio, zmax_ratio);
+        
+        h2d_ratio->Draw("text colz");
         line->Draw();
         info_ratio->Draw();
 
@@ -237,13 +253,16 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
 
         TCanvas *c_ratio_dynKt = new TCanvas(Form("c_ratio_dynKt%d", i), "c_ratio", 1600, 1000);
         c_ratio_dynKt->SetLogz();
+        c_ratio_dynKt->SetGrid();
 
-        TH2F *h2d_ratio_dynKt = (TH2F *) h2d_decayed_dynKt->Clone();
+        TH2D *h2d_ratio_dynKt = (TH2D *) h2d_decayed_dynKt->Clone();
         h2d_ratio_dynKt->Divide(h2d_undecayed_dynKt);
-        // Fix the colormap (Z) axis
-        h2d_ratio_dynKt->GetZaxis()->SetRangeUser(zmin_ratio, zmax_ratio);
+        h2d_ratio_dynKt->SetMarkerSize(500);
+        h2d_ratio_dynKt->GetXaxis()->SetTitleOffset(1.5);
+        h2d_ratio_dynKt->GetYaxis()->SetTitleOffset(1.);
+        set_zrange(h2d_ratio_dynKt, zmin_ratio, zmax_ratio);
 
-        h2d_ratio_dynKt->Draw("colz");
+        h2d_ratio_dynKt->Draw("text colz");
         line->Draw();
         info_ratio_dynKt->Draw();
 
