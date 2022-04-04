@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void plot_fullB(bool parORref = true, bool GSPincl = true)
+void plot_fullB(bool parORref = false, bool GSPincl = false)
 {
     cout << "Running with options: " << endl;
     cout << "parORref : " << parORref << endl;

@@ -21,12 +21,12 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
 
     if (GSPincl) {
         decayed_fname += "~/rootFiles/SD_ref.root";
-        undecayed_fname += "~/rootFiles/undecayHF_SD_ref.root";
+        undecayed_fname += "~/rootFiles/fullB_ref.root";
         charged_decayed_fname += "~/rootFiles/chargedSJ_ref.root";
         charged_undecayed_fname += "~/rootFiles/charged_partialB_ref.root";    
     } else {
         decayed_fname += "~/rootFiles/SD_noGSP_ref.root";
-        undecayed_fname += "~/rootFiles/undecayHF_SD_noGSP_ref.root";
+        undecayed_fname += "~/rootFiles/fullB_SD_noGSP_ref.root";
         charged_decayed_fname += "~/rootFiles/chargedSJ_noGSP_ref.root";
         charged_undecayed_fname += "~/rootFiles/charged_partialB_noGSP_ref.root";    
         savename_c += "noGSP";
@@ -48,7 +48,7 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
     }
 
     string savename_c_dynKt = savename_c + "_dynKt.png";
-    string savename_c_ratio = savename_c + "_ratio.png";
+    string savename_c_ratio = savename_c + "_ratio";
     savename_c += ".png";
 
     // decayed = normal final state particles
@@ -80,8 +80,11 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
     TCanvas *c_dynKt = new TCanvas("c_dynKt", "c_dynKt", 1800, 1000);
     c_dynKt->Divide(npt, 2); // 2 for decayed, undecayed with dynKt
 
+    /*
     TCanvas *c_ratio = new TCanvas("c_ratio", "c_ratio", 1800, 1000);
     c_ratio->Divide(npt, 2); // 2 for decayed/undecayed, decayed/undecayed with dynKt
+    */
+    
 
     for (int i = 0; i < npt; i++) {
         Float_t ptmin = ptrange[i][0];
@@ -125,8 +128,8 @@ void draw_decay_effect(bool chargedSJ = false, bool GSPincl = false)
             info_ratio->AddText("ratio chargedSJ / chargedSJ_partialB b-jets");
         } else {
             info_decayed->AddText("SD b-jets");
-            info_undecayed->AddText("undecayHF_SD b-jets");
-            info_ratio->AddText("ratio SD / undecayHF_SD b-jets");
+            info_undecayed->AddText("fullB b-jets");
+            info_ratio->AddText("ratio SD / fullB b-jets");
         }
 
         info_decayed->AddLine(0., 0.7, 1., 0.7);
