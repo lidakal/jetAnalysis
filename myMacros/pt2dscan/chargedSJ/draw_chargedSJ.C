@@ -95,12 +95,13 @@ void draw_chargedSJ(bool GSPincl = true)
         TPaveText *info_ratio_dynKt = (TPaveText *) info->Clone();
         info_ratio_dynKt->AddText("hadron / parton ratio, dynKt");
         
-        TPaveText *gsptxt = new TPaveText(0.2, 0.25, 0.35, 0.4, "ndc");
-        gsptxt->SetFillColor(0);
-        gsptxt->SetBorderSize(0);
-        gsptxt->SetTextSize(20);
+        TPaveText *gsptxt = new TPaveText(0., 0.0001, 0., 0.00001, "ndc");
         if (!GSPincl) {
+            gsptxt = new TPaveText(0.2, 0.25, 0.35, 0.4, "ndc");
             gsptxt->AddText("NO GSP");
+            gsptxt->SetFillColor(0);
+            gsptxt->SetBorderSize(0);
+            gsptxt->SetTextSize(20);
         }
 
         // c : par, ref
