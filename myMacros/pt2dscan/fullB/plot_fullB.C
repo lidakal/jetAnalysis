@@ -1,21 +1,21 @@
-#include "TreeAnalyzer_chargedSJ_partialB.h"
+#include "TreeAnalyzer_fullB.h"
 #include "TH3.h"
 #include <iostream>
 
 using namespace std;
 
-void plot_chargedSJ_partialB(bool parORref = false, bool GSPincl = true, bool QCDincl = false)
+void plot_fullB(bool parORref = false, bool GSPincl = true, bool QCDincl = false)
 {
     cout << "Running with options: " << endl;
     cout << "parORref : " << parORref << endl;
     cout << "GSPincl : " << GSPincl << endl;
     cout << "QCDincl : " << QCDincl << endl;
 
-    TreeAnalyzer_chargedSJ_partialB TAb(true, true);
-    TreeAnalyzer_chargedSJ_partialB TAqcd(false, true);
+    TreeAnalyzer_fullB TAb(true, true);
+    TreeAnalyzer_fullB TAqcd(false, true);
     
     // Create output file name
-    string foutname = "~/rootFiles/chargedSJ_partialB";
+    string foutname = "~/rootFiles/fullB";
     if (!GSPincl) {
         foutname += "_noGSP";
     }

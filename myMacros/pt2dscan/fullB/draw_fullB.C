@@ -11,10 +11,10 @@
 
 using namespace std;
 
-void draw_chargedSJ_partialB()
+void draw_fullB()
 {      
-    string histfile_ref = "~/rootFiles/chargedSJ_partialB_ref.root";
-    string histfile_par = "~/rootFiles/chargedSJ_partialB_par.root";
+    string histfile_ref = "~/rootFiles/fullB_ref.root";
+    string histfile_par = "~/rootFiles/fullB_par.root";
 
     string xtitle = "ln(1/R_{g})";
     string ytitle = "ln(kt/GeV)";
@@ -65,7 +65,7 @@ void draw_chargedSJ_partialB()
         line->SetLineWidth(2);
 
         TPaveText *info = new TPaveText(0.45, 0.7, 0.8, 0.85, "ndc");
-        info->AddText("chargedSJ_partialB b-jets");
+        info->AddText("fullB b-jets");
         info->AddLine(0., 0.7, 1., 0.7);
         info->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
         info->SetFillColor(0);
@@ -161,7 +161,7 @@ void draw_chargedSJ_partialB()
     c_dynKt->Draw();
     c_ratio->Draw();
     
-    string savename_c = "chargedSJ_partialB_bjets_par_vs_had";
+    string savename_c = "fullB_bjets_par_vs_had";
     string savename_c_dynKt = savename_c + "_dynKt.png";
     string savename_c_ratio = savename_c + "_ratio.png";
     savename_c += ".png";
