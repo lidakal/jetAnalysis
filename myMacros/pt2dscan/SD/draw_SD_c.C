@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void draw_SD()
+void draw_SD_c()
 {      
     string histfile_ref = "~/rootFiles/SD_ref.root";
     string histfile_par = "~/rootFiles/SD_par.root";
@@ -92,6 +92,7 @@ void draw_SD()
         Float_t zmax = 0.4;
 
         c->cd(i + 1);
+        c->cd(i + 1)->SetGrid();
         set_axes_labels(h2d_par, xtitle, ytitle);
         normalise_histo(h2d_par);
         set_zrange(h2d_par, zmin, zmax);
@@ -101,6 +102,7 @@ void draw_SD()
         info_par->Draw();
 
         c->cd(i + 1 + npt);
+        c->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_ref, xtitle, ytitle);
         normalise_histo(h2d_ref);
         set_zrange(h2d_ref, zmin, zmax);
@@ -114,6 +116,7 @@ void draw_SD()
         Float_t zmax_dynKt = 0.3;
 
         c_dynKt->cd(i + 1);
+        c_dynKt->cd(i + 1)->SetGrid();
         TH2D *h2d_par_clone = (TH2D *) h2d_par->Clone();
         set_zrange(h2d_par_clone, zmin_dynKt, zmax_dynKt);
 
@@ -122,6 +125,7 @@ void draw_SD()
         info_par->Draw();
 
         c_dynKt->cd(i + 1 + npt);
+        c_dynKt->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_ref_dynKt, xtitle, ytitle);
         normalise_histo(h2d_ref_dynKt);
         set_zrange(h2d_ref_dynKt, zmin_dynKt, zmax_dynKt);
@@ -136,6 +140,7 @@ void draw_SD()
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();
+        c_ratio->cd(i + 1)->SetGrid();
         TH2D *h2d_ratio = (TH2D *) h2d_ref->Clone();
         h2d_ratio->Divide(h2d_par);
         // Fix the colormap (Z) axis
@@ -147,6 +152,7 @@ void draw_SD()
 
         c_ratio->cd(i + 1 + npt);
         c_ratio->cd(i + 1 + npt)->SetLogz();
+        c_ratio->cd(i + 1 + npt)->SetGrid();
         TH2D *h2d_ratio_dynKt = (TH2D *) h2d_ref_dynKt->Clone();
         h2d_ratio_dynKt->Divide(h2d_par);
         // Fix the colormap (Z) axis
