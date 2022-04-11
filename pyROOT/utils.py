@@ -1,4 +1,4 @@
-from ROOT import TFile, TCanvas, TLegend, TGraph, TMultiGraph, gStyle
+from ROOT import TFile, TTree, TCanvas, TLegend, TGraph, TMultiGraph, gStyle
 from ROOT import kCircle, kFullCircle, kOpenDiamond, kOpenTriangleUp
 
 import numpy as np
@@ -106,7 +106,7 @@ class TreeAnalyzer():
         if (ptCut > 0):
             key = "ptCut%dGeV" % ptCut
             key = key.replace(".", "_")
-        trackGenPartMatches.to_hdf("trackGenPartMatches.h5", key = key, index = False)
+        trackGenPartMatches.to_hdf("trackGenPartMatches.h5", key = key, index = False, format = "table")
         return trackGenPartMatches
 
     def makeTracksdf(self, tree):
