@@ -4,8 +4,10 @@
 
 using namespace std;
 
-void plot_SD(bool parORref = false, bool GSPincl = false)
+void plot_SD(string level = "reco", bool GSPincl = false)
 {
+    // level can be "par", "ref", "reco"
+
     TreeAnalyzer TAb(true, true);
     TreeAnalyzer TAqcd(false, true);
     
@@ -16,14 +18,18 @@ void plot_SD(bool parORref = false, bool GSPincl = false)
     }
 
     // Set analysis level
-    if (parORref) {
+    if (level == "par") {
         TAb.SetAnalysisLevelParton();
         TAqcd.SetAnalysisLevelParton();
         foutname += "_par.root";
-    } else {
+    } else if (level == "ref") {
         TAb.SetAnalysisLevelTruth();
         TAqcd.SetAnalysisLevelTruth();
         foutname += "_ref.root";
+    } else if (level == "reco") {
+        TAb.SetAnalysisLevelReco();
+        TAqcd.SetAnalysisLevelReco();
+        foutname += "_reco.root";
     }
 
     // ln(1/rg)
@@ -91,8 +97,11 @@ void plot_SD(bool parORref = false, bool GSPincl = false)
                 hB_rgkt->Fill(logrg, logkt, TAb.jetpt[j], TAb.weight);
             }
 
-            // Fill dynKt histos with -1 when parORref = true or when !refIsHardest
-            if (parORref || (!TAb.refIsHardest[j])) { 
+            // Fill dynKt histos with -1 when level == "par" OR splitting is not hardest
+            bool dynKt_ref = (level == "ref") && (TAb.refIsHardest[j]);
+            bool dynKt_reco = (level == "reco") && (TAb.jtIsHardest[j]);
+            
+            if ((!dynKt_ref) && (!dynKt_reco)) { 
                 logrg = -1;
                 logkt = -10;
             }
@@ -144,8 +153,11 @@ void plot_SD(bool parORref = false, bool GSPincl = false)
                 hL_rgkt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
             }
 
-            // Fill dynKt histos with -1 when parORref = true or when !refIsHardest
-            if (parORref || (!TAqcd.refIsHardest[j])) { 
+            // Fill dynKt histos with -1 when level == "par" OR splitting is not hardest
+            bool dynKt_ref = (level == "ref") && (TAb.refIsHardest[j]);
+            bool dynKt_reco = (level == "reco") && (TAb.jtIsHardest[j]);
+            
+            if ((!dynKt_ref) && (!dynKt_reco)) {
                 logrg = -1;
                 logkt = -10;
             }
