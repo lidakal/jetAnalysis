@@ -313,5 +313,14 @@ void TreeAnalyzer::SetAnalysisLevelReco(bool activBranches = true)
     t->SetBranchAddress("sjt2Eta", subjet2eta);
     t->SetBranchAddress("sjt2Phi", subjet2phi);
 
-    // TODO activate branches
+    if (activBranches) {
+        t->SetBranchStatus("*", 0);
+        for (auto activeBranchName : {"nref", "jtpt", "jteta", "jtHadFlav", "jtIsHardest",
+                                      "jtNbHad", "jtNcHad",
+                                      "sjt1Pt", "sjt1Eta", "sjt1Phi", 
+                                      "sjt2Pt", "sjt2Eta", "sjt2Phi",
+                                      "weight"}) {
+            t->SetBranchStatus(activeBranchName, 1);
+        }
+    }
 }
