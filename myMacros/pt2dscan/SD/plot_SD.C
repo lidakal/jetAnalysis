@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void plot_SD(string level = "reco", bool GSPincl = false)
+void plot_SD(string level = "reco", bool GSPincl = true)
 {
     // level can be "par", "ref", "reco"
 
