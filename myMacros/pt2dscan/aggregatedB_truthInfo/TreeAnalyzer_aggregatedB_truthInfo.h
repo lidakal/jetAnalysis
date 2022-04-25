@@ -17,7 +17,7 @@ class TreeAnalyzer_aggregatedB_truthInfo : public TreeAnalyzer
 
 TreeAnalyzer_aggregatedB_truthInfo::TreeAnalyzer_aggregatedB_truthInfo(bool init = true)
 {    
-    string path_bJet = "/data_CMS/cms/lkalipol//bJet2022/aggregatedB_truthInfo/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/merged_HiForestAOD.root";
     fin = new TFile(path_bJet.c_str());
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");

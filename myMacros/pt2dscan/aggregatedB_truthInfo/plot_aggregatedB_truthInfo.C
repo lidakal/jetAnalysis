@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void plot_aggregatedB_truthInfo(bool parORreco = false, bool GSPincl = true)
+void plot_aggregatedB_truthInfo(bool parORreco = true, bool GSPincl = true)
 {
     cout << "Running with options: " << endl;
     cout << "parORreco : " << parORreco << endl;

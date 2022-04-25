@@ -84,16 +84,16 @@ void draw_aggregatedB_truthInfo(bool GSPincl = true)
         info_par->AddText("parton level");
         
         TPaveText *info_reco = (TPaveText *) info->Clone();
-        info_reco->AddText("hadron level");
+        info_reco->AddText("reco level");
         
         TPaveText *info_reco_dynKt = (TPaveText *) info->Clone();
-        info_reco_dynKt->AddText("hadron level, dynKt");
+        info_reco_dynKt->AddText("reco level, dynKt");
         
         TPaveText *info_ratio = (TPaveText *) info->Clone();
-        info_ratio->AddText("hadron / parton ratio");
+        info_ratio->AddText("reco / parton ratio");
         
         TPaveText *info_ratio_dynKt = (TPaveText *) info->Clone();
-        info_ratio_dynKt->AddText("hadron / parton ratio, dynKt");
+        info_ratio_dynKt->AddText("reco / parton ratio, dynKt");
         
         TPaveText *gsptxt = new TPaveText(0.2, 0.25, 0.35, 0.4, "ndc");
         gsptxt->SetFillColor(0);
