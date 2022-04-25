@@ -13,7 +13,7 @@
 
 using namespace std;
 
-void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
+void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = false)
 {
     /* Only charged SJ */
     chargedSJ = true;
