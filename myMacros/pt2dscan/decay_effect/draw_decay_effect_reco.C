@@ -13,7 +13,7 @@
 
 using namespace std;
 
-void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = false)
+void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
 {
     /* Only charged SJ */
     chargedSJ = true;
@@ -167,23 +167,28 @@ void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = false)
         TPaveText *info_undecayed_dynKt = (TPaveText *) info_undecayed->Clone();
         TPaveText *info_ratio_dynKt = (TPaveText *) info_ratio->Clone();
 
-        string level = "reco level";
-
+	string level_decayed = "hadron level";
+        string level_undecayed = "reco level";
+	string level_ratio = "hadron / reco level";
         
         if (!GSPincl) { 
-            level += ", noGSP";
+            level_decayed += ", noGSP";
+	    level_undecayed += ", noGSP";
+	    level_ratio += ", noGSP";
         }
         
         
-        string level_dynKt = level + ", dynKt";
+        string level_decayed_dynKt = level_decayed + ", dynKt";
+	string level_undecayed_dynKt = level_undecayed + ", dynKt";
+	string level_ratio_dynKt = level_ratio + ", dynKt";
 
-        info_decayed->AddText(level.c_str());
-        info_undecayed->AddText(level.c_str());
-        info_ratio->AddText(level.c_str());
+        info_decayed->AddText(level_decayed.c_str());
+        info_undecayed->AddText(level_undecayed.c_str());
+        info_ratio->AddText(level_ratio.c_str());
 
-        info_decayed_dynKt->AddText(level_dynKt.c_str());
-        info_undecayed_dynKt->AddText(level_dynKt.c_str());
-        info_ratio_dynKt->AddText(level_dynKt.c_str());
+        info_decayed_dynKt->AddText(level_decayed_dynKt.c_str());
+        info_undecayed_dynKt->AddText(level_undecayed_dynKt.c_str());
+        info_ratio_dynKt->AddText(level_ratio_dynKt.c_str());
 
         // c : decayed, undecayed
         Float_t zmin = 0.;
