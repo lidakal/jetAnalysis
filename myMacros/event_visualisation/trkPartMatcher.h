@@ -8,7 +8,7 @@ class trkPartMatcher : public TreeAnalyzer
         TTree *hi;
         TTree *matches;
 
-        trkPartMatcher(std::string filename = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/merged_HiForest.root", bool init = true);
+        trkPartMatcher(std::string filename = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/merged_HiForestAOD.root", bool init = true);
         void InitHi();
         void matchTrkGenPart(double ptCut = 1.);
         
@@ -27,7 +27,6 @@ trkPartMatcher::trkPartMatcher(std::string filename = "/data_CMS/cms/kalipoliti/
     fin = new TFile(filename.c_str());
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
-    t->AddFriend("hi=hiEvtAnalyzer/HiTree");
 
     if (init) {
         Init();
