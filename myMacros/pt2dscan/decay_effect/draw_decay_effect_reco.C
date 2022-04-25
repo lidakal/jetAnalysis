@@ -13,9 +13,10 @@
 
 using namespace std;
 
-void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
+void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
 {
     /* Only charged SJ */
+    chargedSJ = true;
 
     cout << "Running with options : " << endl;
     cout << "chargedSJ : " << chargedSJ << endl;
@@ -146,8 +147,8 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
 
         //if (chargedSJ) {
             info_decayed->AddText("chargedSJ b-jets");
-            info_undecayed->AddText("chargedSJ_partialB b-jets");
-            info_ratio->AddText("ratio chargedSJ / chargedSJ_partialB b-jets");
+            info_undecayed->AddText("aggregatedB_truthInfo b-jets");
+            info_ratio->AddText("ratio chargedSJ / aggregatedB_truthInfo b-jets");
         //} else {
         //    info_decayed->AddText("SD b-jets");
         //    info_undecayed->AddText("fullB b-jets");
@@ -166,7 +167,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
         TPaveText *info_undecayed_dynKt = (TPaveText *) info_undecayed->Clone();
         TPaveText *info_ratio_dynKt = (TPaveText *) info_ratio->Clone();
 
-        string level = "hadron level";
+        string level = "reco level";
 
         
         if (!GSPincl) { 
@@ -186,7 +187,7 @@ void draw_decay_effect(bool chargedSJ = true, bool GSPincl = true)
 
         // c : decayed, undecayed
         Float_t zmin = 0.;
-        Float_t zmax = 0.4;
+        Float_t zmax = 0.3;
         
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
