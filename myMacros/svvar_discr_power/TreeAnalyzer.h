@@ -11,8 +11,9 @@ class TreeAnalyzer
         // Class attributes
         TFile *fin; 
         TTree *t;
-    
-        Float_t     weight; 
+        TTree *HiTree;
+        TTree *hi;
+     
         Long64_t    nentries;
 
         // t tree leaves
@@ -113,6 +114,23 @@ class TreeAnalyzer
         Float_t         psjt2Eta[9];
         Float_t         psjt2Phi[9];
 
+        // HiTree tree leaves
+        UInt_t          run;
+        ULong64_t       evt;
+        UInt_t          lumi;
+        Float_t         vx;
+        Float_t         vy;
+        Float_t         vz;
+        Float_t         pthat;
+        Float_t         weight; 
+
+        // hi tree leaves
+        Int_t           mult;
+        vector<float>   pt;
+        vector<float>   eta;
+        vector<float>   phi;
+        vector<int>     pdg;
+        vector<int>     sta;
 
         // Fat jet properties
         Int_t           njet;
@@ -131,7 +149,7 @@ class TreeAnalyzer
         Float_t         subjet2phi[30];
 
         // Constructors
-        TreeAnalyzer(bool bJetORqcd = true, bool init = true);
+        TreeAnalyzer(string, bool);
     
         // Class methods
         void Init();
@@ -140,19 +158,13 @@ class TreeAnalyzer
         void SetAnalysisLevelReco(bool activBranches = true);
 };
 
-TreeAnalyzer::TreeAnalyzer(bool bJetORqcd = true, bool init = true) 
+TreeAnalyzer::TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/merged_HiForestAOD.root", bool init = true) 
 {
-    string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
-    
-    if (bJetORqcd) {
-        fin = new TFile(path_bJet.c_str());
-    } else {
-        fin = new TFile(path_qcd.c_str());
-    }
+    fin = new TFile(fname.c_str());
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
-    t->AddFriend("hi=hiEvtAnalyzer/HiTree");
+    HiTree = (TTree *) fin->Get("hiEvtAnalyzer/HiTree");
+    hi = (TTree *) fin->Get("bDecayAna/hi");
 
     if (init) {
         Init();
@@ -261,7 +273,23 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("psjt2Eta",psjt2Eta);
     t->SetBranchAddress("psjt2Phi",psjt2Phi);
 
-    t->SetBranchAddress("weight", &weight);
+    // Set branch addresses for HiTree tree
+    HiTree->SetBranchAddress("run", &run);
+    HiTree->SetBranchAddress("evt", &evt);
+    HiTree->SetBranchAddress("lumi", &lumi);
+    HiTree->SetBranchAddress("vx", &vx);
+    HiTree->SetBranchAddress("vy", &vy);
+    HiTree->SetBranchAddress("vz", &vz);
+    HiTree->SetBranchAddress("pthat", &pthat);
+    HiTree->SetBranchAddress("weight", &weight);
+
+    // Set branch addressses for hi tree
+    hi->SetBranchAddress("mult", &mult);
+    hi->SetBranchAddress("pt", &pt);
+    hi->SetBranchAddress("eta", &eta);
+    hi->SetBranchAddress("phi", &phi);
+    hi->SetBranchAddress("pdg", &pdg);
+    hi->SetBranchAddress("sta", &sta);
     
     nentries = t->GetEntries();
 }
