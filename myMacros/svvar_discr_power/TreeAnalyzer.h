@@ -155,6 +155,7 @@ class TreeAnalyzer
     
         // Class methods
         void Init();
+        void GetEntry(Long64_t ient);
         void SetAnalysisLevelParton(bool activBranches = true);
         void SetAnalysisLevelTruth(bool activBranches = true);
         void SetAnalysisLevelReco(bool activBranches = true);
@@ -294,6 +295,13 @@ void TreeAnalyzer::Init()
     hi->SetBranchAddress("sta", &sta);
     
     nentries = t->GetEntries();
+}
+
+void TreeAnalyzer::GetEntry(Long64_t ient)
+{
+    t->GetEntry(ient);
+    hi->GetEntry(ient);
+    HiTree->GetEntry(ient);
 }
 
 void TreeAnalyzer::SetAnalysisLevelParton(bool activBranches = true)

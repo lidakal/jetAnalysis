@@ -77,7 +77,7 @@ def genPartMatching(finname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/me
                 if (dR < dRmin):
                     dRmin = dR
                     partMatchID = imult
-            genPartMatchID[itrack + itrackOffset] = partMatchID
+            genPartMatchID[itrack] = partMatchID
         matches.Fill()
     print("Writing in file ", foutname)
     matches.Write("matches")
