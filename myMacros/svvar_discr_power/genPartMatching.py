@@ -35,7 +35,7 @@ def genPartMatching(finname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/me
     for ient in range(nentries):
         ient = int(ient)
         
-        if (ient > 10): break
+        #if (ient > 10): break
             
         # Print progress
         if (ient % 100000 == 0): 
@@ -77,7 +77,7 @@ def genPartMatching(finname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/me
                 if (dR < dRmin):
                     dRmin = dR
                     partMatchID = imult
-            genPartMatchID[itrack] = partMatchID
+            genPartMatchID[itrack + itrackOffset] = partMatchID
         matches.Fill()
     print("Writing in file ", foutname)
     matches.Write("matches")
