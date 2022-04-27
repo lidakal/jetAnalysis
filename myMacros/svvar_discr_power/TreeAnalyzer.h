@@ -63,15 +63,15 @@ class TreeAnalyzer
         Float_t         jtDiscDeepFlavourC[8];
         Float_t         jtDiscProb[8];
         Int_t           nsvtx[8];
-        vector<vector<int> > svtxntrk;
-        vector<vector<float> > svtxdls;
-        vector<vector<float> > svtxdls2d;
-        vector<vector<float> > svtxm;
-        vector<vector<float> > svtxpt;
-        vector<vector<float> > svtxmcorr;
-        vector<vector<float> > svtxTrPt;
-        vector<vector<float> > svtxTrEta;
-        vector<vector<float> > svtxTrPhi;
+        vector<vector<int> > *svtxntrk = 0;
+        vector<vector<float> > *svtxdls = 0;
+        vector<vector<float> > *svtxdls2d = 0;
+        vector<vector<float> > *svtxm = 0;
+        vector<vector<float> > *svtxpt = 0;
+        vector<vector<float> > *svtxmcorr = 0;
+        vector<vector<float> > *svtxTrPt = 0;
+        vector<vector<float> > *svtxTrEta = 0;
+        vector<vector<float> > *svtxTrPhi = 0;
         Int_t           nselIPtrk[8];
         Int_t           nIP;
         Float_t         ipPt[64];
@@ -128,11 +128,11 @@ class TreeAnalyzer
 
         // hi tree leaves
         Int_t           mult;
-        vector<float>*  pt = 0;
-        vector<float>   eta;
-        vector<float>   phi;
-        vector<int>     pdg;
-        vector<int>     sta;
+        vector<float>   *pt = 0;
+        vector<float>   *eta = 0;
+        vector<float>   *phi = 0;
+        vector<int>     *pdg = 0;
+        vector<int>     *sta = 0;
 
         // Fat jet properties
         Int_t           njet;
