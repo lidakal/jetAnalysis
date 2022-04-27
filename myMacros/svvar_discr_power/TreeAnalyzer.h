@@ -1,4 +1,6 @@
-// TreeAnalyzer class for .../SD/mergedHiForestAOD.root
+// TreeAnalyzer class for ...root
+
+#include <vector>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -126,7 +128,7 @@ class TreeAnalyzer
 
         // hi tree leaves
         Int_t           mult;
-        vector<float>   pt;
+        vector<float>*  pt = 0;
         vector<float>   eta;
         vector<float>   phi;
         vector<int>     pdg;
@@ -149,7 +151,7 @@ class TreeAnalyzer
         Float_t         subjet2phi[30];
 
         // Constructors
-        TreeAnalyzer(string, bool);
+        TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/merged_HiForestAOD.root", bool init = true);
     
         // Class methods
         void Init();
