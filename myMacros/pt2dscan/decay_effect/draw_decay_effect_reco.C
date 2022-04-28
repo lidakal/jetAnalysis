@@ -35,12 +35,14 @@ void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
         //decayed_fname += "~/rootFiles/SD_ref.root";
         //undecayed_fname += "~/rootFiles/mergedB_ref.root";
         charged_decayed_fname += "~/rootFiles/chargedSJ_ref.root";
-        charged_undecayed_fname += "~/rootFiles/aggregatedB_truthInfo_reco.root";    
+        //charged_undecayed_fname += "~/rootFiles/aggregatedB_truthInfo_reco.root";    
+        charged_undecayed_fname += "~/rootFiles/chargedSJ_mergedSVtracks_reco.root";
     } else {
         //decayed_fname += "~/rootFiles/SD_noGSP_ref.root";
         //undecayed_fname += "~/rootFiles/mergedB_noGSP_ref.root";
         charged_decayed_fname += "~/rootFiles/chargedSJ_noGSP_ref.root";
-        charged_undecayed_fname += "~/rootFiles/aggregatedB_truthInfo_noGSP_reco.root";    
+        //charged_undecayed_fname += "~/rootFiles/aggregatedB_truthInfo_noGSP_reco.root"; 
+        charged_undecayed_fname += "~/rootFiles/chargedSJ_mergedSVtracks_noGSP_reco.root";    
         savename_c += "noGSP_";
     }
 
@@ -52,7 +54,7 @@ void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
     //if (chargedSJ) {
         fin_decayed = new TFile(charged_decayed_fname.c_str());
         fin_undecayed = new TFile(charged_undecayed_fname.c_str());
-        savename_c += "chargedSJ_dec_vs_nodec";
+        savename_c += "chargedSJ_dec_vs_nodec_reco_sv";
     //} else {
     //    fin_decayed = new TFile(decayed_fname.c_str());
     //    fin_undecayed = new TFile(undecayed_fname.c_str());
