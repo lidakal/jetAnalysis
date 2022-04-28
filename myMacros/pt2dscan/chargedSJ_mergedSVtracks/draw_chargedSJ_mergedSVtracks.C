@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void draw_chargedSJ_mergedSVtracks(bool GSPincl = true)
+void draw_chargedSJ_mergedSVtracks(bool GSPincl = false)
 {      
     string histfile_reco = "";
     string histfile_par = "";

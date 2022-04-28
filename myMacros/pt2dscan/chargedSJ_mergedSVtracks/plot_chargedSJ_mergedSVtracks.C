@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void plot_chargedSJ_mergedSVtracks(bool parORreco = false, bool GSPincl = false)
+void plot_chargedSJ_mergedSVtracks(bool parORreco = true, bool GSPincl = false)
 {
     cout << "Running with options: " << endl;
     cout << "parORreco : " << parORreco << endl;
