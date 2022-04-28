@@ -206,7 +206,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("jtDiscDeepFlavourC",jtDiscDeepFlavourC);
     t->SetBranchAddress("jtDiscProb",jtDiscProb);
     t->SetBranchAddress("nsvtx",nsvtx);
-    
+    /*
     t->SetBranchAddress("svtxntrk",&svtxntrk);
     t->SetBranchAddress("svtxdls",&svtxdls);
     t->SetBranchAddress("svtxdls2d",&svtxdls2d);
@@ -216,7 +216,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("svtxTrPt",&svtxTrPt);
     t->SetBranchAddress("svtxTrEta",&svtxTrEta);
     t->SetBranchAddress("svtxTrPhi",&svtxTrPhi);
-    
+    */
     t->SetBranchAddress("nselIPtrk",nselIPtrk);
     t->SetBranchAddress("nIP",&nIP);
     t->SetBranchAddress("ipPt",ipPt);
