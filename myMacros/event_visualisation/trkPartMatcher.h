@@ -27,6 +27,9 @@ trkPartMatcher::trkPartMatcher(std::string filename = "/data_CMS/cms/kalipoliti/
     fin = new TFile(filename.c_str());
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
+    t->AddFriend("HiTree=hiEvtAnalyzer/HiTree");
+
+    hi = (TTree *) fin->Get("bDecayAna/hi");
 
     if (init) {
         Init();

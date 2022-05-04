@@ -63,6 +63,7 @@ class TreeAnalyzer
         Float_t         jtDiscDeepFlavourC[8];
         Float_t         jtDiscProb[8];
         Int_t           nsvtx[8];
+	/*	
         vector<vector<int> > *svtxntrk = 0;
         vector<vector<float> > *svtxdls = 0;
         vector<vector<float> > *svtxdls2d = 0;
@@ -72,6 +73,7 @@ class TreeAnalyzer
         vector<vector<float> > *svtxTrPt = 0;
         vector<vector<float> > *svtxTrEta = 0;
         vector<vector<float> > *svtxTrPhi = 0;
+	*/
         Int_t           nselIPtrk[8];
         Int_t           nIP;
         Float_t         ipPt[64];
@@ -125,7 +127,7 @@ class TreeAnalyzer
         Float_t         vz;
         Float_t         pthat;
         Float_t         weight; 
-
+	
         // hi tree leaves
         Int_t           mult;
         vector<float>   *pt = 0;
@@ -221,7 +223,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("jtDiscDeepFlavourC",jtDiscDeepFlavourC);
     t->SetBranchAddress("jtDiscProb",jtDiscProb);
     t->SetBranchAddress("nsvtx",nsvtx);
-    
+    /*
     t->SetBranchAddress("svtxntrk",&svtxntrk);
     t->SetBranchAddress("svtxdls",&svtxdls);
     t->SetBranchAddress("svtxdls2d",&svtxdls2d);
@@ -231,7 +233,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("svtxTrPt",&svtxTrPt);
     t->SetBranchAddress("svtxTrEta",&svtxTrEta);
     t->SetBranchAddress("svtxTrPhi",&svtxTrPhi);
-    
+    */
     t->SetBranchAddress("nselIPtrk",nselIPtrk);
     t->SetBranchAddress("nIP",&nIP);
     t->SetBranchAddress("ipPt",ipPt);

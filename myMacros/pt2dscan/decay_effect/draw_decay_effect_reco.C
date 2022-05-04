@@ -13,57 +13,47 @@
 
 using namespace std;
 
-void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
+void draw_decay_effect_reco(bool GSPincl = true)
 {
-    /* Only charged SJ */
-    chargedSJ = true;
-
     cout << "Running with options : " << endl;
-    cout << "chargedSJ : " << chargedSJ << endl;
     cout << "GSPincl : " << GSPincl << endl;
-    
     cout << "\n" << endl;
     
-    //string decayed_fname = "";
-    //string undecayed_fname = "";
-    string charged_decayed_fname = "";
-    string charged_undecayed_fname = "";    
+    string gspText = GSPincl ? "" : "_noGSP";
 
-    string savename_c = "";
+    // Reco only
+    string decayedName = "chargedSJ";
+    string undecayedName = "chargedSJ_mergedSVtracks";
+    string decayed_fname = "~/rootFiles/" + decayedName + gspTxt + "_ref.root";
+    string undecayed_fname = "~/rootFiles/" + undecayedName + gspTxt + "_reco.root";
+    
+    // Reco with truth info
+    //string decayedName = "chargedSJ";
+    //string undecayedName = "aggregatedB_truthInfo";
+    //string decayed_fname = "~/rootFiles/" + decayedName + gspTxt + "_ref.root";
+    //string undecayed_fname = "~/rootFiles/" + undecayedName + gspTxt + "_reco.root";
 
-    if (GSPincl) {
-        //decayed_fname += "~/rootFiles/SD_ref.root";
-        //undecayed_fname += "~/rootFiles/mergedB_ref.root";
-        charged_decayed_fname += "~/rootFiles/chargedSJ_ref.root";
-        //charged_undecayed_fname += "~/rootFiles/aggregatedB_truthInfo_reco.root";    
-        charged_undecayed_fname += "~/rootFiles/chargedSJ_mergedSVtracks_reco.root";
-    } else {
-        //decayed_fname += "~/rootFiles/SD_noGSP_ref.root";
-        //undecayed_fname += "~/rootFiles/mergedB_noGSP_ref.root";
-        charged_decayed_fname += "~/rootFiles/chargedSJ_noGSP_ref.root";
-        //charged_undecayed_fname += "~/rootFiles/aggregatedB_truthInfo_noGSP_reco.root"; 
-        charged_undecayed_fname += "~/rootFiles/chargedSJ_mergedSVtracks_noGSP_reco.root";    
-        savename_c += "noGSP_";
-    }
+    // Truth level - not charged
+    //string decayedName = "SD";
+    //string undecayedName = "mergedB";
+    //string decayed_fname = "~/rootFiles/" + decayedName + gspTxt + "_ref.root";
+    //string undecayed_fname = "~/rootFiles/" + undecayedName + "_ref.root";
 
+    // Truth level - charged
+    //string decayedName = "chargedSJ";
+    //string undecayedName = "chargedSJ_partialB";
+    //string decayed_fname = "~/rootFiles/" + decayedName + gspTxt + "_ref.root";
+    //string undecayed_fname = "~/rootFiles/" + undecayedName + "_ref.root";
 
-    TFile *fin_decayed;
-    TFile *fin_undecayed;
-
-    // Load ref 3D histograms -- X = rg, Y = kt, Z = pt 
-    //if (chargedSJ) {
-        fin_decayed = new TFile(charged_decayed_fname.c_str());
-        fin_undecayed = new TFile(charged_undecayed_fname.c_str());
-        savename_c += "chargedSJ_dec_vs_nodec_reco_sv";
-    //} else {
-    //    fin_decayed = new TFile(decayed_fname.c_str());
-    //    fin_undecayed = new TFile(undecayed_fname.c_str());
-    //    savename_c += "SD_dec_vs_nodec_mergedB";
-    //}
-
+    string savename_c = undecayedName + gspTxt;
     string savename_c_dynKt = savename_c + "_dynKt.png";
-    string savename_c_ratio = savename_c + "_ratio";
+    string savename_c_ratio = savename_c + "_ratio"; // not .png because it is used in savename_c_ratio_large
     savename_c += ".png";
+
+    
+    // Load ref 3D histograms -- X = rg, Y = kt, Z = pt 
+    TFile *fin_decayed = new TFile(decayed_fname.c_str());
+    TFile *fin_undecayed = new TFile(undecayed_fname.c_str());
 
     // decayed = normal final state particles
     TH3D *h3d_decayed = (TH3D *) fin_decayed->Get("hB_rgkt")->Clone();
@@ -97,8 +87,6 @@ void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
     
     TCanvas *c_ratio = new TCanvas("c_ratio", "c_ratio", 1800, 1000);
     c_ratio->Divide(npt, 2); // 2 for decayed/undecayed, decayed/undecayed with dynKt
-    
-    
 
     for (int i = 0; i < npt; i++) {
         Float_t ptmin = ptrange[i][0];
@@ -147,15 +135,9 @@ void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
             gsptxt->SetTextSize(20);
         }
 
-        //if (chargedSJ) {
-            info_decayed->AddText("chargedSJ b-jets");
-            info_undecayed->AddText("aggregatedB_truthInfo b-jets");
-            info_ratio->AddText("ratio chargedSJ / aggregatedB_truthInfo b-jets");
-        //} else {
-        //    info_decayed->AddText("SD b-jets");
-        //    info_undecayed->AddText("fullB b-jets");
-        //    info_ratio->AddText("ratio SD / fullB b-jets");
-        //}
+	info_decayed->AddText((decayedName + " b-jets").c_str());
+	info_undecayed->AddText((undecayedName + " b-jets").c_str());
+	info_ratio->AddText(("ratio " + decayedName + " / " + undecayedName + " b-jets").c_str());
 
         info_decayed->AddLine(0., 0.7, 1., 0.7);
         info_undecayed->AddLine(0., 0.7, 1., 0.7);
@@ -273,7 +255,7 @@ void draw_decay_effect_reco(bool chargedSJ = true, bool GSPincl = true)
 
         h2d_ratio_dynKt->Draw("colz");
         line->Draw();
-        info_ratio->Draw();
+        info_ratio_dynKt->Draw();
         gsptxt->Draw();
 
         /*

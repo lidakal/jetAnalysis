@@ -23,7 +23,7 @@ def genPartMatching(finname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/me
     matches = TTree("matches", "tree with matches")
     
     # Add the new branches to the matches
-    nIPmax = 100
+    nIPmax = 20000
     nIPcopy = array("i", [0])
     matches.Branch("nIPcopy", nIPcopy, "nIPcopy/I")
     
@@ -38,7 +38,7 @@ def genPartMatching(finname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/me
         #if (ient > 10): break
             
         # Print progress
-        if (ient % 100000 == 0): 
+        if (ient % 1000 == 0): 
             print("Entry: ", ient)
 
         t.GetEntry(ient)
