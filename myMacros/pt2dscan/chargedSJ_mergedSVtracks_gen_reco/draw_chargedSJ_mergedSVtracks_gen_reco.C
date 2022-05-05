@@ -48,13 +48,17 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
     Float_t *ptrange[npt] = {lowpt, midpt, highpt};
     
     TCanvas *c = new TCanvas("c", "c", 1800, 1000);
-    c->Divide(npt, 2); // 2 for parton, hadron
+    c->Divide(npt, 2); // 2 for truth, reco
 
     TCanvas *c_dynKt = new TCanvas("c_dynKt", "c_dynKt", 1800, 1000);
-    c_dynKt->Divide(npt, 2); // 2 for parton, hadron dynKt
+    c_dynKt->Divide(npt, 2); // 2 for truth dynKt, reco dynKt
 
     TCanvas *c_ratio = new TCanvas("c_ratio", "c_ratio", 1800, 1000);
-    c_ratio->Divide(npt, 2); // 2 for hadron/parton, hadron dynKt/parton
+    c_ratio->Divide(npt, 2); // 2 for  reco / truth, reco dynKt / truth dynKt
+
+    // Create / Draw 1D histograms - Projections
+    TCanvas *crg = new TCanvas("crg", "crg", 1800, 600);
+    crg->Divide(npt, 2); // 2 for truth + reco, truth dynKt + reco dynKt
 
     for (int i = 0; i < npt; i++) {
         Float_t ptmin = ptrange[i][0];
@@ -193,11 +197,52 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
         line->Draw();
         info_ratio_dynKt->Draw();
         gsptxt->Draw();
+
+        // 1D projections
+        TLegend leg = new TLegend(0.6, 0.7, 0.9, 0.9);
+        leg->SetBorderSize(0);
+        leg->SetFillStyle(0);
+
+        TLegend leg_dynKt = new TLegend(0.6, 0.7, 0.9, 0.9);
+        leg_dynKt->SetBorderSize(0);
+        leg_dynKt->SetFillStyle(0);
+        
+
+        TH1D *h1d_ref = (TH2D *) h3d_ref_clone->Project3D(Form("x%d_ref", i));
+        TH1D *h1d_ref_dynKt = (TH2D *) h3d_ref_dynKt_clone->Project3D(Form("x%d_ref", i));
+        TH1D *h1d_reco = (TH2D *) h3d_reco_clone->Project3D(Form("x%d_reco", i));
+        TH1D *h1d_reco_dynKt = (TH2D *) h3d_reco_dynKt_clone->Project3D(Form("x%d_reco", i));
+
+        normalise_histo(h1d_ref);
+        normalise_histo(h1d_ref_dynKt);
+        normalise_histo(h1d_reco);
+        normalise_histo(h1d_reco_dynKt);
+
+        leg->AddEntry(h1d_ref, "truth", "pl");
+        leg_dynKt->AddEntry(h1d_ref_dynKt, "truth dynKt", "pl");
+        leg->AddEntry(h1d_reco, "reco", "pl");
+        leg_dynKt->AddEntry(h1d_reco_dynKt, "reco dynKt", "pl");
+
+        crg->cd(i + 1);
+        crg->cd(i + 1)->SetGrid();
+
+        h1d_ref->Draw();
+        h1d_reco->Draw("same");
+        leg->Draw();
+
+        crg->cd(i + 1 + npt);
+        crg->cd(i + 1 + npt)->SetGrid();
+
+        h1d_ref_dynKt->Draw();
+        h1d_reco_dynKt->Draw("same");
+        leg_dynKt->Draw();
+
     }
 
     c->Draw();
     c_dynKt->Draw();
     c_ratio->Draw();
+    crg->Draw();
     
     string savename_c = "chargedSJ_mergedSVtracks_gen_reco_bjets_ref_vs_reco";
     if (!GSPincl) {
