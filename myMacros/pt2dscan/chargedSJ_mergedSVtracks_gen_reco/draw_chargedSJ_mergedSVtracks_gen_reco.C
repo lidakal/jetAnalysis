@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
+void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = false)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
 
@@ -228,7 +228,7 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
         normalise_histo(h1d_ref_dynKt);
         normalise_histo(h1d_reco);
         normalise_histo(h1d_reco_dynKt);
-        normalise_histo(h2d_par);
+        normalise_histo(h1d_par);
 
         float ymax = std::max({h1d_ref->GetMaximum(), h1d_reco->GetMaximum(), 
                             h1d_ref_dynKt->GetMaximum(), h1d_reco_dynKt->GetMaximum(),

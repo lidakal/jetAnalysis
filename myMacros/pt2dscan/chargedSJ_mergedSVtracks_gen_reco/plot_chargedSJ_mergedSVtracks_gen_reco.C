@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void plot_chargedSJ_mergedSVtracks_gen_reco(string level = "reco", bool GSPincl = false)
+void plot_chargedSJ_mergedSVtracks_gen_reco(string level = "par", bool GSPincl = true)
 {
     cout << "Running with options: " << endl;
     cout << "level : " << level << endl;
