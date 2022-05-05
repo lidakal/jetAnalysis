@@ -4,7 +4,7 @@
 
 #include "TFile.h"
 #include "TTree.h"
-#include "../../TreeAnalyzer.h"
+#include "../TreeAnalyzer_pt2dscan.h"
 
 using namespace std;
 

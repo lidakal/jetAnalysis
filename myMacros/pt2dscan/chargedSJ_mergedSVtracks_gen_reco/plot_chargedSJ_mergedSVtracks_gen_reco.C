@@ -98,8 +98,8 @@ void plot_chargedSJ_mergedSVtracks_gen_reco(string level = "ref", bool GSPincl =
                 hB_rgkt->Fill(logrg, logkt, TAb.jetpt[j], TAb.weight);
             }
 
-            // Fill dynKt histos with -1 when level is parton or when !jtIsHardest
-            if (((level == "reco") && (!TAb.jtIsHardest[j])) || ((level == "ref") && (!TAb.refIsHardest)) || (level == "par")) { 
+            // Fill dynKt histos with -1 when level is parton or when !splitIsHardest
+            if ((level == "par") || (!TAb.splitIsHardest)) { 
                 logrg = -1;
                 logkt = -10;
             }
