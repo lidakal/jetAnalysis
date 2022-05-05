@@ -12,19 +12,11 @@ public :
 
    // Declaration of leaf types
    Int_t           mult;
-   std::vector<float>   *pt;
-   std::vector<float>   *eta;
-   std::vector<float>   *phi;
-   std::vector<int>     *pdg;
-   std::vector<int>     *sta;
-
-   // List of branches
-   TBranch        *b_mult;   
-   TBranch        *b_pt;  
-   TBranch        *b_eta;  
-   TBranch        *b_phi; 
-   TBranch        *b_pdg; 
-   TBranch        *b_sta; 
+   std::vector<float>   *pt = 0;
+   std::vector<float>   *eta = 0;
+   std::vector<float>   *phi = 0;
+   std::vector<int>     *pdg = 0;
+   std::vector<int>     *sta = 0;
 
    hi();
    hi(std::string fname, bool init = true);
@@ -55,7 +47,7 @@ void hi::Init(TTree *tree)
    // code, but the routine can be extended by the user if needed.
    // Init() will be called many times when running on PROOF
    // (once per file to be processed).
-
+   
    // Set object pointer
    pt = 0;
    eta = 0;
@@ -64,11 +56,11 @@ void hi::Init(TTree *tree)
    sta = 0;
    // Set branch addresses and branch pointers
 
-   tree->SetBranchAddress("mult", &mult, &b_mult);
-   tree->SetBranchAddress("pt", &pt, &b_pt);
-   tree->SetBranchAddress("eta", &eta, &b_eta);
-   tree->SetBranchAddress("phi", &phi, &b_phi);
-   tree->SetBranchAddress("pdg", &pdg, &b_pdg);
-   tree->SetBranchAddress("sta", &sta, &b_sta);
+   tree->SetBranchAddress("mult", &mult);
+   tree->SetBranchAddress("pt", &pt);
+   tree->SetBranchAddress("eta", &eta);
+   tree->SetBranchAddress("phi", &phi);
+   tree->SetBranchAddress("pdg", &pdg);
+   tree->SetBranchAddress("sta", &sta);
 }
 
