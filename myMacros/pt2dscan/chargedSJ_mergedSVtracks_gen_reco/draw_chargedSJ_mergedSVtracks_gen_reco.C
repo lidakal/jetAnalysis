@@ -18,13 +18,16 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
 
     string histfile_reco = "";
     string histfile_ref = "";
+    string histfile_par = "";
 
     if (GSPincl) {
         histfile_reco += "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_reco.root";
         histfile_ref += "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_ref.root";
+        histfile_par += "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_par.root";
     } else {
         histfile_reco += "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_reco.root";
         histfile_ref += "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_ref.root";
+        histfile_par += "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_par.root";
     }
 
     string xtitle = "ln(1/R_{g})";
@@ -39,6 +42,10 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
     TFile *fin_ref = new TFile(histfile_ref.c_str());
     TH3D *h3d_ref = (TH3D *) fin_ref->Get("hB_rgkt")->Clone();
     TH3D *h3d_ref_dynKt = (TH3D *) fin_ref->Get("hB_rgkt_dynKt")->Clone();
+
+    // Load par 3D histogram -- X = rg, Y = zg / kt, Z = pt 
+    TFile *fin_par = new TFile(histfile_par.c_str());
+    TH3D *h3d_par = (TH3D *) fin_par->Get("hB_rgkt")->Clone();
 
     // Create / Draw 2D histograms - Projections
     Float_t lowpt[2] = {50., 80.};
@@ -69,11 +76,13 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
         TH3D *h3d_reco_dynKt_clone = (TH3D *) h3d_reco_dynKt->Clone();
         TH3D *h3d_ref_clone = (TH3D *) h3d_ref->Clone();
         TH3D *h3d_ref_dynKt_clone = (TH3D *) h3d_ref_dynKt->Clone();
+        TH3D *h3d_par_clone = (TH3D *) h3d_par->Clone();
 
         h3d_reco_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
         h3d_reco_dynKt_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
         h3d_ref_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
         h3d_ref_dynKt_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
+        h3d_par_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
 
         TH2D *h2d_reco = (TH2D *) h3d_reco_clone->Project3D(Form("yx%d_reco", i)); 
         TH2D *h2d_reco_dynKt = (TH2D *) h3d_reco_dynKt_clone->Project3D(Form("yx%d_reco", i)); 
@@ -213,56 +222,66 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
         TH1D *h1d_ref_dynKt = (TH1D *) h3d_ref_dynKt_clone->Project3D(Form("x%d_ref", i));
         TH1D *h1d_reco = (TH1D *) h3d_reco_clone->Project3D(Form("x%d_reco", i));
         TH1D *h1d_reco_dynKt = (TH1D *) h3d_reco_dynKt_clone->Project3D(Form("x%d_reco", i));
+        TH1D *h1d_par = (TH1D *) h3d_par_clone->Project3D(Form("x%d_par", i));
 
         normalise_histo(h1d_ref);
         normalise_histo(h1d_ref_dynKt);
         normalise_histo(h1d_reco);
         normalise_histo(h1d_reco_dynKt);
+        normalise_histo(h2d_par);
 
-	float ymax = std::max({h1d_ref->GetMaximum(), h1d_reco->GetMaximum(), 
-	                       h1d_ref_dynKt->GetMaximum(), h1d_reco_dynKt->GetMaximum()});
-	ymax += 0.05;
+        float ymax = std::max({h1d_ref->GetMaximum(), h1d_reco->GetMaximum(), 
+                            h1d_ref_dynKt->GetMaximum(), h1d_reco_dynKt->GetMaximum(),
+                            h1d_par->GetMaximum()});
+        ymax += 0.05;
 
-	h1d_ref->GetYaxis()->SetRangeUser(0., ymax);
-	h1d_ref_dynKt->GetYaxis()->SetRangeUser(0., ymax);
-	h1d_reco->GetYaxis()->SetRangeUser(0., ymax);
-	h1d_reco_dynKt->GetYaxis()->SetRangeUser(0., ymax);
+        h1d_ref->GetYaxis()->SetRangeUser(0., ymax);
+        h1d_ref_dynKt->GetYaxis()->SetRangeUser(0., ymax);
+        h1d_reco->GetYaxis()->SetRangeUser(0., ymax);
+        h1d_reco_dynKt->GetYaxis()->SetRangeUser(0., ymax);
+        h1d_par->GetYaxis()->SetRangeUser(0., ymax);
 
-	string xtitle1d = "ln(1/R_{g})";
-	string ytitle1d = Form("1/N dN/d(ln(1/R_{g})) for jetpt in [%.0f, %.0f] GeV", ptmin, ptmax);
+        string xtitle1d = "ln(1/R_{g})";
+        string ytitle1d = Form("1/N dN/d(ln(1/R_{g})) for jetpt in [%.0f, %.0f] GeV", ptmin, ptmax);
 
-	set_axes_labels(h1d_ref, xtitle1d, ytitle1d);
-	set_axes_labels(h1d_ref_dynKt, xtitle1d, ytitle1d);
-	set_axes_labels(h1d_reco, xtitle1d, ytitle1d);
-	set_axes_labels(h1d_reco_dynKt, xtitle1d, ytitle1d);
+        set_axes_labels(h1d_ref, xtitle1d, ytitle1d);
+        set_axes_labels(h1d_ref_dynKt, xtitle1d, ytitle1d);
+        set_axes_labels(h1d_reco, xtitle1d, ytitle1d);
+        set_axes_labels(h1d_reco_dynKt, xtitle1d, ytitle1d);
+        set_axes_labels(h1d_par, xtitle1d, ytitle1d);
 
-	h1d_ref->SetLineColor(1);
-	h1d_ref_dynKt->SetLineColor(1);
-	
-	h1d_reco->SetLineColor(2);
-	h1d_reco_dynKt->SetLineColor(2);
+        h1d_ref->SetLineColor(1);
+        h1d_ref_dynKt->SetLineColor(1);
+        
+        h1d_reco->SetLineColor(2);
+        h1d_reco_dynKt->SetLineColor(2);
+
+        h1d_par->SetLineColor(3);
 
         leg->AddEntry(h1d_ref, "truth", "l");
         leg_dynKt->AddEntry(h1d_ref_dynKt, "truth dynKt", "l");
         leg->AddEntry(h1d_reco, "reco", "l");
         leg_dynKt->AddEntry(h1d_reco_dynKt, "reco dynKt", "l");
+        leg->AddEntry(h1d_par, "parton", "l");
+        leg_dynKt->AddEntry(h1d_par, "parton", "l");
 
         crg->cd(i + 1);
         crg->cd(i + 1)->SetGrid();
 
         h1d_ref->Draw("hist");
         h1d_reco->Draw("hist same");
+        h1d_par->Draw("hist same");
         leg->Draw();
-	gsptxt->Draw();
+        gsptxt->Draw();
 
         crg->cd(i + 1 + npt);
         crg->cd(i + 1 + npt)->SetGrid();
 
         h1d_ref_dynKt->Draw("hist");
         h1d_reco_dynKt->Draw("hist same");
+        h1d_par->Draw("hist same");
         leg_dynKt->Draw();
-	gsptxt->Draw();
-
+        gsptxt->Draw();
     }
 
     c->Draw();

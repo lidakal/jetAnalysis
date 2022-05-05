@@ -1,5 +1,8 @@
 // Useful methods of processes that come up often
 
+#include "TH1D.h"
+#include "TH2D.h"
+
 void normalise_histo(TH1D *h)
 {
     // Normalise the histogram
