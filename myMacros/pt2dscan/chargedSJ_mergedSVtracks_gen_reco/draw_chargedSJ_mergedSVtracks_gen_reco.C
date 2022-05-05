@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = false)
+void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
 
@@ -96,7 +96,7 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = false)
         info_reco_dynKt->AddText("reco level, dynKt");
 
         TPaveText *info_ref_dynKt = (TPaveText *) info->Clone();
-        info_ref_dynKt->AddText("ref level, dynKt");
+        info_ref_dynKt->AddText("truth level, dynKt");
         
         TPaveText *info_ratio = (TPaveText *) info->Clone();
         info_ratio->AddText("reco / truth ratio");
@@ -145,7 +145,7 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = false)
         c_dynKt->cd(i + 1);
         c_dynKt->cd(i + 1)->SetGrid();
         TH2D *h2d_ref_dynKt_clone = (TH2D *) h2d_ref_dynKt->Clone();
-        set_zrange(h2d_ref_clone, zmin_dynKt, zmax_dynKt);
+        set_zrange(h2d_ref_dynKt_clone, zmin_dynKt, zmax_dynKt);
 
         h2d_ref_dynKt_clone->Draw("colz");
         line->Draw();
