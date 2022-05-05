@@ -1,3 +1,4 @@
+
 #include "TH3D.h"
 #include "TH2D.h"
 #include "TFile.h"
@@ -57,7 +58,7 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
     c_ratio->Divide(npt, 2); // 2 for  reco / truth, reco dynKt / truth dynKt
 
     // Create / Draw 1D histograms - Projections
-    TCanvas *crg = new TCanvas("crg", "crg", 1800, 600);
+    TCanvas *crg = new TCanvas("crg", "crg", 1800, 1000);
     crg->Divide(npt, 2); // 2 for truth + reco, truth dynKt + reco dynKt
 
     for (int i = 0; i < npt; i++) {
@@ -199,43 +200,68 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
         gsptxt->Draw();
 
         // 1D projections
-        TLegend leg = new TLegend(0.6, 0.7, 0.9, 0.9);
+        TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.9);
         leg->SetBorderSize(0);
         leg->SetFillStyle(0);
 
-        TLegend leg_dynKt = new TLegend(0.6, 0.7, 0.9, 0.9);
+        TLegend *leg_dynKt = new TLegend(0.6, 0.7, 0.9, 0.9);
         leg_dynKt->SetBorderSize(0);
         leg_dynKt->SetFillStyle(0);
         
 
-        TH1D *h1d_ref = (TH2D *) h3d_ref_clone->Project3D(Form("x%d_ref", i));
-        TH1D *h1d_ref_dynKt = (TH2D *) h3d_ref_dynKt_clone->Project3D(Form("x%d_ref", i));
-        TH1D *h1d_reco = (TH2D *) h3d_reco_clone->Project3D(Form("x%d_reco", i));
-        TH1D *h1d_reco_dynKt = (TH2D *) h3d_reco_dynKt_clone->Project3D(Form("x%d_reco", i));
+        TH1D *h1d_ref = (TH1D *) h3d_ref_clone->Project3D(Form("x%d_ref", i));
+        TH1D *h1d_ref_dynKt = (TH1D *) h3d_ref_dynKt_clone->Project3D(Form("x%d_ref", i));
+        TH1D *h1d_reco = (TH1D *) h3d_reco_clone->Project3D(Form("x%d_reco", i));
+        TH1D *h1d_reco_dynKt = (TH1D *) h3d_reco_dynKt_clone->Project3D(Form("x%d_reco", i));
 
         normalise_histo(h1d_ref);
         normalise_histo(h1d_ref_dynKt);
         normalise_histo(h1d_reco);
         normalise_histo(h1d_reco_dynKt);
 
-        leg->AddEntry(h1d_ref, "truth", "pl");
-        leg_dynKt->AddEntry(h1d_ref_dynKt, "truth dynKt", "pl");
-        leg->AddEntry(h1d_reco, "reco", "pl");
-        leg_dynKt->AddEntry(h1d_reco_dynKt, "reco dynKt", "pl");
+	float ymax = std::max({h1d_ref->GetMaximum(), h1d_reco->GetMaximum(), 
+	                       h1d_ref_dynKt->GetMaximum(), h1d_reco_dynKt->GetMaximum()});
+	ymax += 0.05;
+
+	h1d_ref->GetYaxis()->SetRangeUser(0., ymax);
+	h1d_ref_dynKt->GetYaxis()->SetRangeUser(0., ymax);
+	h1d_reco->GetYaxis()->SetRangeUser(0., ymax);
+	h1d_reco_dynKt->GetYaxis()->SetRangeUser(0., ymax);
+
+	string xtitle1d = "ln(1/R_{g})";
+	string ytitle1d = Form("1/N dN/d(ln(1/R_{g})) for jetpt in [%.0f, %.0f] GeV", ptmin, ptmax);
+
+	set_axes_labels(h1d_ref, xtitle1d, ytitle1d);
+	set_axes_labels(h1d_ref_dynKt, xtitle1d, ytitle1d);
+	set_axes_labels(h1d_reco, xtitle1d, ytitle1d);
+	set_axes_labels(h1d_reco_dynKt, xtitle1d, ytitle1d);
+
+	h1d_ref->SetLineColor(1);
+	h1d_ref_dynKt->SetLineColor(1);
+	
+	h1d_reco->SetLineColor(2);
+	h1d_reco_dynKt->SetLineColor(2);
+
+        leg->AddEntry(h1d_ref, "truth", "l");
+        leg_dynKt->AddEntry(h1d_ref_dynKt, "truth dynKt", "l");
+        leg->AddEntry(h1d_reco, "reco", "l");
+        leg_dynKt->AddEntry(h1d_reco_dynKt, "reco dynKt", "l");
 
         crg->cd(i + 1);
         crg->cd(i + 1)->SetGrid();
 
-        h1d_ref->Draw();
-        h1d_reco->Draw("same");
+        h1d_ref->Draw("hist");
+        h1d_reco->Draw("hist same");
         leg->Draw();
+	gsptxt->Draw();
 
         crg->cd(i + 1 + npt);
         crg->cd(i + 1 + npt)->SetGrid();
 
-        h1d_ref_dynKt->Draw();
-        h1d_reco_dynKt->Draw("same");
+        h1d_ref_dynKt->Draw("hist");
+        h1d_reco_dynKt->Draw("hist same");
         leg_dynKt->Draw();
+	gsptxt->Draw();
 
     }
 
@@ -250,9 +276,11 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
     }
     string savename_c_dynKt = savename_c + "_dynKt.png";
     string savename_c_ratio = savename_c + "_ratio.png";
+    string savename_c_1d = savename_c + "_1d.png";
     savename_c += ".png";
     
     c->Print(savename_c.c_str());
     c_dynKt->Print(savename_c_dynKt.c_str());
     c_ratio->Print(savename_c_ratio.c_str());
+    crg->Print(savename_c_1d.c_str());
 }
