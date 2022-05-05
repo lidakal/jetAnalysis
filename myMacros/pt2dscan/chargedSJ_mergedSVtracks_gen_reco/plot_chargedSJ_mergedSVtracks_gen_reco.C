@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void plot_chargedSJ_mergedSVtracks_gen_reco(string level = "reco", bool GSPincl = false)
+void plot_chargedSJ_mergedSVtracks_gen_reco(string level = "ref", bool GSPincl = true)
 {
     cout << "Running with options: " << endl;
     cout << "level : " << level << endl;
@@ -99,7 +99,7 @@ void plot_chargedSJ_mergedSVtracks_gen_reco(string level = "reco", bool GSPincl 
             }
 
             // Fill dynKt histos with -1 when level is parton or when !jtIsHardest
-            if ((level == "par") || (!TAb.jtIsHardest[j])) { 
+            if (((level == "reco") && (!TAb.jtIsHardest[j])) || ((level == "ref") && (!TAb.refIsHardest)) || (level == "par")) { 
                 logrg = -1;
                 logkt = -10;
             }
