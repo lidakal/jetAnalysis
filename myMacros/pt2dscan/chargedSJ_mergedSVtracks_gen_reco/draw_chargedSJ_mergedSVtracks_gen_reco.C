@@ -114,7 +114,7 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
 
         // c : ref, reco
         Float_t zmin = 0.;
-        Float_t zmax = 0.3;
+        Float_t zmax = 0.2;
 
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
@@ -140,14 +140,15 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
 
         // c_dynKt : ref, reco dynKt
         Float_t zmin_dynKt = 0.;
-        Float_t zmax_dynKt = 0.3;
+        Float_t zmax_dynKt = 0.2;
 
         c_dynKt->cd(i + 1);
         c_dynKt->cd(i + 1)->SetGrid();
-        TH2D *h2d_ref_dynKt_clone = (TH2D *) h2d_ref_dynKt->Clone();
-        set_zrange(h2d_ref_dynKt_clone, zmin_dynKt, zmax_dynKt);
+        set_axes_labels(h2d_ref_dynKt, xtitle, ytitle);
+        normalise_histo(h2d_ref_dynKt);
+        set_zrange(h2d_ref_dynKt, zmin_dynKt, zmax_dynKt);
 
-        h2d_ref_dynKt_clone->Draw("colz");
+        h2d_ref_dynKt->Draw("colz");
         line->Draw();
         info_ref_dynKt->Draw();
         gsptxt->Draw();
@@ -165,7 +166,7 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = true)
 
         // c_ratio : reco / ref, reco dynKt / ref dynKt
         Float_t zmin_ratio = 0.;
-        Float_t zmax_ratio = 40.;
+        Float_t zmax_ratio = 10.;
 
         c_ratio->cd(i + 1);
         c_ratio->cd(i + 1)->SetLogz();
