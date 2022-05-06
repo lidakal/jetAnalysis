@@ -126,6 +126,7 @@ class TreeAnalyzer
         // Class methods
         void Init();
         void GetEntry(Long64_t ient);
+        void SetBranchStatus(string branchName, Int_t status);
 };
 
 TreeAnalyzer::TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root", bool init = true) 
@@ -250,4 +251,16 @@ void TreeAnalyzer::Init()
 void TreeAnalyzer::GetEntry(Long64_t ient)
 {
     t->GetEntry(ient);
+}
+
+void TreeAnalyzer::SetBranchStatus(string branchName, Int_t status)
+{
+    t->SetBranchStatus(branchName.c_str(), status);
+}
+
+void TreeAnalyzer::SetBranchStatus(vector<string> branchNames, Int_t status)
+{
+    for (string branchName : branchNames) {
+        t->SetBranchStatus(branchName.c_str(), status);
+    }
 }
