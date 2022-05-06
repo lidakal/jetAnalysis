@@ -13,8 +13,6 @@ class TreeAnalyzer
         // Class attributes
         TFile *fin; 
         TTree *t;
-        TTree *HiTree;
-        TTree *hi;
      
         Long64_t    nentries;
 
@@ -63,17 +61,17 @@ class TreeAnalyzer
         Float_t         jtDiscDeepFlavourC[8];
         Float_t         jtDiscProb[8];
         Int_t           nsvtx[8];
-	/*	
-        vector<vector<int> > *svtxntrk = 0;
-        vector<vector<float> > *svtxdls = 0;
-        vector<vector<float> > *svtxdls2d = 0;
-        vector<vector<float> > *svtxm = 0;
-        vector<vector<float> > *svtxpt = 0;
-        vector<vector<float> > *svtxmcorr = 0;
-        vector<vector<float> > *svtxTrPt = 0;
-        vector<vector<float> > *svtxTrEta = 0;
-        vector<vector<float> > *svtxTrPhi = 0;
-	*/
+	
+        vector<vector<int> > *svtxntrk = nullptr;
+        vector<vector<float> > *svtxdls = nullptr;
+        vector<vector<float> > *svtxdls2d = nullptr;
+        vector<vector<float> > *svtxm = nullptr;
+        vector<vector<float> > *svtxpt = nullptr;
+        vector<vector<float> > *svtxmcorr = nullptr;
+        vector<vector<float> > *svtxTrPt = nullptr;
+        vector<vector<float> > *svtxTrEta = nullptr;
+        vector<vector<float> > *svtxTrPhi = nullptr;
+	
         Int_t           nselIPtrk[8];
         Int_t           nIP;
         Float_t         ipPt[64];
@@ -119,57 +117,23 @@ class TreeAnalyzer
         Float_t         psjt2Phi[9];
 
         // HiTree tree leaves
-        UInt_t          run;
-        ULong64_t       evt;
-        UInt_t          lumi;
-        Float_t         vx;
-        Float_t         vy;
-        Float_t         vz;
-        Float_t         pthat;
         Float_t         weight; 
-	
-        // hi tree leaves
-        Int_t           mult;
-        vector<float>   *pt = 0;
-        vector<float>   *eta = 0;
-        vector<float>   *phi = 0;
-        vector<int>     *pdg = 0;
-        vector<int>     *sta = 0;
-
-        // Fat jet properties
-        Int_t           njet;
-        Float_t         jetpt[30];
-        Float_t         jeteta[30];
-        Int_t           jetNb[30];
-        Int_t           jetNc[30];
-        
-        // Subjet properties
-        Float_t         subjet1pt[30];
-        Float_t         subjet1eta[30];
-        Float_t         subjet1phi[30];
-    
-        Float_t         subjet2pt[30];
-        Float_t         subjet2eta[30];
-        Float_t         subjet2phi[30];
 
         // Constructors
-        TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/merged_HiForestAOD.root", bool init = true);
+        TreeAnalyzer();
+        TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root", bool init = true);
     
         // Class methods
         void Init();
         void GetEntry(Long64_t ient);
-        void SetAnalysisLevelParton(bool activBranches = true);
-        void SetAnalysisLevelTruth(bool activBranches = true);
-        void SetAnalysisLevelReco(bool activBranches = true);
 };
 
-TreeAnalyzer::TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/aggregatedB_truthInfo/merged_HiForestAOD.root", bool init = true) 
+TreeAnalyzer::TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root", bool init = true) 
 {
     fin = new TFile(fname.c_str());
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
-    HiTree = (TTree *) fin->Get("hiEvtAnalyzer/HiTree");
-    hi = (TTree *) fin->Get("bDecayAna/hi");
+    t->AddFriend("hiEvtAnalyzer/HiTree");
 
     if (init) {
         Init();
@@ -223,7 +187,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("jtDiscDeepFlavourC",jtDiscDeepFlavourC);
     t->SetBranchAddress("jtDiscProb",jtDiscProb);
     t->SetBranchAddress("nsvtx",nsvtx);
-    /*
+    
     t->SetBranchAddress("svtxntrk",&svtxntrk);
     t->SetBranchAddress("svtxdls",&svtxdls);
     t->SetBranchAddress("svtxdls2d",&svtxdls2d);
@@ -233,7 +197,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("svtxTrPt",&svtxTrPt);
     t->SetBranchAddress("svtxTrEta",&svtxTrEta);
     t->SetBranchAddress("svtxTrPhi",&svtxTrPhi);
-    */
+    
     t->SetBranchAddress("nselIPtrk",nselIPtrk);
     t->SetBranchAddress("nIP",&nIP);
     t->SetBranchAddress("ipPt",ipPt);
@@ -278,23 +242,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("psjt2Eta",psjt2Eta);
     t->SetBranchAddress("psjt2Phi",psjt2Phi);
 
-    // Set branch addresses for HiTree tree
-    HiTree->SetBranchAddress("run", &run);
-    HiTree->SetBranchAddress("evt", &evt);
-    HiTree->SetBranchAddress("lumi", &lumi);
-    HiTree->SetBranchAddress("vx", &vx);
-    HiTree->SetBranchAddress("vy", &vy);
-    HiTree->SetBranchAddress("vz", &vz);
-    HiTree->SetBranchAddress("pthat", &pthat);
-    HiTree->SetBranchAddress("weight", &weight);
-
-    // Set branch addressses for hi tree
-    hi->SetBranchAddress("mult", &mult);
-    hi->SetBranchAddress("pt", &pt);
-    hi->SetBranchAddress("eta", &eta);
-    hi->SetBranchAddress("phi", &phi);
-    hi->SetBranchAddress("pdg", &pdg);
-    hi->SetBranchAddress("sta", &sta);
+    t->SetBranchAddress("weight", &weight);
     
     nentries = t->GetEntries();
 }
@@ -302,98 +250,4 @@ void TreeAnalyzer::Init()
 void TreeAnalyzer::GetEntry(Long64_t ient)
 {
     t->GetEntry(ient);
-    hi->GetEntry(ient);
-    HiTree->GetEntry(ient);
-}
-
-void TreeAnalyzer::SetAnalysisLevelParton(bool activBranches = true)
-{
-    // Set branch addresses of class attributes to parton level branches
-    t->SetBranchAddress("weight", &weight);
-
-    t->SetBranchAddress("npar", &njet);
-    t->SetBranchAddress("parpt", jetpt);
-    t->SetBranchAddress("pareta", jeteta);
-    t->SetBranchAddress("parNb", jetNb);
-    t->SetBranchAddress("parNc", jetNc);
-
-    t->SetBranchAddress("psjt1Pt", subjet1pt);
-    t->SetBranchAddress("psjt1Eta", subjet1eta);
-    t->SetBranchAddress("psjt1Phi", subjet1phi);
-
-    t->SetBranchAddress("psjt2Pt", subjet2pt);
-    t->SetBranchAddress("psjt2Eta", subjet2eta);
-    t->SetBranchAddress("psjt2Phi", subjet2phi);
-
-    if (activBranches) {
-        t->SetBranchStatus("*", 0);
-        for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc",
-                                      "psjt1Pt", "psjt1Eta", "psjt1Phi", 
-                                      "psjt2Pt", "psjt2Eta", "psjt2Phi",
-                                      "weight"}) {
-            t->SetBranchStatus(activeBranchName, 1);
-        }
-    }
-}
-
-void TreeAnalyzer::SetAnalysisLevelTruth(bool activBranches = true)
-{
-    // Set branch addresses of class attributes to truth level branches
-    t->SetBranchAddress("weight", &weight);
-
-    t->SetBranchAddress("nref", &njet);
-    t->SetBranchAddress("refpt", jetpt);
-    t->SetBranchAddress("refeta", jeteta);
-    t->SetBranchAddress("jtNbHad", jetNb);
-    t->SetBranchAddress("jtNcHad", jetNc);
-
-    t->SetBranchAddress("rsjt1Pt", subjet1pt);
-    t->SetBranchAddress("rsjt1Eta", subjet1eta);
-    t->SetBranchAddress("rsjt1Phi", subjet1phi);
-
-    t->SetBranchAddress("rsjt2Pt", subjet2pt);
-    t->SetBranchAddress("rsjt2Eta", subjet2eta);
-    t->SetBranchAddress("rsjt2Phi", subjet2phi);
-
-    if (activBranches) {
-        t->SetBranchStatus("*", 0);
-        for (auto activeBranchName : {"nref", "refpt", "refeta", "jtHadFlav", "refIsHardest",
-                                      "jtNbHad", "jtNcHad",
-                                      "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
-                                      "rsjt2Pt", "rsjt2Eta", "rsjt2Phi",
-                                      "weight"}) {
-            t->SetBranchStatus(activeBranchName, 1);
-        }
-    }
-}
-
-void TreeAnalyzer::SetAnalysisLevelReco(bool activBranches = true)
-{
-// Set branch addresses of class attributes to reco level branches
-    t->SetBranchAddress("weight", &weight);
-
-    t->SetBranchAddress("nref", &njet);
-    t->SetBranchAddress("jtpt", jetpt);
-    t->SetBranchAddress("jteta", jeteta);
-    t->SetBranchAddress("jtNbHad", jetNb);
-    t->SetBranchAddress("jtNcHad", jetNc);
-
-    t->SetBranchAddress("sjt1Pt", subjet1pt);
-    t->SetBranchAddress("sjt1Eta", subjet1eta);
-    t->SetBranchAddress("sjt1Phi", subjet1phi);
-
-    t->SetBranchAddress("sjt2Pt", subjet2pt);
-    t->SetBranchAddress("sjt2Eta", subjet2eta);
-    t->SetBranchAddress("sjt2Phi", subjet2phi);
-
-    if (activBranches) {
-        t->SetBranchStatus("*", 0);
-        for (auto activeBranchName : {"nref", "jtpt", "jteta", "jtHadFlav", "jtIsHardest",
-                                      "jtNbHad", "jtNcHad",
-                                      "sjt1Pt", "sjt1Eta", "sjt1Phi", 
-                                      "sjt2Pt", "sjt2Eta", "sjt2Phi",
-                                      "weight"}) {
-            t->SetBranchStatus(activeBranchName, 1);
-        }
-    }
 }
