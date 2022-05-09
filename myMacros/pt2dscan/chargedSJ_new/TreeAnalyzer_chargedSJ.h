@@ -11,13 +11,22 @@ using namespace std;
 class TreeAnalyzer_chargedSJ : public TreeAnalyzer
 {
     public: 
-        TreeAnalyzer_chargedSJ(bool init = true);
+        TreeAnalyzer_chargedSJ(bool bJetORqcd = true, bool init = true);
 };
 
-TreeAnalyzer_chargedSJ::TreeAnalyzer_chargedSJ(bool init = true)
+TreeAnalyzer_chargedSJ::TreeAnalyzer_chargedSJ(bool bJetORqcd = true, bool init = true)
 {    
     string path_bJet = "/data_CMS/cms/kalipoliti/bJetMC/chargedSJ/merged_HiForestAOD.root";
-    fin = new TFile(path_bJet.c_str());
+    string path_qcd = "/data_CMS/cms/kalipoliti/qcdMC/chargedSJ/merged_HiForestAOD.root";
+
+    string path = "";
+    if (bJetORqcd) {
+        path = path_bJet;
+    } else {
+        path = path_qcd;
+    }
+    
+    fin = new TFile(path.c_str());
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
     t->AddFriend("hi=hiEvtAnalyzer/HiTree");
