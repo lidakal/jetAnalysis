@@ -7,6 +7,7 @@
 #include "utils.h"
 
 #include <vector>
+#include <iostream>
 
 void plot_svTagInfo()
 {
