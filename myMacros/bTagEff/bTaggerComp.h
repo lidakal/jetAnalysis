@@ -2,6 +2,7 @@
 #include "TTree.h"
 #include "TCanvas.h"
 #include "TGraph.h"
+#include "TMultiGraph.h"
 #include "TStyle.h"
 #include "TLatex.h"
 #include <iostream>
@@ -494,6 +495,8 @@ void drawROCcurve()
     
     TLegend *leg = new TLegend(0.15, 0.7, 0.8, 0.9);
     gStyle->SetLegendTextSize(18);
+
+	TMultiGraph *mg = new TMultiGraph();
     
     TGraph *gr1 = new TGraph(nwps, effB_CSVV2, effC_CSVV2);
     gr1->SetMarkerStyle(kFullCircle);
@@ -537,23 +540,21 @@ void drawROCcurve()
     gr6->SetLineColor(kBlue+2);
     leg->AddEntry(gr6, "DeepFlavour, B vs L", "pl");
     
-    
-    gr1->Draw();
-    gr2->Draw("PL same");
-    gr3->Draw("PL same");
-    gr4->Draw("PL same");
-    gr5->Draw("PL same");
-    gr6->Draw("PL same");
-    
+	mg->Add(gr1);
+	mg->Add(gr2);
+	mg->Add(gr3);
+	mg->Add(gr4);
+	mg->Add(gr5);
+	mg->Add(gr6);
+
+	mg->Draw("APL");
+
+    mg->GetYaxis()->SetTitle("Misidentification rate");
+    mg->GetXaxis()->SetTitle("b-tag Efficiency");
+
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
     leg->Draw();
-    
-    gr1->GetYaxis()->SetRangeUser(0, 1);
-    gr1->GetXaxis()->SetRangeUser(0, 1);
-    
-    gr1->GetYaxis()->SetTitle("Misidentification rate");
-    gr1->GetXaxis()->SetTitle("b-tag Efficiency");
     
     // Draw Title
     TLatex *title = new TLatex();
