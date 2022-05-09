@@ -79,6 +79,12 @@ class TreeAnalyzer
         Float_t         ipPhi[64];
         Float_t         ipProb[64];
         Float_t         ip3dSig[64];
+
+	Int_t           ipMatchStatus[100];
+	Float_t         ipPtMatch[100];
+        Float_t         ipEtaMatch[100];
+        Float_t         ipPhiMatch[100];
+
         Float_t         refpt[8];
         Float_t         refeta[8];
         Float_t         refphi[8];
@@ -127,6 +133,7 @@ class TreeAnalyzer
         void Init();
         void GetEntry(Long64_t ient);
         void SetBranchStatus(string branchName, Int_t status);
+	void SetBranchStatus(vector<string> branchNames, Int_t status);
 };
 
 TreeAnalyzer::TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root", bool init = true) 
@@ -264,3 +271,5 @@ void TreeAnalyzer::SetBranchStatus(vector<string> branchNames, Int_t status)
         t->SetBranchStatus(branchName.c_str(), status);
     }
 }
+
+
