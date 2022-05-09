@@ -8,19 +8,30 @@
 
 #include <vector>
 #include <iostream>
+#include <stdlib.h>
 
-void plot_svTagInfo()
+void plot_svTagInfo(bool GSPincl = true, bool useBtag = true)
 {
     std::string finname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
     
     // Activate branches of interest
-    std::vector<std::string> activeBranches = {"nref", "jtHadFlav", "nselIPtrk", "ipEta", "ipPhi", "ipMatchStatus", "svtxTrEta", "svtxTrPhi", "weight"};
+    std::vector<std::string> activeBranches = {"nref", "jteta", "jtHadFlav", "jtNbHad", "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB", "nselIPtrk", "ipEta", "ipPhi", "ipMatchStatus", "svtxTrEta", "svtxTrPhi", "weight"};
     ta.SetBranchStatus("*", 0);
     ta.SetBranchStatus(activeBranches, 1);
     
     // Create new file to store histograms
-    std::string foutname = "/home/llr/cms/kalipoliti/rootFiles/svTagInfo_histos_cpp.root";
+	std::string outdir = "/home/llr/cms/kalipoliti/rootFiles/";
+    std::string fname = "svTagInfo_histos";
+	if (!GSPincl) {
+	    fname += "_noGSP";
+    }
+    if (useBtag) {
+	   fname += "_bTag";
+	}
+	fname += "_cpp.root";
+
+	std::string foutname = outdir + fname;
     TFile *fout = new TFile(foutname.c_str(), "recreate");
 
     TH1D *hsv = new TH1D("hsv", "Percentage of tracks from B products associated to any SV per event", 25, 0, 100);
@@ -31,7 +42,7 @@ void plot_svTagInfo()
         
         // for debugging purposes 
         //if (ient < 33200) continue;
-        if (ient > 1000) break;
+        if (ient > 10000) break;
             
         // Show progress
         if (ient % 1000000 == 0) {
@@ -45,15 +56,36 @@ void plot_svTagInfo()
 
         Int_t itrackOffset = 0;
 
+	//std::cout << "i = " << ient << std::endl;
+
         for (Int_t ijet = 0; ijet < ta.nref; ijet++) {
-
-            // TODO: REPLACE jtHadFlav with b-tagging wp 
-
+		    // eta cut
+		    if (std::abs(ta.jteta[ijet]) > 2) {
+			   itrackOffset += ta.nselIPtrk[ijet];
+               continue;
+			}
+	        //std::cout << "ijet = " << ijet << std::endl;
+	        // std::cout << "itrackOffset = " << itrackOffset << std::endl;
+	        // std::cout << "jtHadFlav = " << ta.jtHadFlav[ijet] << std::endl;
+            
             // Discard non b-jets
-            if (ta.jtHadFlav[ijet] != 5) {
+		    if ((!useBtag) && (ta.jtHadFlav[ijet] != 5)) {
                 itrackOffset += ta.nselIPtrk[ijet];
                 continue;
             }
+
+			bool passWp = (ta.jtDiscDeepFlavourB[ijet] + ta.jtDiscDeepFlavourBB[ijet] + ta.jtDiscDeepFlavourLEPB[ijet]) > 0.9;
+			if (useBtag && (!passWp)) {
+			    itrackOffset += ta.nselIPtrk[ijet];
+                continue;
+            }
+
+
+            // Discard GSP jets if !useBtag
+	        if ((!useBtag) && (!GSPincl) && (ta.jtNbHad[ijet] > 1)) {
+                itrackOffset += ta.nselIPtrk[ijet];
+                continue;
+			}
 
             // Go over jet tracks
             for (Int_t itrack = 0; itrack < ta.nselIPtrk[ijet]; itrack++) {
@@ -79,7 +111,9 @@ void plot_svTagInfo()
             }
             itrackOffset += ta.nselIPtrk[ijet];
         }
-	    Float_t perc = -1.;
+	//std::cout << "bProducts: " << bProducts << std::endl;
+	//std::cout << "bProductsInSV: " << bProductsInSV << std::endl;
+	Float_t perc = -1.;
         if (bProducts > 0) {
             perc = (Float_t(bProductsInSV) / Float_t(bProducts)) * 100;
         }

@@ -3,17 +3,48 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 
-void draw_svTagInfo(bool GSPincl = true) 
+void draw_svTagInfo() 
 {
-    std::string finname = "/home/llr/cms/kalipoliti/rootFiles/svTagInfo_histos_cpp.root";
-    TFile *fin = new TFile(finname.c_str());
+    std::cout << "hello" << std::endl;
 
-    TH1D *hsv = (TH1D *) fin->Get("hsv");
+    std::string indir = "/home/llr/cms/kalipoliti/rootFiles/";
+    std::cout << indir << std::endl;
+
+	std::string fname_trueB = "svTagInfo_histos_cpp.root";
+	std::string fname_trueB_noGSP = "svTagInfo_histos_noGSP_cpp.root";
+	std::string fname_wpB = "svTagInfo_histos_bTag_cpp.root";
+
+    TFile *fin_trueB = new TFile((indir + fname_trueB).c_str());
+    TH1D *hsv_trueB = (TH1D *) fin_trueB->Get("hsv");
+
+    TFile *fin_trueB_noGSP = new TFile((indir + fname_trueB_noGSP).c_str());
+    TH1D *hsv_trueB_noGSP = (TH1D *) fin_trueB_noGSP->Get("hsv");
+
+	std::cout << (indir + fname_wpB) << std::endl;
+
+	TFile *fin_wpB = new TFile((indir + fname_wpB).c_str());
+    TH1D *hsv_wpB = (TH1D *) fin_wpB->Get("hsv");
 
     TCanvas *csv = new TCanvas("csv", "csv", 800, 800);
 
-    hsv->GetXaxis()->SetRange(0,hsv->GetNbinsX());
+    //hsv->GetXaxis()->SetRange(2, hsv->GetNbinsX());
 
-    hsv->Draw("hist");
+    const Int_t nh = 3;
+    TH1D *hs[nh];
+
+    for (Int_t hi = 0; hi < nh; hi++) {
+	    hs[hi]->SetLineColor(hi + 1);
+        hs[hi]->Draw("hist");
+	}
+
+    TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.9);
+    leg->SetBorderSize(0);
+	leg->SetFillStyle(0);
+
+	leg->AddEntry(hsv_trueB, "true b-jets", "l");
+	leg->AddEntry(hsv_trueB_noGSP, "true b-jets, no GSP", "l");
+	leg->AddEntry(hsv_wpB, "b-jets passing wp", "l");
+	leg->Draw();
+
     csv->Draw();
 }
