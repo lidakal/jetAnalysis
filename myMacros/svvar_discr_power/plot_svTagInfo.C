@@ -15,7 +15,7 @@ void plot_svTagInfo()
     TreeAnalyzer ta(finname, true);
     
     // Activate branches of interest
-    std::vector<std::string> activeBranches = {"nref", "nIP", "ipEta", "ipPhi", "ipMatchStatus", "svtxTrEta", "svtxTrPhi", "weight"};
+    std::vector<std::string> activeBranches = {"nref", "jtHadFlav", "nselIPtrk", "ipEta", "ipPhi", "ipMatchStatus", "svtxTrEta", "svtxTrPhi", "weight"};
     ta.SetBranchStatus("*", 0);
     ta.SetBranchStatus(activeBranches, 1);
     
@@ -31,7 +31,7 @@ void plot_svTagInfo()
         
         // for debugging purposes 
         //if (ient < 33200) continue;
-        //if (ient > 1000) break;
+        if (ient > 1000) break;
             
         // Show progress
         if (ient % 1000000 == 0) {
@@ -43,28 +43,43 @@ void plot_svTagInfo()
         Int_t bProducts = 0;
         Int_t bProductsInSV = 0;
 
-        for (Int_t itrack = 0; itrack < ta.nIP; itrack++) {
-            // Keep only B decay products
-            Int_t sta = ta.ipMatchStatus[itrack];
-            if (sta < 100) continue;
-            bProducts += 1;
-            
-            // Look for track in SV
-            Float_t eps = 0.001;
-            
-            Bool_t trackFoundInSV = false;
-            std::vector<Float_t> svtxTrEta = flatten(*ta.svtxTrEta);
-            std::vector<Float_t> svtxTrPhi = flatten(*ta.svtxTrPhi);
+        Int_t itrackOffset = 0;
 
-            for (size_t isvTrk = 0; isvTrk < svtxTrEta.size(); isvTrk++) {
-                if ((ta.ipEta[itrack] - svtxTrEta[isvTrk]) > eps) continue;
-                if ((ta.ipPhi[itrack] - svtxTrPhi[isvTrk]) > eps) continue;
-                trackFoundInSV = true;
-                break;
-            }  
-            if (trackFoundInSV) bProductsInSV += 1;
+        for (Int_t ijet = 0; ijet < ta.nref; ijet++) {
+
+            // TODO: REPLACE jtHadFlav with b-tagging wp 
+
+            // Discard non b-jets
+            if (ta.jtHadFlav[ijet] != 5) {
+                itrackOffset += ta.nselIPtrk[ijet];
+                continue;
+            }
+
+            // Go over jet tracks
+            for (Int_t itrack = 0; itrack < ta.nselIPtrk[ijet]; itrack++) {
+                // Keep only B decay products
+                Int_t sta = ta.ipMatchStatus[itrack + itrackOffset];
+                if (sta < 100) continue;
+                bProducts += 1;
+                
+                // Look for track in SV
+                Float_t eps = 0.001;
+                
+                Bool_t trackFoundInSV = false;
+                std::vector<Float_t> svtxTrEta = flatten(*ta.svtxTrEta);
+                std::vector<Float_t> svtxTrPhi = flatten(*ta.svtxTrPhi);
+
+                for (size_t isvTrk = 0; isvTrk < svtxTrEta.size(); isvTrk++) {
+                    if ((ta.ipEta[itrack + itrackOffset] - svtxTrEta[isvTrk]) > eps) continue;
+                    if ((ta.ipPhi[itrack + itrackOffset] - svtxTrPhi[isvTrk]) > eps) continue;
+                    trackFoundInSV = true;
+                    break;
+                }  
+                if (trackFoundInSV) bProductsInSV += 1;
+            }
+            itrackOffset += ta.nselIPtrk[ijet];
         }
-	Float_t perc = -1.;
+	    Float_t perc = -1.;
         if (bProducts > 0) {
             perc = (Float_t(bProductsInSV) / Float_t(bProducts)) * 100;
         }
