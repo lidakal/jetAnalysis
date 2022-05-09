@@ -42,11 +42,15 @@ void plot_svTagInfo()
     hsv_wpB->SetXTitle("% b-product tracks in SVs per event");
     hsv_wpB->SetYTitle("(Weighted) nb of events");
 
+	TH1D *hsv_wpB_2prod = new TH1D("hsv_wpB_2prod", "Percentage of tracks from B products associated to any SV per event", nbins, 0, 100);
+    hsv_wpB_2prod->SetXTitle("% b-product tracks in SVs per event");
+    hsv_wpB_2prod->SetYTitle("(Weighted) nb of events");
+
     for (Long64_t ient = 0; ient < ta.nentries; ient++) {
         
         // for debugging purposes 
         //if (ient < 33200) continue;
-        if (ient > 10000) break;
+        //if (ient > 10000) break;
             
         // Show progress
         if (ient % 1000000 == 0) {
@@ -142,11 +146,18 @@ void plot_svTagInfo()
             perc_wpB = (Float_t(bProductsInSV_wpB) / Float_t(bProducts_wpB)) * 100;
         }
         hsv_wpB->Fill(perc_wpB, ta.weight); 
+
+        Float_t perc_wpB_2prod = -1;
+        if (bProducts_wpB > 1) {
+    		perc_wpB_2prod = (Float_t(bProductsInSV_wpB) / Float_t(bProducts_wpB)) * 100;
+		}
+        hsv_wpB_2prod->Fill(perc_wpB_2prod, ta.weight);
     }
     std::cout << "Saving histograms in " << foutname << std::endl;
     hsv_trueB->Write();
     hsv_trueB_noGSP->Write();
     hsv_wpB->Write();
+	hsv_wpB_2prod->Write();
     fout->Close();
 }
 
