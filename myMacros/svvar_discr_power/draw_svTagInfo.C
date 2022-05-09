@@ -5,12 +5,15 @@
 
 void draw_svTagInfo(bool GSPincl = true) 
 {
-    std::string finname = "/home/llr/cms/kalipoliti/rootFiles/svTagInfo_histos.root";
+    std::string finname = "/home/llr/cms/kalipoliti/rootFiles/svTagInfo_histos_cpp.root";
     TFile *fin = new TFile(finname.c_str());
 
     TH1D *hsv = (TH1D *) fin->Get("hsv");
 
     TCanvas *csv = new TCanvas("csv", "csv", 800, 800);
-    hsv->Draw();
+
+    hsv->GetXaxis()->SetRange(0,hsv->GetNbinsX());
+
+    hsv->Draw("hist");
     csv->Draw();
 }
