@@ -3,27 +3,17 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 
+#include <iostream>
+
 void draw_svTagInfo() 
 {
-    std::cout << "hello" << std::endl;
-
     std::string indir = "/home/llr/cms/kalipoliti/rootFiles/";
-    std::cout << indir << std::endl;
+	std::string fname = "svTagInfo_histos_cpp.root";
 
-	std::string fname_trueB = "svTagInfo_histos_cpp.root";
-	std::string fname_trueB_noGSP = "svTagInfo_histos_noGSP_cpp.root";
-	std::string fname_wpB = "svTagInfo_histos_bTag_cpp.root";
-
-    TFile *fin_trueB = new TFile((indir + fname_trueB).c_str());
-    TH1D *hsv_trueB = (TH1D *) fin_trueB->Get("hsv");
-
-    TFile *fin_trueB_noGSP = new TFile((indir + fname_trueB_noGSP).c_str());
-    TH1D *hsv_trueB_noGSP = (TH1D *) fin_trueB_noGSP->Get("hsv");
-
-	std::cout << (indir + fname_wpB) << std::endl;
-
-	TFile *fin_wpB = new TFile((indir + fname_wpB).c_str());
-    TH1D *hsv_wpB = (TH1D *) fin_wpB->Get("hsv");
+    TFile *fin = new TFile((indir + fname).c_str());
+    TH1D *hsv_trueB = (TH1D *) fin->Get("hsv_trueB");
+    TH1D *hsv_trueB_noGSP = (TH1D *) fin->Get("hsv_trueB_noGSP");
+    TH1D *hsv_wpB = (TH1D *) fin->Get("hsv_wpB");
 
     TCanvas *csv = new TCanvas("csv", "csv", 800, 800);
 
