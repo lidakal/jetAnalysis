@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_chargedSJ(bool GSPincl = false)
+void draw_chargedSJ(bool GSPincl = true)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
 
