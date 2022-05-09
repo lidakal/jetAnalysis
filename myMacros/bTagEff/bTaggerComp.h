@@ -5,6 +5,8 @@
 #include "TMultiGraph.h"
 #include "TStyle.h"
 #include "TLatex.h"
+#include "TLegend.h"
+
 #include <iostream>
 #include <vector>
     
