@@ -16,7 +16,7 @@ void plot_svTagInfo()
     TreeAnalyzer ta(finname, true);
     
     // Activate branches of interest
-    std::vector<std::string> activeBranches = {"nref", "jteta", "jtHadFlav", "jtNbHad", "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB", "nselIPtrk", "ipEta", "ipPhi", "ipMatchStatus", "svtxTrEta", "svtxTrPhi", "weight"};
+    std::vector<std::string> activeBranches = {"nref", "jteta", "jtpt", "jtHadFlav", "jtNbHad", "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB", "nselIPtrk", "ipEta", "ipPhi", "ipMatchStatus", "svtxTrEta", "svtxTrPhi", "weight"};
     ta.SetBranchStatus("*", 0);
     ta.SetBranchStatus(activeBranches, 1);
     
@@ -28,7 +28,7 @@ void plot_svTagInfo()
 	std::string foutname = outdir + fname;
     TFile *fout = new TFile(foutname.c_str(), "recreate");
 
-    Int_t nbins = 25;
+    Int_t nbins = 10;
 
     TH1D *hsv_trueB = new TH1D("hsv_trueB", "Percentage of tracks from B products associated to any SV per event", nbins, 0, 100);
     hsv_trueB->SetXTitle("% b-product tracks in SVs per event");
@@ -73,8 +73,8 @@ void plot_svTagInfo()
 	    //std::cout << "i = " << ient << std::endl;
 
         for (Int_t ijet = 0; ijet < ta.nref; ijet++) {
-		    // eta cut
-		    if (std::abs(ta.jteta[ijet]) > 2) {
+		    // eta cut & pt cut
+		    if ((std::abs(ta.jteta[ijet]) > 2) || (ta.jtpt[ijet] < 100)) {
 			   itrackOffset += ta.nselIPtrk[ijet];
                continue;
 			}
