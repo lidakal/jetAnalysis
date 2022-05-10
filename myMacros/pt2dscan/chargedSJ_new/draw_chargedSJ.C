@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_chargedSJ(string jetFlav = "B", bool GSPincl = true)
+void draw_chargedSJ(string jetFlav = "B", bool GSPincl = false)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
 
@@ -70,8 +70,8 @@ void draw_chargedSJ(string jetFlav = "B", bool GSPincl = true)
     c_ratio->Divide(npt, 2); // 2 for  reco / truth, reco dynKt / truth dynKt
 
     // Create / Draw 1D histograms - Projections
-    TCanvas *crg = new TCanvas("crg", "crg", 1800, 1000);
-    crg->Divide(npt, 2); // 2 for truth + reco, truth dynKt + reco dynKt
+    //TCanvas *crg = new TCanvas("crg", "crg", 1800, 1000);
+    //crg->Divide(npt, 2); // 2 for truth + reco, truth dynKt + reco dynKt
 
     for (int i = 0; i < npt; i++) {
         Float_t ptmin = ptrange[i][0];
@@ -133,7 +133,7 @@ void draw_chargedSJ(string jetFlav = "B", bool GSPincl = true)
 
         // c : ref, reco
         Float_t zmin = 0.;
-        Float_t zmax = 0.2;
+        Float_t zmax = 0.3;
 
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
