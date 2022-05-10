@@ -60,8 +60,16 @@ void draw_underflow()
         normalise_histo(hB1d_merged_ref);
 
         // New histogram to fill with underflow bins
-        TH1D *hunderflow = new TH1D();
-        hunderflow->SetBinsLength(3);
+        TH1D *hunderflow = new TH1D(Form("hunderflow%d", i), "histogram with underflow bin content", 3, 0, 1);
+        
+        Float_t barWidth = 0.7;
+        hunderflow->SetBarOffset((1.-barWidth) / 2.);
+        hunderflow->GetXaxis()->SetRangeUser(0., 1.);
+        hunderflow->GetXaxis()->SetTickLength(0.);
+        hunderflow->SetBarWidth(barWidth);
+		hunderflow->SetFillColor(40);
+		hunderflow->SetLineColor(1);
+
         hunderflow->GetXaxis()->SetBinLabel(1, "chargedSJ, L");
         hunderflow->GetXaxis()->SetBinLabel(2, "chargedSJ, B");
         hunderflow->GetXaxis()->SetBinLabel(3, "merged, B");
@@ -70,10 +78,22 @@ void draw_underflow()
         hunderflow->SetBinContent(2, hB1d_chargedSJ_ref->GetBinContent(0));
         hunderflow->SetBinContent(3, hB1d_merged_ref->GetBinContent(0));
 
-        c->cd(i + 1);
-        c->cd(i + 1)->SetGrid(1);
+		TPaveText *info = new TPaveText(0.2, 0.75, 0.5, 0.85, "ndc");
+		info->SetBorderSize(1);
+		info->SetFillColor(0);
+		info->SetTextSize(15);
+		info->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
+		
+        std::string ytitle = "1/N_{jets} dN_{1-prong jets}/d(ln(1/R_{g}))";
+        hunderflow->SetYTitle(ytitle.c_str());
 
-        hunderflow->Draw("bar");
+        c->cd(i + 1);
+
+        hunderflow->Draw("b");
+		info->Draw();
     }
     c->Draw();
+
+	std::string savename = "underflow_comparison.png";
+	c->Print(savename.c_str(), "png");
 }
