@@ -25,18 +25,21 @@ void draw_svTagInfo()
 
     const Int_t nh = 4;
     TH1D *hs[nh] = {hsv_trueB, hsv_trueB_noGSP, hsv_wpB, hsv_wpB_2prod};
-    //Float_t ymax = std::max({hsv_trueB->GetMaximum(), hsv_trueB_noGSP->GetMaximum(), hsv_wpB->GetMaximum()});
     for (Int_t hi = 0; hi < nh; hi++) {
 	    // normalise histogram without underflow
 	    hs[hi]->Scale(1 / hs[hi]->Integral());
         hs[hi]->SetYTitle("Nb of events");
 	    hs[hi]->SetLineColor(hi + 1);
-		//hs[hi]->GetYaxis()->SetRangeUser(0, ymax);
 		//hs[hi]->GetXaxis()->SetRange(0, hs[hi]->GetNbinsX()+1);
-        hs[hi]->Draw("hist same");
+    }
+
+	Float_t ymax = std::max({hsv_trueB->GetMaximum(), hsv_trueB_noGSP->GetMaximum(), hsv_wpB->GetMaximum()}) + 0.05;
+    for (Int_t hi = 0; hi < nh; hi++) {
+	  hs[hi]->GetYaxis()->SetRangeUser(0, ymax);
+	  hs[hi]->Draw("hist same");
 	}
 
-    TLegend *leg = new TLegend(0.55, 0.7, 0.9, 0.9);
+    TLegend *leg = new TLegend(0.25, 0.6, 0.7, 0.85);
     leg->SetBorderSize(0);
 	leg->SetFillStyle(0);
 
