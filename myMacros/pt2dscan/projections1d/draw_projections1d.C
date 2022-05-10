@@ -131,13 +131,16 @@ void draw_projections1d()
 
         leg->Draw();
 
-		TPaveText *info = new TPaveText(0.2, 0.17, 0.45, 0.24, "ndc");
+		TPaveText *info = new TPaveText(0.2, 0.17, 0.45, 0.28, "ndc");
 		info->SetBorderSize(1);
 		info->SetFillColor(0);
 		info->SetTextSize(15);
 		info->AddText(Form("%.0f < p_{T} < %0.f (GeV)", ptmin, ptmax));
+		info->AddText("NO GSP");
 
 		info->Draw();
+
+
     }
     crg->Draw();
 
