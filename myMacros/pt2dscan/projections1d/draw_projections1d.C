@@ -44,7 +44,7 @@ void draw_projections1d()
     const int npt = 3;
     Float_t *ptrange[npt] = {lowpt, midpt, highpt};
 
-    TCanvas *crg = new TCanvas("crg", "crg", 1800, 600);
+    TCanvas *crg = new TCanvas("crg", "crg", 1800, 450);
     crg->Divide(npt, 1); // 2 for truth + reco, truth dynKt + reco dynKt
 
     for (int i = 0; i < npt; i++) {
@@ -91,7 +91,7 @@ void draw_projections1d()
         hB1d_merged_reco->GetYaxis()->SetRangeUser(0, ymax);
 
         std::string xtitle1d = "ln(1/R_{g})";
-        std::string ytitle1d = Form("1/N dN/d(ln(1/R_{g})) for jetpt in [%.0f, %.0f] GeV", ptmin, ptmax);
+        std::string ytitle1d = "1/N dN/d(ln(1/R_{g}))"; 
 
         set_axes_labels(hL1d_chargedSJ_ref, xtitle1d, ytitle1d);
         set_axes_labels(hL1d_chargedSJ_reco, xtitle1d, ytitle1d);
@@ -105,7 +105,12 @@ void draw_projections1d()
         hB1d_merged_ref->SetLineColor(4);
         hB1d_merged_reco->SetLineColor(6);
 
-        TLegend *leg = new TLegend(0.5, 0.7, 0.7, 0.9);
+        TLegend *leg;
+		if (i == 2) {
+		    leg = new TLegend(0.2, 0.65, 0.4, 0.85);
+		} else {
+		    leg = new TLegend(0.5, 0.65, 0.7, 0.85);
+		}
         leg->SetBorderSize(0);
         leg->SetFillColor(0);
 
@@ -125,6 +130,17 @@ void draw_projections1d()
         hB1d_merged_reco->Draw("hist same");
 
         leg->Draw();
+
+		TPaveText *info = new TPaveText(0.2, 0.17, 0.45, 0.24, "ndc");
+		info->SetBorderSize(1);
+		info->SetFillColor(0);
+		info->SetTextSize(15);
+		info->AddText(Form("%.0f < p_{T} < %0.f (GeV)", ptmin, ptmax));
+
+		info->Draw();
     }
     crg->Draw();
+
+	std::string savename = "rg_comparison.png";
+	crg->Print(savename.c_str(), "png");
 }
