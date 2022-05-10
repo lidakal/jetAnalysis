@@ -12,9 +12,11 @@
 
 using namespace std;
 
-void draw_chargedSJ(bool GSPincl = true)
+void draw_chargedSJ(string jetFlav = "B", bool GSPincl = true)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
+
+    // jetFlav can be B, C or L
 
     string histfile_reco = "";
     string histfile_ref = "";
@@ -33,19 +35,22 @@ void draw_chargedSJ(bool GSPincl = true)
     string xtitle = "ln(1/R_{g})";
     string ytitle = "ln(kt/GeV)";
 
+    string histName = "h" + jetFlav + "_rgkt";
+    string histName_dynKt = "h" + jetFlav + "_rgkt_dynKt";
+
     // Load reco 3D histogram -- X = rg, Y = zg / kt, Z = pt 
     TFile *fin_reco = new TFile(histfile_reco.c_str());
-    TH3D *h3d_reco = (TH3D *) fin_reco->Get("hB_rgkt")->Clone();
-    TH3D *h3d_reco_dynKt = (TH3D *) fin_reco->Get("hB_rgkt_dynKt")->Clone();
+    TH3D *h3d_reco = (TH3D *) fin_reco->Get(histName.c_str())->Clone();
+    TH3D *h3d_reco_dynKt = (TH3D *) fin_reco->Get(histName_dynKt.c_str())->Clone();
 
     // Load ref 3D histogram -- X = rg, Y = zg / kt, Z = pt 
     TFile *fin_ref = new TFile(histfile_ref.c_str());
-    TH3D *h3d_ref = (TH3D *) fin_ref->Get("hB_rgkt")->Clone();
-    TH3D *h3d_ref_dynKt = (TH3D *) fin_ref->Get("hB_rgkt_dynKt")->Clone();
+    TH3D *h3d_ref = (TH3D *) fin_ref->Get(histName.c_str())->Clone();
+    TH3D *h3d_ref_dynKt = (TH3D *) fin_ref->Get(histName_dynKt.c_str())->Clone();
 
     // Load par 3D histogram -- X = rg, Y = zg / kt, Z = pt 
     TFile *fin_par = new TFile(histfile_par.c_str());
-    TH3D *h3d_par = (TH3D *) fin_par->Get("hB_rgkt")->Clone();
+    TH3D *h3d_par = (TH3D *) fin_par->Get(histName.c_str())->Clone();
 
     // Create / Draw 2D histograms - Projections
     Float_t lowpt[2] = {50., 80.};
@@ -93,7 +98,7 @@ void draw_chargedSJ(bool GSPincl = true)
         line->SetLineWidth(2);
 
         TPaveText *info = new TPaveText(0.45, 0.7, 0.8, 0.85, "ndc");
-        info->AddText("chargedSJ b-jets");
+        info->AddText(("chargedSJ " + jetFlav + "-jets").c_str());
         info->AddLine(0., 0.7, 1., 0.7);
         info->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
         info->SetFillColor(0);
@@ -208,6 +213,7 @@ void draw_chargedSJ(bool GSPincl = true)
         info_ratio_dynKt->Draw();
         gsptxt->Draw();
 
+        /*
         // 1D projections
         TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.9);
         leg->SetBorderSize(0);
@@ -282,24 +288,25 @@ void draw_chargedSJ(bool GSPincl = true)
         h1d_par->Draw("hist same");
         leg_dynKt->Draw();
         gsptxt->Draw();
+        */
     }
 
     c->Draw();
     c_dynKt->Draw();
     c_ratio->Draw();
-    crg->Draw();
+    //crg->Draw();
     
-    string savename_c = "chargedSJ_bjets_ref_vs_reco";
+    string savename_c = "chargedSJ_" + jetFlav + "jets_ref_vs_reco";
     if (!GSPincl) {
         savename_c += "_noGSP";
     }
     string savename_c_dynKt = savename_c + "_dynKt.png";
     string savename_c_ratio = savename_c + "_ratio.png";
-    string savename_c_1d = savename_c + "_1d.png";
+    //string savename_c_1d = savename_c + "_1d.png";
     savename_c += ".png";
     
     c->Print(savename_c.c_str());
     c_dynKt->Print(savename_c_dynKt.c_str());
     c_ratio->Print(savename_c_ratio.c_str());
-    crg->Print(savename_c_1d.c_str());
+    //crg->Print(savename_c_1d.c_str());
 }
