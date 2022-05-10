@@ -13,11 +13,11 @@
 
 void draw_projections1d()
 {
-    std::string fname_chargedSJ_ref = "~/rootFiles/chargedSJ_new_ref.root"; // ljet truth
-    std::string fname_chargedSJ_reco = "~/rootFiles/chargedSJ_new_reco.root"; // ljet reco, bjet reco no merge
+    std::string fname_chargedSJ_ref = "~/rootFiles/chargedSJ_new_noGSP_ref.root"; // ljet truth
+    std::string fname_chargedSJ_reco = "~/rootFiles/chargedSJ_new_noGSP_reco.root"; // ljet reco, bjet reco no merge
 
-    std::string fname_merged_ref = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_ref.root"; // bjet truth merge
-    std::string fname_merged_reco = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_reco.root"; // bjet reco merge
+    std::string fname_merged_ref = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_ref.root"; // bjet truth merge
+    std::string fname_merged_reco = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_reco.root"; // bjet reco merge
 
     TFile *f_chargedSJ_ref = new TFile(fname_chargedSJ_ref.c_str());
     TH3D *hL3d_chargedSJ_ref = (TH3D *) f_chargedSJ_ref->Get("hL_rgkt");
