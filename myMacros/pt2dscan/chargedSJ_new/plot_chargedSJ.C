@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void plot_chargedSJ(string level = "par", bool GSPincl = false)
+void plot_chargedSJ(string level = "reco", bool GSPincl = false)
 {
     cout << "Running with options: " << endl;
     cout << "level : " << level << endl;

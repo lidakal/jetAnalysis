@@ -44,7 +44,7 @@ void draw_projections1d()
     const int npt = 3;
     Float_t *ptrange[npt] = {lowpt, midpt, highpt};
 
-    TCanvas *crg = new TCanvas("crg", "crg", 1800, 1000);
+    TCanvas *crg = new TCanvas("crg", "crg", 1800, 600);
     crg->Divide(npt, 1); // 2 for truth + reco, truth dynKt + reco dynKt
 
     for (int i = 0; i < npt; i++) {
@@ -103,9 +103,9 @@ void draw_projections1d()
         hL1d_chargedSJ_reco->SetLineColor(2);
         hB1d_chargedSJ_reco->SetLineColor(3);
         hB1d_merged_ref->SetLineColor(4);
-        hB1d_merged_reco->SetLineColor(5);
+        hB1d_merged_reco->SetLineColor(6);
 
-        TLegend *leg = new TLegend(0.5, 0.8, 0.7, 0.9);
+        TLegend *leg = new TLegend(0.5, 0.7, 0.7, 0.9);
         leg->SetBorderSize(0);
         leg->SetFillColor(0);
 

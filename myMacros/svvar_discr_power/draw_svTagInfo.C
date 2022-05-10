@@ -47,4 +47,6 @@ void draw_svTagInfo()
 	leg->Draw();
 
     csv->Draw();
+
+	csv->Print("bProductsInSVs.png", "png");
 }
