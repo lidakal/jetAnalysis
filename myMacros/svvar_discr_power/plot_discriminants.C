@@ -26,15 +26,15 @@ void plot_discriminants()
 
     // Create new file to store histograms
 	std::string outdir = "/home/llr/cms/kalipoliti/rootFiles/";
-    std::string fname = "bDiscriminants_histos";
+    std::string fname = "bDiscriminants_histos.root";
 
     std::string foutname = outdir + fname;
     TFile *fout = new TFile(foutname.c_str(), "recreate");
 
     // ip3dSig
-    Int_t x1bins = 25;
-    Float_t x1min = -100.;
-    Float_t x1max = 150.;
+    Int_t x1bins = 50;
+    Float_t x1min = -50.;
+    Float_t x1max = 100.;
 
     TH1D *hsig_ip3dSig = new TH1D("hsig_ip3dSig", "histogram of ip3dSig, signal", x1bins, x1min, x1max);
     TH1D *hbkg_ip3dSig = new TH1D("hbkg_ip3dSig", "histogram of ip3dSig, background", x1bins, x1min, x1max);
@@ -63,13 +63,14 @@ void plot_discriminants()
     for (Long64_t ient = 0; ient < ta.nentries; ient++) {
         
         // for debugging purposes 
-        //if (ient < 33200) continue;
-        //if (ient > 10000) break;
+        //if (ient < 2) continue;
+        //if (ient > 10) break;
+
             
         // Show progress
         if (ient % 1000000 == 0) {
             std::cout << "i = " << ient << std::endl;
-        }
+		}
 
         ta.GetEntry(ient);
         Float_t weight = ta.weight;
@@ -88,15 +89,16 @@ void plot_discriminants()
             // Go over jet tracks
             for (Int_t itrack = 0; itrack < ta.nselIPtrk[ijet]; itrack++) {
                 // Get track properties
-                Float_t ipEta = ta.ipEta[itrack + itrackOffset];
-                Float_t ipPhi = ta.ipPhi[itrack + itrackOffset];
-                Float_t ip3dSig = TAb.ip3dSig[itrackOffset + itrack];
-                Int_t sta = ta.ipMatchStatus[itrack + itrackOffset];
+                Float_t ipEta = ta.ipEta[itrackOffset + itrack];
+                Float_t ipPhi = ta.ipPhi[itrackOffset + itrack];
+                Float_t ip3dSig = ta.ip3dSig[itrackOffset + itrack];
+                Int_t sta = ta.ipMatchStatus[itrackOffset + itrack];
 
                 // Check if track is in SV
                 bool inSV = false;
                 std::vector<Float_t> svtxTrEta = flatten(*ta.svtxTrEta);
                 std::vector<Float_t> svtxTrPhi = flatten(*ta.svtxTrPhi);
+				Float_t eps = 0.001;
                 for (size_t isvTrk = 0; isvTrk < svtxTrEta.size(); isvTrk++) {
                     if ((ipEta - svtxTrEta[isvTrk]) > eps) continue;
                     if ((ipPhi - svtxTrPhi[isvTrk]) > eps) continue;
@@ -104,8 +106,8 @@ void plot_discriminants()
                     break;
                 }  
 
-                Float_t putInSV = 0.;
-                if (inSV) putInSV = 1.;
+                Float_t putInSV = 0.1;
+                if (inSV) putInSV = 0.9;
 
                 if (sta >= 100) {
                     hsig_ip3dSig->Fill(ip3dSig, weight);

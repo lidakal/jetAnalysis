@@ -7,7 +7,7 @@
 
 #include <algorithm> // std::max
 
-void draw_svTagInfo() 
+void draw_discriminants() 
 {
     std::string indir = "/home/llr/cms/kalipoliti/rootFiles/";
 	std::string fname = "bDiscriminants_histos.root";
@@ -28,24 +28,27 @@ void draw_svTagInfo()
     TH1D *hs_inSV[nh] = {hsig_inSV, hbkg_inSV};
     for (Int_t ih = 0; ih < nh; ih++) {
         normalise_histo(hs_ip3dSig[ih]);
-        normalise_histo(hs_inSV[ih]);
-        set_axes_labels(hs_ip3dSig[ih], x1title, y1title);
+        //normalise_histo(hs_inSV[ih]);
+        hs_inSV[ih]->Scale(1 / hs_inSV[ih]->Integral());
+		set_axes_labels(hs_ip3dSig[ih], x1title, y1title);
         set_axes_labels(hs_inSV[ih], "", y2title);
         hs_inSV[ih]->GetXaxis()->SetBinLabel(1, "not in SV");
         hs_inSV[ih]->GetXaxis()->SetBinLabel(2, "in SV");
         hs_ip3dSig[ih]->SetLineColor(ih + 1);
+		hs_inSV[ih]->SetLineColor(ih + 1);
     }
 
-    Float_t ymax_inSV = std::max({hsig_inSV->GetMaximum(), hbkg_inSV->GetMaximum()});
-    Float_t ymax_ip3dSig = std::max(hsig_ip3dSig->GetMaximum(), hbkg_ip3dSig->GetMaximum());
+    //Float_t ymax_inSV = std::max({hsig_inSV->GetMaximum(), hbkg_inSV->GetMaximum()}) + 0.05;
+    Float_t ymax_ip3dSig = std::max(hsig_ip3dSig->GetMaximum(), hbkg_ip3dSig->GetMaximum()) + 0.05;
     for (Int_t ih = 0; ih < nh; ih++) {
-        hs_inSV[ih]->GetYaxis()->SetRangeUser(0, ymax_inSV);
+        hs_inSV[ih]->GetYaxis()->SetRangeUser(0, 1.);
         hs_ip3dSig[ih]->GetYaxis()->SetRangeUser(0, ymax_ip3dSig);
     }
 
-    TLegend *leg_ip3dSig = new TLegend(0.5, 0.6, 0.8, 0.8);
+    TLegend *leg_ip3dSig = new TLegend(0.2, 0.75, 0.5, 0.85);
     leg_ip3dSig->SetBorderSize(0);
     leg_ip3dSig->SetFillStyle(0);
+	gStyle->SetLegendTextSize(15);
 
     TLegend *leg_inSV = (TLegend *) leg_ip3dSig->Clone();
 
@@ -60,11 +63,14 @@ void draw_svTagInfo()
     hbkg_ip3dSig->Draw("hist same");
     leg_ip3dSig->Draw();
     c_ip3dSig->Draw();
+	std::string savename_ip3dSig = "ip3dSig.png";
+	c_ip3dSig->Print(savename_ip3dSig.c_str(), "png");
 
     TCanvas *c_inSV = new TCanvas("c_inSV", "", 1000, 800);
     hsig_inSV->Draw("hist");
     hbkg_inSV->Draw("hist same");
     leg_inSV->Draw();
     c_inSV->Draw();
-
+	std::string savename_inSV = "inSV.png";
+	c_inSV->Print(savename_inSV.c_str(), "png");	
 }
