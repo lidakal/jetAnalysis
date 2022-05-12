@@ -1,6 +1,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1D.h"
+#include "TH2D.h"
 #include "TCanvas.h"
 
 #include "TreeAnalyzer.h"
@@ -46,6 +47,10 @@ void plot_discriminants()
 
     TH1D *hsig_inSV = new TH1D("hsig_inSV", "histogram of inSV, signal", x2bins, x2min, x2max);
     TH1D *hbkg_inSV = new TH1D("hbkg_inSV", "histogram of inSV, background", x2bins, x2min, x2max);
+
+    // ip3dSig and in SV 2d
+    TH2D *hsig_2d = new TH2D("hsig_2d", "2d histogram of ip3dSig and inSV, signal", x1bins, x1min, x1max, x2bins, x2min, x2max);
+    TH2D *hbkg_2d = new TH2D("hbkg_2d", "2d histogram of ip3dSig and inSV, background", x1bins, x1min, x1max, x2bins, x2min, x2max);
 
     /*
     // svtxdls
@@ -112,9 +117,11 @@ void plot_discriminants()
                 if (sta >= 100) {
                     hsig_ip3dSig->Fill(ip3dSig, weight);
                     hsig_inSV->Fill(putInSV, weight);
+                    hsig_2d->Fill(ip3dSig, putInSV, weight);
                 } else if (sta == 1) {
                     hbkg_ip3dSig->Fill(ip3dSig, weight);
                     hbkg_inSV->Fill(putInSV, weight);
+                    hbkg_2d->Fill(ip3dSig, putInSV, weight);
                 }
             } // track loop
             itrackOffset += ta.nselIPtrk[ijet];
@@ -125,5 +132,7 @@ void plot_discriminants()
     for (auto h : {hsig_inSV, hsig_ip3dSig, hbkg_inSV, hbkg_ip3dSig}) {
         h->Write();
     }
+    hsig_2d->Write();
+    hbkg_2d->Write();
     fout->Close();
 }
