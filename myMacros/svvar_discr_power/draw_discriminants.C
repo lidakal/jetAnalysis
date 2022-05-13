@@ -2,6 +2,7 @@
 #include "TH1D.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TStyle.h"
 
 #include "../utils.h" // normalise_histo, set_axes_labels
 
