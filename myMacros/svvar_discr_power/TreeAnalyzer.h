@@ -80,8 +80,8 @@ class TreeAnalyzer
         Float_t         ipProb[64];
         Float_t         ip3dSig[64];
 
-	Int_t           ipMatchStatus[100];
-	Float_t         ipPtMatch[100];
+	    Int_t           ipMatchStatus[100];
+	    Float_t         ipPtMatch[100];
         Float_t         ipEtaMatch[100];
         Float_t         ipPhiMatch[100];
 
@@ -213,6 +213,12 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("ipPhi",ipPhi);
     t->SetBranchAddress("ipProb",ipProb);
     t->SetBranchAddress("ip3dSig",ip3dSig);
+
+	t->SetBranchAddress("ipMatchStatus", &ipMatchStatus);
+	t->SetBranchAddress("ipPtMatch", ipPtMatch);
+	t->SetBranchAddress("ipEtaMatch", ipEtaMatch);
+	t->SetBranchAddress("ipPhiMatch", ipPhiMatch);
+
     t->SetBranchAddress("refpt",refpt);
     t->SetBranchAddress("refeta",refeta);
     t->SetBranchAddress("refphi",refphi);
