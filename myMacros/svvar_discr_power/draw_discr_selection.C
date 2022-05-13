@@ -10,7 +10,7 @@
 
 #include <algorithm> // std::max
 
-void draw_discriminants() 
+void draw_discr_selection() 
 {
     std::string indir = "/home/llr/cms/kalipoliti/rootFiles/";
 	std::string fname = "bDiscriminants_histos.root";
@@ -47,15 +47,26 @@ void draw_discriminants()
     std::string y2title = "1/N_{total tracks (not) from B decays | in SV} dN_{tracks (not) from B decays | in SV}/dip3dSig";
 
     normalise_histo(hsig_ip3dSig_notInSV);
+	normalise_histo(hbkg_ip3dSig_notInSV);
+	normalise_histo(hsig_ip3dSig_inSV);
+	normalise_histo(hbkg_ip3dSig_inSV);
+
+	Float_t ymax = std::max({hsig_ip3dSig_notInSV->GetMaximum(), hsig_ip3dSig_inSV->GetMaximum(), 
+		  hbkg_ip3dSig_notInSV->GetMaximum(), hbkg_ip3dSig_inSV->GetMaximum()}) + 0.02;
+
     set_axes_labels(hsig_ip3dSig_notInSV, x1title, y1title);
+	hsig_ip3dSig_notInSV->GetYaxis()->SetTitleOffset(2.);
+	hsig_ip3dSig_notInSV->GetYaxis()->SetRangeUser(0., ymax);
     hsig_ip3dSig_notInSV->SetLineColor(1);
 
-    normalise_histo(hbkg_ip3dSig_notInSV);
+    
     set_axes_labels(hbkg_ip3dSig_notInSV, x1title, y1title);
     hbkg_ip3dSig_notInSV->SetLineColor(2);
 
     normalise_histo(hsig_ip3dSig_inSV);
     set_axes_labels(hsig_ip3dSig_inSV, x1title, y2title);
+	hsig_ip3dSig_inSV->GetYaxis()->SetTitleOffset(2.);
+	hsig_ip3dSig_inSV->GetYaxis()->SetRangeUser(0., ymax);
     hsig_ip3dSig_inSV->SetLineColor(1);
 
     normalise_histo(hbkg_ip3dSig_inSV);
@@ -63,7 +74,10 @@ void draw_discriminants()
     hbkg_ip3dSig_inSV->SetLineColor(2);
    
     // Create info box and legend 
-    TPaveText *info_notInSV = new TPaveText(0.2, 0.7, 0.5, 0.85);
+    TPaveText *info_notInSV = new TPaveText(0.2, 0.75, 0.35, 0.85, "ndc");
+	info_notInSV->SetFillColor(0);
+	info_notInSV->SetBorderSize(1);
+	info_notInSV->SetTextSize(15);
     info_notInSV->AddText("track p_{T} > 1 GeV");
 
     TPaveText *info_inSV = (TPaveText *) info_notInSV->Clone();
@@ -71,7 +85,7 @@ void draw_discriminants()
 
     info_notInSV->AddText("not in SV");
 
-    TLegend *leg_notInSV = new TLegend(0.2, 0.75, 0.5, 0.85);
+    TLegend *leg_notInSV = new TLegend(0.55, 0.75, 0.8, 0.85);
     leg_notInSV->SetBorderSize(0);
     leg_notInSV->SetFillStyle(0);
 	gStyle->SetLegendTextSize(15);
@@ -85,7 +99,7 @@ void draw_discriminants()
     leg_inSV->AddEntry(hbkg_ip3dSig_inSV, "tracks NOT from B decays", "l");
 
     TCanvas *c_ip3dSig = new TCanvas("c_ip3dSig", "", 1800, 800);
-    c_ip3dSig->Divide(1, 2);
+    c_ip3dSig->Divide(2, 1);
 
     c_ip3dSig->cd(1);
     hsig_ip3dSig_notInSV->Draw("hist");
@@ -100,4 +114,8 @@ void draw_discriminants()
     leg_inSV->Draw();
 
     c_ip3dSig->Draw();
+	
+	std::string savename = "ip3dSig_inSV.png";
+	c_ip3dSig->Print(savename.c_str(), "png");
+
 }
