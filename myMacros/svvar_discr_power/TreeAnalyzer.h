@@ -10,6 +10,7 @@ using namespace std;
 class TreeAnalyzer 
 {
     public:
+  
         // Class attributes
         TFile *fin; 
         TTree *t;
@@ -60,9 +61,8 @@ class TreeAnalyzer
         Float_t         jtDiscDeepFlavourLEPB[8];
         Float_t         jtDiscDeepFlavourC[8];
         Float_t         jtDiscProb[8];
-        Int_t           nsvtx[8];
-	
-        vector<vector<int> > *svtxntrk = nullptr;
+
+		vector<vector<int> > *svtxntrk = 0;
         vector<vector<float> > *svtxdls = nullptr;
         vector<vector<float> > *svtxdls2d = nullptr;
         vector<vector<float> > *svtxm = nullptr;
@@ -71,6 +71,8 @@ class TreeAnalyzer
         vector<vector<float> > *svtxTrPt = nullptr;
         vector<vector<float> > *svtxTrEta = nullptr;
         vector<vector<float> > *svtxTrPhi = nullptr;
+
+        Int_t           nsvtx[8];
 	
         Int_t           nselIPtrk[8];
         Int_t           nIP;
@@ -133,7 +135,7 @@ class TreeAnalyzer
         void Init();
         void GetEntry(Long64_t ient);
         void SetBranchStatus(string branchName, Int_t status);
-	void SetBranchStatus(vector<string> branchNames, Int_t status);
+    	void SetBranchStatus(vector<string> branchNames, Int_t status);
 };
 
 TreeAnalyzer::TreeAnalyzer(string fname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root", bool init = true) 
@@ -194,6 +196,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("jtDiscDeepFlavourLEPB",jtDiscDeepFlavourLEPB);
     t->SetBranchAddress("jtDiscDeepFlavourC",jtDiscDeepFlavourC);
     t->SetBranchAddress("jtDiscProb",jtDiscProb);
+
     t->SetBranchAddress("nsvtx",nsvtx);
     
     t->SetBranchAddress("svtxntrk",&svtxntrk);
@@ -205,6 +208,7 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("svtxTrPt",&svtxTrPt);
     t->SetBranchAddress("svtxTrEta",&svtxTrEta);
     t->SetBranchAddress("svtxTrPhi",&svtxTrPhi);
+    
     
     t->SetBranchAddress("nselIPtrk",nselIPtrk);
     t->SetBranchAddress("nIP",&nIP);

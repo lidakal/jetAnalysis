@@ -20,11 +20,14 @@ void plot_svtx()
     std::vector<std::string> activeBranches = {"nref", "jteta", "jtpt", "jtHadFlav", "jtNbHad", 
                                                "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB", 
                                                "nselIPtrk", "ipEta", "ipPhi", "ipMatchStatus",  
-                                               "svtxTrEta", "svtxTrPhi", "svtxdls", "nsvtx", "svtxntrk",
+                                               "svtxTrEta", "svtxTrPhi", "svtxdls", "nsvtx", "svtxntrk", "svtxm", "svtxmcorr",
                                                "weight"};
     ta.SetBranchStatus("*", 0);
     ta.SetBranchStatus(activeBranches, 1);
-
+	//ta.SetBranchStatus("svtxntrk",0);
+	//ta.SetBranchStatus("svtxdls",1);
+	//ta.SetBranchStatus("nsvtx",0);
+    
     // Create new file to store histograms
 	std::string outdir = "/home/llr/cms/kalipoliti/rootFiles/";
     std::string fname = "svtx_histos.root";
@@ -35,7 +38,7 @@ void plot_svtx()
     // svtxdls
     Int_t x1bins = 50;
     Float_t x1min = 0.;
-    Float_t x1max = 200.;
+    Float_t x1max = 400.;
 
     // svtxm
     Int_t x2bins = 20;
@@ -64,12 +67,12 @@ void plot_svtx()
     for (Long64_t ient = 0; ient < ta.nentries; ient++) {
         
         // for debugging purposes 
-        //if (ient < 2) continue;
-        if (ient > 0) break;
+        //if (ient < 30745) continue;
+        //if (ient > 30745) break;
 
             
         // Show progress
-        if (ient % 1000000 == 0) {
+		if (ient % 1000000 == 0) {
             std::cout << "i = " << ient << std::endl;
 		}
 
@@ -79,32 +82,37 @@ void plot_svtx()
         Int_t itrackOffset = 0;
 
         for (Int_t ijet = 0; ijet < ta.nref; ijet++) {
-            std::cout << "jet = " << ijet << std::endl;
-            std::cout << "itrackOffset = " << itrackOffset << std::endl;
+		  //std::cout << "jet = " << ijet << std::endl;
+		  //std::cout << "itrackOffset = " << itrackOffset << std::endl;
 
 		    // bjet & eta cut & pt cut
             bool isBjet = (ta.jtDiscDeepFlavourB[ijet] + ta.jtDiscDeepFlavourBB[ijet] + ta.jtDiscDeepFlavourLEPB[ijet]) > 0.9;
 
 		    if ((!isBjet) || (std::abs(ta.jteta[ijet]) > 2) || (ta.jtpt[ijet] < 100)) {
 			   itrackOffset += ta.nselIPtrk[ijet];
+			   //std::cout << "not bjet" << std::endl;
                continue;
 			}
+
+			//std::cout << "passes bjet selection" << std::endl;
 
             // Go over SVs in jet
             Int_t nsv = ta.nsvtx[ijet];
             Int_t iSVtrackOffset = 0;
             for (Int_t isv = 0; isv < nsv; isv++) {
-                std::cout << "sv = " << isv << std::endl;
-                std::cout << "isvtrackOffset = " << iSVtrackOffset << std::endl;
+              //  std::cout << "sv = " << isv << std::endl;
+			  //std::cout << "isvtrackOffset = " << iSVtrackOffset << std::endl;
                 Float_t svtxdls = (*ta.svtxdls)[ijet][isv];
+				//std::cout << "svtxdls = " << svtxdls << std::endl;
                 Float_t svtxm = (*ta.svtxm)[ijet][isv];
+				//std::cout << "svtxm = " << svtxm << std::endl;
                 Float_t svtxmcorr = (*ta.svtxmcorr)[ijet][isv];
-
+				//std::cout << "svtxmcorr = " << svtxmcorr << std::endl;
                 // Go over tracks in SV and count how many come from b decay products
                 Int_t bProductsInSV = 0;
                 Int_t tracksInSV = (*ta.svtxntrk)[ijet][isv];
                 for (Int_t iSVtrack = 0; iSVtrack < tracksInSV; iSVtrack++) { 
-                    std::cout << "isvtrack = " << iSVtrack << std::endl;
+                  //  std::cout << "isvtrack = " << iSVtrack << std::endl;
                     // Get track properties
                     Float_t trackEta = (*ta.svtxTrEta)[ijet][iSVtrackOffset + iSVtrack];
                     Float_t trackPhi = (*ta.svtxTrPhi)[ijet][iSVtrackOffset + iSVtrack];
@@ -121,13 +129,13 @@ void plot_svtx()
                         break;
                     } // jet track loop
                     Int_t sta = ta.ipMatchStatus[itrackOffset + trackID];
-                    std::cout << "track status = " << sta << std::endl;
+                    //std::cout << "track status = " << sta << std::endl;
                     if (sta >= 100) bProductsInSV += 1;
                 } // SV track loop
                 // Get percentage of b products in SV 
                 Float_t perc = -1;
-                std::cout << "bproducts in sv = " << bProductsInSV << std::endl;
-                std::cout << "tracks in sv = " << tracksInSV << std::endl;
+                //std::cout << "bproducts in sv = " << bProductsInSV << std::endl;
+                //std::cout << "tracks in sv = " << tracksInSV << std::endl;
                 if (tracksInSV > 0) perc = (Float_t(bProductsInSV) / Float_t(tracksInSV)) * 100.;
 
                 // Add the SV in the histograms 
