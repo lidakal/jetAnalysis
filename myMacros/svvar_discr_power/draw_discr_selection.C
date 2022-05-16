@@ -62,28 +62,30 @@ void draw_discr_selection()
     // Create stack histograms
     THStack *hs_inSV = new THStack("hs_inSV", "");
 
-    hsig_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
-    hsig_ip3dSig_inSV_stack->SetFillColor(4);
-    hsig_ip3dSig_inSV_stack->SetFillStyle(1001);
-    hs_inSV->Add(hsig_ip3dSig_inSV_stack);
-
     hbkg_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
     hbkg_ip3dSig_inSV_stack->SetFillColor(2);
     hbkg_ip3dSig_inSV_stack->SetFillStyle(1001);
     hs_inSV->Add(hbkg_ip3dSig_inSV_stack);
 
+    hsig_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
+    hsig_ip3dSig_inSV_stack->SetFillColor(4);
+    hsig_ip3dSig_inSV_stack->SetFillStyle(1001);
+    hs_inSV->Add(hsig_ip3dSig_inSV_stack);
+
+
     THStack *hs_notInSV = new THStack("hs_notInSV", "");
+
+	hbkg_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
+    hbkg_ip3dSig_notInSV_stack->SetFillColor(2);
+    hbkg_ip3dSig_notInSV_stack->SetFillStyle(1001);
+    hs_notInSV->Add(hbkg_ip3dSig_notInSV_stack);
 
     hsig_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
     hsig_ip3dSig_notInSV_stack->SetFillColor(4);
     hsig_ip3dSig_notInSV_stack->SetFillStyle(1001);
     hs_notInSV->Add(hsig_ip3dSig_notInSV_stack);
 
-    hbkg_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
-    hbkg_ip3dSig_notInSV_stack->SetFillColor(2);
-    hbkg_ip3dSig_notInSV_stack->SetFillStyle(1001);
-    hs_notInSV->Add(hbkg_ip3dSig_notInSV_stack);
-
+    
     // Modify the appearence of the histograms
     std::string x1title = "ip3dSig";
     std::string y1title = "1/N_{total tracks (not) from B decays | not in SV} dN_{tracks (not) from B decays | not in SV}/dip3dSig";
@@ -134,6 +136,8 @@ void draw_discr_selection()
 	gStyle->SetLegendTextSize(15);
 
     TLegend *leg_inSV = (TLegend *) leg_notInSV->Clone();
+    TLegend *leg_inSV_stack = (TLegend *) leg_notInSV->Clone();
+    TLegend *leg_notInSV_stack = (TLegend *) leg_notInSV->Clone();
 
     leg_notInSV->AddEntry(hsig_ip3dSig_notInSV, "tracks from B decays", "l");
     leg_notInSV->AddEntry(hbkg_ip3dSig_notInSV, "tracks NOT from B decays", "l");
@@ -159,9 +163,6 @@ void draw_discr_selection()
     c_ip3dSig->Draw();
 
     // Same for stack histograms
-    TLegend *leg_inSV_stack = (TLegend *) leg_notInSV->Clone();
-    TLegend *leg_notInSV_stack = (TLegend *) leg_notInSV->Clone();
-
     leg_inSV_stack->AddEntry(hsig_ip3dSig_inSV_stack, "tracks from B decays", "f");
     leg_inSV_stack->AddEntry(hbkg_ip3dSig_inSV_stack, "tracks NOT from B decays", "f");
 
@@ -172,12 +173,12 @@ void draw_discr_selection()
     c_ip3dSig_stack->Divide(2, 1);
 
     c_ip3dSig_stack->cd(1);
-    h_notInSV_stack->Draw("hist");
+    hs_notInSV->Draw("hist");
     info_notInSV->Draw();
     leg_notInSV_stack->Draw();
 
     c_ip3dSig_stack->cd(2);
-    h_inSV_stack->Draw("hist");
+    hs_inSV->Draw("hist");
     info_inSV->Draw();
     leg_inSV_stack->Draw();
 
