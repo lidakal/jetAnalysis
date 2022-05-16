@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_aggregateB_ip3dSig(bool GSPincl = false)
+void draw_aggregateB_ip3dSig(bool GSPincl = true)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
 

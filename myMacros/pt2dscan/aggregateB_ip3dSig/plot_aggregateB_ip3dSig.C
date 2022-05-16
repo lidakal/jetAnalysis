@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void plot_aggregateB_ip3dSig(string level = "par", bool GSPincl = true)
+void plot_aggregateB_ip3dSig(string level = "reco", bool GSPincl = false)
 {
     cout << "Running with options: " << endl;
     cout << "level : " << level << endl;
