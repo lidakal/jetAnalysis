@@ -5,6 +5,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TPaveText.h"
+#include "THStack.h"
 
 #include "../utils.h" // normalise_histo, set_axes_labels
 
@@ -40,6 +41,48 @@ void draw_discr_selection()
     hbkg_2d_inSV->SetName("hbkg_2d_inSV");
     hbkg_2d_inSV->GetYaxis()->SetRange(2, 2);
     TH1D *hbkg_ip3dSig_inSV = (TH1D *) hbkg_2d_inSV->ProjectionX();
+
+    // Copy histograms to make stack plot
+    TH1D *hsig_ip3dSig_inSV_stack = (TH1D *) hsig_ip3dSig_inSV->Clone();
+    TH1D *hsig_ip3dSig_notInSV_stack = (TH1D *) hsig_ip3dSig_notInSV->Clone();
+    TH1D *hbkg_ip3dSig_inSV_stack = (TH1D *) hbkg_ip3dSig_inSV->Clone();
+    TH1D *hbkg_ip3dSig_notInSV_stack = (TH1D *) hbkg_ip3dSig_notInSV->Clone();
+
+    // Create sum histogram to normalise stack histograms
+    TH1D *h_inSV_stack = (TH1D *) hsig_ip3dSig_inSV->Clone();
+    h_inSV_stack->Add(hsig_ip3dSig_notInSV_stack);
+    h_inSV_stack->GetXaxis()->SetRange(0, h_inSV_stack->GetNbinsX() + 1);
+    Float_t inSV_norm = h_inSV_stack->Integral();
+
+    TH1D *h_notInSV_stack = (TH1D *) hsig_ip3dSig_notInSV->Clone();
+    h_notInSV_stack->Add(hsig_ip3dSig_notInSV_stack);
+    h_notInSV_stack->GetXaxis()->SetRange(0, h_notInSV_stack->GetNbinsX() + 1);
+    Float_t notInSV_norm = h_notInSV_stack->Integral();
+
+    // Create stack histograms
+    THStack *hs_inSV = new THStack("hs_inSV", "");
+
+    hsig_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
+    hsig_ip3dSig_inSV_stack->SetFillColor(4);
+    hsig_ip3dSig_inSV_stack->SetFillStyle(1001);
+    hs_inSV->Add(hsig_ip3dSig_inSV_stack);
+
+    hbkg_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
+    hbkg_ip3dSig_inSV_stack->SetFillColor(2);
+    hbkg_ip3dSig_inSV_stack->SetFillStyle(1001);
+    hs_inSV->Add(hbkg_ip3dSig_inSV_stack);
+
+    THStack *hs_notInSV = new THStack("hs_notInSV", "");
+
+    hsig_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
+    hsig_ip3dSig_notInSV_stack->SetFillColor(4);
+    hsig_ip3dSig_notInSV_stack->SetFillStyle(1001);
+    hs_notInSV->Add(hsig_ip3dSig_notInSV_stack);
+
+    hbkg_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
+    hbkg_ip3dSig_notInSV_stack->SetFillColor(2);
+    hbkg_ip3dSig_notInSV_stack->SetFillStyle(1001);
+    hs_notInSV->Add(hbkg_ip3dSig_notInSV_stack);
 
     // Modify the appearence of the histograms
     std::string x1title = "ip3dSig";
@@ -114,8 +157,36 @@ void draw_discr_selection()
     leg_inSV->Draw();
 
     c_ip3dSig->Draw();
+
+    // Same for stack histograms
+    TLegend *leg_inSV_stack = (TLegend *) leg_notInSV->Clone();
+    TLegend *leg_notInSV_stack = (TLegend *) leg_notInSV->Clone();
+
+    leg_inSV_stack->AddEntry(hsig_ip3dSig_inSV_stack, "tracks from B decays", "f");
+    leg_inSV_stack->AddEntry(hbkg_ip3dSig_inSV_stack, "tracks NOT from B decays", "f");
+
+    leg_notInSV_stack->AddEntry(hsig_ip3dSig_notInSV_stack, "tracks from B decays", "f");
+    leg_notInSV_stack->AddEntry(hbkg_ip3dSig_notInSV_stack, "tracks NOT from B decays", "f");
+    
+    TCanvas *c_ip3dSig_stack = new TCanvas("c_ip3dSig_stack", "", 1800, 800);
+    c_ip3dSig_stack->Divide(2, 1);
+
+    c_ip3dSig_stack->cd(1);
+    h_notInSV_stack->Draw("hist");
+    info_notInSV->Draw();
+    leg_notInSV_stack->Draw();
+
+    c_ip3dSig_stack->cd(2);
+    h_inSV_stack->Draw("hist");
+    info_inSV->Draw();
+    leg_inSV_stack->Draw();
+
+    c_ip3dSig_stack->Draw();
 	
 	std::string savename = "ip3dSig_inSV.png";
 	c_ip3dSig->Print(savename.c_str(), "png");
+
+    std::string savename_stack = "ip3dSig_inSV_stack.png";
+	c_ip3dSig_stack->Print(savename_stack.c_str(), "png");
 
 }
