@@ -16,7 +16,7 @@ class TreeAnalyzer_aggregateB_ip3dSig : public TreeAnalyzer
 
 TreeAnalyzer_aggregateB_ip3dSig::TreeAnalyzer_aggregateB_ip3dSig(bool init = true)
 {    
-    string path_bJet = "/data_CMS/cms/kalipoliti/aggregateB_ip3dSig/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig/merged_HiForestAOD.root";
     fin = new TFile(path_bJet.c_str());
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
