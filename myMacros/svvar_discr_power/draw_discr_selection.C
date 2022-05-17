@@ -59,38 +59,48 @@ void draw_discr_selection()
     h_notInSV_stack->GetXaxis()->SetRange(0, h_notInSV_stack->GetNbinsX() + 1);
     Float_t notInSV_norm = h_notInSV_stack->Integral();
 
+	std::string x1title = "ip3dSig";
+    std::string y1title = "1/N_{total tracks (not) from B decays | not in SV} dN_{tracks (not) from B decays | not in SV}/dip3dSig";
+    std::string y2title = "1/N_{total tracks (not) from B decays | in SV} dN_{tracks (not) from B decays | in SV}/dip3dSig";
+    std::string y3title = "1/N_{total tracks | in SV} dN_{tracks | in SV}/dip3dSig";
+    std::string y4title = "1/N_{total tracks | not in SV} dN_{tracks | not in SV}/dip3dSig";
+
+
     // Create stack histograms
     THStack *hs_inSV = new THStack("hs_inSV", "");
 
     hbkg_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
     hbkg_ip3dSig_inSV_stack->SetFillColor(2);
     hbkg_ip3dSig_inSV_stack->SetFillStyle(1001);
+	set_axes_labels(hbkg_ip3dSig_inSV_stack, x1title, y1title);
     hs_inSV->Add(hbkg_ip3dSig_inSV_stack);
 
     hsig_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
     hsig_ip3dSig_inSV_stack->SetFillColor(4);
     hsig_ip3dSig_inSV_stack->SetFillStyle(1001);
+	set_axes_labels(hsig_ip3dSig_inSV_stack, x1title, y1title);
     hs_inSV->Add(hsig_ip3dSig_inSV_stack);
 
+	hs_inSV->SetTitle(Form("; %s; %s", x1title.c_str(), y3title.c_str()));
 
     THStack *hs_notInSV = new THStack("hs_notInSV", "");
 
 	hbkg_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
     hbkg_ip3dSig_notInSV_stack->SetFillColor(2);
     hbkg_ip3dSig_notInSV_stack->SetFillStyle(1001);
+	set_axes_labels(hbkg_ip3dSig_notInSV_stack, x1title, y1title);
     hs_notInSV->Add(hbkg_ip3dSig_notInSV_stack);
 
     hsig_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
     hsig_ip3dSig_notInSV_stack->SetFillColor(4);
     hsig_ip3dSig_notInSV_stack->SetFillStyle(1001);
+	set_axes_labels(hsig_ip3dSig_notInSV_stack, x1title, y1title);
     hs_notInSV->Add(hsig_ip3dSig_notInSV_stack);
 
-    
-    // Modify the appearence of the histograms
-    std::string x1title = "ip3dSig";
-    std::string y1title = "1/N_{total tracks (not) from B decays | not in SV} dN_{tracks (not) from B decays | not in SV}/dip3dSig";
-    std::string y2title = "1/N_{total tracks (not) from B decays | in SV} dN_{tracks (not) from B decays | in SV}/dip3dSig";
+	hs_notInSV->SetTitle(Form("; %s; %s", x1title.c_str(), y4title.c_str()));
 
+    // Modify the appearence of the histograms
+    
     normalise_histo(hsig_ip3dSig_notInSV);
 	normalise_histo(hbkg_ip3dSig_notInSV);
 	normalise_histo(hsig_ip3dSig_inSV);
