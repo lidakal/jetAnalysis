@@ -158,6 +158,6 @@ void draw_projections1d_1ptBin(bool GSPincl = false)
 
     crg->Draw();
 
-	std::string savename = "rg_comparison.png";
+	std::string savename = "rg_comparison" + gspTxt + ".png";
 	crg->Print(savename.c_str(), "png");
 }
