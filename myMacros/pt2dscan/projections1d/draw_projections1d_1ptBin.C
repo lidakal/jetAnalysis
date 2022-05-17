@@ -11,15 +11,18 @@
 
 #include "stdlib.h"
 
-void draw_projections1d_1ptBin()
+void draw_projections1d_1ptBin(bool GSPincl = false)
 {
-    std::string fname_chargedSJ_ref = "~/rootFiles/chargedSJ_new_noGSP_ref.root"; // ljet truth
-    std::string fname_chargedSJ_reco = "~/rootFiles/chargedSJ_new_noGSP_reco.root"; // ljet reco, bjet reco no merge
+    std::string gspTxt = "_noGSP";
+    if (GSPincl) gspTxt = "";
 
-    std::string fname_merged_ref = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_ref.root"; // bjet truth merge
-    std::string fname_merged_reco = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_reco.root"; // bjet reco merge only SV
+    std::string fname_chargedSJ_ref = "~/rootFiles/chargedSJ_new" + gspTxt + "_ref.root"; // ljet truth
+    std::string fname_chargedSJ_reco = "~/rootFiles/chargedSJ_new" + gspTxt + "_reco.root"; // ljet reco, bjet reco no merge
 
-    std::string fname_merged_ip3dSig_reco = "~/rootFiles/aggregateB_ip3dSig_looserCut_noGSP_reco.root"; // bjet reco merge SV and ip3dSig   
+    std::string fname_merged_ref = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco" + gspTxt + "_ref.root"; // bjet truth merge
+    std::string fname_merged_reco = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco" + gspTxt + "_reco.root"; // bjet reco merge only SV
+
+    std::string fname_merged_ip3dSig_reco = "~/rootFiles/aggregateB_ip3dSig_looserCut" + gspTxt + "_reco.root"; // bjet reco merge SV and ip3dSig   
 
     TFile *f_chargedSJ_ref = new TFile(fname_chargedSJ_ref.c_str());
     TH3D *hL3d_chargedSJ_ref = (TH3D *) f_chargedSJ_ref->Get("hL_rgkt");
@@ -44,9 +47,10 @@ void draw_projections1d_1ptBin()
     hB3d_merged_ip3dSig_reco->SetName("hB3d_merged_ip3dSig_reco");
 
     TCanvas *crg = new TCanvas("crg", "crg", 1000, 1000);
-   
-    Float_t ptmin = 100.;
-    Float_t ptmax = 150.;
+	crg->SetGrid(1);
+
+    Float_t ptmin = 200.;
+    Float_t ptmax = 250.;
 
     // Clone histograms as to not destroy the pt range
     TH3D *hL3d_chargedSJ_ref_clone = (TH3D *) hL3d_chargedSJ_ref->Clone();
@@ -65,12 +69,20 @@ void draw_projections1d_1ptBin()
     hB3d_merged_ip3dSig_reco_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
 
     // Make projections
-    TH1D *hL1d_chargedSJ_ref = (TH1D *) hL3d_chargedSJ_ref_clone->Project3D(Form("x%d"));
-    TH1D *hL1d_chargedSJ_reco = (TH1D *) hL3d_chargedSJ_reco_clone->Project3D(Form("x%d"));
-    TH1D *hB1d_chargedSJ_reco = (TH1D *) hB3d_chargedSJ_reco_clone->Project3D(Form("x%d"));
-    TH1D *hB1d_merged_ref = (TH1D *) hB3d_merged_ref_clone->Project3D(Form("x%d"));
-    TH1D *hB1d_merged_reco = (TH1D *) hB3d_merged_reco_clone->Project3D(Form("x%d"));
-    TH1D *hB1d_merged_ip3dSig_reco = (TH1D *) hB3d_merged_ip3dSig_reco_clone->Project3D(Form("x%d"));
+    TH1D *hL1d_chargedSJ_ref = (TH1D *) hL3d_chargedSJ_ref_clone->Project3D(Form("x"));
+    TH1D *hL1d_chargedSJ_reco = (TH1D *) hL3d_chargedSJ_reco_clone->Project3D(Form("x"));
+    TH1D *hB1d_chargedSJ_reco = (TH1D *) hB3d_chargedSJ_reco_clone->Project3D(Form("x"));
+    TH1D *hB1d_merged_ref = (TH1D *) hB3d_merged_ref_clone->Project3D(Form("x"));
+    TH1D *hB1d_merged_reco = (TH1D *) hB3d_merged_reco_clone->Project3D(Form("x"));
+    TH1D *hB1d_merged_ip3dSig_reco = (TH1D *) hB3d_merged_ip3dSig_reco_clone->Project3D(Form("x"));
+
+    hL1d_chargedSJ_ref->GetXaxis()->SetRange(1, hL1d_chargedSJ_ref->GetNbinsX() + 1);
+    hL1d_chargedSJ_reco->GetXaxis()->SetRange(1, hL1d_chargedSJ_reco->GetNbinsX() + 1);
+    hB1d_chargedSJ_reco->GetXaxis()->SetRange(1, hB1d_chargedSJ_reco->GetNbinsX() + 1);
+    hB1d_merged_ref->GetXaxis()->SetRange(1, hB1d_merged_ref->GetNbinsX() + 1);
+    hB1d_merged_reco->GetXaxis()->SetRange(1, hB1d_merged_reco->GetNbinsX() + 1);
+    hB1d_merged_ip3dSig_reco->GetXaxis()->SetRange(1, hB1d_merged_ip3dSig_reco->GetNbinsX() + 1);
+
 
     hL1d_chargedSJ_ref->Scale(1 / hL1d_chargedSJ_ref->Integral("width"));
     hL1d_chargedSJ_reco->Scale(1 / hL1d_chargedSJ_reco->Integral("width"));
@@ -102,14 +114,19 @@ void draw_projections1d_1ptBin()
 
     hL1d_chargedSJ_ref->SetLineColor(1);
     hL1d_chargedSJ_reco->SetLineColor(2);
+	hL1d_chargedSJ_reco->SetLineStyle(2);
+	hL1d_chargedSJ_ref->SetLineStyle(2);
+
     hB1d_chargedSJ_reco->SetLineColor(3);
     hB1d_merged_ref->SetLineColor(4);
     hB1d_merged_reco->SetLineColor(6);
     hB1d_merged_ip3dSig_reco->SetLineColor(7);
 
     TLegend *leg;
-    leg = new TLegend(0.2, 0.65, 0.4, 0.85);
+    leg = new TLegend(0.18, 0.68, 0.48, 0.88);
+	gStyle->SetLegendTextSize(13);
 
+	leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     leg->SetFillColor(0);
 
@@ -134,8 +151,9 @@ void draw_projections1d_1ptBin()
     info->SetFillColor(0);
     info->SetTextSize(15);
     info->AddText(Form("%.0f < p_{T} < %0.f (GeV)", ptmin, ptmax));
-    info->AddText("NO GSP");
-
+	if (!GSPincl) {
+	    info->AddText("NO GSP");
+	}
     info->Draw();
 
     crg->Draw();
