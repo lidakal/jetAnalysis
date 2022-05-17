@@ -20,7 +20,7 @@ void plot_svtx_perTrack()
     std::vector<std::string> activeBranches = {"nref", "jteta", "jtpt", "jtHadFlav", "jtNbHad", 
                                                "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB", 
                                                "nselIPtrk", "ipEta", "ipPhi", "ipMatchStatus", "ip3dSig", 
-                                               "svtxTrEta", "svtxTrPhi", "svtxdls", "svtxm", "svtxmcorr",
+                                               "svtxTrEta", "svtxTrPhi", "svtxdls", "svtxm", "svtxmcorr", "nsvtx", "svtxntrk",
                                                "weight"};
     ta.SetBranchStatus("*", 0);
     ta.SetBranchStatus(activeBranches, 1);
