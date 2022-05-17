@@ -108,11 +108,8 @@ void draw_projections1d_1ptBin()
     hB1d_merged_ip3dSig_reco->SetLineColor(7);
 
     TLegend *leg;
-    if (i == 2) {
-        leg = new TLegend(0.2, 0.65, 0.4, 0.85);
-    } else {
-        leg = new TLegend(0.5, 0.65, 0.7, 0.85);
-    }
+    leg = new TLegend(0.2, 0.65, 0.4, 0.85);
+
     leg->SetBorderSize(0);
     leg->SetFillColor(0);
 
@@ -122,10 +119,7 @@ void draw_projections1d_1ptBin()
     leg->AddEntry(hB1d_merged_ref, "bjets, merged, truth", "l");
     leg->AddEntry(hB1d_merged_reco, "bjets, merged SV only, reco", "l");
     leg->AddEntry(hB1d_merged_ip3dSig_reco, "bjets, merged SV and ip3dSig, reco", "l");
-
-    crg->cd(i + 1);
-    crg->cd(i + 1)->SetGrid(1);
-
+    
     hL1d_chargedSJ_ref->Draw("hist");
     hL1d_chargedSJ_reco->Draw("hist same");
     hB1d_chargedSJ_reco->Draw("hist same");
