@@ -42,6 +42,10 @@ class TreeAnalyzer
         Float_t         sjt2Phi[30];
         Float_t         sjt2HadFlav[30];
         Float_t         sjt2ParFlav[30];
+
+		Float_t         jtDiscDeepFlavourB[30];
+		Float_t         jtDiscDeepFlavourBB[30];
+		Float_t         jtDiscDeepFlavourLEPB[30];
         
         Float_t         refpt[30];
         Float_t         refeta[30];
@@ -167,6 +171,10 @@ void TreeAnalyzer::Init()
     t->SetBranchAddress("sjt2Phi",sjt2Phi);
     t->SetBranchAddress("sjt2HadFlav",sjt2HadFlav);
     t->SetBranchAddress("sjt2ParFlav",sjt2ParFlav);
+
+	t->SetBranchAddress("jtDiscDeepFlavourB", jtDiscDeepFlavourB);
+	t->SetBranchAddress("jtDiscDeepFlavourBB", jtDiscDeepFlavourBB);
+	t->SetBranchAddress("jtDiscDeepFlavourLEPB", jtDiscDeepFlavourLEPB);
     
     t->SetBranchAddress("refpt",refpt);
     t->SetBranchAddress("refeta",refeta);
@@ -310,6 +318,7 @@ void TreeAnalyzer::SetAnalysisLevelReco(bool activateBranches = true)
                                       "jtNbHad", "jtNcHad",
                                       "sjt1Pt", "sjt1Eta", "sjt1Phi", 
                                       "sjt2Pt", "sjt2Eta", "sjt2Phi",
+			                          "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB",
                                       "weight"}) {
             t->SetBranchStatus(activeBranchName, 1);
         }

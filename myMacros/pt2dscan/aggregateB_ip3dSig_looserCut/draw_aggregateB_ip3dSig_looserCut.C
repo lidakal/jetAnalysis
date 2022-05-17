@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
+void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = false)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
 
@@ -120,6 +120,7 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
         
         TPaveText *gsptxt = new TPaveText(0.2, 0.25, 0.35, 0.4, "ndc");
         gsptxt->SetFillColor(0);
+		gsptxt->SetFillStyle(0);
         gsptxt->SetBorderSize(0);
         gsptxt->SetTextSize(20);
         if (!GSPincl) {
@@ -128,7 +129,7 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
 
         // c : ref, reco
         Float_t zmin = 0.;
-        Float_t zmax = 0.2;
+        Float_t zmax = 0.4;
 
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
@@ -154,7 +155,7 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
 
         // c_dynKt : ref, reco dynKt
         Float_t zmin_dynKt = 0.;
-        Float_t zmax_dynKt = 0.2;
+        Float_t zmax_dynKt = 0.4;
 
         c_dynKt->cd(i + 1);
         c_dynKt->cd(i + 1)->SetGrid();

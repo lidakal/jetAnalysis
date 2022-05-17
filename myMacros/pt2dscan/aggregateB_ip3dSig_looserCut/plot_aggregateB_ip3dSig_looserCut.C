@@ -5,11 +5,13 @@
 
 using namespace std;
 
-void plot_aggregateB_ip3dSig_looserCut(string level = "reco", bool GSPincl = false)
+void plot_aggregateB_ip3dSig_looserCut(string level = "reco", bool GSPincl = true)
 {
     cout << "Running with options: " << endl;
     cout << "level : " << level << endl;
     cout << "GSPincl : " << GSPincl << endl;
+
+	Float_t wp = 0.9;
 
     TreeAnalyzer_aggregateB_ip3dSig_looserCut TAb;
     
@@ -89,7 +91,13 @@ void plot_aggregateB_ip3dSig_looserCut(string level = "reco", bool GSPincl = fal
             }
 
             // Fill the histograms
-            if (TAb.jetNb[j] > 0) {
+			bool passWp = (TAb.jtDiscDeepFlavourB[j] + TAb.jtDiscDeepFlavourBB[j] + TAb.jtDiscDeepFlavourLEPB[j]) > wp;
+
+			bool isBjet = false;
+			if (((level == "ref") || (level == "par")) && (TAb.jetNb[j] > 0)) isBjet = true;
+			if ((level == "reco") && passWp) isBjet = true;
+
+            if (isBjet) {
                 // Skip jet if it comes from GSP (and we don't want it)
                 if ((!GSPincl) && TAb.jetNb[j] > 1) {
                     continue;
