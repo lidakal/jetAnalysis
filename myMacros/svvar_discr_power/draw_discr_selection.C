@@ -50,12 +50,12 @@ void draw_discr_selection()
 
     // Create sum histogram to normalise stack histograms
     TH1D *h_inSV_stack = (TH1D *) hsig_ip3dSig_inSV->Clone();
-    h_inSV_stack->Add(hsig_ip3dSig_notInSV_stack);
+    h_inSV_stack->Add(hbkg_ip3dSig_inSV_stack);
     h_inSV_stack->GetXaxis()->SetRange(0, h_inSV_stack->GetNbinsX() + 1);
     Float_t inSV_norm = h_inSV_stack->Integral();
 
     TH1D *h_notInSV_stack = (TH1D *) hsig_ip3dSig_notInSV->Clone();
-    h_notInSV_stack->Add(hsig_ip3dSig_notInSV_stack);
+    h_notInSV_stack->Add(hbkg_ip3dSig_notInSV_stack);
     h_notInSV_stack->GetXaxis()->SetRange(0, h_notInSV_stack->GetNbinsX() + 1);
     Float_t notInSV_norm = h_notInSV_stack->Integral();
 
