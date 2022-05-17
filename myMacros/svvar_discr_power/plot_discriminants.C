@@ -33,9 +33,9 @@ void plot_discriminants()
     TFile *fout = new TFile(foutname.c_str(), "recreate");
 
     // ip3dSig
-    Int_t x1bins = 50;
-    Float_t x1min = -50.;
-    Float_t x1max = 100.;
+    Int_t x1bins = 48;
+    Float_t x1min = -45.;
+    Float_t x1max = 99.;
 
     TH1D *hsig_ip3dSig = new TH1D("hsig_ip3dSig", "histogram of ip3dSig, signal", x1bins, x1min, x1max);
     TH1D *hbkg_ip3dSig = new TH1D("hbkg_ip3dSig", "histogram of ip3dSig, background", x1bins, x1min, x1max);
