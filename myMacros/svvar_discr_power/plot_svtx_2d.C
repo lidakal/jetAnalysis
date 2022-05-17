@@ -11,7 +11,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-void plot_svtx() 
+void plot_svtx_2d() 
 {
     std::string finname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
@@ -30,7 +30,7 @@ void plot_svtx()
     
     // Create new file to store histograms
 	std::string outdir = "/home/llr/cms/kalipoliti/rootFiles/";
-    std::string fname = "svtx_histos.root";
+    std::string fname = "svtx_histos_2d.root";
 
     std::string foutname = outdir + fname;
     TFile *fout = new TFile(foutname.c_str(), "recreate");
