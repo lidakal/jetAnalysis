@@ -152,8 +152,6 @@ void draw_projections1d()
 		info->AddText("NO GSP");
 
 		info->Draw();
-
-
     }
     crg->Draw();
 
