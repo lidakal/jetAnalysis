@@ -133,7 +133,7 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
         set_axes_labels(h2d_ref, xtitle, ytitle);
-        normalise_histo(h2d_ref);
+        h2d_ref->Scale(1 / h2d_ref->Integral("width"));
         set_zrange(h2d_ref, zmin, zmax);
 
         h2d_ref->Draw("colz");
@@ -144,7 +144,7 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
         c->cd(i + 1 + npt);
         c->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_reco, xtitle, ytitle);
-        normalise_histo(h2d_reco);
+        h2d_reco->Scale(1 / h2d_reco->Integral("width"));
         set_zrange(h2d_reco, zmin, zmax);
         
         h2d_reco->Draw("colz");
@@ -159,7 +159,7 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
         c_dynKt->cd(i + 1);
         c_dynKt->cd(i + 1)->SetGrid();
         set_axes_labels(h2d_ref_dynKt, xtitle, ytitle);
-        normalise_histo(h2d_ref_dynKt);
+        h2d_ref_dynKt->Scale(1 / h2d_ref_dynKt->Integral("width"));
         set_zrange(h2d_ref_dynKt, zmin_dynKt, zmax_dynKt);
 
         h2d_ref_dynKt->Draw("colz");
@@ -170,7 +170,7 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
         c_dynKt->cd(i + 1 + npt);
         c_dynKt->cd(i + 1 + npt)->SetGrid();
         set_axes_labels(h2d_reco_dynKt, xtitle, ytitle);
-        normalise_histo(h2d_reco_dynKt);
+        h2d_reco_dynKt->Scale(1 / h2d_reco_dynKt->Integral("width"));
         set_zrange(h2d_reco_dynKt, zmin_dynKt, zmax_dynKt);
         
         h2d_reco_dynKt->Draw("colz");
@@ -224,11 +224,11 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
         TH1D *h1d_reco_dynKt = (TH1D *) h3d_reco_dynKt_clone->Project3D(Form("x%d_reco", i));
         TH1D *h1d_par = (TH1D *) h3d_par_clone->Project3D(Form("x%d_par", i));
 
-        normalise_histo(h1d_ref);
-        normalise_histo(h1d_ref_dynKt);
-        normalise_histo(h1d_reco);
-        normalise_histo(h1d_reco_dynKt);
-        normalise_histo(h1d_par);
+        h1d_ref->Scale(1 / h1d_ref->Integral("width"));
+        h1d_ref_dynKt->Scale(1 / h1d_ref_dynKt->Integral("width"));
+        h1d_reco->Scale(1 / h1d_reco->Integral("width"));
+        h1d_reco_dynKt->Scale(1 / h1d_reco_dynKt->Integral("width"));
+        h1d_par->Scale(1 / h1d_par->Integral("width"));
 
         float ymax = std::max({h1d_ref->GetMaximum(), h1d_reco->GetMaximum(), 
                             h1d_ref_dynKt->GetMaximum(), h1d_reco_dynKt->GetMaximum(),
