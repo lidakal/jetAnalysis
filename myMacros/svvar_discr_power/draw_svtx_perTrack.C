@@ -11,7 +11,7 @@
 
 #include <algorithm> // std::max
 
-void draw_svtx_perTrack(std::string variable = "svtxdls") 
+void draw_svtx_perTrack(std::string variable = "svtxmcorr") 
 {
     // variable can be "svtxdls", "svtxm", "svtxmcorr"
     std::string hsig_name = "hsig_" + variable;
@@ -39,33 +39,38 @@ void draw_svtx_perTrack(std::string variable = "svtxdls")
     std::string y2title = "1/N_{total tracks} dN_{tracks}/" + variable;
     
     // Modify the normal histograms
+	THStack *hs = new THStack("hs", "");
+
     hsig->GetXaxis()->SetRange(1, hsig->GetNbinsX() + 1);
     hsig->Scale(1 / hsig->Integral("width"));
     hsig->SetLineColor(4);
-    set_axes_labels(hsig, x1title, y1title);
+	hs->Add(hsig);
 
     hbkg->GetXaxis()->SetRange(1, hbkg->GetNbinsX() + 1);
     hbkg->Scale(1 / hbkg->Integral("width"));
     hbkg->SetLineColor(2);
-    set_axes_labels(hbkg, x1title, y1title);
+	hs->Add(hbkg);
+
+	gStyle->SetTitleOffset(2.);
+	hs->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
 
     // Modify the stack histograms
-    THStack *hs = new THStack("hs", "");
+    THStack *hs_stack = new THStack("hs_stack", "");
 
     hbkg_stack->Scale(1 / norm);
     hbkg_stack->SetFillColor(2);
     hbkg_stack->SetFillStyle(1001);
-    hs->Add(hbkg_stack);
+    hs_stack->Add(hbkg_stack);
 
     hsig_stack->Scale(1 / norm);
     hsig_stack->SetFillColor(4);
     hsig_stack->SetFillStyle(1001);
-    hs->Add(hsig_stack);
+    hs_stack->Add(hsig_stack);
 
-	hs->SetTitle(Form("; %s; %s", x1title.c_str(), y2title.c_str()));
+	hs_stack->SetTitle(Form("; %s; %s", x1title.c_str(), y2title.c_str()));
    
     // Create info box and legends
-    TPaveText *info = new TPaveText(0.2, 0.75, 0.35, 0.85, "ndc");
+    TPaveText *info = new TPaveText(0.35, 0.75, 0.5, 0.85, "ndc");
 	info->SetFillColor(0);
 	info->SetBorderSize(1);
 	info->SetTextSize(15);
@@ -76,26 +81,24 @@ void draw_svtx_perTrack(std::string variable = "svtxdls")
     leg->SetFillStyle(0);
 	gStyle->SetLegendTextSize(15);
 
-    TLegend *leg = (TLegend *) leg->Clone();
     TLegend *leg_stack = (TLegend *) leg->Clone();
     
     leg->AddEntry(hsig, "tracks from B decays", "l");
     leg->AddEntry(hbkg, "tracks NOT from B decays", "l");
 
-    leg_stack->AddEntry(hsig_stack, "tracks from B decays", "l");
-    leg_stack->AddEntry(hbkg_stack, "tracks NOT from B decays", "l");
+    leg_stack->AddEntry(hsig_stack, "tracks from B decays", "f");
+    leg_stack->AddEntry(hbkg_stack, "tracks NOT from B decays", "f");
 
     TCanvas *c = new TCanvas("c", "", 1800, 800);
     c->Divide(2, 1);
 
     c->cd(1);
-    hsig->Draw("hist");
-    hbkg->Draw("hist same");
+	hs->Draw("nostack hist");
     info->Draw();
     leg->Draw();
     
     c->cd(2);
-    hs->Draw("hist");
+    hs_stack->Draw("hist");
     info->Draw();
     leg_stack->Draw();
 
