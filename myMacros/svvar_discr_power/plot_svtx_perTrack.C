@@ -35,7 +35,7 @@ void plot_svtx_perTrack()
     // svtxdls
     Int_t x1bins = 50;
     Float_t x1min = 0.;
-    Float_t x1max = 400.;
+    Float_t x1max = 200.;
 
     // svtxm
     Int_t x2bins = 20;
@@ -45,7 +45,7 @@ void plot_svtx_perTrack()
     // svtxmcorr
     Int_t x3bins = 20;
     Float_t x3min = 0.;
-    Float_t x3max = 5.;
+    Float_t x3max = 10.;
 
     // svtxdls 
     TH1D *hsig_svtxdls = new TH1D("hsig_svtxdls", "histogram of svtxdls, signal", x1bins, x1min, x1max);
