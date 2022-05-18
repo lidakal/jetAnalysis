@@ -46,17 +46,17 @@ void plot_svtx_BvsL()
     // svtxdls
     Int_t x1bins = 50;
     Float_t x1min = 0.;
-    Float_t x1max = 400.;
+    Float_t x1max = 100.;
 
     // svtxm
     Int_t x2bins = 20;
     Float_t x2min = 0.;
-    Float_t x2max = 5.;
+    Float_t x2max = 6.;
 
     // svtxmcorr
     Int_t x3bins = 20;
     Float_t x3min = 0.;
-    Float_t x3max = 5.;
+    Float_t x3max = 7.;
 
     // svtxdls 
     TH1D *hB_svtxdls = new TH1D("hB_svtxdls", "histogram of svtxdls, bjets", x1bins, x1min, x1max);
@@ -67,8 +67,8 @@ void plot_svtx_BvsL()
     TH1D *hL_svtxm = new TH1D("hL_svtxm", "histogram of svtxm, ljets", x2bins, x2min, x2max);
 
     // svtxmcorr 
-    TH1D *hB_svtxmcorr = new TH1D("hB_svtmcorr", "histogram of svtxmcorr, bjets", x3bins, x3min, x3max);
-    TH1D *hL_svtxmcorr = new TH1D("hL_svtmcorr", "histogram of svtxmcorr, ljets", x3bins, x3min, x3max);
+    TH1D *hB_svtxmcorr = new TH1D("hB_svtxmcorr", "histogram of svtxmcorr, bjets", x3bins, x3min, x3max);
+    TH1D *hL_svtxmcorr = new TH1D("hL_svtxmcorr", "histogram of svtxmcorr, ljets", x3bins, x3min, x3max);
 
     // --------------------- B JETS ------------------------
 
@@ -131,6 +131,9 @@ void plot_svtx_BvsL()
         for (Int_t ijet = 0; ijet < taL.nref; ijet++) {
 		    // eta cut & pt cut
             if ((std::abs(taL.jteta[ijet]) > 2) || (taL.jtpt[ijet] < 100)) continue;
+
+			// skip b- and c-jets => use only fake SVs
+			if (taL.jtHadFlav[ijet] > 0) continue;
 
             // Go over SVs in jet
             Int_t nsv = taL.nsvtx[ijet];
