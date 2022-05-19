@@ -28,8 +28,8 @@ void plot_aggregation_eff()
 
     // X = track from B (0.2) / track not from B (0.9)
     // Y = track pass selection (0.2) / track does not pass selection (0.9)
-    TH2D *heff_sel1 = new TH1D("heff_sel1", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel2 = new TH1D("heff_sel2", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel1 = new TH2D("heff_sel1", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel2 = new TH2D("heff_sel2", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
     
     //------------------ Calculate efficiency / purity ----------------------
 
@@ -49,7 +49,7 @@ void plot_aggregation_eff()
             bool passWp = (ta.jtDiscDeepFlavourB[ijet] + ta.jtDiscDeepFlavourBB[ijet] + ta.jtDiscDeepFlavourLEPB[ijet]) > 0.9;
 
             // bjet & eta cut & pt cut
-            if ((!isBjet) || (std::abs(ta.jteta[ijet]) > 2) || (ta.jtpt[ijet] < 100)) {
+            if ((!passWp) || (std::abs(ta.jteta[ijet]) > 2) || (ta.jtpt[ijet] < 100)) {
 			   itrackOffset += ta.nselIPtrk[ijet];
                continue;
 			}

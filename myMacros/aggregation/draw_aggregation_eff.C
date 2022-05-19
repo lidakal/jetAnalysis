@@ -23,22 +23,38 @@ void draw_aggregation_eff()
     leg->SetFillStyle(0);
 	gStyle->SetLegendTextSize(15);
 
-    TGraph *gr_sel1 = new TGraph();
-    gr_sel1->SetPoint(gr_sel1.getN(), heff_sel1->GetBinContent(1, 1), heff_sel1->GetBinContent(2, 1));
+	Float_t totalFromB_sel1 = heff_sel1->GetBinContent(1, 1) + heff_sel1->GetBinContent(1, 2);
+	Float_t passFromB_sel1 = heff_sel1->GetBinContent(1, 1);
+	Float_t xSel1 = passFromB_sel1 / totalFromB_sel1;
+
+	Float_t totalNotFromB_sel1 = heff_sel1->GetBinContent(2, 1) + heff_sel1->GetBinContent(2, 2);
+	Float_t passNotFromB_sel1 = heff_sel1->GetBinContent(2, 1);
+	Float_t ySel1 = passNotFromB_sel1 / totalNotFromB_sel1;
+
+    TGraph *gr_sel1 = new TGraph(1, &xSel1, &ySel1);
     gr_sel1->SetMarkerColor(2);
     gr_sel1->SetMarkerStyle(kFullCircle);
     mg->Add(gr_sel1);
-    leg->Add(gr_sel1, sel1.c_str(), "p");
+    leg->AddEntry(gr_sel1, sel1.c_str(), "p");
 
-    TGraph *gr_sel2 = new TGraph();
-    gr_sel2->SetPoint(gr_sel2.getN(), heff_sel2->GetBinContent(1, 1), heff_sel2->GetBinContent(2, 1));
+	Float_t totalFromB_sel2 = heff_sel2->GetBinContent(1, 1) + heff_sel2->GetBinContent(1, 2);
+	Float_t passFromB_sel2 = heff_sel2->GetBinContent(1, 1);
+	Float_t xSel2 = passFromB_sel2 / totalFromB_sel2;
+
+	Float_t totalNotFromB_sel2 = heff_sel2->GetBinContent(2, 1) + heff_sel2->GetBinContent(2, 2);
+	Float_t passNotFromB_sel2 = heff_sel2->GetBinContent(2, 1);
+	Float_t ySel2 = passNotFromB_sel2 / totalNotFromB_sel2;
+
+    TGraph *gr_sel2 = new TGraph(1, &xSel2, &ySel2);
     gr_sel2->SetMarkerColor(4);
     gr_sel2->SetMarkerStyle(kFullTriangleUp);
     mg->Add(gr_sel2);
-    leg->Add(gr_sel2, sel2.c_str(), "p");
+    leg->AddEntry(gr_sel2, sel2.c_str(), "p");
 
-    mg->GetXaxis()->SetTitle(x1title);
-    mg->GetYaxis()->SetTitle(y1title);
+	mg->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
+    //mg->GetXaxis()->SetTitle(x1title.c_str());
+    //mg->GetYaxis()->SetTitle(y1title.c_str());
 
     mg->Draw("pa");
+	leg->Draw();
 }
