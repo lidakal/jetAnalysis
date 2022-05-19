@@ -30,6 +30,9 @@ void plot_aggregation_eff()
     // Y = track pass selection (0.2) / track does not pass selection (0.9)
     TH2D *heff_sel1 = new TH2D("heff_sel1", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
     TH2D *heff_sel2 = new TH2D("heff_sel2", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel3 = new TH2D("heff_sel3", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel4 = new TH2D("heff_sel4", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel5 = new TH2D("heff_sel5", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
     
     //------------------ Calculate efficiency / purity ----------------------
 
@@ -100,6 +103,9 @@ void plot_aggregation_eff()
 
                 bool passSelection1 = passSelection(1, inSV, ip3dSig);
                 bool passSelection2 = passSelection(2, inSV, ip3dSig);
+                bool passSelection3 = passSelection(3, inSV, ip3dSig);
+                bool passSelection4 = passSelection(4, inSV, ip3dSig);
+                bool passSelection5 = passSelection(5, inSV, ip3dSig);
 
                 // Fill histograms
                 Float_t xFromB = 0.9;
@@ -111,15 +117,27 @@ void plot_aggregation_eff()
                 Float_t ySel2 = 0.9;
                 if (passSelection2) ySel2 = 0.2;
 
+                Float_t ySel3 = 0.9;
+                if (passSelection3) ySel3 = 0.2;
+
+                Float_t ySel4 = 0.9;
+                if (passSelection4) ySel4 = 0.2;
+
+                Float_t ySel5 = 0.9;
+                if (passSelection5) ySel5 = 0.2;
+
                 heff_sel1->Fill(xFromB, ySel1, weight);
                 heff_sel2->Fill(xFromB, ySel2, weight);
+                heff_sel3->Fill(xFromB, ySel3, weight);
+                heff_sel4->Fill(xFromB, ySel4, weight);
+                heff_sel5->Fill(xFromB, ySel5, weight);
             } // jet track loop
             itrackOffset += ta.nselIPtrk[ijet];
         } // jet loop
     } // entry loop
 
     std::cout << "Saving histograms in " << foutname << std::endl;
-    for (auto h : {heff_sel1, heff_sel2}) {
+    for (auto h : {heff_sel1, heff_sel2, heff_sel3, heff_sel4, heff_sel5}) {
         h->Write();
     }
 
