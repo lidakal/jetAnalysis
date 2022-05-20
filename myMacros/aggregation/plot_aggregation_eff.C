@@ -84,11 +84,11 @@ void plot_aggregation_eff()
                         whichSV = isv;
                         break;
                     } // SV track loop
-                    if (whichSV > 0) break;
+                    if (whichSV >= 0) break;
                     iSVtrackOffset += tracksInSV;
                 } // SV loop
 
-                bool inSV = (whichSV > 0);
+                bool inSV = (whichSV >= 0);
 
                 // Initialize variables
                 Float_t svtxdls = -100.;

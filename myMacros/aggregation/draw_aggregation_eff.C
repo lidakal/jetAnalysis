@@ -16,10 +16,10 @@ void draw_aggregation_eff()
     TH1D *heff_sel3 = (TH1D *) fin->Get("heff_sel3");
     TH1D *heff_sel4 = (TH1D *) fin->Get("heff_sel4");
     TH1D *heff_sel5 = (TH1D *) fin->Get("heff_sel5");
-	std::string sel2 = "in SV || ip3dSig > (3, 6, 9, 12)";
+	std::string sel2 = "in SV || ip3dSig > (12, 9, 6, 3)";
 
-    std::string x1title = "pass selection | From B";
-    std::string y1title = "pass selection | Not from B";
+    std::string x1title = "pass selection | From B decay";
+    std::string y1title = "pass selection | Not from B decay";
 
     TMultiGraph *mg = new TMultiGraph();
     TLegend *leg = new TLegend(0.2, 0.7, 0.5, 0.85);
