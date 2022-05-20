@@ -103,7 +103,7 @@ void plot_discriminants()
                 bool inSV = false;
                 std::vector<Float_t> svtxTrEta = flatten(*ta.svtxTrEta);
                 std::vector<Float_t> svtxTrPhi = flatten(*ta.svtxTrPhi);
-				Float_t eps = 0.001;
+				Float_t eps = 0.00001;
                 for (size_t isvTrk = 0; isvTrk < svtxTrEta.size(); isvTrk++) {
 				  if (std::abs(ipEta - svtxTrEta[isvTrk]) > eps) continue;
 				  if (std::abs(ipPhi - svtxTrPhi[isvTrk]) > eps) continue;

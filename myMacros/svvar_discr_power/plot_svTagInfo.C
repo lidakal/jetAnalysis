@@ -102,7 +102,7 @@ void plot_svTagInfo()
                 }
                 
                 // Look for track in SV
-                Float_t eps = 0.001;
+                Float_t eps = 0.00001;
                 
                 Bool_t trackFoundInSV = false;
                 std::vector<Float_t> svtxTrEta = flatten(*ta.svtxTrEta);

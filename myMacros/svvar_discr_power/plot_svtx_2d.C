@@ -119,7 +119,7 @@ void plot_svtx_2d()
 
                     // Look for track in jet tracks to get its status
                     Int_t trackID = -1;
-                    Float_t eps = 0.001;
+                    Float_t eps = 0.00001;
                     for (Int_t itrack = 0; itrack < ta.nselIPtrk[ijet]; itrack++) {
                         Float_t ipEta = ta.ipEta[itrackOffset + itrack];
                         Float_t ipPhi = ta.ipPhi[itrackOffset + itrack];
