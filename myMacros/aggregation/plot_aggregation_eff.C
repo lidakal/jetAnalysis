@@ -7,7 +7,7 @@
 
 void plot_aggregation_eff()
 {
-    std::string finname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root";
+    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
 
     // Activate branches of interest
@@ -78,8 +78,8 @@ void plot_aggregation_eff()
                         Float_t trackEta = (*ta.svtxTrEta)[ijet][iSVtrackOffset + iSVtrack];
                         Float_t trackPhi = (*ta.svtxTrPhi)[ijet][iSVtrackOffset + iSVtrack];
 
-                        if (trackEta - ipEta > eps) continue;
-                        if (trackPhi - ipPhi > eps) continue;
+                        if (std::abs(trackEta - ipEta) > eps) continue;
+                        if (std::abs(trackPhi - ipPhi) > eps) continue;
 
                         whichSV = isv;
                         break;

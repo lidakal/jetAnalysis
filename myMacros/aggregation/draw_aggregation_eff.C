@@ -11,8 +11,12 @@ void draw_aggregation_eff()
     TFile *fin = new TFile((indir + fname).c_str());
     TH1D *heff_sel1 = (TH1D *) fin->Get("heff_sel1");
     std::string sel1 = "in SV";
+
     TH1D *heff_sel2 = (TH1D *) fin->Get("heff_sel2");
-    std::string sel2 = "in SV || ip3dSig > (3, 6, 9, 12)";
+    TH1D *heff_sel3 = (TH1D *) fin->Get("heff_sel3");
+    TH1D *heff_sel4 = (TH1D *) fin->Get("heff_sel4");
+    TH1D *heff_sel5 = (TH1D *) fin->Get("heff_sel5");
+	std::string sel2 = "in SV || ip3dSig > (3, 6, 9, 12)";
 
     std::string x1title = "pass selection | From B";
     std::string y1title = "pass selection | Not from B";
@@ -46,34 +50,36 @@ void draw_aggregation_eff()
 
     Float_t passFromB_sel2 = heff_sel2->GetBinContent(1, 1);
     Float_t passNotFromB_sel2 = heff_sel2->GetBinContent(2, 1);
-	Float_t xSel2[0] = passFromB_sel2 / totalFromB;
-	Float_t ySel2[0] = passNotFromB_sel2 / totalFromB;
+	xSel2[0] = passFromB_sel2 / totalFromB;
+	ySel2[0] = passNotFromB_sel2 / totalNotFromB;
 
     Float_t passFromB_sel3 = heff_sel3->GetBinContent(1, 1);
     Float_t passNotFromB_sel3 = heff_sel3->GetBinContent(2, 1);
-	Float_t xSel2[1] = passFromB_sel3 / totalFromB;
-	Float_t ySel2[1] = passNotFromB_sel3 / totalFromB;
+	xSel2[1] = passFromB_sel3 / totalFromB;
+	ySel2[1] = passNotFromB_sel3 / totalNotFromB;
 
     Float_t passFromB_sel4 = heff_sel4->GetBinContent(1, 1);
     Float_t passNotFromB_sel4 = heff_sel4->GetBinContent(2, 1);
-	Float_t xSel2[2] = passFromB_sel4 / totalFromB;
-	Float_t ySel2[2] = passNotFromB_sel4 / totalFromB;
+	xSel2[2] = passFromB_sel4 / totalFromB;
+	ySel2[2] = passNotFromB_sel4 / totalNotFromB;
 
     Float_t passFromB_sel5 = heff_sel5->GetBinContent(1, 1);
     Float_t passNotFromB_sel5 = heff_sel5->GetBinContent(2, 1);
-	Float_t xSel2[3] = passFromB_sel5 / totalFromB;
-	Float_t ySel2[3] = passNotFromB_sel5 / totalFromB;
+	xSel2[3] = passFromB_sel5 / totalFromB;
+	ySel2[3] = passNotFromB_sel5 / totalNotFromB;
 
-    TGraph *gr_sel2 = new TGraph(1, xSel2, ySel2);
+    TGraph *gr_sel2 = new TGraph(nSel2, xSel2, ySel2);
     gr_sel2->SetMarkerColor(4);
     gr_sel2->SetMarkerStyle(kFullTriangleUp);
+	gr_sel2->SetLineColor(4);
+	gr_sel2->SetLineStyle(2);
     mg->Add(gr_sel2);
-    leg->AddEntry(gr_sel2, sel2.c_str(), "p");
+    leg->AddEntry(gr_sel2, sel2.c_str(), "pl");
 
 	mg->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
     //mg->GetXaxis()->SetTitle(x1title.c_str());
     //mg->GetYaxis()->SetTitle(y1title.c_str());
 
-    mg->Draw("pa");
+    mg->Draw("pla");
 	leg->Draw();
 }
