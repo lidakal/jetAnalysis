@@ -331,7 +331,7 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
 
     // Set analysis level
     if (level == "par") {
-        SetAnalysisLevelPar();
+        SetAnalysisLevelParton();
         foutname += "_par.root";
     } else if (level == "ref") {
         SetAnalysisLevelTruth();
@@ -364,8 +364,8 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
     TH3D *hB_rgkt = new TH3D("hB_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hB_rgkt_dynKt = new TH3D("hB_rgkt_dynKt", "rg, kt, pt, bjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hBtag_rgkt = new TH3D("hBtag_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hBtag_rgkt_dynKt = new TH3D("hBtag_rgkt_dynKt", "rg, kt, pt, bjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hBtag_rgkt = new TH3D("hBtag_rgkt", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hBtag_rgkt_dynKt = new TH3D("hBtag_rgkt_dynKt", "rg, kt, pt, b tagged jets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     TH3D *hC_rgkt = new TH3D("hC_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hC_rgkt_dynKt = new TH3D("hC_rgkt_dynKt", "rg, kt, pt, cjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
@@ -377,15 +377,15 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
 
     for (Long64_t ient = 0; ient < nentries; ient++) {
         // Print progress
-        if (i%1000000 == 0) {
-            cout << "i = " << i << endl;
+        if (ient % 1000000 == 0) {
+            cout << "ient = " << ient << endl;
         }
 
         t->GetEntry(ient);
 
         for (Int_t ijet = 0; ijet < njet; ijet++) {
             // universal eta cut
-            if (std::abs(jeteta) > 2) continue;
+            if (std::abs(jeteta[ijet]) > 2) continue;
 
             Float_t rg = -1.;
             Float_t kt = -1.;
@@ -420,7 +420,7 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
             }
 
             // Fill the b-tag histogram
-            bool passWP = (bool passWp = (jtDiscDeepFlavourB[ijet] + jtDiscDeepFlavourBB[ijet] + jtDiscDeepFlavourLEPB[ijet]) > bTagWP);
+            bool passWP = ((jtDiscDeepFlavourB[ijet] + jtDiscDeepFlavourBB[ijet] + jtDiscDeepFlavourLEPB[ijet]) > bTagWP);
             if (passWP) {
                 if (GSPincl || jetNb[ijet] == 1) { // TODO: NEED TO FIX THIS TO NOT USE TRUTH GSP
                     hBtag_rgkt->Fill(logrg, logkt, weight);
@@ -455,7 +455,7 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
 
     // Save histograms
     cout << "\n(Re)creating file " << foutname << endl;
-    TFile *fout = new TFile(foutname.c_str());
+    TFile *fout = new TFile(foutname.c_str(), "recreate");
 
     for (auto h : {hB_rgkt, hB_rgkt_dynKt, hBtag_rgkt, hBtag_rgkt_dynKt, hL_rgkt, hL_rgkt_dynKt, hC_rgkt, hC_rgkt_dynKt}) {
         h->Write();
