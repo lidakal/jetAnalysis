@@ -28,11 +28,15 @@ void plot_aggregation_eff()
 
     // X = track from B (0.2) / track not from B (0.9)
     // Y = track pass selection (0.2) / track does not pass selection (0.9)
-    TH2D *heff_sel1 = new TH2D("heff_sel1", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel2 = new TH2D("heff_sel2", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel3 = new TH2D("heff_sel3", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel4 = new TH2D("heff_sel4", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel5 = new TH2D("heff_sel5", "histogram with b product tag efficiency", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel1 = new TH2D("heff_sel1", "histogram with b product tag efficiency, sel1", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel2 = new TH2D("heff_sel2", "histogram with b product tag efficiency, sel2", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel3 = new TH2D("heff_sel3", "histogram with b product tag efficiency, sel3", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel4 = new TH2D("heff_sel4", "histogram with b product tag efficiency, sel4", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel5 = new TH2D("heff_sel5", "histogram with b product tag efficiency, sel5", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel6 = new TH2D("heff_sel6", "histogram with b product tag efficiency, sel6", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel7 = new TH2D("heff_sel7", "histogram with b product tag efficiency, sel7", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel8 = new TH2D("heff_sel8", "histogram with b product tag efficiency, sel8", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel9 = new TH2D("heff_sel9", "histogram with b product tag efficiency, sel9", 2, 0, 1, 2, 0, 1);
     
     //------------------ Calculate efficiency / purity ----------------------
 
@@ -106,6 +110,10 @@ void plot_aggregation_eff()
                 bool passSelection3 = passSelection(3, inSV, ip3dSig);
                 bool passSelection4 = passSelection(4, inSV, ip3dSig);
                 bool passSelection5 = passSelection(5, inSV, ip3dSig);
+                bool passSelection6 = passSelection(6, inSV, ip3dSig);
+                bool passSelection7 = passSelection(7, inSV, ip3dSig);
+                bool passSelection8 = passSelection(8, inSV, ip3dSig);
+                bool passSelection9 = passSelection(9, inSV, ip3dSig);
 
                 // Fill histograms
                 Float_t xFromB = 0.9;
@@ -126,18 +134,34 @@ void plot_aggregation_eff()
                 Float_t ySel5 = 0.9;
                 if (passSelection5) ySel5 = 0.2;
 
+                Float_t ySel6 = 0.9;
+                if (passSelection6) ySel6 = 0.2;
+
+                Float_t ySel7 = 0.9;
+                if (passSelection7) ySel7 = 0.2;
+
+                Float_t ySel8 = 0.9;
+                if (passSelection8) ySel8 = 0.2;
+
+                Float_t ySel9 = 0.9;
+                if (passSelection9) ySel9 = 0.2;
+
                 heff_sel1->Fill(xFromB, ySel1, weight);
                 heff_sel2->Fill(xFromB, ySel2, weight);
                 heff_sel3->Fill(xFromB, ySel3, weight);
                 heff_sel4->Fill(xFromB, ySel4, weight);
                 heff_sel5->Fill(xFromB, ySel5, weight);
+                heff_sel6->Fill(xFromB, ySel6, weight);
+                heff_sel7->Fill(xFromB, ySel7, weight);
+                heff_sel8->Fill(xFromB, ySel8, weight);
+                heff_sel9->Fill(xFromB, ySel9, weight);
             } // jet track loop
             itrackOffset += ta.nselIPtrk[ijet];
         } // jet loop
     } // entry loop
 
     std::cout << "Saving histograms in " << foutname << std::endl;
-    for (auto h : {heff_sel1, heff_sel2, heff_sel3, heff_sel4, heff_sel5}) {
+    for (auto h : {heff_sel1, heff_sel2, heff_sel3, heff_sel4, heff_sel5, heff_sel6, heff_sel7, heff_sel8, heff_sel9}) {
         h->Write();
     }
 

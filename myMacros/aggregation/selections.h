@@ -31,6 +31,26 @@ bool passSelection(int Selection, bool inSV, float ip3dSig)
         return false; 
     }
 
+    if (Selection == 6) {
+        if (ip3dSig > 3.) return true;
+        return false; 
+    }
+
+    if (Selection == 7) {
+        if (ip3dSig > 6.) return true;
+        return false; 
+    }
+
+    if (Selection == 8) {
+        if (ip3dSig > 9.) return true;
+        return false; 
+    }
+
+    if (Selection == 9) {
+        if (ip3dSig > 12.) return true;
+        return false; 
+    }
+
     std::cout << "Selection out of bounds, returning false." << std::endl;
     return false;
 }

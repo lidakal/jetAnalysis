@@ -2,6 +2,8 @@
 #include "TH2D.h"
 #include "TGraph.h"
 #include "TMultiGraph.h"
+#include "TLegend.h"
+#include "TStyle.h"
 
 void draw_aggregation_eff() 
 {
@@ -17,6 +19,12 @@ void draw_aggregation_eff()
     TH1D *heff_sel4 = (TH1D *) fin->Get("heff_sel4");
     TH1D *heff_sel5 = (TH1D *) fin->Get("heff_sel5");
 	std::string sel2 = "in SV || ip3dSig > (12, 9, 6, 3)";
+
+    TH1D *heff_sel6 = (TH1D *) fin->Get("heff_sel6");
+    TH1D *heff_sel7 = (TH1D *) fin->Get("heff_sel7");
+    TH1D *heff_sel8 = (TH1D *) fin->Get("heff_sel8");
+    TH1D *heff_sel9 = (TH1D *) fin->Get("heff_sel9");
+	std::string sel6 = "ip3dSig > (12, 9, 6, 3)";
 
     std::string x1title = "pass selection | From B decay";
     std::string y1title = "pass selection | Not from B decay";
@@ -75,6 +83,39 @@ void draw_aggregation_eff()
 	gr_sel2->SetLineStyle(2);
     mg->Add(gr_sel2);
     leg->AddEntry(gr_sel2, sel2.c_str(), "pl");
+
+    // Sel6 + 7 + 8 + 9
+    const Int_t nSel6 = 4;
+    Float_t xSel6[nSel6];
+    Float_t ySel6[nSel6];
+
+    Float_t passFromB_sel6 = heff_sel6->GetBinContent(1, 1);
+    Float_t passNotFromB_sel6 = heff_sel6->GetBinContent(2, 1);
+	xSel6[0] = passFromB_sel6 / totalFromB;
+	ySel6[0] = passNotFromB_sel6 / totalNotFromB;
+
+    Float_t passFromB_sel7 = heff_sel7->GetBinContent(1, 1);
+    Float_t passNotFromB_sel7 = heff_sel7->GetBinContent(2, 1);
+	xSel6[1] = passFromB_sel7 / totalFromB;
+	ySel6[1] = passNotFromB_sel7 / totalNotFromB;
+
+    Float_t passFromB_sel8 = heff_sel8->GetBinContent(1, 1);
+    Float_t passNotFromB_sel8 = heff_sel8->GetBinContent(2, 1);
+	xSel6[2] = passFromB_sel8 / totalFromB;
+	ySel6[2] = passNotFromB_sel8 / totalNotFromB;
+
+    Float_t passFromB_sel9 = heff_sel9->GetBinContent(1, 1);
+    Float_t passNotFromB_sel9 = heff_sel9->GetBinContent(2, 1);
+	xSel6[3] = passFromB_sel9 / totalFromB;
+	ySel6[3] = passNotFromB_sel9 / totalNotFromB;
+
+    TGraph *gr_sel6 = new TGraph(nSel6, xSel6, ySel6);
+    gr_sel6->SetMarkerColor(4);
+    gr_sel6->SetMarkerStyle(kFullDiamond);
+	gr_sel6->SetLineColor(6);
+	gr_sel6->SetLineStyle(2);
+    mg->Add(gr_sel6);
+    leg->AddEntry(gr_sel6, sel6.c_str(), "pl");
 
 	mg->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
     //mg->GetXaxis()->SetTitle(x1title.c_str());
