@@ -1,15 +1,17 @@
-// TreeAnalyzer class for .../SD/mergedHiForestAOD.root
+// TreeAnalyzer_pt2dscan class for .../SD/mergedHiForestAOD.root
 
 #include "TFile.h"
 #include "TTree.h"
+#include "TH3D.h"
 
-using namespace std;
+#include <iostream>
+#include <stdlib.h>
+#include <cmath>
 
-class TreeAnalyzer 
+class TreeAnalyzer_pt2dscan
 {
     public:
         // Class attributes
-        TFile *fin; 
         TTree *t;
     
         Float_t     weight; 
@@ -114,25 +116,21 @@ class TreeAnalyzer
         Bool_t          splitIsHardest[30];
 
         // Constructors
-        TreeAnalyzer(bool bJetORqcd = true, bool init = true);
+        TreeAnalyzer_pt2dscan() {};
+        TreeAnalyzer_pt2dscan(std::string fname, bool init = true);
     
         // Class methods
         void Init();
         void SetAnalysisLevelParton(bool activBranches = true);
         void SetAnalysisLevelTruth(bool activBranches = true);
         void SetAnalysisLevelReco(bool activBranches = true);
+
+        void plot_pt2dscan(std::string foutname, std::string level, bool GSPincl, Float_t bTagWP = 0.9);
 };
 
-TreeAnalyzer::TreeAnalyzer(bool bJetORqcd = true, bool init = true) 
+TreeAnalyzer_pt2dscan::TreeAnalyzer_pt2dscan(std::string fname, bool init = true) 
 {
-    string path_qcd = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
-    
-    if (bJetORqcd) {
-        fin = new TFile(path_bJet.c_str());
-    } else {
-        fin = new TFile(path_qcd.c_str());
-    }
+    TFile *fin = new TFile(fname.c_str());
 
     t = (TTree *) fin->Get("ak4PFJetAnalyzer/t");
     t->AddFriend("hi=hiEvtAnalyzer/HiTree"); // to get the event weight
@@ -142,7 +140,7 @@ TreeAnalyzer::TreeAnalyzer(bool bJetORqcd = true, bool init = true)
     }
 }
 
-void TreeAnalyzer::Init() 
+void TreeAnalyzer_pt2dscan::Init() 
 {
     // Set branch addresses for t tree
     t->SetBranchAddress("nref",&nref);
@@ -228,7 +226,7 @@ void TreeAnalyzer::Init()
     nentries = t->GetEntries();
 }
 
-void TreeAnalyzer::SetAnalysisLevelParton(bool activateBranches = true)
+void TreeAnalyzer_pt2dscan::SetAnalysisLevelParton(bool activateBranches = true)
 {
     // Set branch addresses of class attributes to parton level branches
     t->SetBranchAddress("weight", &weight);
@@ -258,7 +256,7 @@ void TreeAnalyzer::SetAnalysisLevelParton(bool activateBranches = true)
     }
 }
 
-void TreeAnalyzer::SetAnalysisLevelTruth(bool activateBranches = true)
+void TreeAnalyzer_pt2dscan::SetAnalysisLevelTruth(bool activateBranches = true)
 {
     // Set branch addresses of class attributes to truth level branches
     t->SetBranchAddress("weight", &weight);
@@ -291,7 +289,7 @@ void TreeAnalyzer::SetAnalysisLevelTruth(bool activateBranches = true)
     }
 }
 
-void TreeAnalyzer::SetAnalysisLevelReco(bool activateBranches = true)
+void TreeAnalyzer_pt2dscan::SetAnalysisLevelReco(bool activateBranches = true)
 {
 // Set branch addresses of class attributes to reco level branches
     t->SetBranchAddress("weight", &weight);
@@ -323,4 +321,145 @@ void TreeAnalyzer::SetAnalysisLevelReco(bool activateBranches = true)
             t->SetBranchStatus(activeBranchName, 1);
         }
     }
+}
+
+void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string level, bool GSPincl, Float_t bTagWP = 0.9)
+{
+    if (!GSPincl) {
+        foutname += "_noGSP";
+    }
+
+    // Set analysis level
+    if (level == "par") {
+        SetAnalysisLevelPar();
+        foutname += "_par.root";
+    } else if (level == "ref") {
+        SetAnalysisLevelTruth();
+        foutname += "_ref.root";
+    } else if (level == "reco") {
+        SetAnalysisLevelReco();
+        foutname += "_reco.root";
+    } else {
+        std::cout << "Analysis level not recognised. Please choose between 'par', 'ref' or 'reco'. Exiting." << std::endl;
+        std::exit(1);
+    }
+
+    // Create histograms
+
+    // ln(1/rg)
+    Int_t x1bins = 40;
+    Float_t x1min = 0.91;
+    Float_t x1max = 5.;
+
+    // ln(kt)
+    Int_t y1bins = 40;
+    Float_t y1min = -5.;
+    Float_t y1max = 5.;
+
+    // jetpt
+    Int_t z1bins = 27*2;
+    Float_t z1min = 30.;
+    Float_t z1max = 300.;
+
+    TH3D *hB_rgkt = new TH3D("hB_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hB_rgkt_dynKt = new TH3D("hB_rgkt_dynKt", "rg, kt, pt, bjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+
+    TH3D *hBtag_rgkt = new TH3D("hBtag_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hBtag_rgkt_dynKt = new TH3D("hBtag_rgkt_dynKt", "rg, kt, pt, bjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+
+    TH3D *hC_rgkt = new TH3D("hC_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hC_rgkt_dynKt = new TH3D("hC_rgkt_dynKt", "rg, kt, pt, cjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+
+    TH3D *hL_rgkt = new TH3D("hL_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_rgkt_dynKt = new TH3D("hL_rgkt_dynKt", "rg, kt, pt, ljets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+
+    std::cout << "Creating histograms ..." << std::endl;
+
+    for (Long64_t ient = 0; ient < nentries; ient++) {
+        // Print progress
+        if (i%1000000 == 0) {
+            cout << "i = " << i << endl;
+        }
+
+        t->GetEntry(ient);
+
+        for (Int_t ijet = 0; ijet < njet; ijet++) {
+            // universal eta cut
+            if (std::abs(jeteta) > 2) continue;
+
+            Float_t rg = -1.;
+            Float_t kt = -1.;
+
+            Float_t logrg = -1.;
+            Float_t logkt = -10.;
+
+            // Calculate rg, kt only for 2 prong jets
+            if (subjet2pt[ijet] > 0.) {
+                Float_t deta = subjet1eta[ijet] - subjet2eta[ijet];
+                Float_t dphi = std::acos(std::cos(subjet1phi[ijet] - subjet2phi[ijet]));
+
+                rg = sqrt(deta * deta + dphi * dphi);
+                kt = subjet2pt[ijet] * rg;
+                
+                // calculate logs
+                logrg = log(1/rg);
+                logkt = log(kt);
+            }
+
+            // Fill true-flavour histograms
+            if (jetNb[ijet] > 0) {
+                if (GSPincl || jetNb[ijet] == 1) {
+                    hB_rgkt->Fill(logrg, logkt, weight);
+                }
+            } else if (jetNc[ijet] > 0) {
+                if (GSPincl || jetNc[ijet] == 1) {
+                    hC_rgkt->Fill(logrg, logkt, weight);
+                }
+            } else {
+                hL_rgkt->Fill(logrg, logkt, weight);
+            }
+
+            // Fill the b-tag histogram
+            bool passWP = (bool passWp = (jtDiscDeepFlavourB[ijet] + jtDiscDeepFlavourBB[ijet] + jtDiscDeepFlavourLEPB[ijet]) > bTagWP);
+            if (passWP) {
+                if (GSPincl || jetNb[ijet] == 1) { // TODO: NEED TO FIX THIS TO NOT USE TRUTH GSP
+                    hBtag_rgkt->Fill(logrg, logkt, weight);
+                }
+            }
+
+            // Same for dynKt histograms
+            if (!splitIsHardest[ijet]) {
+                logrg = -1.;
+                logkt = -10.;
+            }
+
+            if (jetNb[ijet] > 0) {
+                if (GSPincl || jetNb[ijet] == 1) {
+                    hB_rgkt_dynKt->Fill(logrg, logkt, weight);
+                }
+            } else if (jetNc[ijet] > 0) {
+                if (GSPincl || jetNc[ijet] == 1) {
+                    hC_rgkt_dynKt->Fill(logrg, logkt, weight);
+                }
+            } else {
+                hL_rgkt_dynKt->Fill(logrg, logkt, weight);
+            }
+
+            if (passWP) {
+                if (GSPincl || jetNb[ijet] == 1) { // TODO: NEED TO FIX THIS TO NOT USE TRUTH GSP
+                    hBtag_rgkt_dynKt->Fill(logrg, logkt, weight);
+                }
+            }
+        } // jet loop
+    } // entry loop
+
+    // Save histograms
+    cout << "\n(Re)creating file " << foutname << endl;
+    TFile *fout = new TFile(foutname.c_str());
+
+    for (auto h : {hB_rgkt, hB_rgkt_dynKt, hBtag_rgkt, hBtag_rgkt_dynKt, hL_rgkt, hL_rgkt_dynKt, hC_rgkt, hC_rgkt_dynKt}) {
+        h->Write();
+    }
+
+    fout->Close();
 }
