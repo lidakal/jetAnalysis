@@ -12,7 +12,7 @@
 
 void plot_svTagInfo()
 {
-    std::string finname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root";
+    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
     
     // Activate branches of interest
@@ -109,8 +109,8 @@ void plot_svTagInfo()
                 std::vector<Float_t> svtxTrPhi = flatten(*ta.svtxTrPhi);
 
                 for (size_t isvTrk = 0; isvTrk < svtxTrEta.size(); isvTrk++) {
-                    if ((ta.ipEta[itrack + itrackOffset] - svtxTrEta[isvTrk]) > eps) continue;
-                    if ((ta.ipPhi[itrack + itrackOffset] - svtxTrPhi[isvTrk]) > eps) continue;
+				  if (std::abs(ta.ipEta[itrack + itrackOffset] - svtxTrEta[isvTrk]) > eps) continue;
+                    if (std::abs(ta.ipPhi[itrack + itrackOffset] - svtxTrPhi[isvTrk]) > eps) continue;
                     trackFoundInSV = true;
                     break;
                 }  

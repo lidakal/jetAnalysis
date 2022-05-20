@@ -13,7 +13,7 @@
 
 void plot_discriminants() 
 {
-    std::string finname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root";
+    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
 
     // Activate branches of interest
@@ -105,8 +105,8 @@ void plot_discriminants()
                 std::vector<Float_t> svtxTrPhi = flatten(*ta.svtxTrPhi);
 				Float_t eps = 0.001;
                 for (size_t isvTrk = 0; isvTrk < svtxTrEta.size(); isvTrk++) {
-                    if ((ipEta - svtxTrEta[isvTrk]) > eps) continue;
-                    if ((ipPhi - svtxTrPhi[isvTrk]) > eps) continue;
+				  if (std::abs(ipEta - svtxTrEta[isvTrk]) > eps) continue;
+				  if (std::abs(ipPhi - svtxTrPhi[isvTrk]) > eps) continue;
                     inSV = true;
                     break;
                 }  
