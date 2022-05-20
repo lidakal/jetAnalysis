@@ -68,7 +68,7 @@ void plot_aggregation_eff()
                 bool isFromB = (sta >= 100);
 
                 // Find track in SV and get the SV properties
-                Float_t eps = 0.001;
+                Float_t eps = 0.00001;
                 Int_t whichSV = -1;
                 Int_t iSVtrackOffset = 0;
                 for (Int_t isv = 0; isv < ta.nsvtx[ijet]; isv++) {
