@@ -37,6 +37,10 @@ void plot_aggregation_eff()
     TH2D *heff_sel7 = new TH2D("heff_sel7", "histogram with b product tag efficiency, sel7", 2, 0, 1, 2, 0, 1);
     TH2D *heff_sel8 = new TH2D("heff_sel8", "histogram with b product tag efficiency, sel8", 2, 0, 1, 2, 0, 1);
     TH2D *heff_sel9 = new TH2D("heff_sel9", "histogram with b product tag efficiency, sel9", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel10 = new TH2D("heff_sel10", "histogram with b product tag efficiency, sel10", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel11 = new TH2D("heff_sel11", "histogram with b product tag efficiency, sel11", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel12 = new TH2D("heff_sel12", "histogram with b product tag efficiency, sel12", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel13 = new TH2D("heff_sel13", "histogram with b product tag efficiency, sel13", 2, 0, 1, 2, 0, 1);
     
     //------------------ Calculate efficiency / purity ----------------------
 
@@ -114,6 +118,10 @@ void plot_aggregation_eff()
                 bool passSelection7 = passSelection(7, inSV, ip3dSig);
                 bool passSelection8 = passSelection(8, inSV, ip3dSig);
                 bool passSelection9 = passSelection(9, inSV, ip3dSig);
+                bool passSelection10 = passSelection(10, inSV, ip3dSig);
+                bool passSelection11 = passSelection(11, inSV, ip3dSig);
+                bool passSelection12 = passSelection(12, inSV, ip3dSig);
+                bool passSelection13 = passSelection(13, inSV, ip3dSig);
 
                 // Fill histograms
                 Float_t xFromB = 0.9;
@@ -146,6 +154,18 @@ void plot_aggregation_eff()
                 Float_t ySel9 = 0.9;
                 if (passSelection9) ySel9 = 0.2;
 
+                Float_t ySel10 = 0.9;
+                if (passSelection10) ySel10 = 0.2;
+
+                Float_t ySel11 = 0.9;
+                if (passSelection11) ySel11 = 0.2;
+
+                Float_t ySel12 = 0.9;
+                if (passSelection12) ySel12 = 0.2;
+
+                Float_t ySel13 = 0.9;
+                if (passSelection13) ySel13 = 0.2;
+
                 heff_sel1->Fill(xFromB, ySel1, weight);
                 heff_sel2->Fill(xFromB, ySel2, weight);
                 heff_sel3->Fill(xFromB, ySel3, weight);
@@ -155,13 +175,20 @@ void plot_aggregation_eff()
                 heff_sel7->Fill(xFromB, ySel7, weight);
                 heff_sel8->Fill(xFromB, ySel8, weight);
                 heff_sel9->Fill(xFromB, ySel9, weight);
+                heff_sel10->Fill(xFromB, ySel10, weight);
+                heff_sel11->Fill(xFromB, ySel11, weight);
+                heff_sel12->Fill(xFromB, ySel12, weight);
+                heff_sel13->Fill(xFromB, ySel13, weight);
             } // jet track loop
             itrackOffset += ta.nselIPtrk[ijet];
         } // jet loop
     } // entry loop
 
     std::cout << "Saving histograms in " << foutname << std::endl;
-    for (auto h : {heff_sel1, heff_sel2, heff_sel3, heff_sel4, heff_sel5, heff_sel6, heff_sel7, heff_sel8, heff_sel9}) {
+    for (auto h : {heff_sel1, 
+                    heff_sel2, heff_sel3, heff_sel4, heff_sel5, 
+                    heff_sel6, heff_sel7, heff_sel8, heff_sel9,
+                    heff_sel10, heff_sel11, heff_sel12, heff_sel13,}) {
         h->Write();
     }
 

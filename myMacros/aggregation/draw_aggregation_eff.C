@@ -5,29 +5,12 @@
 #include "TLegend.h"
 #include "TStyle.h"
 
+#include "utils.h" // make_graph()
+
 void draw_aggregation_eff() 
 {
     std::string indir = "/home/llr/cms/kalipoliti/rootFiles/";
 	std::string fname = "aggregation_eff.root";
-
-    TFile *fin = new TFile((indir + fname).c_str());
-    TH1D *heff_sel1 = (TH1D *) fin->Get("heff_sel1");
-    std::string sel1 = "in SV";
-
-    TH1D *heff_sel2 = (TH1D *) fin->Get("heff_sel2");
-    TH1D *heff_sel3 = (TH1D *) fin->Get("heff_sel3");
-    TH1D *heff_sel4 = (TH1D *) fin->Get("heff_sel4");
-    TH1D *heff_sel5 = (TH1D *) fin->Get("heff_sel5");
-	std::string sel2 = "in SV || ip3dSig > (12, 9, 6, 3)";
-
-    TH1D *heff_sel6 = (TH1D *) fin->Get("heff_sel6");
-    TH1D *heff_sel7 = (TH1D *) fin->Get("heff_sel7");
-    TH1D *heff_sel8 = (TH1D *) fin->Get("heff_sel8");
-    TH1D *heff_sel9 = (TH1D *) fin->Get("heff_sel9");
-	std::string sel6 = "ip3dSig > (12, 9, 6, 3)";
-
-    std::string x1title = "pass selection | From B decay";
-    std::string y1title = "pass selection | Not from B decay";
 
     TMultiGraph *mg = new TMultiGraph();
     TLegend *leg = new TLegend(0.2, 0.7, 0.5, 0.85);
@@ -35,92 +18,30 @@ void draw_aggregation_eff()
     leg->SetFillStyle(0);
 	gStyle->SetLegendTextSize(15);
 
-    // These should be the same for all selections
-	Float_t totalFromB = heff_sel1->GetBinContent(1, 1) + heff_sel1->GetBinContent(1, 2);
-    Float_t totalNotFromB = heff_sel1->GetBinContent(2, 1) + heff_sel1->GetBinContent(2, 2);
-
-    // Sel1
-	Float_t passFromB_sel1 = heff_sel1->GetBinContent(1, 1);
-    Float_t passNotFromB_sel1 = heff_sel1->GetBinContent(2, 1);
-	Float_t xSel1 = passFromB_sel1 / totalFromB;
-	Float_t ySel1 = passNotFromB_sel1 / totalNotFromB;
-
-    TGraph *gr_sel1 = new TGraph(1, &xSel1, &ySel1);
-    gr_sel1->SetMarkerColor(2);
-    gr_sel1->SetMarkerStyle(kFullCircle);
+    std::string label_sel1 = "in SV";
+    std::vector<Int_t> sel1 = {1};
+    TGraph *gr_sel1 = make_graph(indir + fname, sel1, kFullCircle, kRed, leg, label_sel1);
     mg->Add(gr_sel1);
-    leg->AddEntry(gr_sel1, sel1.c_str(), "p");
 
-    // Sel2 + 3 + 4 + 5
-    const Int_t nSel2 = 4;
-    Float_t xSel2[nSel2];
-    Float_t ySel2[nSel2];
-
-    Float_t passFromB_sel2 = heff_sel2->GetBinContent(1, 1);
-    Float_t passNotFromB_sel2 = heff_sel2->GetBinContent(2, 1);
-	xSel2[0] = passFromB_sel2 / totalFromB;
-	ySel2[0] = passNotFromB_sel2 / totalNotFromB;
-
-    Float_t passFromB_sel3 = heff_sel3->GetBinContent(1, 1);
-    Float_t passNotFromB_sel3 = heff_sel3->GetBinContent(2, 1);
-	xSel2[1] = passFromB_sel3 / totalFromB;
-	ySel2[1] = passNotFromB_sel3 / totalNotFromB;
-
-    Float_t passFromB_sel4 = heff_sel4->GetBinContent(1, 1);
-    Float_t passNotFromB_sel4 = heff_sel4->GetBinContent(2, 1);
-	xSel2[2] = passFromB_sel4 / totalFromB;
-	ySel2[2] = passNotFromB_sel4 / totalNotFromB;
-
-    Float_t passFromB_sel5 = heff_sel5->GetBinContent(1, 1);
-    Float_t passNotFromB_sel5 = heff_sel5->GetBinContent(2, 1);
-	xSel2[3] = passFromB_sel5 / totalFromB;
-	ySel2[3] = passNotFromB_sel5 / totalNotFromB;
-
-    TGraph *gr_sel2 = new TGraph(nSel2, xSel2, ySel2);
-    gr_sel2->SetMarkerColor(4);
-    gr_sel2->SetMarkerStyle(kFullTriangleUp);
-	gr_sel2->SetLineColor(4);
-	gr_sel2->SetLineStyle(2);
-    mg->Add(gr_sel2);
-    leg->AddEntry(gr_sel2, sel2.c_str(), "pl");
-
-    // Sel6 + 7 + 8 + 9
-    const Int_t nSel6 = 4;
-    Float_t xSel6[nSel6];
-    Float_t ySel6[nSel6];
-
-    Float_t passFromB_sel6 = heff_sel6->GetBinContent(1, 1);
-    Float_t passNotFromB_sel6 = heff_sel6->GetBinContent(2, 1);
-	xSel6[0] = passFromB_sel6 / totalFromB;
-	ySel6[0] = passNotFromB_sel6 / totalNotFromB;
-
-    Float_t passFromB_sel7 = heff_sel7->GetBinContent(1, 1);
-    Float_t passNotFromB_sel7 = heff_sel7->GetBinContent(2, 1);
-	xSel6[1] = passFromB_sel7 / totalFromB;
-	ySel6[1] = passNotFromB_sel7 / totalNotFromB;
-
-    Float_t passFromB_sel8 = heff_sel8->GetBinContent(1, 1);
-    Float_t passNotFromB_sel8 = heff_sel8->GetBinContent(2, 1);
-	xSel6[2] = passFromB_sel8 / totalFromB;
-	ySel6[2] = passNotFromB_sel8 / totalNotFromB;
-
-    Float_t passFromB_sel9 = heff_sel9->GetBinContent(1, 1);
-    Float_t passNotFromB_sel9 = heff_sel9->GetBinContent(2, 1);
-	xSel6[3] = passFromB_sel9 / totalFromB;
-	ySel6[3] = passNotFromB_sel9 / totalNotFromB;
-
-    TGraph *gr_sel6 = new TGraph(nSel6, xSel6, ySel6);
-    gr_sel6->SetMarkerColor(4);
-    gr_sel6->SetMarkerStyle(kFullDiamond);
-	gr_sel6->SetLineColor(6);
-	gr_sel6->SetLineStyle(2);
+    std::string label_sel6 = "ip3dSig > (12, 9, 6, 3)";
+    std::vector<Int_t> sel6 = {6, 7, 8, 9};
+    TGraph *gr_sel6 = make_graph(indir + fname, sel6, kFullDiamond, kGreen, leg, label_sel6);
     mg->Add(gr_sel6);
-    leg->AddEntry(gr_sel6, sel6.c_str(), "pl");
+    
+	std::string label_sel2 = "in SV || ip3dSig > (12, 9, 6, 3)";
+    std::vector<Int_t> sel2 = {1, 2, 3, 4};
+    TGraph *gr_sel2 = make_graph(indir + fname, sel2, kFullTriangleUp, kBlue, leg, label_sel2);
+    mg->Add(gr_sel2);
 
+    std::string label_sel10 = "inSV && ip3dSig > (12, 9, 6, 3)";
+    std::vector<Int_t> sel10 = {10, 11, 12, 13};
+    TGraph *gr_sel10 = make_graph(indir + fname, sel10, kFullTriangleDown, kViolet, leg, label_sel10);
+    mg->Add(gr_sel10);
+
+    std::string x1title = "pass selection | From B decay";
+    std::string y1title = "pass selection | Not from B decay";
 	mg->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
-    //mg->GetXaxis()->SetTitle(x1title.c_str());
-    //mg->GetYaxis()->SetTitle(y1title.c_str());
-
+    
     mg->Draw("pla");
 	leg->Draw();
 }
