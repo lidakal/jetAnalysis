@@ -13,7 +13,7 @@
 
 void plot_svtx_2d() 
 {
-    std::string finname = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root";
+    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
 
     // Activate branches of interest
@@ -123,8 +123,8 @@ void plot_svtx_2d()
                     for (Int_t itrack = 0; itrack < ta.nselIPtrk[ijet]; itrack++) {
                         Float_t ipEta = ta.ipEta[itrackOffset + itrack];
                         Float_t ipPhi = ta.ipPhi[itrackOffset + itrack];
-                        if (trackEta - ipEta > eps) continue;
-                        if (trackPhi - ipPhi > eps) continue;
+                        if (std::abs(trackEta - ipEta) > eps) continue;
+                        if (std::abs(trackPhi - ipPhi) > eps) continue;
                         trackID = itrack;
                         break;
                     } // jet track loop

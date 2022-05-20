@@ -13,7 +13,7 @@
 
 void plot_svtx_BvsL() 
 {
-    std::string finname_B = "/data_CMS/cms/kalipoliti/chargedSJ_mergedSVtracks_gen_reco/merged_HiForestAOD.root";
+    std::string finname_B = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
     std::string finname_L = "/data_CMS/cms/kalipoliti/qcdMC/chargedSJ/merged_HiForestAOD.root";
     
     TreeAnalyzer taB(finname_B, true);
