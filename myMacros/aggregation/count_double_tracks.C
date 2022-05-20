@@ -5,7 +5,7 @@
 #include "TTree.h"
 #include "TH2D.h"
 
-void plot_aggregation_eff()
+void count_double_tracks()
 {
     std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
@@ -40,12 +40,12 @@ void plot_aggregation_eff()
     // Go over events
     for (Long64_t ient = 0; ient < ta.nentries; ient++) {
         // Show progress
-        //if (ient % 1000000 == 0) {
+        if (ient % 1000000 == 0) {
             std::cout << "i = " << ient << std::endl;
-		//}
+		}
 
         // For debug purposes
-        if (ient > 10) break;
+        //if (ient > 10) break;
 
         ta.GetEntry(ient);
         Float_t weight = ta.weight;
@@ -53,7 +53,7 @@ void plot_aggregation_eff()
 
         // Go over jets
         for (Int_t ijet = 0; ijet < ta.nref; ijet++) {
-            std::cout << "ijet = " << ijet << std::endl;
+		  //std::cout << "ijet = " << ijet << std::endl;
             bool passWp = (ta.jtDiscDeepFlavourB[ijet] + ta.jtDiscDeepFlavourBB[ijet] + ta.jtDiscDeepFlavourLEPB[ijet]) > 0.9;
 
             // bjet & eta cut & pt cut
@@ -64,7 +64,7 @@ void plot_aggregation_eff()
 
             // Go over jet tracks
             for (Int_t itrack = 0; itrack < ta.nselIPtrk[ijet]; itrack++) {
-                std::cout <<"itrack="<< itrack << std::endl;
+			  //std::cout <<"itrack="<< itrack << std::endl;
                 // Get track properties
                 Float_t ipEta = ta.ipEta[itrackOffset + itrack];
                 Float_t ipPhi = ta.ipPhi[itrackOffset + itrack];
@@ -74,7 +74,7 @@ void plot_aggregation_eff()
                 bool isFromB = (sta >= 100);
 
                 // Find track in SV and get the SV properties
-                Float_t eps = 0.001;
+                Float_t eps = 0.00001;
                 Int_t whichSV = -1;
                 Int_t iSVtrackOffset = 0;
                 for (Int_t isv = 0; isv < ta.nsvtx[ijet]; isv++) {
@@ -87,14 +87,15 @@ void plot_aggregation_eff()
                         if (std::abs(trackEta - ipEta) > eps) continue;
                         if (std::abs(trackPhi - ipPhi) > eps) continue;
 
-                        std::cout << "track found in SV: " << isv << std::endl;
+                        //std::cout << "track found in SV: " << isv << std::endl;
 
                         if (whichSV>0) {
-                            std::cout << "found double" << std::endl;
+						  std::cout << "found double in event i = " << ient << "and jet ijet = " << ijet  << std::endl;
+						  
+							counts++;
                         }
                         whichSV = isv;
                         
-                        counts++;
                         break;
                     } // SV track loop
                     //if (whichSV > 0) break;
@@ -150,5 +151,5 @@ void plot_aggregation_eff()
         } // jet loop
     } // entry loop
 
-    
+	std::cout << "doubles found: " << counts << std::endl;   
 }
