@@ -49,4 +49,4 @@
 __pycache__
 
 # hdf
-.h5
+*.h5
