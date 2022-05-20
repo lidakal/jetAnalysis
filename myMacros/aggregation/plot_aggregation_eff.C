@@ -41,6 +41,7 @@ void plot_aggregation_eff()
     TH2D *heff_sel11 = new TH2D("heff_sel11", "histogram with b product tag efficiency, sel11", 2, 0, 1, 2, 0, 1);
     TH2D *heff_sel12 = new TH2D("heff_sel12", "histogram with b product tag efficiency, sel12", 2, 0, 1, 2, 0, 1);
     TH2D *heff_sel13 = new TH2D("heff_sel13", "histogram with b product tag efficiency, sel13", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel14 = new TH2D("heff_sel14", "histogram with b product tag efficiency, sel14", 2, 0, 1, 2, 0, 1);
     
     //------------------ Calculate efficiency / purity ----------------------
 
@@ -122,6 +123,7 @@ void plot_aggregation_eff()
                 bool passSelection11 = passSelection(11, inSV, ip3dSig);
                 bool passSelection12 = passSelection(12, inSV, ip3dSig);
                 bool passSelection13 = passSelection(13, inSV, ip3dSig);
+				bool passSelection14 = passSelection(14, inSV, ip3dSig);
 
                 // Fill histograms
                 Float_t xFromB = 0.9;
@@ -166,6 +168,9 @@ void plot_aggregation_eff()
                 Float_t ySel13 = 0.9;
                 if (passSelection13) ySel13 = 0.2;
 
+                Float_t ySel14 = 0.9;
+                if (passSelection14) ySel14 = 0.2;
+
                 heff_sel1->Fill(xFromB, ySel1, weight);
                 heff_sel2->Fill(xFromB, ySel2, weight);
                 heff_sel3->Fill(xFromB, ySel3, weight);
@@ -179,6 +184,8 @@ void plot_aggregation_eff()
                 heff_sel11->Fill(xFromB, ySel11, weight);
                 heff_sel12->Fill(xFromB, ySel12, weight);
                 heff_sel13->Fill(xFromB, ySel13, weight);
+                heff_sel14->Fill(xFromB, ySel14, weight);
+
             } // jet track loop
             itrackOffset += ta.nselIPtrk[ijet];
         } // jet loop
@@ -188,7 +195,10 @@ void plot_aggregation_eff()
     for (auto h : {heff_sel1, 
                     heff_sel2, heff_sel3, heff_sel4, heff_sel5, 
                     heff_sel6, heff_sel7, heff_sel8, heff_sel9,
-                    heff_sel10, heff_sel11, heff_sel12, heff_sel13,}) {
+                    heff_sel10, heff_sel11, heff_sel12, heff_sel13,
+                    heff_sel14}) 
+	        
+{
         h->Write();
     }
 

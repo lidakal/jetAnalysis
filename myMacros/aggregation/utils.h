@@ -8,10 +8,9 @@ TGraph * make_graph(std::string fname, std::vector<Int_t> v_selN, Style_t marker
 {
     TFile *fin = new TFile(fname.c_str());
     TGraph *gr = new TGraph();
-
-    size_t 
-    for (auto selN : v_selN) {
-        TH1D *h = (TH1D *) fin->Get(Form("h_sel%d", selN));
+ 
+    for (Int_t selN : v_selN) {
+        TH1D *h = (TH1D *) fin->Get(Form("heff_sel%d", selN));
 
         Float_t totalFromB = h->GetBinContent(1, 1) + h->GetBinContent(1, 2);
         Float_t totalNotFromB = h->GetBinContent(2, 1) + h->GetBinContent(2, 2);

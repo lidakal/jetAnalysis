@@ -4,6 +4,7 @@
 #include "TMultiGraph.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "TCanvas.h"
 
 #include "utils.h" // make_graph()
 
@@ -11,6 +12,8 @@ void draw_aggregation_eff()
 {
     std::string indir = "/home/llr/cms/kalipoliti/rootFiles/";
 	std::string fname = "aggregation_eff.root";
+
+	TCanvas *c = new TCanvas("c", "", 800, 800);
 
     TMultiGraph *mg = new TMultiGraph();
     TLegend *leg = new TLegend(0.2, 0.7, 0.5, 0.85);
@@ -29,7 +32,7 @@ void draw_aggregation_eff()
     mg->Add(gr_sel6);
     
 	std::string label_sel2 = "in SV || ip3dSig > (12, 9, 6, 3)";
-    std::vector<Int_t> sel2 = {1, 2, 3, 4};
+    std::vector<Int_t> sel2 = {2, 3, 4, 5};
     TGraph *gr_sel2 = make_graph(indir + fname, sel2, kFullTriangleUp, kBlue, leg, label_sel2);
     mg->Add(gr_sel2);
 
@@ -38,10 +41,20 @@ void draw_aggregation_eff()
     TGraph *gr_sel10 = make_graph(indir + fname, sel10, kFullTriangleDown, kViolet, leg, label_sel10);
     mg->Add(gr_sel10);
 
+	std::string label_sel14 = "ip3dSig > 3 || ip3dSig < -3";
+	std::vector<Int_t> sel14 = {14};
+	TGraph *gr_sel14 = make_graph(indir + fname, sel14, kOpenCircle, kOrange, leg, label_sel14);
+	mg->Add(gr_sel14);
+
     std::string x1title = "pass selection | From B decay";
     std::string y1title = "pass selection | Not from B decay";
 	mg->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
     
     mg->Draw("pla");
 	leg->Draw();
+
+	c->Draw();
+
+	std::string savename = "aggregation_eff_ROC.png";
+	c->Print(savename.c_str(), "png");
 }
