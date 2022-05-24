@@ -14,7 +14,7 @@ void draw_truth_btag_diff()
 
     TCanvas *c = new TCanvas("c", "", 1000, 800);
 
-    TLegend *leg = new TLegend(0.5, 0.7, 0.8, 0.85);
+    TLegend *leg = new TLegend(0.6, 0.7, 0.8, 0.85);
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     gStyle->SetLegendTextSize(15);
@@ -22,7 +22,7 @@ void draw_truth_btag_diff()
     THStack *hs = new THStack("hs", "");
 
     Float_t ptrange[2] = {100., 150.};
-    TPaveText *info = new TPaveText(0.5, 0.4, 0.8, 0.6, "ndc");
+    TPaveText *info = new TPaveText(0.6, 0.6, 0.8, 0.7, "ndc");
     info->AddText(Form("%.0f < p_{T, jet} < %.0f", ptrange[0], ptrange[1]));
     info->SetTextSize(15);
     info->SetFillStyle(0);
