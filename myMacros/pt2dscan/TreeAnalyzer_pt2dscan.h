@@ -250,6 +250,7 @@ void TreeAnalyzer_pt2dscan::SetAnalysisLevelParton(bool activateBranches = true)
         for (auto activeBranchName : {"npar", "parpt", "pareta", "parNb", "parNc",
                                       "psjt1Pt", "psjt1Eta", "psjt1Phi", 
                                       "psjt2Pt", "psjt2Eta", "psjt2Phi",
+                                      "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB",
                                       "weight"}) {
             t->SetBranchStatus(activeBranchName, 1);
         }
@@ -283,6 +284,7 @@ void TreeAnalyzer_pt2dscan::SetAnalysisLevelTruth(bool activateBranches = true)
                                       "jtNbHad", "jtNcHad",
                                       "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
                                       "rsjt2Pt", "rsjt2Eta", "rsjt2Phi",
+                                      "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB",
                                       "weight"}) {
             t->SetBranchStatus(activeBranchName, 1);
         }
