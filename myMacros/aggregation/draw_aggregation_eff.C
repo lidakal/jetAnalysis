@@ -64,7 +64,7 @@ void draw_aggregation_eff()
 
     //-------------------------- efficiency VS purity ---------------------
 
-    TCanvas *c_pur = new TCanvas("cpur", "", 800, 800);
+    TCanvas *c_pur = new TCanvas("c_pur", "", 800, 800);
 
     TMultiGraph *mg_pur = new TMultiGraph();
     TLegend *leg_pur = new TLegend(0.2, 0.7, 0.5, 0.85);
@@ -72,30 +72,20 @@ void draw_aggregation_eff()
     leg_pur->SetFillStyle(0);
 	gStyle->SetLegendTextSize(15);
 
-    std::string label_sel1 = "in SV";
-    std::vector<Int_t> sel1 = {1};
-    TGraph *gr_sel1 = make_graph_eff_pur(indir + fname, sel1, kFullCircle, kRed, leg_pur, label_sel1);
+    TGraph *gr_pur_sel1 = make_graph_eff_pur(indir + fname, sel1, kFullCircle, kRed, leg_pur, label_sel1);
     mg_pur->Add(gr_sel1);
 
-    std::string label_sel6 = "|ip3dSig| > (12, 9, 6, 3)";
-    std::vector<Int_t> sel6 = {6, 7, 8, 9};
-    TGraph *gr_sel6 = make_graph_eff_pur(indir + fname, sel6, kFullDiamond, kGreen, leg_pur, label_sel6);
-    mg_pur->Add(gr_sel6);
+    TGraph *gr_pur_sel6 = make_graph_eff_pur(indir + fname, sel6, kFullDiamond, kGreen, leg_pur, label_sel6);
+    mg_pur->Add(gr_pur_sel6);
     
-	std::string label_sel2 = "in SV || |ip3dSig| > (12, 9, 6, 3)";
-    std::vector<Int_t> sel2 = {2, 3, 4, 5};
-    TGraph *gr_sel2 = make_graph_eff_pur(indir + fname, sel2, kFullTriangleUp, kBlue, leg_pur, label_sel2);
-    mg_pur->Add(gr_sel2);
+	TGraph *gr_pur_sel2 = make_graph_eff_pur(indir + fname, sel2, kFullTriangleUp, kBlue, leg_pur, label_sel2);
+    mg_pur->Add(gr_pur_sel2);
 
-    std::string label_sel10 = "inSV && |ip3dSig| > (12, 9, 6, 3)";
-    std::vector<Int_t> sel10 = {10, 11, 12, 13};
-    TGraph *gr_sel10 = make_graph_eff_pur(indir + fname, sel10, kFullTriangleDown, kViolet, leg_pur, label_sel10);
-    mg_pur->Add(gr_sel10);
+    TGraph *gr_pur_sel10 = make_graph_eff_pur(indir + fname, sel10, kFullTriangleDown, kViolet, leg_pur, label_sel10);
+    mg_pur->Add(gr_pur_sel10);
 
-	std::string label_sel14 = "(inSV && |ip3dSig| > 3) || (!inSV && |ip3dSig| > (9, 6, 3))";
-	std::vector<Int_t> sel14 = {14, 15, 16};
-	TGraph *gr_sel14 = make_graph_eff_pur(indir + fname, sel14, kOpenCircle, kOrange, leg_pur, label_sel14);
-	mg_pur->Add(gr_sel14);
+	TGraph *gr_pur_sel14 = make_graph_eff_pur(indir + fname, sel14, kOpenCircle, kOrange, leg_pur, label_sel14);
+	mg_pur->Add(gr_pur_sel14);
 
     std::string x1title_pur = "pass selection | From B decay";
     std::string y1title_pur = "From B decay | pass selection";
