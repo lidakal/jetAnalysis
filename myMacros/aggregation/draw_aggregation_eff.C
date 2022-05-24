@@ -41,8 +41,8 @@ void draw_aggregation_eff()
     TGraph *gr_sel10 = make_graph(indir + fname, sel10, kFullTriangleDown, kViolet, leg, label_sel10);
     mg->Add(gr_sel10);
 
-	std::string label_sel14 = "ip3dSig > 3 || ip3dSig < -3";
-	std::vector<Int_t> sel14 = {14};
+	std::string label_sel14 = "(inSV && |ip3dSig| > 3) || (!inSV && |ip3dSig| > (9, 6, 3))";
+	std::vector<Int_t> sel14 = {14, 15, 16};
 	TGraph *gr_sel14 = make_graph(indir + fname, sel14, kOpenCircle, kOrange, leg, label_sel14);
 	mg->Add(gr_sel14);
 

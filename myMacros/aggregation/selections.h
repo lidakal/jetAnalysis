@@ -75,8 +75,30 @@ bool passSelection(int Selection, bool inSV, float ip3dSig)
         return false; 
     }
 
-	if (Selection == 14) {
-	    if ((ip3dSig > 3.) || (ip3dSig < -3.)) return true;
+    if (Selection == 14) {
+        if (inSV) {
+	        if (std::abs(ip3dSig) > 3.) return true;
+        } else {
+            if (std::abs(ip3dSig) > 3.) return true;
+        }
+	    return false;
+	}
+
+    if (Selection == 15) {
+        if (inSV) {
+	        if (std::abs(ip3dSig) > 3.) return true;
+        } else {
+            if (std::abs(ip3dSig) > 6.) return true;
+        }
+	    return false;
+	}
+
+    if (Selection == 16) {
+        if (inSV) {
+	        if (std::abs(ip3dSig) > 3.) return true;
+        } else {
+            if (std::abs(ip3dSig) > 9.) return true;
+        }
 	    return false;
 	}
 

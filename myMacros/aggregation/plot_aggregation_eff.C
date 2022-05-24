@@ -42,6 +42,8 @@ void plot_aggregation_eff()
     TH2D *heff_sel12 = new TH2D("heff_sel12", "histogram with b product tag efficiency, sel12", 2, 0, 1, 2, 0, 1);
     TH2D *heff_sel13 = new TH2D("heff_sel13", "histogram with b product tag efficiency, sel13", 2, 0, 1, 2, 0, 1);
     TH2D *heff_sel14 = new TH2D("heff_sel14", "histogram with b product tag efficiency, sel14", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel15 = new TH2D("heff_sel15", "histogram with b product tag efficiency, sel15", 2, 0, 1, 2, 0, 1);
+    TH2D *heff_sel16 = new TH2D("heff_sel16", "histogram with b product tag efficiency, sel16", 2, 0, 1, 2, 0, 1);
     
     //------------------ Calculate efficiency / purity ----------------------
 
@@ -124,6 +126,8 @@ void plot_aggregation_eff()
                 bool passSelection12 = passSelection(12, inSV, ip3dSig);
                 bool passSelection13 = passSelection(13, inSV, ip3dSig);
 				bool passSelection14 = passSelection(14, inSV, ip3dSig);
+                bool passSelection15 = passSelection(15, inSV, ip3dSig);
+                bool passSelection16 = passSelection(16, inSV, ip3dSig);
 
                 // Fill histograms
                 Float_t xFromB = 0.9;
@@ -171,6 +175,12 @@ void plot_aggregation_eff()
                 Float_t ySel14 = 0.9;
                 if (passSelection14) ySel14 = 0.2;
 
+                Float_t ySel15 = 0.9;
+                if (passSelection15) ySel15 = 0.2;
+
+                Float_t ySel16 = 0.9;
+                if (passSelection16) ySel16 = 0.2;
+
                 heff_sel1->Fill(xFromB, ySel1, weight);
                 heff_sel2->Fill(xFromB, ySel2, weight);
                 heff_sel3->Fill(xFromB, ySel3, weight);
@@ -185,6 +195,8 @@ void plot_aggregation_eff()
                 heff_sel12->Fill(xFromB, ySel12, weight);
                 heff_sel13->Fill(xFromB, ySel13, weight);
                 heff_sel14->Fill(xFromB, ySel14, weight);
+                heff_sel15->Fill(xFromB, ySel15, weight);
+                heff_sel16->Fill(xFromB, ySel16, weight);
 
             } // jet track loop
             itrackOffset += ta.nselIPtrk[ijet];
@@ -196,7 +208,7 @@ void plot_aggregation_eff()
                     heff_sel2, heff_sel3, heff_sel4, heff_sel5, 
                     heff_sel6, heff_sel7, heff_sel8, heff_sel9,
                     heff_sel10, heff_sel11, heff_sel12, heff_sel13,
-                    heff_sel14}) 
+                    heff_sel14, heff_sel15, heff_sel16}) 
 	        
 {
         h->Write();
