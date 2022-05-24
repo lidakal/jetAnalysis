@@ -31,25 +31,25 @@ void draw_truth_btag_diff()
     TH1D *hB_rg = do_rg_projection(fname, "hB_rgkt", ptrange);
     hB_rg->SetLineColor(1);
     hB_rg->SetLineStyle(1);
-    leg->AddEntry("truth, true b-jets", "l");
+    leg->AddEntry(hB_rg, "truth, true b-jets", "l");
     hs->Add(hB_rg);
 
     TH1D *hB_rg_dynKt = do_rg_projection(fname, "hB_rgkt_dynKt", ptrange);
     hB_rg_dynKt->SetLineColor(1);
     hB_rg_dynKt->SetLineStyle(2);
-    leg->AddEntry("truth, true b-jets, dynKt", "l");
+    leg->AddEntry(hB_rg_dynKt, "truth, true b-jets, dynKt", "l");
     hs->Add(hB_rg_dynKt);
 
     TH1D *hBtag_rg = do_rg_projection(fname, "hBtag_rgkt", ptrange);
     hBtag_rg->SetLineColor(2);
     hBtag_rg->SetLineStyle(1);
-    leg->AddEntry("truth, tagged b-jets", "l");
+    leg->AddEntry(hBtag_rg, "truth, tagged b-jets", "l");
     hs->Add(hBtag_rg);
 
     TH1D *hBtag_rg_dynKt = do_rg_projection(fname, "hBtag_rgkt_dynKt", ptrange);
     hBtag_rg->SetLineColor(2);
     hBtag_rg_dynKt->SetLineStyle(2);
-    leg->AddEntry("truth, tagged b-jets, dynKt", "l");
+    leg->AddEntry(hBtag_rg_dynKt, "truth, tagged b-jets, dynKt", "l");
     hs->Add(hBtag_rg_dynKt);
 
     hs->Draw("nostack hist");
