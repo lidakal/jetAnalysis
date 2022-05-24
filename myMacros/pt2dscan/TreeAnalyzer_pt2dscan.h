@@ -409,21 +409,21 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
             // Fill true-flavour histograms
             if (jetNb[ijet] > 0) {
                 if (GSPincl || jetNb[ijet] == 1) {
-                    hB_rgkt->Fill(logrg, logkt, weight);
+                    hB_rgkt->Fill(logrg, logkt, jetpt[ijet], weight);
                 }
             } else if (jetNc[ijet] > 0) {
                 if (GSPincl || jetNc[ijet] == 1) {
-                    hC_rgkt->Fill(logrg, logkt, weight);
+                    hC_rgkt->Fill(logrg, logkt, jetpt[ijet], weight);
                 }
             } else {
-                hL_rgkt->Fill(logrg, logkt, weight);
+                hL_rgkt->Fill(logrg, logkt, jetpt[ijet], weight);
             }
 
             // Fill the b-tag histogram
             bool passWP = ((jtDiscDeepFlavourB[ijet] + jtDiscDeepFlavourBB[ijet] + jtDiscDeepFlavourLEPB[ijet]) > bTagWP);
             if (passWP) {
                 if (GSPincl || jetNb[ijet] == 1) { // TODO: NEED TO FIX THIS TO NOT USE TRUTH GSP
-                    hBtag_rgkt->Fill(logrg, logkt, weight);
+                    hBtag_rgkt->Fill(logrg, logkt, jetpt[ijet], weight);
                 }
             }
 
@@ -435,19 +435,19 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
 
             if (jetNb[ijet] > 0) {
                 if (GSPincl || jetNb[ijet] == 1) {
-                    hB_rgkt_dynKt->Fill(logrg, logkt, weight);
+                    hB_rgkt_dynKt->Fill(logrg, logkt, jetpt[ijet], weight);
                 }
             } else if (jetNc[ijet] > 0) {
                 if (GSPincl || jetNc[ijet] == 1) {
-                    hC_rgkt_dynKt->Fill(logrg, logkt, weight);
+                    hC_rgkt_dynKt->Fill(logrg, logkt, jetpt[ijet], weight);
                 }
             } else {
-                hL_rgkt_dynKt->Fill(logrg, logkt, weight);
+                hL_rgkt_dynKt->Fill(logrg, logkt, jetpt[ijet], weight);
             }
 
             if (passWP) {
                 if (GSPincl || jetNb[ijet] == 1) { // TODO: NEED TO FIX THIS TO NOT USE TRUTH GSP
-                    hBtag_rgkt_dynKt->Fill(logrg, logkt, weight);
+                    hBtag_rgkt_dynKt->Fill(logrg, logkt, jetpt[ijet], weight);
                 }
             }
         } // jet loop
