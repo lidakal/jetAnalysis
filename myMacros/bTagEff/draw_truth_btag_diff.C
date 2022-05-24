@@ -23,7 +23,7 @@ void draw_truth_btag_diff()
 
     Float_t ptrange[2] = {100., 150.};
     TPaveText *info = new TPaveText(0.6, 0.6, 0.8, 0.7, "ndc");
-    info->AddText(Form("%.0f < p_{T, jet} < %.0f", ptrange[0], ptrange[1]));
+    info->AddText(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", ptrange[0], ptrange[1]));
     info->SetTextSize(15);
     info->SetFillStyle(0);
     info->SetBorderSize(0);
@@ -31,30 +31,33 @@ void draw_truth_btag_diff()
     TH1D *hB_rg = do_rg_projection(fname, "hB_rgkt", ptrange);
     hB_rg->SetLineColor(1);
     hB_rg->SetLineStyle(1);
-    leg->AddEntry(hB_rg, "truth, true b-jets", "l");
+    leg->AddEntry(hB_rg, "truth level, true b-jets", "l");
     hs->Add(hB_rg);
 
     TH1D *hB_rg_dynKt = do_rg_projection(fname, "hB_rgkt_dynKt", ptrange);
     hB_rg_dynKt->SetLineColor(1);
     hB_rg_dynKt->SetLineStyle(2);
-    leg->AddEntry(hB_rg_dynKt, "truth, true b-jets, dynKt", "l");
-    hs->Add(hB_rg_dynKt);
+    //leg->AddEntry(hB_rg_dynKt, "truth, true b-jets, dynKt", "l");
+    //hs->Add(hB_rg_dynKt);
 
     TH1D *hBtag_rg = do_rg_projection(fname, "hBtag_rgkt", ptrange);
     hBtag_rg->SetLineColor(2);
     hBtag_rg->SetLineStyle(1);
-    leg->AddEntry(hBtag_rg, "truth, tagged b-jets", "l");
+    leg->AddEntry(hBtag_rg, "truth level, tagged b-jets", "l");
     hs->Add(hBtag_rg);
 
     TH1D *hBtag_rg_dynKt = do_rg_projection(fname, "hBtag_rgkt_dynKt", ptrange);
-    hBtag_rg->SetLineColor(2);
+    hBtag_rg_dynKt->SetLineColor(2);
     hBtag_rg_dynKt->SetLineStyle(2);
-    leg->AddEntry(hBtag_rg_dynKt, "truth, tagged b-jets, dynKt", "l");
-    hs->Add(hBtag_rg_dynKt);
+    //leg->AddEntry(hBtag_rg_dynKt, "truth, tagged b-jets, dynKt", "l");
+    //hs->Add(hBtag_rg_dynKt);
 
     hs->Draw("nostack hist");
     leg->Draw();
     info->Draw();
 
     c->Draw();
+
+	std::string savename = "true_tagged_b_diff.png";
+	c->Print(savename.c_str(), "png");
 }
