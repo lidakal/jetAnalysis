@@ -16,7 +16,7 @@ void draw_aggregation_eff()
 
     // ------------------- efficiency VS mistag rate ------------------------
 
-	TCanvas *c = new TCanvas("c", "", 800, 800);
+	TCanvas *c = new TCanvas("c", "", 1800, 800);
     c->Divide(2,1);
 
     TMultiGraph *mg = new TMultiGraph();
