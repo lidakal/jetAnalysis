@@ -52,6 +52,11 @@ void draw_truth_btag_diff()
     //leg->AddEntry(hBtag_rg_dynKt, "truth, tagged b-jets, dynKt", "l");
     //hs->Add(hBtag_rg_dynKt);
 
+	std::string x1title = "ln(1/R_{g})";
+	std::string y1title = "1/N_{2-prong jets} dN/dln(1/R_{g})";
+
+	hs->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
+
     hs->Draw("nostack hist");
     leg->Draw();
     info->Draw();
