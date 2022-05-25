@@ -4,6 +4,7 @@
 #include "THStack.h"
 #include "TPaveText.h"
 #include "TLegend.h"
+#include "TCanvas.h"
 
 #include "utils.h" // do_rg_projection()
 
@@ -13,6 +14,7 @@ void draw_truth_btag_diff()
     //std::string fname_noGSP = "/home/llr/cms/kalipoliti/rootFiles/aggregateB_ip3dSig_looserCut_noGSP_ref.root";
 
     TCanvas *c = new TCanvas("c", "", 1000, 800);
+    c->Divide(2, 1);
 
     TLegend *leg = new TLegend(0.6, 0.7, 0.8, 0.85);
     leg->SetFillStyle(0);
@@ -54,12 +56,22 @@ void draw_truth_btag_diff()
 
 	std::string x1title = "ln(1/R_{g})";
 	std::string y1title = "1/N_{2-prong jets} dN/dln(1/R_{g})";
+    std::string y2title = "N_{true b-jets} / N_{tagged b-jets}";
 
 	hs->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
 
+    // Create ratio histogram
+    TH1D *h_ratio = (TH1D *) hB_rg->Clone();
+    h_ratio->Divide(hBtag_rg);
+    h_ratio->SetTitle(Form("; %s; %s", x1title.c_str(), y2title.c_str()));
+
+    c->cd(1);
     hs->Draw("nostack hist");
     leg->Draw();
     info->Draw();
+
+    c->cd(2);
+    h_ratio->Draw("hist");
 
     c->Draw();
 
