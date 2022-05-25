@@ -13,7 +13,7 @@ void draw_truth_btag_diff()
     std::string fname = "/home/llr/cms/kalipoliti/rootFiles/aggregateB_ip3dSig_looserCut_ref.root";
     //std::string fname_noGSP = "/home/llr/cms/kalipoliti/rootFiles/aggregateB_ip3dSig_looserCut_noGSP_ref.root";
 
-    TCanvas *c = new TCanvas("c", "", 1000, 800);
+    TCanvas *c = new TCanvas("c", "", 1800, 800);
     c->Divide(2, 1);
 
     TLegend *leg = new TLegend(0.6, 0.7, 0.8, 0.85);
@@ -23,9 +23,10 @@ void draw_truth_btag_diff()
 
     THStack *hs = new THStack("hs", "");
 
-    Float_t ptrange[2] = {100., 150.};
+    Float_t ptrange[2] = {400., 500.};
     TPaveText *info = new TPaveText(0.6, 0.6, 0.8, 0.7, "ndc");
     info->AddText(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", ptrange[0], ptrange[1]));
+	info->AddText("Aggregated pseudo-B's");
     info->SetTextSize(15);
     info->SetFillStyle(0);
     info->SetBorderSize(0);
@@ -64,6 +65,8 @@ void draw_truth_btag_diff()
     TH1D *h_ratio = (TH1D *) hB_rg->Clone();
     h_ratio->Divide(hBtag_rg);
     h_ratio->SetTitle(Form("; %s; %s", x1title.c_str(), y2title.c_str()));
+	TPaveText *info_ratio = (TPaveText *) info->Clone();
+	info_ratio->AddText("truth level");
 
     c->cd(1);
     hs->Draw("nostack hist");
@@ -72,6 +75,7 @@ void draw_truth_btag_diff()
 
     c->cd(2);
     h_ratio->Draw("hist");
+	info_ratio->Draw();
 
     c->Draw();
 
