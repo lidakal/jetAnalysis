@@ -7,6 +7,7 @@
 #include "TPaveText.h"
 #include "THStack.h"
 #include "TStyle.h"
+#include "TLine.h"
 
 class HistDrawer_pt2dscan
 {
@@ -105,7 +106,7 @@ void HistDrawer_pt2dscan::draw_pt2dscan(bool GSPincl)
 
     c->Draw();
     
-    string savename_c = fname + "_bjets_ref_vs_reco" + noGSP + ".png";
+    std::string savename_c = fname + "_bjets_ref_vs_reco" + noGSP + ".png";
     c->Print(savename_c.c_str());
 }
 
@@ -125,7 +126,7 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     // New selections can be added here
     std::string fname_merged_reco = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco" + noGSP + "_reco.root"; // bjet reco merge only SV
     std::string fname_merged_ip3dSig_looser_reco = "~/rootFiles/aggregateB_ip3dSig_looserCut" + noGSP + "_reco.root"; // bjet reco merge ((inSV && (|ip3dSig| > 3)) || ((!inSV) && (9 < ip3dSig < 100)))
-    std::string fname_merged_ip3dSig_loosest_reco = "~/rootFiles/aggregateB_ip3dSig_loosestCut" + noGSP + "_reco.root"; // bjet reco merge (inSV || (ip3dSig > 9))
+    std::string fname_merged_ip3dSig_reco = "~/rootFiles/aggregateB_ip3dSig" + noGSP + "_reco.root"; // bjet reco merge (tight cut)
 
     // Load histograms
     Float_t ptrange[2] = {100., 150.};
@@ -133,28 +134,28 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     TLegend *leg = new TLegend(0.5, 0.5, 0.8, 0.8);
     gStyle->SetLegendTextSize(15);
 
-    HistLoader_pt2dscan HL_ljet_ref(fname_chargedSJ_ref, "hL_rgkt");
+    HistLoader_pt2dscan HL_ljet_ref(fname_chargedSJ_qcdMC_ref, "hL_rgkt");
     TH1D *h1d_ljet_ref = HL_ljet_ref.do_rg_projection(ptrange, "h1d_ljet_ref");
     h1d_ljet_ref->SetLineColor(1);
     h1d_ljet_ref->SetLineStyle(2);
     leg->AddEntry(h1d_ljet_ref, "l-jets, truth", "l");
     hs->Add(h1d_ljet_ref);
 
-    HistLoader_pt2dscan HL_ljet_reco(fname_chargedSJ_reco, "hL_rgkt");
+    HistLoader_pt2dscan HL_ljet_reco(fname_chargedSJ_qcdMC_reco, "hL_rgkt");
     TH1D *h1d_ljet_reco = HL_ljet_reco.do_rg_projection(ptrange, "h1d_ljet_reco");
     h1d_ljet_reco->SetLineColor(2);
     h1d_ljet_reco->SetLineStyle(2);
     leg->AddEntry(h1d_ljet_reco, "l-jets, reco", "l");
     hs->Add(h1d_ljet_reco);
 
-    HistLoader_pt2dscan HL_bjet_ref(fname_chargedSJ_ref, "hB_rgkt");
+    HistLoader_pt2dscan HL_bjet_ref(fname_merged_ref, "hB_rgkt");
     TH1D *h1d_bjet_ref = HL_bjet_ref.do_rg_projection(ptrange, "h1d_bjet_ref");
     h1d_bjet_ref->SetLineColor(4);
     h1d_bjet_ref->SetLineStyle(1);
     leg->AddEntry(h1d_bjet_ref, "b-jets, truth, aggregated pseudo-B's", "l");
     hs->Add(h1d_bjet_ref);
 
-    HistLoader_pt2dscan HL_bjet_reco(fname_chargedSJ_reco, "hBtag_rgkt");
+    HistLoader_pt2dscan HL_bjet_reco(fname_chargedSJ_bJetMC_reco, "hBtag_rgkt");
     TH1D *h1d_bjet_reco = HL_bjet_reco.do_rg_projection(ptrange, "h1d_bjet_reco");
     h1d_bjet_reco->SetLineColor(6);
     h1d_bjet_reco->SetLineStyle(1);
@@ -168,19 +169,19 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     leg->AddEntry(h1d_bjet_reco_SV, "b-jets, reco, aggregation if inSV", "l");
     hs->Add(h1d_bjet_reco_SV);
 
+    HistLoader_pt2dscan HL_bjet_reco_ip3dSig(fname_merged_ip3dSig_reco, "hBtag_rgkt");
+    TH1D *h1d_bjet_reco_ip3dSig = HL_bjet_reco_ip3dSig.do_rg_projection(ptrange, "h1d_bjet_reco_ip3dSig");
+    h1d_bjet_reco_ip3dSig->SetLineColor(9);
+    h1d_bjet_reco_ip3dSig->SetLineStyle(1);
+    leg->AddEntry(h1d_bjet_reco_ip3dSig, "b-jets, reco, aggregation with ip3dSig", "l");
+    hs->Add(h1d_bjet_reco_ip3dSig);
+
     HistLoader_pt2dscan HL_bjet_reco_ip3dSig_looser(fname_merged_ip3dSig_looser_reco, "hBtag_rgkt");
     TH1D *h1d_bjet_reco_ip3dSig_looser = HL_bjet_reco_ip3dSig_looser.do_rg_projection(ptrange, "h1d_bjet_reco_ip3dSig_looser");
     h1d_bjet_reco_ip3dSig_looser->SetLineColor(9);
     h1d_bjet_reco_ip3dSig_looser->SetLineStyle(1);
     leg->AddEntry(h1d_bjet_reco_ip3dSig_looser, "b-jets, reco, aggregation with ip3dSig - looserCut", "l");
-    hs->Add(h1d_bjet_reco_ip3dSig_looser);
-
-    HistLoader_pt2dscan HL_bjet_reco_ip3dSig_loosest(fname_merged_ip3dSig_loosest_reco, "hBtag_rgkt");
-    TH1D *h1d_bjet_reco_ip3dSig_loosest = HL_bjet_reco_ip3dSig_loosest.do_rg_projection(ptrange, "h1d_bjet_reco_ip3dSig_loosest");
-    h1d_bjet_reco_ip3dSig_loosest->SetLineColor(9);
-    h1d_bjet_reco_ip3dSig_loosest->SetLineStyle(1);
-    leg->AddEntry(h1d_bjet_reco_ip3dSig_loosest, "b-jets, reco, aggregation with ip3dSig - loosestCut", "l");
-    hs->Add(h1d_bjet_reco_ip3dSig_loosest);
+    hs->Add(h1d_bjet_reco_ip3dSig_looser);    
 
     TCanvas *c = new TCanvas("c", "", 800, 800);
     hs->Draw("nostack hist");
