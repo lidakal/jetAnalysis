@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void draw_chargedSJ(string jetFlav = "B", bool GSPincl = false)
+void draw_chargedSJ(string jetFlav = "L", bool GSPincl = true)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
 
@@ -133,7 +133,7 @@ void draw_chargedSJ(string jetFlav = "B", bool GSPincl = false)
 
         // c : ref, reco
         Float_t zmin = 0.;
-        Float_t zmax = 0.3;
+        Float_t zmax = 0.4;
 
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();

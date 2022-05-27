@@ -18,6 +18,7 @@ class HistDrawer_pt2dscan
         HistDrawer_pt2dscan(std::string MCname);
 
         void draw_pt2dscan(bool GSPincl);
+		void draw_rg_projection(bool GSPincl);
 };
 
 HistDrawer_pt2dscan::HistDrawer_pt2dscan(std::string MCname)
@@ -116,9 +117,10 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     }
 
     // These do not change
-    std::string fname_chargedSJ_ref = "~/rootFiles/chargedSJ_new" + noGSP + "_ref.root"; // ljet truth
-    std::string fname_chargedSJ_reco = "~/rootFiles/chargedSJ_new" + noGSP + "_reco.root"; // ljet reco, bjet reco no merge
-    std::string fname_merged_ref = "~/rootFiles/aggregateB_ip3dSig_looserCut" + noGSP + "_ref.root"; // bjet truth merge
+    std::string fname_chargedSJ_qcdMC_ref = "~/rootFiles/chargedSJ_new_qcdMC" + noGSP + "_ref.root"; // ljet truth
+    std::string fname_chargedSJ_qcdMC_reco = "~/rootFiles/chargedSJ_new_qcdMC" + noGSP + "_reco.root"; // ljet reco
+    std::string fname_chargedSJ_bJetMC_reco = "~/rootFiles/chargedSJ_new_bJetMC" + noGSP + "_reco.root"; // bjet reco no merge
+	std::string fname_merged_ref = "~/rootFiles/aggregateB_ip3dSig_looserCut" + noGSP + "_ref.root"; // bjet truth merge
 
     // New selections can be added here
     std::string fname_merged_reco = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco" + noGSP + "_reco.root"; // bjet reco merge only SV
