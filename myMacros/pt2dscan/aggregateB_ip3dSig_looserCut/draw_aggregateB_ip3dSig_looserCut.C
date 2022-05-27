@@ -15,7 +15,7 @@
 
 using namespace std;
 
-void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = false)
+void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = true)
 {      
     /* Draw truth vs reco level with manual B aggregation */ 
     std::string noGSP = "";
@@ -26,7 +26,7 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = false)
     std::string fname_reco = "~/rootFiles/aggregateB_ip3dSig_looserCut" + noGSP + "_reco.root";
     std::string fname_ref = "~/rootFiles/aggregateB_ip3dSig_looserCut" + noGSP + "_ref.root";
     
-    HistDrawer_pt2dscan HD_reco(fname_reco, "hB_rgkt");
+    HistDrawer_pt2dscan HD_reco(fname_reco, "hBtag_rgkt");
     HistDrawer_pt2dscan HD_ref(fname_ref, "hB_rgkt");
 
     // Create / Draw 2D histograms - Projections
@@ -77,6 +77,9 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = false)
         Float_t zmin = 0.;
         Float_t zmax = 0.4;
 
+		h2d_ref->GetZaxis()->SetRangeUser(zmin, zmax);
+		h2d_reco->GetZaxis()->SetRangeUser(zmin, zmax);
+
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
         
@@ -102,5 +105,5 @@ void draw_aggregateB_ip3dSig_looserCut(bool GSPincl = false)
     }
     savename_c += ".png";
     
-    //c->Print(savename_c.c_str());
+    c->Print(savename_c.c_str());
 }
