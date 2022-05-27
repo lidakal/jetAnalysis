@@ -293,7 +293,7 @@ void TreeAnalyzer_pt2dscan::SetAnalysisLevelTruth(bool activateBranches = true)
 
 void TreeAnalyzer_pt2dscan::SetAnalysisLevelReco(bool activateBranches = true)
 {
-// Set branch addresses of class attributes to reco level branches
+    // Set branch addresses of class attributes to reco level branches
     t->SetBranchAddress("weight", &weight);
 
     t->SetBranchAddress("nref", &njet);
@@ -383,6 +383,9 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
             cout << "ient = " << ient << endl;
         }
 
+		// For debugging purposes
+		//if (ient > 15) break;
+ 
         t->GetEntry(ient);
 
         for (Int_t ijet = 0; ijet < njet; ijet++) {
