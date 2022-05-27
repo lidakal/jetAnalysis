@@ -1,84 +1,106 @@
-#include "TFile.h"
-#include "TH3D.h"
+#include "HistLoader_pt2dscan.h"
+
 #include "TH2D.h"
 #include "TH1D.h"
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TPaveText.h"
 
-// Class to load a 3D histo and create the projections
 class HistDrawer_pt2dscan
 {
-    public:
-        TH3D *h3d; 
+    std::string fname;
 
-        // ------ Constructors -------
-        HistDrawer_pt2dscan() {};
-        HistDrawer_pt2dscan(std::string fname, std::string hname);
+    // ---- Constructors ----
+    HistDrawer_pt2dscan() {};
+    HistDrawer_pt2dscan(std::string MCname);
 
-        TH2D * do_rgkt_projection(Float_t *ptrange, std::string hname);
-        TH1D * do_rg_projection(Float_t *ptrange, std::string hname);
-		TH1D * do_kt_projection(Float_t *ptrange, std::string hname);
+    void do_pt2dscan(bool GSPincl);
 };
 
-HistDrawer_pt2dscan::HistDrawer_pt2dscan(std::string fname, std::string hname)
+HistDrawer_pt2dscan::HistDrawer_pt2dscan(std::string MCname)
 {
-    TFile *fin = new TFile(fname.c_str());
-    h3d = (TH3D *) fin->Get(hname.c_str());
+    fname = MCname;
 }
 
-TH2D * HistDrawer_pt2dscan::do_rgkt_projection(Float_t *ptrange, std::string hname)
+void HistDrawer_pt2dscan::do_pt2dscan(bool GSPincl)
 {
-    TH3D *htemp = (TH3D *) h3d->Clone();
-    htemp->GetZaxis()->SetRangeUser(ptrange[0], ptrange[1]);
+    std::string noGSP = "";
+    if (!GSPincl) {
+        noGSP += "_noGSP";
+    }
+    
+    std::string fname_reco = "~/rootFiles/" + fname + noGSP + "_reco.root";
+    std::string fname_ref = "~/rootFiles/" + fname + noGSP + "_ref.root";
+    
+    HistLoader_pt2dscan HL_reco(fname_reco, "hB_rgkt"); // use true b-jets at truth level
+    HistLoader_pt2dscan HL_ref(fname_ref, "hBtag_rgkt"); // use tagged b-jets at reco level
 
-    TH2D *h2d = (TH2D *) htemp->Project3D("yx");
-	h2d->SetName(hname.c_str());
-    h2d->Scale(1. / h2d->Integral("width"));
+    Float_t lowpt[2] = {50., 80.};
+    Float_t midpt[2] = {100., 150.};
+    Float_t highpt[2] = {200., 250.};
 
-    std::string xtitle = "ln(1/R_{g})";
-    std::string ytitle = "ln(k_{T})";
+    const int npt = 3;
+    Float_t *ptrange[npt] = {lowpt, midpt, highpt};
+    
+    TCanvas *c = new TCanvas("c", "c", 1800, 1000);
+    c->Divide(npt, 2); // 2 for truth, reco
 
-    h2d->GetXaxis()->SetTitle(xtitle.c_str());
-	h2d->GetXaxis()->SetTitleOffset(2.5);
-    h2d->GetYaxis()->SetTitle(ytitle.c_str());
+    for (int i = 0; i < npt; i++) {
+        Float_t ptmin = ptrange[i][0];
+        Float_t ptmax = ptrange[i][1];
+
+        TH2D *h2d_reco = (TH2D *) HL_reco.do_rgkt_projection(ptrange[i], "h2d_reco");
+        TH2D *h2d_ref = (TH2D *) HL_ref.do_rgkt_projection(ptrange[i], "h2d_ref");
+        
+        TLine *line = new TLine(0.91, 0, 5, 0);
+        line->SetLineWidth(2);
+
+        TPaveText *info = new TPaveText(0.4, 0.7, 0.8, 0.85, "ndc");
+        info->AddText((fname + " b-jets").c_str());
+        info->AddLine(0., 0.7, 1., 0.7);
+        info->AddText(Form("%.0f < p_{T} < %.0f (GeV)", ptmin, ptmax));
+        info->SetFillColor(0);
+        info->SetBorderSize(1);
+        info->SetTextSize(15);
+        
+        TPaveText *info_ref = (TPaveText *) info->Clone();
+        info_ref->AddText("truth level");
+        
+        TPaveText *info_reco = (TPaveText *) info->Clone();
+        info_reco->AddText("reco level");
    
+        TPaveText *gsptxt = new TPaveText(0.2, 0.25, 0.35, 0.4, "ndc");
+        gsptxt->SetFillColor(0);
+		gsptxt->SetFillStyle(0);
+        gsptxt->SetBorderSize(0);
+        gsptxt->SetTextSize(20);
+        if (!GSPincl) {
+            gsptxt->AddText("NO GSP");
+        }
 
-    return h2d;
-}
+        // c : ref, reco
+        Float_t zmin = 0.;
+        Float_t zmax = 0.4;
 
-TH1D * HistDrawer_pt2dscan::do_rg_projection(Float_t *ptrange, std::string hname)
-{
-    TH3D *htemp = (TH3D *) h3d->Clone();
-    htemp->GetZaxis()->SetRangeUser(ptrange[0], ptrange[1]);
+        c->cd(i + 1);
+        c->cd(i + 1)->SetGrid();
+        
+        h2d_ref->Draw("colz");
+        line->Draw();
+        info_ref->Draw();
+        gsptxt->Draw();
 
-    TH1D *h1d = (TH1D *) htemp->Project3D("x");
-	h1d->SetName(hname.c_str());
-    h1d->Scale(1. / h1d->Integral("width"));
+        c->cd(i + 1 + npt);
+        c->cd(i + 1 + npt)->SetGrid();
+    
+        h2d_reco->Draw("colz");
+        line->Draw();
+        info_reco->Draw();
+        gsptxt->Draw();
+    }
 
-    std::string xtitle = "ln(1/R_{g})";
-    std::string ytitle = "1 / N_{2-prog jets} dN/dln(1/R_{g})";
-
-    h1d->GetXaxis()->SetTitle(xtitle.c_str());
-    h1d->GetYaxis()->SetTitle(ytitle.c_str());
-
-    return h1d;
-}
-
-TH1D * HistDrawer_pt2dscan::do_kt_projection(Float_t *ptrange, std::string hname)
-{
-    TH3D *htemp = (TH3D *) h3d->Clone();
-    htemp->GetZaxis()->SetRangeUser(ptrange[0], ptrange[1]);
-
-    TH1D *h1d = (TH1D *) htemp->Project3D("y");
-	h1d->SetName(hname.c_str());
-    h1d->Scale(1. / h1d->Integral("width"));
-
-    std::string xtitle = "ln(k_{T})";
-    std::string ytitle = "1 / N_{2-prog jets} dN/dln(k_{T})";
-
-    h1d->GetXaxis()->SetTitle(xtitle.c_str());
-    h1d->GetYaxis()->SetTitle(ytitle.c_str());
-
-    return h1d;
+    c->Draw();
+    
+    string savename_c = fname + "_bjets_ref_vs_reco" + noGSP + ".png";
+    c->Print(savename_c.c_str());
 }
