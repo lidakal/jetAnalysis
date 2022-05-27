@@ -5,201 +5,31 @@
 
 using namespace std;
 
-void plot_chargedSJ(string level = "reco", bool GSPincl = false)
+void plot_chargedSJ()
 {
-    cout << "Running with options: " << endl;
-    cout << "level : " << level << endl;
-    cout << "GSPincl : " << GSPincl << endl;
+    std::string finnameB = "/data_CMS/cms/kalipoliti/bJetMC/chargedSJ/merged_HiForestAOD.root";
+    std::string finnameL = "/data_CMS/cms/kalipoliti/qcdMC/chargedSJ/merged_HiForestAOD.root";
+    std::string foutnameB = "~/rootFiles/chargedSJ_new_bJetMC";
+    std::string foutnameL = "~/rootFiles/chargedSJ_new_qcdMC";
 
-    TreeAnalyzer_chargedSJ TAb(true, true);
-    TreeAnalyzer_chargedSJ TAqcd(false, true);
-    
-    // Create output file name
-    string foutname = "~/rootFiles/chargedSJ_new";
-    if (!GSPincl) {
-        foutname += "_noGSP";
-    }
+    // -------- bJetMC --------
+    std::cout << "Processing " << finnameB << std::endl;
 
-    // Set analysis level
-    if (level == "par") {
-        TAb.SetAnalysisLevelParton();
-        TAqcd.SetAnalysisLevelParton();
-        foutname += "_par.root";
-    } else if (level == "ref") {
-        TAb.SetAnalysisLevelTruth();
-        TAqcd.SetAnalysisLevelTruth();
-        foutname += "_ref.root";
-    } else if (level == "reco") {
-        TAb.SetAnalysisLevelReco();
-        TAqcd.SetAnalysisLevelReco();
-        foutname += "_reco.root";
-    } else {
-        cout << "Level not recognised. Terminating the process." << endl;
-        exit(1);
-    }
+    TreeAnalyzer_pt2dscan TAb_ref(finnameB, true);
+    TAb_ref.plot_pt2dscan(foutnameB, "ref", true);  // b-jets truth with GSP
 
-    // ln(1/rg)
-    Int_t x1bins = 40;
-    Float_t x1min = 0.91;
-    Float_t x1max = 5.;
+    TreeAnalyzer_pt2dscan TAb_reco(finnameB, true);
+    TAb_reco.plot_pt2dscan(foutnameB, "reco", true);  // b-jets reco with GSP
 
-    // ln(kt)
-    Int_t y1bins = 40;
-    Float_t y1min = -5.;
-    Float_t y1max = 5.;
+    // ---------- qcdMC ---------
+    std::cout << "Processing " << finnameL << std::endl;
 
-    // jetpt
-    Int_t z1bins = 27*2;
-    Float_t z1min = 30.;
-    Float_t z1max = 300.;
+    TreeAnalyzer_pt2dscan TAl_ref(finnameL, true);
+    TAl_ref.plot_pt2dscan(foutnameL, "ref", true);  // l-jets truth with GSP
 
-    TH3D *hB_rgkt = new TH3D("hB_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hB_rgkt_dynKt = new TH3D("hB_rgkt_dynKt", "rg, kt, pt, bjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TreeAnalyzer_pt2dscan TAl_reco(finnameL, true);
+    TAl_reco.plot_pt2dscan(foutnameL, "reco", true);  // l-jets reco with GSP
 
-    TH3D *hL_rgkt = new TH3D("hL_rgkt", "rg, kt, pt, ljets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hL_rgkt_dynKt = new TH3D("hL_rgkt_dynKt", "rg, kt, pt, ljets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-
-    TH3D *hC_rgkt = new TH3D("hC_rgkt", "rg, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hC_rgkt_dynKt = new TH3D("hC_rgkt_dynKt", "rg, kt, pt, cjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-
-    cout << "Creating B histograms..." << endl;
-
-    for (Long64_t i = 0; i < TAb.nentries; i++) {
-        TAb.t->GetEntry(i);
-
-        // Print progress
-        if (i%1000000 == 0) {
-            cout << "i = " << i << endl;
-        }
-
-        for (Int_t j = 0; j < TAb.njet; j++) {
-            // eta cut on jets, keep only -2 < eta < 2
-            if (abs(TAb.jeteta[j]) > 2.) {
-                continue;
-            }
-
-            Float_t rg = -1.;
-            Float_t kt = -1.;
-
-            Float_t logrg = -1;
-            Float_t logkt = -10;
-
-            // Calculate rg, kt only for 2 prong jets
-            if (TAb.subjet2pt[j] > 0.) {
-                Float_t deta = TAb.subjet1eta[j] - TAb.subjet2eta[j];
-                Float_t dphi = acos(cos(TAb.subjet1phi[j] - TAb.subjet2phi[j]));
-                rg = sqrt(deta * deta + dphi * dphi);
-                
-                kt = TAb.subjet2pt[j] * rg;
-                
-                // calculate logs
-                logrg = log(1/rg);
-                logkt = log(kt);
-            }
-
-            // Fill the histograms
-            if (TAb.jetNb[j] > 0) {
-                // Skip jet if it comes from GSP (and we don't want it)
-                if ((!GSPincl) && TAb.jetNb[j] > 1) {
-                    continue;
-                }
-                
-                hB_rgkt->Fill(logrg, logkt, TAb.jetpt[j], TAb.weight);
-            }
-
-            // Fill dynKt histos with -1 when level is parton or when !splitIsHardest
-            if ((level == "par") || (!TAb.splitIsHardest[j])) { 
-                logrg = -1;
-                logkt = -10;
-            }
-
-            if (TAb.jetNb[j] > 0) {
-                hB_rgkt_dynKt->Fill(logrg, logkt, TAb.jetpt[j], TAb.weight);
-            }
-        }
-    }   
-
-    cout << "Creating C, L histograms..." << endl;
-
-    for (Long64_t i = 0; i < TAqcd.nentries; i++) {
-        TAqcd.t->GetEntry(i);
-
-        // Print progress
-        if (i%1000000 == 0) {
-            cout << "i = " << i << endl;
-        }
-
-        for (Int_t j = 0; j < TAqcd.njet; j++) {
-            // eta cut on jets, keep only -2 < eta < 2
-            if (abs(TAqcd.jeteta[j]) > 2.) {
-                continue;
-            }
-
-            Float_t rg = -1.;
-            Float_t kt = -1.;
-
-            Float_t logrg = -1;
-            Float_t logkt = -10;
-
-            // Calculate rg, kt only for 2 prong jets
-            if (TAqcd.subjet2pt[j] > 0.) {
-                Float_t deta = TAqcd.subjet1eta[j] - TAqcd.subjet2eta[j];
-                Float_t dphi = acos(cos(TAqcd.subjet1phi[j] - TAqcd.subjet2phi[j]));
-                rg = sqrt(deta * deta + dphi * dphi);
-                
-                kt = TAqcd.subjet2pt[j] * rg;
-                
-                // calculate logs
-                logrg = log(1/rg);
-                logkt = log(kt);
-            }
-
-            // Fill the histograms
-            if (TAqcd.jetNb[j] > 0) {
-                continue;
-            } else if (TAqcd.jetNc[j] > 0) {
-                // Skip jet if it comes from GSP (and we don't want it)
-                if ((!GSPincl) && TAqcd.jetNc[j] > 1) {
-                    continue;
-                }
-                hC_rgkt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
-            } else {
-                hL_rgkt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
-            }
-
-            // Fill dynKt histos with -1 when level is parton or when !splitIsHardest
-            if ((level == "par") || (!TAqcd.splitIsHardest[j])) { 
-                logrg = -1;
-                logkt = -10;
-            }
-
-            if (TAqcd.jetNb[j] > 0) {
-                continue; // should have already been skipped
-            } else if (TAqcd.jetNc[j] > 0) {
-                // Skip jet if it comes from GSP (and we don't want it)
-                if ((!GSPincl) && TAqcd.jetNc[j] > 1) {
-                    continue; // should have already been skipped
-                }
-                hC_rgkt_dynKt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
-            } else {
-                hL_rgkt_dynKt->Fill(logrg, logkt, TAqcd.jetpt[j], TAqcd.weight);
-            }
-        }
-    }   
-
-    cout << "\n(Re)creating file " << foutname << endl;
-    TFile *fout = new TFile(foutname.c_str(), "recreate");
-
-    cout << "Saving histograms..." << endl;
-
-    hB_rgkt->Write();
-    hB_rgkt_dynKt->Write();
-
-    hL_rgkt->Write();
-    hL_rgkt_dynKt->Write();
-
-    hC_rgkt->Write();
-    hC_rgkt_dynKt->Write();
-
-    fout->Close();
+    //TA.plot_pt2dscan(fname, "ref", false); // truth no GSP
+    //TA.plot_pt2dscan(fname, "reco", false);  // reco no GSP
 }
