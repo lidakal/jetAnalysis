@@ -18,6 +18,7 @@ class HistDrawer_pt2dscan
 
         TH2D * do_rgkt_projection(Float_t *ptrange, std::string hname);
         TH1D * do_rg_projection(Float_t *ptrange, std::string hname);
+		TH1D * do_kt_projection(Float_t *ptrange, std::string hname);
 };
 
 HistDrawer_pt2dscan::HistDrawer_pt2dscan(std::string fname, std::string hname)
@@ -31,14 +32,17 @@ TH2D * HistDrawer_pt2dscan::do_rgkt_projection(Float_t *ptrange, std::string hna
     TH3D *htemp = (TH3D *) h3d->Clone();
     htemp->GetZaxis()->SetRangeUser(ptrange[0], ptrange[1]);
 
-    TH2D *h2d = (TH2D *) htemp->Project3D("xy");
+    TH2D *h2d = (TH2D *) htemp->Project3D("yx");
+	h2d->SetName(hname.c_str());
     h2d->Scale(1. / h2d->Integral("width"));
 
     std::string xtitle = "ln(1/R_{g})";
     std::string ytitle = "ln(k_{T})";
 
     h2d->GetXaxis()->SetTitle(xtitle.c_str());
+	h2d->GetXaxis()->SetTitleOffset(2.5);
     h2d->GetYaxis()->SetTitle(ytitle.c_str());
+   
 
     return h2d;
 }
@@ -49,6 +53,7 @@ TH1D * HistDrawer_pt2dscan::do_rg_projection(Float_t *ptrange, std::string hname
     htemp->GetZaxis()->SetRangeUser(ptrange[0], ptrange[1]);
 
     TH1D *h1d = (TH1D *) htemp->Project3D("x");
+	h1d->SetName(hname.c_str());
     h1d->Scale(1. / h1d->Integral("width"));
 
     std::string xtitle = "ln(1/R_{g})";
@@ -66,6 +71,7 @@ TH1D * HistDrawer_pt2dscan::do_kt_projection(Float_t *ptrange, std::string hname
     htemp->GetZaxis()->SetRangeUser(ptrange[0], ptrange[1]);
 
     TH1D *h1d = (TH1D *) htemp->Project3D("y");
+	h1d->SetName(hname.c_str());
     h1d->Scale(1. / h1d->Integral("width"));
 
     std::string xtitle = "ln(k_{T})";
