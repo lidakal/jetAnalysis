@@ -8,13 +8,14 @@
 
 class HistDrawer_pt2dscan
 {
-    std::string fname;
+    public:
+        std::string fname;
 
-    // ---- Constructors ----
-    HistDrawer_pt2dscan() {};
-    HistDrawer_pt2dscan(std::string MCname);
+        // ---- Constructors ----
+        HistDrawer_pt2dscan() {};
+        HistDrawer_pt2dscan(std::string MCname);
 
-    void do_pt2dscan(bool GSPincl);
+        void do_pt2dscan(bool GSPincl);
 };
 
 HistDrawer_pt2dscan::HistDrawer_pt2dscan(std::string MCname)
