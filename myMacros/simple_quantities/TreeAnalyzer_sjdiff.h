@@ -8,6 +8,7 @@
 class TreeAnalyzer_sjdiff : public TreeAnalyzer_pt2dscan
 {
     public:
+        TreeAnalyzer_sjdiff(std::string finname, bool init = true) : TreeAnalyzer_pt2dscan(finname, init) {};
         void plot_sjdiff(std::string foutname, bool GSPincl, float bTagWP = 0.9);
 };
 
@@ -25,7 +26,7 @@ void TreeAnalyzer_sjdiff::plot_sjdiff(std::string foutname, bool GSPincl, float 
     t->SetBranchStatus("*", 0);
     std::vector<std::string> activeBranches = {"nref", "jtHadFlav", "jtNbHad", "jteta", "jtpt", "jtIsHardest",
                                                 "sjt1Pt", "sjt1Eta", "sjt1Phi", "sjt2Pt", "sjt2Eta", "sjt2Phi",
-                                                "rstj1Pt", "rsjt1Eta", "rsjt1Phi", "rstj2Pt", "rsjt2Eta", "rsjt2Phi",
+                                                "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", "rsjt2Pt", "rsjt2Eta", "rsjt2Phi",
                                                 "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB",
                                                 "weight"};
     for (auto activeBranchName : activeBranches) {
@@ -38,13 +39,13 @@ void TreeAnalyzer_sjdiff::plot_sjdiff(std::string foutname, bool GSPincl, float 
 
     // dpt
     Int_t xbins = 40;
-    Float_t xmin = -100.;
-    Float_t xmax = 60.;
+    Float_t xmin = -10.;
+    Float_t xmax = 10.;
 
     // dR
     Int_t ybins = 40.;
-    Float_t ymin = -1.;
-    Float_t ymax = 1.;
+    Float_t ymin = 0.;
+    Float_t ymax = 0.8;
 
     // jetpt 
     Int_t zbins = 27 * 2;
@@ -114,7 +115,7 @@ void TreeAnalyzer_sjdiff::plot_sjdiff(std::string foutname, bool GSPincl, float 
             }
 
             // Same for dynKt histograms
-            if (!jtIsHardest) { 
+            if (!jtIsHardest[ijet]) { 
                 DPt1 = -1000.;
                 DPt2 = -1000.;
                 DR1 = -1000.;
