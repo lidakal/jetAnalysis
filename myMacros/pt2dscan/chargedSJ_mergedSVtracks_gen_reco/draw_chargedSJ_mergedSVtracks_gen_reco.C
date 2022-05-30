@@ -128,7 +128,11 @@ void draw_chargedSJ_mergedSVtracks_gen_reco(bool GSPincl = false)
 
         // c : ref, reco
         Float_t zmin = 0.;
-        Float_t zmax = 0.2;
+        Float_t zmax = 0.4;
+
+		if (!GSPincl) {
+		  zmax = 0.3;
+		}
 
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
