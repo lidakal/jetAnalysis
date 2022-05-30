@@ -131,7 +131,7 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     // Load histograms
     Float_t ptrange[2] = {100., 150.};
     THStack *hs = new THStack("hs", "");
-    TLegend *leg = new TLegend(0.5, 0.5, 0.8, 0.8);
+    TLegend *leg = new TLegend(0.5, 0.6, 0.8, 0.85);
     gStyle->SetLegendTextSize(15);
 
     HistLoader_pt2dscan HL_ljet_ref(fname_chargedSJ_qcdMC_ref, "hL_rgkt");
@@ -178,12 +178,16 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
 
     HistLoader_pt2dscan HL_bjet_reco_ip3dSig_looser(fname_merged_ip3dSig_looser_reco, "hBtag_rgkt");
     TH1D *h1d_bjet_reco_ip3dSig_looser = HL_bjet_reco_ip3dSig_looser.do_rg_projection(ptrange, "h1d_bjet_reco_ip3dSig_looser");
-    h1d_bjet_reco_ip3dSig_looser->SetLineColor(9);
+    h1d_bjet_reco_ip3dSig_looser->SetLineColor(46);
     h1d_bjet_reco_ip3dSig_looser->SetLineStyle(1);
     leg->AddEntry(h1d_bjet_reco_ip3dSig_looser, "b-jets, reco, aggregation with ip3dSig - looserCut", "l");
     hs->Add(h1d_bjet_reco_ip3dSig_looser);    
 
-    TCanvas *c = new TCanvas("c", "", 800, 800);
+	std::string xtitle = "ln(1/R_{g})";
+	std::string ytitle = "1/N_{2-prong jets} dN/dln(1/R_{g})";
+	hs->SetTitle(Form("; %s; %s", xtitle.c_str(), ytitle.c_str()));
+
+    TCanvas *c = new TCanvas("c", "", 1200, 800);
     hs->Draw("nostack hist");
     leg->Draw();
 
