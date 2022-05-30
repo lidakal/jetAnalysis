@@ -380,7 +380,7 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
     for (Long64_t ient = 0; ient < nentries; ient++) {
         // Print progress
         if (ient % 1000000 == 0) {
-            cout << "ient = " << ient << endl;
+            std::cout << "ient = " << ient << std::endl;
         }
 
 		// For debugging purposes
