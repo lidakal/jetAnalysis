@@ -62,17 +62,6 @@ void HistDrawer::draw_sjdiff(bool GSPincl)
     hs_dpt->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
     hs_dr->SetTitle(Form("; %s; %s", x2title.c_str(), y2title.c_str()));
 
-    TCanvas *c = new TCanvas("c", "", 1800, 800);
-    c->Divide(2, 1);
-
-    c->cd(1);
-    hs_dpt->Draw("nostack hist");
-    leg->Draw();
-
-    c->cd(2);
-    hs_dr->Draw("nostack hist");
-    leg->Draw();
-
     TPaveText *info = new TPaveText(0.6, 0.4, 0.8, 0.5, "ndc");
     info->SetFillStyle(0);
     info->SetBorderSize(1);
@@ -80,6 +69,19 @@ void HistDrawer::draw_sjdiff(bool GSPincl)
 
     info->AddText(Form("%.0f < p_{T}^{jet} < %.0f", ptrange[0], ptrange[1]));
     info->AddText(noGSP.c_str());
+
+    TCanvas *c = new TCanvas("c", "", 1800, 800);
+    c->Divide(2, 1);
+
+    c->cd(1);
+    hs_dpt->Draw("nostack hist");
+    leg->Draw();
+    info->Draw();
+
+    c->cd(2);
+    hs_dr->Draw("nostack hist");
+    leg->Draw();
+    info->Draw();
 
     c->Draw();
 
