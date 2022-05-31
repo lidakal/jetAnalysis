@@ -58,8 +58,8 @@ void HistDrawer::draw_sjdiff(bool GSPincl)
     std::string y1title = "1/N dN/d" + x1title;
     std::string y2title = "1/N dN/d" + x2title;
 
-    hs_dpt->SetTitle(Form("; %s; %s", x1title, y1title));
-    hs_dr->SetTitle(Form("; %s; %s", x2title, y2title));
+    hs_dpt->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
+    hs_dr->SetTitle(Form("; %s; %s", x2title.c_str(), y2title.c_str()));
 
     TCanvas *c = new TCanvas("c", "", 1800, 800);
     c->Divide(2, 1);
