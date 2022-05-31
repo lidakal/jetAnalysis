@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 
-void plot_aggregateB_ip3dSig_looserCut()
+void plot_aggregateB_highestEfficiency()
 {
-    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
-    std::string foutname = "~/rootFiles/aggregateB_ip3dSig_looserCut";
+    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_highestEfficiency/merged_HiForestAOD.root";
+    std::string foutname = "~/rootFiles/aggregateB_highestEfficiency";
 
     TreeAnalyzer_pt2dscan TAref(finname, true);
     TAref.plot_pt2dscan(foutname, "ref", true);  // truth with GSP

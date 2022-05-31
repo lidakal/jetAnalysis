@@ -1,8 +1,8 @@
 #include "../HistDrawer_pt2dscan.h"
 
-void draw_aggregateB_ip3dSig_looserCut()
+void draw_aggregateB_highestEfficiency()
 {          
-    std::string fname = "aggregateB_ip3dSig_looserCut";
+    std::string fname = "aggregateB_highestEfficiency";
     HistDrawer_pt2dscan HD(fname);
-    HD.do_pt2dscan(true);
+    HD.draw_pt2dscan(true);
 }
