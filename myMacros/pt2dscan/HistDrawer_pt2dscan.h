@@ -128,6 +128,7 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     std::string fname_merged_ip3dSig_looser_reco = "~/rootFiles/aggregateB_ip3dSig_looserCut" + noGSP + "_reco.root"; // bjet reco merge ((inSV && (|ip3dSig| > 3)) || ((!inSV) && (9 < ip3dSig < 100)))
     std::string fname_merged_ip3dSig_reco = "~/rootFiles/aggregateB_ip3dSig" + noGSP + "_reco.root"; // bjet reco merge (tight cut)
     std::string fname_merged_ip3dSig_loosest_reco = "~/rootFiles/aggregateB_ip3dSig_loosestCut" + noGSP + "_reco.root"; // bjet reco merge (inSV || (ip3dSig > 9))
+    std::string fname_merged_highestEfficiency_reco = "~/rootFiles/aggregateB_highestEfficiency" + noGSP + "_reco.root"; // bjet reco merge (inSV || (|ip3dSig| > 3))
 
     // Load histograms
     Float_t ptrange[2] = {200., 250.};
@@ -189,7 +190,14 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     h1d_bjet_reco_ip3dSig_loosest->SetLineColor(32);
     h1d_bjet_reco_ip3dSig_loosest->SetLineStyle(1);
     leg->AddEntry(h1d_bjet_reco_ip3dSig_loosest, "b-jets, reco, aggregation with ip3dSig - loosestCut", "l");
-    hs->Add(h1d_bjet_reco_ip3dSig_loosest);    
+    hs->Add(h1d_bjet_reco_ip3dSig_loosest);   
+
+    HistLoader_pt2dscan HL_bjet_reco_highestEfficiency(fname_merged_highestEfficiency_reco, "hBtag_rgkt");
+    TH1D *h1d_bjet_reco_highestEfficiency = HL_bjet_reco_highestEfficiency.do_rg_projection(ptrange, "h1d_bjet_reco_highestEfficiency");
+    h1d_bjet_reco_highestEfficiency->SetLineColor(28);
+    h1d_bjet_reco_highestEfficiency->SetLineStyle(1);
+    leg->AddEntry(h1d_bjet_reco_highestEfficiency, "b-jets, reco, aggregation with ip3dSig - highest efficiency", "l");
+    hs->Add(h1d_bjet_reco_highestEfficiency);    
 
 	std::string xtitle = "ln(1/R_{g})";
 	std::string ytitle = "1/N_{2-prong jets} dN/dln(1/R_{g})";
