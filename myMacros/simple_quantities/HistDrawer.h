@@ -3,6 +3,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TCanvas.h"
+#include "TPaveText.h"
 
 #include "HistLoader.h"
 
@@ -72,8 +73,16 @@ void HistDrawer::draw_sjdiff(bool GSPincl)
     hs_dr->Draw("nostack hist");
     leg->Draw();
 
+    TPaveText *info = new TPaveText(0.6, 0.4, 0.8, 0.5, "ndc");
+    info->SetFillStyle(0);
+    info->SetBorderSize(1);
+    info->SetTextSize(15);
+
+    info->AddText(Form("%.0f < p_{T}^{jet} < %.0f", ptrange[0], ptrange[1]));
+    info->AddText(noGSP.c_str());
 
     c->Draw();
 
-
+    std::string savename = "sjdiff" + noGSP + ".png";
+    c->Print(savename.c_str());
 }
