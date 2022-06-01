@@ -24,7 +24,7 @@ void draw_event(Long64_t ient = 0)
     ta.SetBranchStatus("*", 0);
     ta.SetBranchStatus(activeBranches, 1);
 
-    TMultiGraph *mg;
+    TMultiGraph *mg = new TMultiGraph();
     TLegend *leg = new TLegend(0.2, 0.6, 0.4, 0.8);
 
     ta.GetEntry(ient);
@@ -33,34 +33,29 @@ void draw_event(Long64_t ient = 0)
     // Draw gen particles
     std::cout << "Drawing gen particles..." << std::endl;
 
-    std::vector<Float_t> phi_gen;
-    std::vector<Float_t> eta_gen;
-
-    std::vector<Float_t> phi_genb;
-    std::vector<Float_t> eta_genb;
+	TGraph *gr_gen = new TGraph();
+	TGraph *gr_genb = new TGraph();
 
     for (Int_t ipar = 0; ipar < hita.mult; ipar++) {
         Float_t phi = (*hita.phi)[ipar];
         Float_t eta = (*hita.eta)[ipar];
         Int_t sta = (*hita.sta)[ipar];
 
-        phi_gen.push_back(phi);
-        eta_gen.push_back(eta);
+		gr_gen->SetPoint(gr_gen->GetN(), phi, eta);
 
         if (sta >= 100) {
-            phi_genb.push_back(phi);
-            eta_genb.push_back(eta);
+		    gr_genb->SetPoint(gr_genb->GetN(), phi, eta);
         }
     } // gen particle loop
 
-    TGraph *gr_gen = new TGraph(phi_gen.size(), &phi_gen[0], &eta_gen[0]); 
-    gr_gen->SetMarkerStyle(kOpenCircle);
-    gr_gen->SetMarkerColorAlpha(kBlack, 0.5);
-    mg->Add(gr_gen);
+	gr_gen->SetMarkerStyle(kOpenCircle);
+	gr_gen->SetMarkerColorAlpha(kBlack, 0.5);
+	gr_gen->SetMarkerSize(1);
+	mg->Add(gr_gen);
 
-    TGraph *gr_genb = new TGraph(phi_genb.size(), &phi_genb[0], &eta_genb[0]); 
     gr_genb->SetMarkerStyle(kFullCircle);
     gr_genb->SetMarkerColorAlpha(kBlack, 0.5);
+	gr_genb->SetMarkerSize(1);
     mg->Add(gr_genb);
 
 
@@ -73,9 +68,9 @@ void draw_event(Long64_t ient = 0)
     */
     
 
-    TCanvas *c = new TCanvas("c", "", 1000, 800);
+	TCanvas *c = new TCanvas("c", "", 1000, 800);
     mg->Draw("pa");
-    c->Draw();
+	c->Draw();
 
 }
 
