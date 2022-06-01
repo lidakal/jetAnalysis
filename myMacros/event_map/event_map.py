@@ -9,7 +9,7 @@ def passTrackBTag(inSV, ip3dSig):
         return True
     return False
 
-if __name__ == "__main__":
+def draw_event(ient):
     fname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root"
     f = TFile(fname)
     t = f.Get("ak4PFJetAnalyzer/t")
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         t.SetBranchStatus(branch, 1)
 
     # ---- Select entry ----
-    ient = 13
+    #ient = 13
     t.GetEntry(ient)
     hi.GetEntry(ient)
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     # color in gen particles coming from b decays
     phi_b = np.array(phi_b)
     eta_b = np.array(eta_b)
-    
+
     gr_b = TGraph(len(phi_b), phi_b, eta_b)
     gr_b.SetMarkerStyle(kFullCircle)
     gr_b.SetMarkerColorAlpha(kBlack, 0.5)
@@ -168,3 +168,6 @@ if __name__ == "__main__":
 
     c.Draw()
     c.Print("test.png")
+
+if __name__ == "__main__":
+    draw_event(13)
