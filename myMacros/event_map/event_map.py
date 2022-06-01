@@ -157,13 +157,14 @@ if __name__ == "__main__":
 
     c = TCanvas("c", "", 1000, 800)
 
-    mg.SetMinimum(-2.)
-    mg.SetMaximum(2.)
-
     mg.GetXaxis().SetTitle("#phi")
     mg.GetYaxis().SetTitle("#eta")
     mg.GetYaxis().SetTitleOffset(1.)
 
     mg.Draw("pa")
 
+    mg.SetMinimum(-2.)
+    mg.SetMaximum(2.)
+
     c.Draw()
+    c.Print("test.png")
