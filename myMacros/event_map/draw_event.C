@@ -9,7 +9,7 @@
 #include "TLegend.h"
 #include "TCanvas.h"
 
-void draw_event(Long64_t ient)
+void draw_event(Long64_t ient = 0)
 {
     std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
@@ -31,6 +31,8 @@ void draw_event(Long64_t ient)
     hita.GetEntry(ient);
 
     // Draw gen particles
+    std::cout << "Drawing gen particles..." << std::endl;
+
     std::vector<Float_t> phi_gen;
     std::vector<Float_t> eta_gen;
 
