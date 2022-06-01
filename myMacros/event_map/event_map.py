@@ -3,7 +3,6 @@ from ROOT import kOpenCircle, kFullCircle, kOpenDiamond, kFullDiamond
 from ROOT import kBlack, kRed, kBlue, kGreen
 
 import numpy as np
-import pandas as pd
 
 def passTrackBTag(inSV, ip3dSig):
     if inSV or (np.abs(ip3dSig) > 3):
@@ -33,21 +32,38 @@ if __name__ == "__main__":
 
     mg = TMultiGraph()
 
-    gen_d = {"phi" : np.array(hi.phi), "eta" : np.array(hi.eta), "sta" : np.array(hi.sta)}
-    gen = pd.DataFrame(gen_d)
-
     # draw all gen particles
-    phi_all = gen["phi"].to_numpy()
-    eta_all = gen["eta"].to_numpy()
+
+    phi_all = []
+    eta_all = []
+
+    phi_b = []
+    eta_b = []
+
+    for ipar in range(hi.mult):
+        phi = hi.phi[ipar]
+        eta = hi.eta[ipar]
+        sta = hi.sta[ipar]
+
+        phi_all.append(phi)
+        eta_all.append(eta)
+
+        if (sta >= 100):
+            phi_b.append(phi)
+            eta_b.append(eta)
+
+    phi_all = np.array(phi_all)
+    eta_all = np.array(eta_all)
+
     gr_all = TGraph(len(phi_all), phi_all, eta_all)
     gr_all.SetMarkerStyle(kOpenCircle)
     gr_all.SetMarkerColorAlpha(kBlack, 0.5)
     mg.Add(gr_all)
 
     # color in gen particles coming from b decays
-    sel = gen["sta"] >= 100
-    phi_b = gen.loc[sel, "phi"].to_numpy()
-    eta_b = gen.loc[sel, "eta"].to_numpy()
+    phi_b = np.array(phi_b)
+    eta_b = np.array(eta_b)
+    
     gr_b = TGraph(len(phi_b), phi_b, eta_b)
     gr_b.SetMarkerStyle(kFullCircle)
     gr_b.SetMarkerColorAlpha(kBlack, 0.5)
