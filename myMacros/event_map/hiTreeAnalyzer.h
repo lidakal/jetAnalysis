@@ -36,7 +36,7 @@ hiTreeAnalyzer::hiTreeAnalyzer(std::string fname, bool init = true)
    }
 }
 
-void hi::Init()
+void hiTreeAnalyzer::Init()
 {
    hi->SetBranchAddress("mult", &mult);
    hi->SetBranchAddress("pt", &pt);
