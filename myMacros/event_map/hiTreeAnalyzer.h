@@ -30,6 +30,7 @@ class hiTreeAnalyzer {
 hiTreeAnalyzer::hiTreeAnalyzer(std::string fname, bool init = true) 
 {
    fin = new TFile(fname.c_str());
+   hi = (TTree *) fin->Get("bDecayAna/hi");
    
    if (init) {
       Init();
