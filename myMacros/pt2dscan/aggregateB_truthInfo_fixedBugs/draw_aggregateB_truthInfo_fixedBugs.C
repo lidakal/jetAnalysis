@@ -4,5 +4,5 @@ void draw_aggregateB_truthInfo_fixedBugs()
 {          
     std::string fname = "aggregateB_truthInfo_fixedBugs";
     HistDrawer_pt2dscan HD(fname);
-    HD.draw_pt2dscan(true);
+    HD.draw_pt2dscan(false);
 }
