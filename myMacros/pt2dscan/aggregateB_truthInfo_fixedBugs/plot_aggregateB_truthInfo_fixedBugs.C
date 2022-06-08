@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 
-void plot_aggregateB_truthInfo_fixedBugs()
+void plot_aggregateB_highestEfficiency()
 {
-    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_truthInfo_fixedBugs/merged_HiForestAOD.root";
-    std::string foutname = "~/rootFiles/aggregateB_truthInfo_fixedBugs";
+    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_highestEfficiency_fixedBugs/merged_HiForestAOD.root";
+    std::string foutname = "~/rootFiles/aggregateB_highestEfficiency";
 
     TreeAnalyzer_pt2dscan TAref(finname, true);
     TAref.plot_pt2dscan(foutname, "ref", true);  // truth with GSP
