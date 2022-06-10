@@ -361,7 +361,7 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
     // zg
     Int_t y2bins = 40;
     Float_t y2min = 0.1;
-    Float_t y2max = 1.;
+    Float_t y2max = 0.5;
 
     // jetpt
     Int_t z1bins = 27*2;
