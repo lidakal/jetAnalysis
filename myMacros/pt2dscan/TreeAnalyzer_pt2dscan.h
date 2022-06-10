@@ -372,21 +372,29 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
     TH3D *hB_rgkt_dynKt = new TH3D("hB_rgkt_dynKt", "rg, kt, pt, bjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hB_rgzg = new TH3D("hB_rgzg", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hB_rgzg_dynKt = new TH3D("hB_rgzg_dynKt", "rg, zg, pt, bjets, dynKt only", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+    TH3D *hB_zgkt = new TH3D("hB_zgkt", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hB_zgkt_dynKt = new TH3D("hB_zgkt_dynKt", "zg, kt, pt, bjets, dynKt only", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     TH3D *hBtag_rgkt = new TH3D("hBtag_rgkt", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hBtag_rgkt_dynKt = new TH3D("hBtag_rgkt_dynKt", "rg, kt, pt, b tagged jets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hBtag_rgzg = new TH3D("hBtag_rgzg", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hBtag_rgzg_dynKt = new TH3D("hBtag_rgzg_dynKt", "rg, zg, pt, b tagged jets, dynKt only", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+    TH3D *hBtag_zgkt = new TH3D("hBtag_zgkt", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hBtag_zgkt_dynKt = new TH3D("hBtag_zgkt_dynKt", "zg, kt, pt, b tagged jets, dynKt only", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     TH3D *hC_rgkt = new TH3D("hC_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hC_rgkt_dynKt = new TH3D("hC_rgkt_dynKt", "rg, kt, pt, cjets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hC_rgzg = new TH3D("hC_rgzg", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hC_rgzg_dynKt = new TH3D("hC_rgzg_dynKt", "rg, zg, pt, cjets, dynKt only", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+    TH3D *hC_zgkt = new TH3D("hC_zgkt", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hC_zgkt_dynKt = new TH3D("hC_zgkt_dynKt", "zg, kt, pt, cjets, dynKt only", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     TH3D *hL_rgkt = new TH3D("hL_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hL_rgkt_dynKt = new TH3D("hL_rgkt_dynKt", "rg, kt, pt, ljets, dynKt only", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hL_rgzg = new TH3D("hL_rgzg", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hL_rgzg_dynKt = new TH3D("hL_rgzg_dynKt", "rg, zg, pt, ljets, dynKt only", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+    TH3D *hL_zgkt = new TH3D("hL_zgkt", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_zgkt_dynKt = new TH3D("hL_zgkt_dynKt", "zg, kt, pt, ljets, dynKt only", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     std::cout << "Creating histograms ..." << std::endl;
 
@@ -431,15 +439,18 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
                 if (GSPincl || jetNb[ijet] == 1) {
                     hB_rgkt->Fill(logrg, logkt, jetpt[ijet], weight);
                     hB_rgzg->Fill(logrg, zg, jetpt[ijet], weight);
+                    hB_zgkt->Fill(zg, logkt, jetpt[ijet], weight);
                 }
             } else if (jetNc[ijet] > 0) {
                 if (GSPincl || jetNc[ijet] == 1) {
                     hC_rgkt->Fill(logrg, logkt, jetpt[ijet], weight);
                     hC_rgzg->Fill(logrg, zg, jetpt[ijet], weight);
+                    hC_zgkt->Fill(zg, logkt, jetpt[ijet], weight);
                 }
             } else {
                 hL_rgkt->Fill(logrg, logkt, jetpt[ijet], weight);
                 hL_rgzg->Fill(logrg, zg, jetpt[ijet], weight);
+                hL_zgkt->Fill(zg, logkt, jetpt[ijet], weight);
             }
 
             // Fill the b-tag histogram
@@ -448,6 +459,7 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
                 if (GSPincl || jetNb[ijet] == 1) { // TODO: NEED TO FIX THIS TO NOT USE TRUTH GSP
                     hBtag_rgkt->Fill(logrg, logkt, jetpt[ijet], weight);
                     hBtag_rgzg->Fill(logrg, zg, jetpt[ijet], weight);
+                    hBtag_zgkt->Fill(zg, logkt, jetpt[ijet], weight);
                 }
             }
 
@@ -461,21 +473,25 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
                 if (GSPincl || jetNb[ijet] == 1) {
                     hB_rgkt_dynKt->Fill(logrg, logkt, jetpt[ijet], weight);
                     hB_rgzg_dynKt->Fill(logrg, zg, jetpt[ijet], weight);
+                    hB_zgkt_dynKt->Fill(zg, logkt, jetpt[ijet], weight);
                 }
             } else if (jetNc[ijet] > 0) {
                 if (GSPincl || jetNc[ijet] == 1) {
                     hC_rgkt_dynKt->Fill(logrg, logkt, jetpt[ijet], weight);
                     hC_rgzg_dynKt->Fill(logrg, zg, jetpt[ijet], weight);
+                    hC_zgkt_dynKt->Fill(zg, logkt, jetpt[ijet], weight);
                 }
             } else {
                 hL_rgkt_dynKt->Fill(logrg, logkt, jetpt[ijet], weight);
                 hL_rgzg_dynKt->Fill(logrg, zg, jetpt[ijet], weight);
+                hL_zgkt_dynKt->Fill(zg, logkt, jetpt[ijet], weight);
             }
 
             if (passWP) {
                 if (GSPincl || jetNb[ijet] == 1) { // TODO: NEED TO FIX THIS TO NOT USE TRUTH GSP
                     hBtag_rgkt_dynKt->Fill(logrg, logkt, jetpt[ijet], weight);
                     hBtag_rgzg_dynKt->Fill(logrg, zg, jetpt[ijet], weight);
+                    hBtag_zgkt_dynKt->Fill(zg, logkt, jetpt[ijet], weight);
                 }
             }
         } // jet loop
@@ -486,7 +502,8 @@ void TreeAnalyzer_pt2dscan::plot_pt2dscan(std::string foutname, std::string leve
     TFile *fout = new TFile(foutname.c_str(), "recreate");
 
     for (auto h : {hB_rgkt, hB_rgkt_dynKt, hBtag_rgkt, hBtag_rgkt_dynKt, hL_rgkt, hL_rgkt_dynKt, hC_rgkt, hC_rgkt_dynKt,
-                   hB_rgzg, hB_rgzg_dynKt, hBtag_rgzg, hBtag_rgzg_dynKt, hL_rgzg, hL_rgzg_dynKt, hC_rgzg, hC_rgzg_dynKt,}) {
+                   hB_rgzg, hB_rgzg_dynKt, hBtag_rgzg, hBtag_rgzg_dynKt, hL_rgzg, hL_rgzg_dynKt, hC_rgzg, hC_rgzg_dynKt,
+                   hB_zgkt, hB_zgkt_dynKt, hBtag_zgkt, hBtag_zgkt_dynKt, hL_zgkt, hL_zgkt_dynKt, hC_zgkt, hC_zgkt_dynKt}) {
         h->Write();
     }
 
