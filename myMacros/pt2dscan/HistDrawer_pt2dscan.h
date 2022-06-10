@@ -89,7 +89,8 @@ void HistDrawer_pt2dscan::draw_pt2dscan(bool GSPincl)
 
         c->cd(i + 1);
         c->cd(i + 1)->SetGrid();
-        
+
+		h2d_ref->GetZaxis()->SetRangeUser(zmin, zmax);
         h2d_ref->Draw("colz");
         line->Draw();
         info_ref->Draw();
@@ -98,6 +99,7 @@ void HistDrawer_pt2dscan::draw_pt2dscan(bool GSPincl)
         c->cd(i + 1 + npt);
         c->cd(i + 1 + npt)->SetGrid();
     
+		h2d_reco->GetZaxis()->SetRangeUser(zmin, zmax);
         h2d_reco->Draw("colz");
         line->Draw();
         info_reco->Draw();
@@ -131,7 +133,7 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     std::string fname_merged_highestEfficiency_reco = "~/rootFiles/aggregateB_highestEfficiency" + noGSP + "_reco.root"; // bjet reco merge (inSV || (|ip3dSig| > 3))
 
     // Load histograms
-    Float_t ptrange[2] = {200., 250.};
+    Float_t ptrange[2] = {100., 150.};
     THStack *hs = new THStack("hs", "");
     TLegend *leg = new TLegend(0.5, 0.6, 0.8, 0.85);
     gStyle->SetLegendTextSize(15);
