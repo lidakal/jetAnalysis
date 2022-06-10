@@ -48,6 +48,8 @@ TH1D * HistLoader_pt2dscan::do_rg_projection(Float_t *ptrange, std::string hname
 {
     TH3D *htemp = (TH3D *) h3d->Clone();
     htemp->GetZaxis()->SetRangeUser(ptrange[0], ptrange[1]);
+	htemp->GetYaxis()->SetRangeUser(0., 5.);
+
 
     TH1D *h1d = (TH1D *) htemp->Project3D("x");
 	h1d->SetName(hname.c_str());

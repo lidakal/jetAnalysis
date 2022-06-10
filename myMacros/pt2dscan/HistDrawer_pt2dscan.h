@@ -166,7 +166,7 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
 
     HistLoader_pt2dscan HL_bjet_reco_truth(fname_merged_truth_reco, "hBtag_rgkt");
     TH1D *h1d_bjet_reco_truth = HL_bjet_reco_truth.do_rg_projection(ptrange, "h1d_bjet_reco_truth");
-    h1d_bjet_reco_truth->SetLineColor(9);
+    h1d_bjet_reco_truth->SetLineColor(7);
     h1d_bjet_reco_truth->SetLineStyle(1);
     leg->AddEntry(h1d_bjet_reco_truth, "b-jets, reco, aggregation with truth info", "l");
     hs->Add(h1d_bjet_reco_truth);
@@ -199,8 +199,10 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     info->SetTextSize(15);
     info->AddText(Form("%.0f < p_{T}^{jet} < %0.f (GeV)", ptrange[0], ptrange[1]));
     if (!GSPincl) {
-        info->AddText("NO GSP");
+	  //info->AddText("truth doesn't pass b-tag, NO GSP");
+	  info->AddText("all b-jets pass b-tag, NO GSP");
     }
+	info->AddText("ln(k_{T}) > 0");
     info->Draw();
 
     c->Draw();
