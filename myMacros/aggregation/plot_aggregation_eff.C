@@ -7,7 +7,7 @@
 
 void plot_aggregation_eff()
 {
-    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_ip3dSig_looserCut_fixedBugs/merged_HiForestAOD.root";
+    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/aggregateB_truthInfo_fixedBugs/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
 
     // Activate branches of interest
