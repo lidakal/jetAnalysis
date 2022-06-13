@@ -14,8 +14,9 @@ class HistLoader_pt2dscan
         HistLoader_pt2dscan(std::string fname, std::string hname);
 
         TH2D * do_rgkt_projection(Float_t *ptrange, std::string hname);
-        TH1D * do_rg_projection(Float_t *ptrange, std::string hname);
-		TH1D * do_kt_projection(Float_t *ptrange, std::string hname);
+        TH1D * do_rg_projection(Float_t *ptrange, std::string hname); // for all kt
+        TH1D * do_zg_projection(Float_t *ptrange, std::string hname); // for all kt
+		TH1D * do_kt_projection(Float_t *ptrange, std::string hname); // for all rg
 };
 
 HistLoader_pt2dscan::HistLoader_pt2dscan(std::string fname, std::string hname)
@@ -57,6 +58,26 @@ TH1D * HistLoader_pt2dscan::do_rg_projection(Float_t *ptrange, std::string hname
 
     std::string xtitle = "ln(1/R_{g})";
     std::string ytitle = "1 / N_{2-prog jets} dN/dln(1/R_{g})";
+
+    h1d->GetXaxis()->SetTitle(xtitle.c_str());
+    h1d->GetYaxis()->SetTitle(ytitle.c_str());
+
+    return h1d;
+}
+
+TH1D * HistLoader_pt2dscan::do_zg_projection(Float_t *ptrange, std::string hname)
+{
+    TH3D *htemp = (TH3D *) h3d->Clone();
+    htemp->GetZaxis()->SetRangeUser(ptrange[0], ptrange[1]);
+	htemp->GetYaxis()->SetRangeUser(0., 5.);
+
+
+    TH1D *h1d = (TH1D *) htemp->Project3D("x");
+	h1d->SetName(hname.c_str());
+    h1d->Scale(1. / h1d->Integral("width"));
+
+    std::string xtitle = "z_{g}";
+    std::string ytitle = "1 / N_{2-prog jets} dN/z_{g}";
 
     h1d->GetXaxis()->SetTitle(xtitle.c_str());
     h1d->GetYaxis()->SetTitle(ytitle.c_str());
