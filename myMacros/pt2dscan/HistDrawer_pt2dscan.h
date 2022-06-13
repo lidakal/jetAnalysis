@@ -20,6 +20,7 @@ class HistDrawer_pt2dscan
 
         void draw_pt2dscan(bool GSPincl);
 		void draw_rg_projection(bool GSPincl);
+		void draw_zg_projection(bool GSPincl);
 };
 
 HistDrawer_pt2dscan::HistDrawer_pt2dscan(std::string MCname)
@@ -131,7 +132,7 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     std::string fname_merged_highestEfficiency_reco = "~/rootFiles/aggregateB_highestEfficiency" + noGSP + "_reco.root"; // bjet reco merge (inSV || (|ip3dSig| > 3))
 
     // Load histograms
-    Float_t ptrange[2] = {100., 150.};
+    Float_t ptrange[2] = {50., 80.};
     THStack *hs = new THStack("hs", "");
     TLegend *leg = new TLegend(0.5, 0.6, 0.8, 0.85);
     gStyle->SetLegendTextSize(15);
@@ -193,7 +194,7 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
     hs->Draw("nostack hist");
     leg->Draw();
 
-    TPaveText *info = new TPaveText(0.2, 0.17, 0.45, 0.28, "ndc");
+    TPaveText *info = new TPaveText(0.55, 0.37, 0.85, 0.48, "ndc");
     info->SetBorderSize(1);
     info->SetFillColor(0);
     info->SetTextSize(15);
@@ -202,7 +203,7 @@ void HistDrawer_pt2dscan::draw_rg_projection(bool GSPincl)
 	  //info->AddText("truth doesn't pass b-tag, NO GSP");
 	  info->AddText("all b-jets pass b-tag, NO GSP");
     }
-	info->AddText("ln(k_{T}) > 0");
+	//info->AddText("ln(k_{T}) > 0");
     info->Draw();
 
     c->Draw();
@@ -301,7 +302,7 @@ void HistDrawer_pt2dscan::draw_zg_projection(bool GSPincl)
 	  //info->AddText("truth doesn't pass b-tag, NO GSP");
 	  info->AddText("all b-jets pass b-tag, NO GSP");
     }
-	info->AddText("ln(k_{T}) > 0");
+	//info->AddText("ln(k_{T}) > 0");
     info->Draw();
 
     c->Draw();
