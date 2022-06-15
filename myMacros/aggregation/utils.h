@@ -26,6 +26,7 @@ TGraph * make_graph_eff_mistag(std::string fname, std::vector<Int_t> v_selN, Sty
 
     gr->SetMarkerStyle(markerStyle);
     gr->SetMarkerColor(markerColor);
+    gr->SetMarkerSize(2);
 
     gr->SetLineStyle(kDashed);
     gr->SetLineColor(markerColor);
@@ -56,10 +57,13 @@ TGraph * make_graph_eff_pur(std::string fname, std::vector<Int_t> v_selN, Style_
 
     gr->SetMarkerStyle(markerStyle);
     gr->SetMarkerColor(markerColor);
+    gr->SetMarkerSize(1);
 
     gr->SetLineStyle(kDashed);
     gr->SetLineColor(markerColor);
 
-    leg->AddEntry(gr, label.c_str(), "pl");
+    if (label != "") {
+        leg->AddEntry(gr, label.c_str(), "pl");
+    }
     return gr;
 }
