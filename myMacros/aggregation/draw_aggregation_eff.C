@@ -120,7 +120,7 @@ void draw_aggregation_eff()
     mcinfo->SetFillColor(0);
     mcinfo->SetFillStyle(0);
     mcinfo->SetTextSize(20);
-    mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA)");
+    mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA8)");
     mcinfo->Draw();
 
 	c->Draw();
