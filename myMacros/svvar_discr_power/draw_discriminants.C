@@ -1,5 +1,6 @@
 #include "TFile.h"
 #include "TH1D.h"
+#include "TH3D.h"
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TStyle.h"
@@ -13,13 +14,21 @@ void draw_discriminants()
 	std::string fname = "bDiscriminants_histos.root";
 
     TFile *fin = new TFile((indir + fname).c_str());
-    TH1D *hsig_ip3dSig = (TH1D *) fin->Get("hsig_ip3dSig");
-    TH1D *hbkg_ip3dSig = (TH1D *) fin->Get("hbkg_ip3dSig");
-    TH1D *hsig_inSV = (TH1D *) fin->Get("hsig_inSV");
-    TH1D *hbkg_inSV = (TH1D *) fin->Get("hbkg_inSV");
+    TH3D *hsig_3d = (TH3D *) fin->Get("hsig_3d");
+    TH3D *hbkg_3d = (TH3D *) fin->Get("hbkg_3d");
 
-    hsig_ip3dSig->GetXaxis()->SetRange(0, hsig_ip3dSig->GetNbinsX() + 1);
-    hbkg_ip3dSig->GetXaxis()->SetRange(0, hbkg_ip3dSig->GetNbinsX() + 1);
+    // Get pt range projections in 1d
+    Float_t ptmin = 50.;
+    Float_t ptmax = 80.;
+
+    hsig_3d->GetZaxis()->SetRangeUser(ptmin, ptmax);
+    hbkg_3d->GetZaxis()->SetRangeUser(ptmin, ptmax);
+
+    TH1D *hsig_ip3dSig = (TH1D *) hsig_3d->Project3D("x");
+    TH1D *hbkg_ip3dSig = (TH1D *) hbkg_3d->Project3D("x");
+    TH1D *hsig_inSV = (TH1D *) hsig_3d->Project3D("y");
+    TH1D *hbkg_inSV = (TH1D *) hbkg_3d->Project3D("y");
+
     Float_t total_tracks = hsig_ip3dSig->Integral() + hbkg_ip3dSig->Integral();
     Float_t ip3dSig_bin_width = hsig_ip3dSig->GetXaxis()->GetBinWidth(1);
 
@@ -79,6 +88,21 @@ void draw_discriminants()
     mcinfo->SetTextSize(20);
     mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA8)");
     
+    TPaveText *info = new TPaveText(0.55, 0.47, 0.85, 0.58, "ndc");
+    info->SetBorderSize(0);
+    info->SetFillColor(0);
+    info->SetFillStyle(0);
+    info->SetTextSize(15);
+    info->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+    info->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
+
+    TPaveText *infosv = new TPaveText(0.25, 0.65, 0.45, 0.75, "ndc");
+    infosv->SetBorderSize(0);
+    infosv->SetFillColor(0);
+    infosv->SetFillStyle(0);
+    infosv->SetTextSize(15);
+    infosv->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+    infosv->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
 
     TCanvas *c_ip3dSig = new TCanvas("c_ip3dSig", "", 1000, 800);
     c_ip3dSig->SetGrid(1);
@@ -86,6 +110,7 @@ void draw_discriminants()
     hstack_ip3dSig->Draw("hist");
     leg_ip3dSig->Draw();
     mcinfo->Draw();
+    info->Draw();
     c_ip3dSig->Draw();
 	std::string savename_ip3dSig = "ip3dSig.png";
 	c_ip3dSig->Print(savename_ip3dSig.c_str(), "png");
@@ -96,6 +121,7 @@ void draw_discriminants()
     hstack_inSV->Draw("hist");
     hstack_inSV->SetMaximum(0.7);
     mcinfo->Draw();
+    infosv->Draw();
     leg_inSV->Draw();
     c_inSV->Draw();
 	std::string savename_inSV = "inSV.png";
