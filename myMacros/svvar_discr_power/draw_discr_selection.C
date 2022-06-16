@@ -8,8 +8,7 @@
 #include "THStack.h"
 
 #include "../utils.h" // normalise_histo, set_axes_labels
-
-#include <algorithm> // std::max
+#include "../pt2dscan/myPalette.h"
 
 void draw_discr_selection() 
 {
@@ -17,8 +16,19 @@ void draw_discr_selection()
 	std::string fname = "bDiscriminants_histos.root";
 
     TFile *fin = new TFile((indir + fname).c_str());
-    TH2D *hsig_2d = (TH2D *) fin->Get("hsig_2d");
-    TH2D *hbkg_2d = (TH2D *) fin->Get("hbkg_2d");
+    TH3D *hsig_3d = (TH3D *) fin->Get("hsig_3d");
+    TH3D *hbkg_3d = (TH3D *) fin->Get("hbkg_3d");
+
+    // Get pt range projections in 1d
+    Float_t ptmin = 50.;
+    Float_t ptmax = 80.;
+
+    hsig_3d->GetZaxis()->SetRangeUser(ptmin, ptmax);
+    hbkg_3d->GetZaxis()->SetRangeUser(ptmin, ptmax);
+
+    TH2D *hsig_2d = (TH2D *) hsig_3d->Project3D("yx");
+    TH2D *hbkg_2d = (TH2D *) hbkg_3d->Project3D("yx");
+
     // X = ip3dSig, Y = not in SV (bin 1) / in SV (bin 2)
 
     // Get histograms of ip3dSig for sig/bkg when not in SV / in SV
@@ -70,13 +80,13 @@ void draw_discr_selection()
     THStack *hs_inSV = new THStack("hs_inSV", "");
 
     hbkg_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
-    hbkg_ip3dSig_inSV_stack->SetFillColor(2);
+    hbkg_ip3dSig_inSV_stack->SetFillColor(mykRed);
     hbkg_ip3dSig_inSV_stack->SetFillStyle(1001);
 	set_axes_labels(hbkg_ip3dSig_inSV_stack, x1title, y1title);
     hs_inSV->Add(hbkg_ip3dSig_inSV_stack);
 
     hsig_ip3dSig_inSV_stack->Scale(1 / inSV_norm);
-    hsig_ip3dSig_inSV_stack->SetFillColor(4);
+    hsig_ip3dSig_inSV_stack->SetFillColor(mykBlue);
     hsig_ip3dSig_inSV_stack->SetFillStyle(1001);
 	set_axes_labels(hsig_ip3dSig_inSV_stack, x1title, y1title);
     hs_inSV->Add(hsig_ip3dSig_inSV_stack);
@@ -86,13 +96,13 @@ void draw_discr_selection()
     THStack *hs_notInSV = new THStack("hs_notInSV", "");
 
 	hbkg_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
-    hbkg_ip3dSig_notInSV_stack->SetFillColor(2);
+    hbkg_ip3dSig_notInSV_stack->SetFillColor(mykRed);
     hbkg_ip3dSig_notInSV_stack->SetFillStyle(1001);
 	set_axes_labels(hbkg_ip3dSig_notInSV_stack, x1title, y1title);
     hs_notInSV->Add(hbkg_ip3dSig_notInSV_stack);
 
     hsig_ip3dSig_notInSV_stack->Scale(1 / notInSV_norm);
-    hsig_ip3dSig_notInSV_stack->SetFillColor(4);
+    hsig_ip3dSig_notInSV_stack->SetFillColor(mykBlue);
     hsig_ip3dSig_notInSV_stack->SetFillStyle(1001);
 	set_axes_labels(hsig_ip3dSig_notInSV_stack, x1title, y1title);
     hs_notInSV->Add(hsig_ip3dSig_notInSV_stack);
@@ -129,31 +139,34 @@ void draw_discr_selection()
     hbkg_ip3dSig_inSV->SetLineColor(2);
    
     // Create info box and legend 
-    TPaveText *info_notInSV = new TPaveText(0.2, 0.75, 0.35, 0.85, "ndc");
-	info_notInSV->SetFillColor(0);
-	info_notInSV->SetBorderSize(1);
-	info_notInSV->SetTextSize(15);
-    info_notInSV->AddText("track p_{T} > 1 GeV");
+    TPaveText *info_notInSV = new TPaveText(0.55, 0.4, 0.85, 0.58, "ndc");
+    info_notInSV->SetBorderSize(0);
+    info_notInSV->SetFillColor(0);
+    info_notInSV->SetFillStyle(0);
+    info_notInSV->SetTextSize(15);
+    info_notInSV->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+    info_notInSV->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
+    info_notInSV->AddText("Track #it{p_{T}} > 1 GeV");
 
     TPaveText *info_inSV = (TPaveText *) info_notInSV->Clone();
-    info_inSV->AddText("in SV");
+    info_inSV->AddText("Tracks in SV");
 
-    info_notInSV->AddText("not in SV");
+    info_notInSV->AddText("Tracks not in SV");
 
-    TLegend *leg_notInSV = new TLegend(0.55, 0.75, 0.8, 0.85);
-    leg_notInSV->SetBorderSize(0);
-    leg_notInSV->SetFillStyle(0);
+    TLegend *leg_notInSV = new TLegend(0.55, 0.78, 0.85, 0.9);
+    leg_notInSV->SetBorderSize(1);
+    leg_notInSV->SetFillStyle(1000);
 	gStyle->SetLegendTextSize(15);
 
     TLegend *leg_inSV = (TLegend *) leg_notInSV->Clone();
     TLegend *leg_inSV_stack = (TLegend *) leg_notInSV->Clone();
     TLegend *leg_notInSV_stack = (TLegend *) leg_notInSV->Clone();
 
-    leg_notInSV->AddEntry(hsig_ip3dSig_notInSV, "tracks from B decays", "l");
-    leg_notInSV->AddEntry(hbkg_ip3dSig_notInSV, "tracks NOT from B decays", "l");
+    leg_notInSV->AddEntry(hsig_ip3dSig_notInSV, "Tracks from B decays", "l");
+    leg_notInSV->AddEntry(hbkg_ip3dSig_notInSV, "Tracks NOT from B decays", "l");
 
-    leg_inSV->AddEntry(hsig_ip3dSig_inSV, "tracks from B decays", "l");
-    leg_inSV->AddEntry(hbkg_ip3dSig_inSV, "tracks NOT from B decays", "l");
+    leg_inSV->AddEntry(hsig_ip3dSig_inSV, "Tracks from B decays", "l");
+    leg_inSV->AddEntry(hbkg_ip3dSig_inSV, "Tracks NOT from B decays", "l");
 
     TCanvas *c_ip3dSig = new TCanvas("c_ip3dSig", "", 1800, 800);
     c_ip3dSig->Divide(2, 1);
@@ -173,21 +186,23 @@ void draw_discr_selection()
     c_ip3dSig->Draw();
 
     // Same for stack histograms
-    leg_inSV_stack->AddEntry(hsig_ip3dSig_inSV_stack, "tracks from B decays", "f");
-    leg_inSV_stack->AddEntry(hbkg_ip3dSig_inSV_stack, "tracks NOT from B decays", "f");
+    leg_inSV_stack->AddEntry(hsig_ip3dSig_inSV_stack, "Tracks from B decays", "f");
+    leg_inSV_stack->AddEntry(hbkg_ip3dSig_inSV_stack, "Tracks NOT from B decays", "f");
 
-    leg_notInSV_stack->AddEntry(hsig_ip3dSig_notInSV_stack, "tracks from B decays", "f");
-    leg_notInSV_stack->AddEntry(hbkg_ip3dSig_notInSV_stack, "tracks NOT from B decays", "f");
+    leg_notInSV_stack->AddEntry(hsig_ip3dSig_notInSV_stack, "Tracks from B decays", "f");
+    leg_notInSV_stack->AddEntry(hbkg_ip3dSig_notInSV_stack, "Tracks NOT from B decays", "f");
     
     TCanvas *c_ip3dSig_stack = new TCanvas("c_ip3dSig_stack", "", 1800, 800);
     c_ip3dSig_stack->Divide(2, 1);
 
     c_ip3dSig_stack->cd(1);
+    c_ip3dSig_stack->cd(1)->SetGrid(1);
     hs_notInSV->Draw("hist");
     info_notInSV->Draw();
     leg_notInSV_stack->Draw();
 
     c_ip3dSig_stack->cd(2);
+    c_ip3dSig_stack->cd(2)->SetGrid(1);
     hs_inSV->Draw("hist");
     info_inSV->Draw();
     leg_inSV_stack->Draw();

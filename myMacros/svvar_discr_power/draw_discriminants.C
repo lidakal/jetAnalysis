@@ -95,6 +95,7 @@ void draw_discriminants()
     info->SetTextSize(15);
     info->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
     info->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
+    info->AddText("Track #it{p_{T}} > 1 GeV");
 
     TPaveText *infosv = new TPaveText(0.25, 0.65, 0.45, 0.75, "ndc");
     infosv->SetBorderSize(0);
@@ -103,6 +104,7 @@ void draw_discriminants()
     infosv->SetTextSize(15);
     infosv->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
     infosv->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
+    infosv->AddText("Track #it{p_{T}} > 1 GeV");
 
     TCanvas *c_ip3dSig = new TCanvas("c_ip3dSig", "", 1000, 800);
     c_ip3dSig->SetGrid(1);
