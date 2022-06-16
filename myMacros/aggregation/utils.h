@@ -41,7 +41,13 @@ TGraph * make_graph_eff_pur(std::string fname, std::vector<Int_t> v_selN, Style_
     TGraph *gr = new TGraph();
  
     for (Int_t selN : v_selN) {
-        TH1D *h = (TH1D *) fin->Get(Form("heff_sel%d", selN));
+        TH3D *h3d = (TH3D *) fin->Get(Form("heff_sel%d", selN));
+        // Choose pt range
+        Float_t ptmin = 50.;
+        Float_t ptmax = 80.;
+        h3d->GetZaxis()->SetRangeUser(ptmin, ptmax);
+
+        TH2D *h = (TH2D *) h3d->Project3D("yx");
 
         Float_t totalFromB = h->GetBinContent(1, 1) + h->GetBinContent(1, 2);
         Float_t totalNotFromB = h->GetBinContent(2, 1) + h->GetBinContent(2, 2);

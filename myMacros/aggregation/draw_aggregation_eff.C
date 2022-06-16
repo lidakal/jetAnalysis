@@ -15,6 +15,9 @@ void draw_aggregation_eff()
     std::string indir = "/home/llr/cms/kalipoliti/rootFiles/";
 	std::string fname = "aggregation_eff.root";
 
+    Float_t ptmin = 50.;
+    Float_t ptmax = 80.;
+
 
     // ------------------- efficiency VS mistag rate ------------------------
 
@@ -114,6 +117,16 @@ void draw_aggregation_eff()
     c->SetGrid(1);
     mg_pur->Draw("pla");
 	leg_pur->Draw();
+
+    TPaveText *info = new TPaveText(0.17, 0.47, 0.46, 0.58, "ndc");
+    info->SetBorderSize(0);
+    info->SetFillColor(0);
+    info->SetFillStyle(0);
+    info->SetTextSize(15);
+    info->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+    info->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
+    info->AddText("Track #it{p_{T}} > 1 GeV");
+    info->Draw();
 
     TPaveText *mcinfo = new TPaveText(0.15, 0.9, 0.4, 0.95, "ndc");
     mcinfo->SetBorderSize(0);

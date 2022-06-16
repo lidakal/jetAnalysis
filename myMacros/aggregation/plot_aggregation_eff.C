@@ -3,7 +3,7 @@
 
 #include "TFile.h"
 #include "TTree.h"
-#include "TH2D.h"
+#include "TH3D.h"
 
 void plot_aggregation_eff()
 {
@@ -26,29 +26,38 @@ void plot_aggregation_eff()
     std::string foutname = outdir + fname;
     TFile *fout = new TFile(foutname.c_str(), "recreate");
 
+    Int_t ptbins = 27*2;
+    Float_t ptmin = 30.;
+    Float_t ptmax = 300.;
+
     // X = track from B (0.2) / track not from B (0.9)
     // Y = track pass selection (0.2) / track does not pass selection (0.9)
-    TH2D *heff_sel1 = new TH2D("heff_sel1", "histogram with b product tag efficiency, sel1", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel2 = new TH2D("heff_sel2", "histogram with b product tag efficiency, sel2", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel3 = new TH2D("heff_sel3", "histogram with b product tag efficiency, sel3", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel4 = new TH2D("heff_sel4", "histogram with b product tag efficiency, sel4", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel5 = new TH2D("heff_sel5", "histogram with b product tag efficiency, sel5", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel6 = new TH2D("heff_sel6", "histogram with b product tag efficiency, sel6", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel7 = new TH2D("heff_sel7", "histogram with b product tag efficiency, sel7", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel8 = new TH2D("heff_sel8", "histogram with b product tag efficiency, sel8", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel9 = new TH2D("heff_sel9", "histogram with b product tag efficiency, sel9", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel10 = new TH2D("heff_sel10", "histogram with b product tag efficiency, sel10", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel11 = new TH2D("heff_sel11", "histogram with b product tag efficiency, sel11", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel12 = new TH2D("heff_sel12", "histogram with b product tag efficiency, sel12", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel13 = new TH2D("heff_sel13", "histogram with b product tag efficiency, sel13", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel14 = new TH2D("heff_sel14", "histogram with b product tag efficiency, sel14", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel15 = new TH2D("heff_sel15", "histogram with b product tag efficiency, sel15", 2, 0, 1, 2, 0, 1);
-    TH2D *heff_sel16 = new TH2D("heff_sel16", "histogram with b product tag efficiency, sel16", 2, 0, 1, 2, 0, 1);
+    TH3D *heff_sel1 = new TH3D("heff_sel1", "histogram with b product tag efficiency, sel1", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel2 = new TH3D("heff_sel2", "histogram with b product tag efficiency, sel2", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel3 = new TH3D("heff_sel3", "histogram with b product tag efficiency, sel3", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel4 = new TH3D("heff_sel4", "histogram with b product tag efficiency, sel4", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel5 = new TH3D("heff_sel5", "histogram with b product tag efficiency, sel5", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel6 = new TH3D("heff_sel6", "histogram with b product tag efficiency, sel6", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel7 = new TH3D("heff_sel7", "histogram with b product tag efficiency, sel7", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel8 = new TH3D("heff_sel8", "histogram with b product tag efficiency, sel8", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel9 = new TH3D("heff_sel9", "histogram with b product tag efficiency, sel9", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel10 = new TH3D("heff_sel10", "histogram with b product tag efficiency, sel10", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel11 = new TH3D("heff_sel11", "histogram with b product tag efficiency, sel11", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel12 = new TH3D("heff_sel12", "histogram with b product tag efficiency, sel12", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel13 = new TH3D("heff_sel13", "histogram with b product tag efficiency, sel13", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel14 = new TH3D("heff_sel14", "histogram with b product tag efficiency, sel14", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel15 = new TH3D("heff_sel15", "histogram with b product tag efficiency, sel15", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
+    TH3D *heff_sel16 = new TH3D("heff_sel16", "histogram with b product tag efficiency, sel16", 2, 0, 1, 2, 0, 1, ptbins, ptmin, ptmax);
     
     //------------------ Calculate efficiency / purity ----------------------
 
     // Go over events
     for (Long64_t ient = 0; ient < ta.nentries; ient++) {
+
+        // For debugging purposes
+        //if (ient < 1887891) continue;
+        //if (ient > 1887891) break;
+
         // Show progress
         if (ient % 1000000 == 0) {
             std::cout << "i = " << ient << std::endl;
@@ -61,15 +70,22 @@ void plot_aggregation_eff()
         // Go over jets
         for (Int_t ijet = 0; ijet < ta.nref; ijet++) {
             bool passWp = (ta.jtDiscDeepFlavourB[ijet] + ta.jtDiscDeepFlavourBB[ijet] + ta.jtDiscDeepFlavourLEPB[ijet]) > 0.9;
-
-            // bjet & eta cut & pt cut
-            if ((!passWp) || (std::abs(ta.jteta[ijet]) > 2) || (ta.jtpt[ijet] < 100)) {
+            
+            // bjet & eta cut 
+            if ((!passWp) || (std::abs(ta.jteta[ijet]) > 2)) {
 			   itrackOffset += ta.nselIPtrk[ijet];
                continue;
 			}
 
+            // remove GSP
+            if (ta.jtNbHad[ijet] != 1) {
+                itrackOffset += ta.nselIPtrk[ijet];
+                continue;
+            }
+
             // Go over jet tracks
             for (Int_t itrack = 0; itrack < ta.nselIPtrk[ijet]; itrack++) {
+                
                 // Get track properties
                 Float_t ipEta = ta.ipEta[itrackOffset + itrack];
                 Float_t ipPhi = ta.ipPhi[itrackOffset + itrack];
@@ -82,6 +98,9 @@ void plot_aggregation_eff()
                 Float_t eps = 0.00001;
                 Int_t whichSV = -1;
                 Int_t iSVtrackOffset = 0;
+
+                //std::cout << "jet: " << ijet << ", nsv: " << ta.nsvtx[ijet] << std::endl;
+
                 for (Int_t isv = 0; isv < ta.nsvtx[ijet]; isv++) {
                     Float_t tracksInSV = (*ta.svtxntrk)[ijet][isv];
                     for (Int_t iSVtrack = 0; iSVtrack < tracksInSV; iSVtrack++) { 
@@ -181,22 +200,22 @@ void plot_aggregation_eff()
                 Float_t ySel16 = 0.9;
                 if (passSelection16) ySel16 = 0.2;
 
-                heff_sel1->Fill(xFromB, ySel1, weight);
-                heff_sel2->Fill(xFromB, ySel2, weight);
-                heff_sel3->Fill(xFromB, ySel3, weight);
-                heff_sel4->Fill(xFromB, ySel4, weight);
-                heff_sel5->Fill(xFromB, ySel5, weight);
-                heff_sel6->Fill(xFromB, ySel6, weight);
-                heff_sel7->Fill(xFromB, ySel7, weight);
-                heff_sel8->Fill(xFromB, ySel8, weight);
-                heff_sel9->Fill(xFromB, ySel9, weight);
-                heff_sel10->Fill(xFromB, ySel10, weight);
-                heff_sel11->Fill(xFromB, ySel11, weight);
-                heff_sel12->Fill(xFromB, ySel12, weight);
-                heff_sel13->Fill(xFromB, ySel13, weight);
-                heff_sel14->Fill(xFromB, ySel14, weight);
-                heff_sel15->Fill(xFromB, ySel15, weight);
-                heff_sel16->Fill(xFromB, ySel16, weight);
+                heff_sel1->Fill(xFromB, ySel1, ta.jtpt[ijet], weight);
+                heff_sel2->Fill(xFromB, ySel2, ta.jtpt[ijet], weight);
+                heff_sel3->Fill(xFromB, ySel3, ta.jtpt[ijet], weight);
+                heff_sel4->Fill(xFromB, ySel4, ta.jtpt[ijet], weight);
+                heff_sel5->Fill(xFromB, ySel5, ta.jtpt[ijet], weight);
+                heff_sel6->Fill(xFromB, ySel6, ta.jtpt[ijet], weight);
+                heff_sel7->Fill(xFromB, ySel7, ta.jtpt[ijet], weight);
+                heff_sel8->Fill(xFromB, ySel8, ta.jtpt[ijet], weight);
+                heff_sel9->Fill(xFromB, ySel9, ta.jtpt[ijet], weight);
+                heff_sel10->Fill(xFromB, ySel10, ta.jtpt[ijet], weight);
+                heff_sel11->Fill(xFromB, ySel11, ta.jtpt[ijet], weight);
+                heff_sel12->Fill(xFromB, ySel12, ta.jtpt[ijet], weight);
+                heff_sel13->Fill(xFromB, ySel13, ta.jtpt[ijet], weight);
+                heff_sel14->Fill(xFromB, ySel14, ta.jtpt[ijet], weight);
+                heff_sel15->Fill(xFromB, ySel15, ta.jtpt[ijet], weight);
+                heff_sel16->Fill(xFromB, ySel16, ta.jtpt[ijet], weight);
 
             } // jet track loop
             itrackOffset += ta.nselIPtrk[ijet];
