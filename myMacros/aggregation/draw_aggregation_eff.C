@@ -115,6 +115,14 @@ void draw_aggregation_eff()
     mg_pur->Draw("pla");
 	leg_pur->Draw();
 
+    TPaveText *mcinfo = new TPaveText(0.15, 0.9, 0.4, 0.95, "ndc");
+    mcinfo->SetBorderSize(0);
+    mcinfo->SetFillColor(0);
+    mcinfo->SetFillStyle(0);
+    mcinfo->SetTextSize(20);
+    mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA)");
+    mcinfo->Draw();
+
 	c->Draw();
 
 	std::string savename = "aggregation_eff_ROC.png";

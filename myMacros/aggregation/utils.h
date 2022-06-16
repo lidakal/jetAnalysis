@@ -57,7 +57,8 @@ TGraph * make_graph_eff_pur(std::string fname, std::vector<Int_t> v_selN, Style_
 
     gr->SetMarkerStyle(markerStyle);
     gr->SetMarkerColor(markerColor);
-    gr->SetMarkerSize(1);
+    gr->SetMarkerSize(2);
+    gr->SetLineWidth(2);
 
     gr->SetLineStyle(kDashed);
     gr->SetLineColor(markerColor);
