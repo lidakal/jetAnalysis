@@ -6,7 +6,9 @@
 #include "TLegend.h"
 #include "TStyle.h"
 
-TH1D * do_rg_projection(std::string fname, std::string hname, Float_t *ptrange)
+#include "../pt2dscan/myPalette.h"
+
+TH1D * do_1d_projection(std::string fname, std::string hname, Float_t *ptrange)
 {
     // Making sure the histograms have different names 
     static Int_t counter = 0;
@@ -28,24 +30,31 @@ TH1D * do_rg_projection(std::string fname, std::string hname, Float_t *ptrange)
     return h1d;
 }
 
-void draw_rg_projection(TCanvas *c, THStack *hs, TLegend *leg, THStack *hs_ratio, TLegend *leg_ratio, Float_t *ptrange)
+void draw_rg_projection(std::string var, THStack *hs, TLegend *leg, THStack *hs_ratio, TLegend *leg_ratio, Float_t *ptrange)
 {
+    // var can be "rg" or "zg"
     Float_t ptmin = ptrange[0];
     Float_t ptmax = ptrange[1];
 
-    static Int_t lcolor = 1;
+    Int_t pal[3] = {mykRed, mykGreen, mykBlue};
+
+    static Int_t lcolor = 0;
     static Int_t lstyle = 1;
 
-    std::string fname = "/home/llr/cms/kalipoliti/rootFiles/aggregateB_ip3dSig_looserCut_ref.root";
+    std::string fname = "/home/llr/cms/kalipoliti/rootFiles/aggregateB_truthInfo_fixedBugs_noGSP_ref.root";
 
-    TH1D *hB_rg = do_rg_projection(fname, "hB_rgkt", ptrange);
-    hB_rg->SetLineColor(lcolor);
+    TH1D *hB_rg = do_1d_projection(fname, Form("hB_%skt", var.c_str()), ptrange);
+    hB_rg->Rebin(2);
+    hB_rg->SetLineWidth(2);
+    hB_rg->SetLineColor(pal[lcolor]);
     hB_rg->SetLineStyle(1);
     leg->AddEntry(hB_rg, Form("true b-jets, p_{T}^{jet} #in [%.0f, %.0f] (GeV)", ptmin, ptmax), "l");
     hs->Add(hB_rg);
 
-    TH1D *hBtag_rg = do_rg_projection(fname, "hBtag_rgkt", ptrange);
-    hBtag_rg->SetLineColor(lcolor);
+    TH1D *hBtag_rg = do_1d_projection(fname, Form("hBtag_%skt", var.c_str()), ptrange);
+    hBtag_rg->Rebin(2);
+    hBtag_rg->SetLineColor(pal[lcolor]);
+    hBtag_rg->SetLineWidth(2);
     hBtag_rg->SetLineStyle(2);
     leg->AddEntry(hBtag_rg, Form("tagged b-jets,  p_{T}^{jet} #in [%.0f, %.0f] (GeV)", ptmin, ptmax), "l");
     hs->Add(hBtag_rg);
@@ -53,7 +62,8 @@ void draw_rg_projection(TCanvas *c, THStack *hs, TLegend *leg, THStack *hs_ratio
     // Create ratio histogram
     TH1D *h_ratio = (TH1D *) hB_rg->Clone();
     h_ratio->Divide(hBtag_rg);
-    h_ratio->SetLineColor(lcolor);
+    h_ratio->SetLineWidth(2);
+    h_ratio->SetLineColor(pal[lcolor]);
     leg_ratio->AddEntry(h_ratio, Form("%0.f < p_{T}^{jet} < %0.f (GeV)", ptmin, ptmax), "l");
 
 	hs_ratio->Add(h_ratio);

@@ -10,14 +10,18 @@
 
 void draw_truth_btag_diff()
 {
-    TCanvas *c = new TCanvas("c", "", 1200, 800);
-    TCanvas *c_ratio = new TCanvas("c_ratio", "", 1200, 800);
+    std::string var = "zg";
 
 	THStack *hs = new THStack("hs", "");
 	THStack *hs_ratio = new THStack("hs_ratio", "");
 
-	std::string x1title = "ln(1/R_{g})";
-	std::string y1title = "1/N_{2-prong jets} dN/dln(1/R_{g})";
+	std::string x1title = "";
+    if (var == "rg") {
+        x1title += "ln(1/R_{g})";
+    } else if (var == "zg") {
+        x1title += "z_{g}";
+    }
+	std::string y1title = "1/N_{2-prong jets} dN/" + x1title;
 	std::string y2title = "N_{true b-jets} / N_{tagged b-jets}";
 
 	hs->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
@@ -33,15 +37,15 @@ void draw_truth_btag_diff()
 	leg_ratio->SetBorderSize(1);
 
     Float_t ptrange1[2] = {50., 80.};
-    draw_rg_projection(c, c_ratio, hs, leg, hs_ratio, leg_ratio, ptrange1);
+    draw_rg_projection(var, hs, leg, hs_ratio, leg_ratio, ptrange1);
 
     Float_t ptrange2[2] = {100., 150.};
-    draw_rg_projection(c, c_ratio, hs, leg, hs_ratio, leg_ratio, ptrange2);
+    draw_rg_projection(var, hs, leg, hs_ratio, leg_ratio, ptrange2);
 
     Float_t ptrange3[2] = {200., 250.};
-    draw_rg_projection(c, c_ratio, hs, leg, hs_ratio, leg_ratio, ptrange3);
+    draw_rg_projection(var, hs, leg, hs_ratio, leg_ratio, ptrange3);
 
-    TPaveText *info = new TPaveText(0.15, 0.22, 0.5, 0.37, "ndc");
+    TPaveText *info = new TPaveText(0.15, 0.17, 0.5, 0.27, "ndc");
 	info->AddText("Truth level #it{b}-jets with aggregated pseudo-B's");
     info->SetTextSize(15);
     info->SetFillStyle(0);
@@ -54,6 +58,9 @@ void draw_truth_btag_diff()
     mcinfo->SetTextSize(20);
     mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA8)");
 
+    TCanvas *c = new TCanvas("c", "", 1200, 800);
+    TCanvas *c_ratio = new TCanvas("c_ratio", "", 1200, 800);
+
     c->cd();
     c->SetGrid(1);
 	hs->Draw("nostack hist");
@@ -62,7 +69,7 @@ void draw_truth_btag_diff()
     mcinfo->Draw();
 
     c->Draw();
-	std::string savename = "true_tagged_b_diff.png";
+	std::string savename = "true_tagged_b_diff_" + var + ".png";
 	c->Print(savename.c_str(), "png");
 
     c_ratio->SetGrid(1);
@@ -73,7 +80,7 @@ void draw_truth_btag_diff()
     mcinfo->Draw();
 
     c_ratio->Draw();
-	std::string savename_ratio = "true_tagged_b_diff_ratio.png";
+	std::string savename_ratio = "true_tagged_b_diff_" + var + "_ratio.png";
 	c_ratio->Print(savename_ratio.c_str(), "png");
 
     
