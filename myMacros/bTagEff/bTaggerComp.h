@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include <vector>
+
+#include "../pt2dscan/myPalette.h"
     
 using namespace std;
 //using namespace vector;
@@ -16,8 +18,8 @@ using namespace std;
 // Count how many of the actual b's are tagged as b's
 vector<vector<Float_t>> bTagEff() 
 {
-    string path_incl = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
+    string path_incl = "/data_CMS/cms/kalipoliti/qcdMC/SD_ptCut/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/kalipoliti/bJetMC/SD_ptCut/merged_HiForestAOD.root";
     TFile *f;
     TTree *t;
     TTree *HiTree;
@@ -86,7 +88,7 @@ vector<vector<Float_t>> bTagEff()
     const Int_t nwps = 14;
 
     Float_t wp_probs[nwps] = {0., 0.01, 0.03, 0.05, 0.07, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
-    Float_t wp_jetpt = 100.;
+    Float_t wp_jetpt = 50.;
     
     Float_t actualBs = 0;
 
@@ -154,8 +156,8 @@ vector<vector<Float_t>> bTagEff()
 // count how many of the actual C's and L's are tagged as B's
 vector<vector<Float_t>> missIdC() 
 {
-    string path_incl = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
+    string path_incl = "/data_CMS/cms/kalipoliti/qcdMC/SD_ptCut/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/kalipoliti/bJetMC/SD_ptCut/merged_HiForestAOD.root";
     TFile *f;
     TTree *t;
     TTree *HiTree;
@@ -225,7 +227,7 @@ vector<vector<Float_t>> missIdC()
     const Int_t nwps = 14;
 
     Float_t wp_probs[nwps] = {0., 0.01, 0.03, 0.05, 0.07, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
-    Float_t wp_jetpt = 100.;
+    Float_t wp_jetpt = 50.;
     
     Float_t taggedBsCSVV2[nwps] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     Float_t taggedBsDeepCSV[nwps] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -291,8 +293,8 @@ vector<vector<Float_t>> missIdC()
 // count how many of the actual light jets are tagged as B's
 vector<vector<Float_t>> missIdL() 
 {
-    string path_incl = "/data_CMS/cms/mnguyen//bJet2022/qcdMC/SD/merged_HiForestAOD.root";
-    string path_bJet = "/data_CMS/cms/mnguyen//bJet2022/bJetMC/SD/merged_HiForestAOD.root";
+    string path_incl = "/data_CMS/cms/kalipoliti/qcdMC/SD_ptCut/merged_HiForestAOD.root";
+    string path_bJet = "/data_CMS/cms/kalipoliti/bJetMC/SD_ptCut/merged_HiForestAOD.root";
     TFile *f;
     TTree *t;
     TTree *HiTree;
@@ -363,7 +365,7 @@ vector<vector<Float_t>> missIdL()
     const Int_t nwps = 14;
 
     Float_t wp_probs[nwps] = {0., 0.01, 0.03, 0.05, 0.07, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
-    Float_t wp_jetpt = 100.;
+    Float_t wp_jetpt = 50.;
     
     Float_t taggedBsCSVV2[nwps] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     Float_t taggedBsDeepCSV[nwps] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -492,54 +494,64 @@ void drawROCcurve()
     
     tree->GetEntry(0);
     
-    TCanvas *c = new TCanvas("c","b-tagger comparison", 900, 900);
+    TCanvas *c = new TCanvas("c","b-tagger comparison", 1200, 800);
     c->SetLogy();
+    c->SetGrid(1);
     
-    TLegend *leg = new TLegend(0.15, 0.7, 0.8, 0.9);
-    gStyle->SetLegendTextSize(18);
+    TLegend *leg = new TLegend(0.65, 0.15, 0.85, 0.48);
+    leg->SetBorderSize(1);
+    leg->SetFillStyle(1000);
+    leg->SetFillColor(0);
+    leg->SetHeader("B-taggers compared:");
+    gStyle->SetLegendTextSize(15);
+
+    TLegendEntry *header = (TLegendEntry*) leg->GetListOfPrimitives()->First();
+    header->SetTextAlign(22);
+    //header->SetTextColor(2);
+    header->SetTextSize(17);
 
 	TMultiGraph *mg = new TMultiGraph();
     
     TGraph *gr1 = new TGraph(nwps, effB_CSVV2, effC_CSVV2);
     gr1->SetMarkerStyle(kFullCircle);
-    gr1->SetMarkerColor(kRed+2);
+    gr1->SetMarkerColor(mykRed);
     gr1->SetLineStyle(kSolid);
-    gr1->SetLineColor(kRed+2);
+    gr1->SetLineColor(mykRed);
     leg->AddEntry(gr1, "CSVV2, B vs C", "pl");
     
     TGraph *gr2 = new TGraph(nwps, effB_CSVV2, effL_CSVV2);
     gr2->SetMarkerStyle(kCircle);
-    gr2->SetMarkerColor(kRed+2);
+    gr2->SetMarkerColor(mykRed);
     gr2->SetLineStyle(kDashed);
-    gr2->SetLineColor(kRed+2);
+    gr2->SetLineColor(mykRed);
     leg->AddEntry(gr2, "CSVV2, B vs L", "pl");
     
     TGraph *gr3 = new TGraph(nwps, effB_DeepCSV, effC_DeepCSV);
     gr3->SetMarkerStyle(kFullSquare);
-    gr3->SetMarkerColor(kGreen+2);
+    gr3->SetMarkerColor(mykGreen);
     gr3->SetLineStyle(kSolid);
-    gr3->SetLineColor(kGreen+2);
+    gr3->SetLineColor(mykGreen);
     leg->AddEntry(gr3, "DeepCSV, B vs C", "pl");
     
     TGraph *gr4 = new TGraph(nwps, effB_DeepCSV, effL_DeepCSV);
     gr4->SetMarkerStyle(kOpenSquare);
-    gr4->SetMarkerColor(kGreen+2);
+    gr4->SetMarkerColor(mykGreen);
     gr4->SetLineStyle(kDashed);
-    gr4->SetLineColor(kGreen+2);
+    gr4->SetLineColor(mykGreen);
     leg->AddEntry(gr4, "DeepCSV, B vs L", "pl");
     
     TGraph *gr5 = new TGraph(nwps, effB_DeepFlavour, effC_DeepFlavour);
     gr5->SetMarkerStyle(kFullTriangleUp);
-    gr5->SetMarkerColor(kBlue+2);
+    gr5->SetMarkerColor(mykBlue);
     gr5->SetLineStyle(kSolid);
-    gr5->SetLineColor(kBlue+2);
+    gr5->SetLineColor(mykBlue);
     leg->AddEntry(gr5, "DeepFlavour, B vs C", "pl");
     
     TGraph *gr6 = new TGraph(nwps, effB_DeepFlavour, effL_DeepFlavour);
     gr6->SetMarkerStyle(kOpenTriangleUp);
-    gr6->SetMarkerColor(kBlue+2);
+    gr6->SetMarkerColor(mykBlue);
     gr6->SetLineStyle(kDashed);
-    gr6->SetLineColor(kBlue+2);
+    gr6->SetLineColor(mykBlue);
     leg->AddEntry(gr6, "DeepFlavour, B vs L", "pl");
     
 	mg->Add(gr1);
@@ -554,14 +566,30 @@ void drawROCcurve()
     mg->GetYaxis()->SetTitle("Misidentification rate");
     mg->GetXaxis()->SetTitle("b-tag Efficiency");
 
-    leg->SetBorderSize(0);
-    leg->SetFillStyle(0);
     leg->Draw();
+
+    TPaveText *mcinfo = new TPaveText(0.15, 0.9, 0.4, 0.95, "ndc");
+    mcinfo->SetBorderSize(0);
+    mcinfo->SetFillColor(0);
+    mcinfo->SetFillStyle(0);
+    mcinfo->SetTextSize(20);
+    mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA8)");
+    mcinfo->Draw();
+
+    TPaveText *info = new TPaveText(0.2, 0.7, 0.3, 0.75, "ndc");
+    info->SetBorderSize(0);
+    info->SetFillColor(0);
+    info->SetFillStyle(0);
+    info->SetTextSize(15);
+    info->AddText("#it{p_{T}^{jet}} > 50 GeV");
+    //info->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
+    //nfo->AddText("Track #it{p_{T}} > 1 GeV");
+    info->Draw();
     
     // Draw Title
     TLatex *title = new TLatex();
     title->SetTextSize(25);
-    title->DrawLatexNDC(0.4, 0.94, "b-tagger comparison");
+    //title->DrawLatexNDC(0.4, 0.94, "b-tagger comparison");
     
     c->Draw();
     c->Print("btagcomp.png");
