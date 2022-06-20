@@ -124,6 +124,7 @@ void draw_aggregation_eff()
     info->SetFillStyle(0);
     info->SetTextSize(15);
     info->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+    info->AddText("-2 < #it{#eta^{jet}} < 2");
     info->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
     info->AddText("Track #it{p_{T}} > 1 GeV");
     info->Draw();

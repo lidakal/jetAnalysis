@@ -8,10 +8,8 @@
 
 #include "utils.h" // do_rg_projection()
 
-void draw_truth_btag_diff()
+void draw_truth_btag_diff(std::string var = "zg")
 {
-    std::string var = "zg";
-
 	THStack *hs = new THStack("hs", "");
 	THStack *hs_ratio = new THStack("hs_ratio", "");
 
@@ -22,7 +20,7 @@ void draw_truth_btag_diff()
         x1title += "z_{g}";
     }
 	std::string y1title = "1/N_{2-prong jets} dN/" + x1title;
-	std::string y2title = "N_{true b-jets} / N_{tagged b-jets}";
+	std::string y2title = "N_{true #it{b}-jets} / N_{#it{b}-tagged #it{b}-jets}";
 
 	hs->SetTitle(Form("; %s; %s", x1title.c_str(), y1title.c_str()));
 	hs_ratio->SetTitle(Form("; %s; %s", x1title.c_str(), y2title.c_str()));
@@ -45,8 +43,9 @@ void draw_truth_btag_diff()
     Float_t ptrange3[2] = {200., 250.};
     draw_rg_projection(var, hs, leg, hs_ratio, leg_ratio, ptrange3);
 
-    TPaveText *info = new TPaveText(0.15, 0.17, 0.5, 0.27, "ndc");
+    TPaveText *info = new TPaveText(0.15, 0.17, 0.46, 0.25, "ndc");
 	info->AddText("Truth level #it{b}-jets with aggregated pseudo-B's");
+    info->AddText("-2 < #it{#eta^{jet}} < 2");
     info->SetTextSize(15);
     info->SetFillStyle(0);
     info->SetBorderSize(0);

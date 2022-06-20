@@ -502,7 +502,7 @@ void drawROCcurve()
     leg->SetBorderSize(1);
     leg->SetFillStyle(1000);
     leg->SetFillColor(0);
-    leg->SetHeader("B-taggers compared:");
+    leg->SetHeader("#it{b}-taggers compared:");
     gStyle->SetLegendTextSize(15);
 
     TLegendEntry *header = (TLegendEntry*) leg->GetListOfPrimitives()->First();
@@ -563,8 +563,8 @@ void drawROCcurve()
 
 	mg->Draw("APL");
 
-    mg->GetYaxis()->SetTitle("Misidentification rate");
-    mg->GetXaxis()->SetTitle("b-tag Efficiency");
+    mg->GetYaxis()->SetTitle("#it{c}- / light-jet misidentification rate");
+    mg->GetXaxis()->SetTitle("#it{b}-tag efficiency");
 
     leg->Draw();
 
@@ -576,12 +576,13 @@ void drawROCcurve()
     mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA8)");
     mcinfo->Draw();
 
-    TPaveText *info = new TPaveText(0.2, 0.7, 0.3, 0.75, "ndc");
+    TPaveText *info = new TPaveText(0.2, 0.7, 0.35, 0.8, "ndc");
     info->SetBorderSize(0);
     info->SetFillColor(0);
     info->SetFillStyle(0);
     info->SetTextSize(15);
     info->AddText("#it{p_{T}^{jet}} > 50 GeV");
+    info->AddText("-2 < #it{#eta^{jet}} < 2");
     //info->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
     //nfo->AddText("Track #it{p_{T}} > 1 GeV");
     info->Draw();

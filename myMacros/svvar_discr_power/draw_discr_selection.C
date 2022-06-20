@@ -69,11 +69,11 @@ void draw_discr_selection()
     h_notInSV_stack->GetXaxis()->SetRange(0, h_notInSV_stack->GetNbinsX() + 1);
     Float_t notInSV_norm = h_notInSV_stack->Integral();
 
-	std::string x1title = "ip3dSig";
-    std::string y1title = "1/N_{total tracks (not) from B decays | not in SV} dN_{tracks (not) from B decays | not in SV}/dip3dSig";
-    std::string y2title = "1/N_{total tracks (not) from B decays | in SV} dN_{tracks (not) from B decays | in SV}/dip3dSig";
-    std::string y3title = "1/N_{total tracks | in SV} dN_{tracks | in SV}/dip3dSig";
-    std::string y4title = "1/N_{total tracks | not in SV} dN_{tracks | not in SV}/dip3dSig";
+	std::string x1title = "3D IP/#sigma";
+    std::string y1title = "1/N_{total tracks (not) from B decays | not in SV} dN_{tracks (not) from B decays | not in SV}/d(" + x1title + ")";
+    std::string y2title = "1/N_{total tracks (not) from B decays | in SV} dN_{tracks (not) from B decays | in SV}/d(" + x1title + ")";
+    std::string y3title = "1/N_{total tracks | in SV} dN_{tracks | in SV}/d(" + x1title + ")";
+    std::string y4title = "1/N_{total tracks | not in SV} dN_{tracks | not in SV}/d(" + x1title + ")";
 
 
     // Create stack histograms
@@ -139,14 +139,22 @@ void draw_discr_selection()
     hbkg_ip3dSig_inSV->SetLineColor(2);
    
     // Create info box and legend 
-    TPaveText *info_notInSV = new TPaveText(0.55, 0.4, 0.85, 0.58, "ndc");
+    TPaveText *info_notInSV = new TPaveText(0.55, 0.4, 0.85, 0.6, "ndc");
     info_notInSV->SetBorderSize(0);
     info_notInSV->SetFillColor(0);
     info_notInSV->SetFillStyle(0);
     info_notInSV->SetTextSize(15);
     info_notInSV->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+    info_notInSV->AddText("-2 < #it{#eta^{jet}} < 2");
     info_notInSV->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
     info_notInSV->AddText("Track #it{p_{T}} > 1 GeV");
+
+    TPaveText *mcinfo = new TPaveText(0.24, 0.9, 0.4, 0.95, "ndc");
+    mcinfo->SetBorderSize(0);
+    mcinfo->SetFillColor(0);
+    mcinfo->SetFillStyle(0);
+    mcinfo->SetTextSize(20);
+    mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA8)");
 
     TPaveText *info_inSV = (TPaveText *) info_notInSV->Clone();
     info_inSV->AddText("Tracks in SV");
@@ -200,12 +208,14 @@ void draw_discr_selection()
     hs_notInSV->Draw("hist");
     info_notInSV->Draw();
     leg_notInSV_stack->Draw();
+    mcinfo->Draw();
 
     c_ip3dSig_stack->cd(2);
     c_ip3dSig_stack->cd(2)->SetGrid(1);
     hs_inSV->Draw("hist");
     info_inSV->Draw();
     leg_inSV_stack->Draw();
+    mcinfo->Draw();
 
     c_ip3dSig_stack->Draw();
 	

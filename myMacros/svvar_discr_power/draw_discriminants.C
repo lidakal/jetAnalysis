@@ -32,8 +32,8 @@ void draw_discriminants()
     Float_t total_tracks = hsig_ip3dSig->Integral() + hbkg_ip3dSig->Integral();
     Float_t ip3dSig_bin_width = hsig_ip3dSig->GetXaxis()->GetBinWidth(1);
 
-    std::string x1title = "ip3dSig";
-    std::string y1title = "1/N_{total tracks} dN_{tracks (not) from B decays}/dip3dSig";
+    std::string x1title = "3D IP/#sigma";
+    std::string y1title = "1/N_{total tracks} dN_{tracks (not) from B decays}/d(" + x1title + ")";
     std::string y2title = "1/N_{total tracks} N_{tracks (not) from B decays}";
 
     const Int_t nh = 2;
@@ -88,21 +88,23 @@ void draw_discriminants()
     mcinfo->SetTextSize(20);
     mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA8)");
     
-    TPaveText *info = new TPaveText(0.55, 0.47, 0.85, 0.58, "ndc");
+    TPaveText *info = new TPaveText(0.55, 0.45, 0.85, 0.6, "ndc");
     info->SetBorderSize(0);
     info->SetFillColor(0);
     info->SetFillStyle(0);
     info->SetTextSize(15);
     info->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+    info->AddText("-2 < #it{#eta^{jet}} < 2");
     info->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
     info->AddText("Track #it{p_{T}} > 1 GeV");
 
-    TPaveText *infosv = new TPaveText(0.25, 0.65, 0.45, 0.75, "ndc");
+    TPaveText *infosv = new TPaveText(0.25, 0.6, 0.45, 0.75, "ndc");
     infosv->SetBorderSize(0);
     infosv->SetFillColor(0);
     infosv->SetFillStyle(0);
     infosv->SetTextSize(15);
     infosv->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+    infosv->AddText("-2 < #it{#eta^{jet}} < 2");
     infosv->AddText("Reconstructed #it{b}-tagged #it{b}-jets");
     infosv->AddText("Track #it{p_{T}} > 1 GeV");
 
