@@ -4,5 +4,5 @@ void draw_SD_ptCut()
 {          
     std::string fname = "SD_ptCut";
     HistDrawer_pt2dscan HD(fname);
-    HD.draw_pt2dscan(false);
+    HD.draw_pt2dscan_parVSref("B", "Normal SD #it{b}-jets", false);
 }
