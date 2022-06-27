@@ -6,155 +6,143 @@
 #include "TLatex.h"
 #include "TPaveText.h"
 #include "TLine.h"
-#include "../../utils.h"
-#include <regex>
+#include "TPad.h"
 
+#include "../HistDrawer_pt2dscan.h"
+
+#include <regex>
 #include "stdlib.h"
 
-void draw_projections1d()
+void draw_projections1d(std::string var = "zg", bool GSPincl = false)
 {
-    std::string fname_chargedSJ_ref = "~/rootFiles/chargedSJ_new_noGSP_ref.root"; // ljet truth
-    std::string fname_chargedSJ_reco = "~/rootFiles/chargedSJ_new_noGSP_reco.root"; // ljet reco, bjet reco no merge
+    std::string noGSP = "";
+    if (!GSPincl) {
+        noGSP += "_noGSP";
+    }
 
-    std::string fname_merged_ref = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_ref.root"; // bjet truth merge
-    std::string fname_merged_reco = "~/rootFiles/chargedSJ_mergedSVtracks_gen_reco_noGSP_reco.root"; // bjet reco merge only SV
+    Float_t lowpt[] = {50., 80.};
+    Float_t midpt[] = {100., 150.};
+    Float_t highpt[] = {200., 250.};
 
-    std::string fname_merged_ip3dSig_reco = "~/rootFiles/aggregateB_ip3dSig_looserCut_noGSP_reco.root"; // bjet reco merge SV and ip3dSig   
+    Float_t ktrange[] = {0., 5.};    
+    Float_t ktmin = ktrange[0];
+    Float_t ktmax = ktrange[1];
 
-    TFile *f_chargedSJ_ref = new TFile(fname_chargedSJ_ref.c_str());
-    TH3D *hL3d_chargedSJ_ref = (TH3D *) f_chargedSJ_ref->Get("hL_rgkt");
-    hL3d_chargedSJ_ref->SetName("hL3d_chargedSJ_ref"); // ljet truth
+    const Int_t npt = 3;
+    Float_t *ptranges[npt] = {lowpt, midpt, highpt};
 
-    TFile *f_chargedSJ_reco = new TFile(fname_chargedSJ_reco.c_str());
-    TH3D *hL3d_chargedSJ_reco = (TH3D *) f_chargedSJ_reco->Get("hL_rgkt"); // ljet reco
-    hL3d_chargedSJ_reco->SetName("hL3d_chargedSJ_reco");
-    TH3D *hB3d_chargedSJ_reco = (TH3D *) f_chargedSJ_reco->Get("hB_rgkt"); // bjet reco no merge
-    hB3d_chargedSJ_reco->SetName("hB3d_chargedSJ_reco");
+    TCanvas *c = new TCanvas("c", "", 1800, 450);
+    // Divide canvas into 3 pads
+    c->cd();
+    TPad *pad1 = new TPad("pad1", "pad1", 0., 0., 0.34, 1.);
+    pad1->SetRightMargin(0.);
+    pad1->SetGrid(1);
+    pad1->Draw();
 
-    TFile *f_merged_ref = new TFile(fname_merged_ref.c_str());
-    TH3D *hB3d_merged_ref = (TH3D *) f_merged_ref->Get("hB_rgkt"); // bjet truth merge 
-    hB3d_merged_ref->SetName("hB3d_merged_ref");
+    c->cd();
+    TPad *pad2 = new TPad("pad2", "pad2", 0.34, 0., 0.66, 1.);
+    pad2->SetLeftMargin(0.);
+    pad2->SetRightMargin(0.);
+    pad2->SetGrid(1);
+    pad2->Draw();
 
-    TFile *f_merged_reco = new TFile(fname_merged_reco.c_str());
-    TH3D *hB3d_merged_reco = (TH3D *) f_merged_reco->Get("hB_rgkt"); // bjet reco merge only SV
-    hB3d_merged_reco->SetName("hB3d_merged_reco");
+    c->cd();
+    TPad *pad3 = new TPad("pad3", "pad3", 0.66, 0., 1., 1.);
+    pad3->SetLeftMargin(0.);
+    pad3->SetGrid(1);
+    pad3->Draw();
 
-    TFile *f_merged_ip3dSig_reco = new TFile(fname_merged_ip3dSig_reco.c_str());
-    TH3D *hB3d_merged_ip3dSig_reco = (TH3D *) f_merged_ip3dSig_reco->Get("hB_rgkt"); // bjet reco merge SV and ip3dSig
-    hB3d_merged_ip3dSig_reco->SetName("hB3d_merged_ip3dSig_reco");
+    TPad *pads[npt] = {pad1, pad2, pad3};
 
-    Float_t lowpt[2] = {50., 80.};
-    Float_t midpt[2] = {80., 120.};
-    Float_t highpt[2] = {200., 250.};
+    for (Int_t i = 0; i < npt; i++) {
+        Float_t ptmin = ptranges[i][0];
+        Float_t ptmax = ptranges[i][1];
+        Float_t ptrange[2] = {ptmin, ptmax};
 
-    const int npt = 3;
-    Float_t *ptrange[npt] = {lowpt, midpt, highpt};
+        THStack *hs = new THStack("hs", "");
 
-    TCanvas *crg = new TCanvas("crg", "crg", 1800, 450);
-    crg->Divide(npt, 1); // 2 for truth + reco, truth dynKt + reco dynKt
+        TLegend *leg = new TLegend(0.57, 0.65, 1., 0.9);
+        leg->SetBorderSize(1);
+        gStyle->SetLegendTextSize(15);
+        leg->SetMargin(0.1);
 
-    for (int i = 0; i < npt; i++) {
-        Float_t ptmin = ptrange[i][0];
-        Float_t ptmax = ptrange[i][1];
+        std::string xtitle = "";        
+        if (var == "rg") {
+            xtitle = "ln(1/R_{g})";
+        } else if (var == "kt") {
+            xtitle = "ln(k_{T})";
+        } else if (var == "zg") {
+            xtitle = "z_{g}";
+        }
+        std::string ytitle = "1/N_{2-prong jets} dN/d" + xtitle;
 
-        // Clone histograms as to not destroy the pt range
-        TH3D *hL3d_chargedSJ_ref_clone = (TH3D *) hL3d_chargedSJ_ref->Clone();
-        TH3D *hL3d_chargedSJ_reco_clone = (TH3D *) hL3d_chargedSJ_reco->Clone();
-        TH3D *hB3d_chargedSJ_reco_clone = (TH3D *) hB3d_chargedSJ_reco->Clone();
-        TH3D *hB3d_merged_ref_clone = (TH3D *) hB3d_merged_ref->Clone();
-        TH3D *hB3d_merged_reco_clone = (TH3D *) hB3d_merged_reco->Clone();
-        TH3D *hB3d_merged_ip3dSig_reco_clone = (TH3D *) hB3d_merged_ip3dSig_reco->Clone();
+        if (i != 0) ytitle = "";
+        if (i != 2) xtitle = "";
 
-        // Set pt range
-        hL3d_chargedSJ_ref_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
-        hL3d_chargedSJ_reco_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
-        hB3d_chargedSJ_reco_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
-        hB3d_merged_ref_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
-        hB3d_merged_reco_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
-        hB3d_merged_ip3dSig_reco_clone->GetZaxis()->SetRangeUser(ptmin, ptmax);
+        HistDrawer_pt2dscan HD;
+        HD.draw_1d_projection_1ptbin(hs, leg, GSPincl, var, ptrange, ktrange);
 
-        // Make projections
-        TH1D *hL1d_chargedSJ_ref = (TH1D *) hL3d_chargedSJ_ref_clone->Project3D(Form("x%d", i));
-        TH1D *hL1d_chargedSJ_reco = (TH1D *) hL3d_chargedSJ_reco_clone->Project3D(Form("x%d", i));
-        TH1D *hB1d_chargedSJ_reco = (TH1D *) hB3d_chargedSJ_reco_clone->Project3D(Form("x%d", i));
-        TH1D *hB1d_merged_ref = (TH1D *) hB3d_merged_ref_clone->Project3D(Form("x%d", i));
-        TH1D *hB1d_merged_reco = (TH1D *) hB3d_merged_reco_clone->Project3D(Form("x%d", i));
-        TH1D *hB1d_merged_ip3dSig_reco = (TH1D *) hB3d_merged_ip3dSig_reco_clone->Project3D(Form("x%d", i));
+        pads[i]->cd();
 
-        hL1d_chargedSJ_ref->Scale(1 / hL1d_chargedSJ_ref->Integral("width"));
-        hL1d_chargedSJ_reco->Scale(1 / hL1d_chargedSJ_reco->Integral("width"));
-        hB1d_chargedSJ_reco->Scale(1 / hB1d_chargedSJ_reco->Integral("width"));
-        hB1d_merged_ref->Scale(1 / hB1d_merged_ref->Integral("width"));
-        hB1d_merged_reco->Scale(1 / hB1d_merged_reco->Integral("width"));
-        hB1d_merged_ip3dSig_reco->Scale(1 / hB1d_merged_ip3dSig_reco->Integral("width"));
+        hs->SetTitle(Form("; %s; %s", xtitle.c_str(), ytitle.c_str()));
 
-        Float_t ymax = std::max({hL1d_chargedSJ_ref->GetMaximum(), hL1d_chargedSJ_reco->GetMaximum(), 
-                                hB1d_chargedSJ_reco->GetMaximum(), hB1d_merged_ref->GetMaximum(), 
-                                hB1d_merged_reco->GetMaximum()});
+        Float_t ymin = 0.;
+        Float_t ymax = 0.9;
 
-        ymax += 0.05;
+        if ((ktmin >= 0) && (var == "rg")) {
+            ymax = 1.4;
+        }
+        if (var == "zg") {
+            ymax = 7.;
+        }
 
-        hL1d_chargedSJ_ref->GetYaxis()->SetRangeUser(0, ymax);
-        hL1d_chargedSJ_reco->GetYaxis()->SetRangeUser(0, ymax);
-        hB1d_chargedSJ_reco->GetYaxis()->SetRangeUser(0, ymax);
-        hB1d_merged_ref->GetYaxis()->SetRangeUser(0, ymax);
-        hB1d_merged_reco->GetYaxis()->SetRangeUser(0, ymax);
+        hs->SetMinimum(ymin);
+        hs->SetMaximum(ymax);
 
-        std::string xtitle1d = "ln(1/R_{g})";
-        std::string ytitle1d = "1/N dN/d(ln(1/R_{g}))"; 
+        hs->Draw("nostack hist");
 
-        set_axes_labels(hL1d_chargedSJ_ref, xtitle1d, ytitle1d);
-        set_axes_labels(hL1d_chargedSJ_reco, xtitle1d, ytitle1d);
-        set_axes_labels(hB1d_chargedSJ_reco, xtitle1d, ytitle1d);
-        set_axes_labels(hB1d_merged_ref, xtitle1d, ytitle1d);
-        set_axes_labels(hB1d_merged_reco, xtitle1d, ytitle1d);
-
-        hL1d_chargedSJ_ref->SetLineColor(1);
-        hL1d_chargedSJ_reco->SetLineColor(2);
-        hB1d_chargedSJ_reco->SetLineColor(3);
-        hB1d_merged_ref->SetLineColor(4);
-        hB1d_merged_reco->SetLineColor(6);
-        hB1d_merged_ip3dSig_reco->SetLineColor(7);
-
-        TLegend *leg;
-		if (i == 2) {
-		    leg = new TLegend(0.2, 0.65, 0.4, 0.85);
-		} else {
-		    leg = new TLegend(0.5, 0.65, 0.7, 0.85);
-		}
-        leg->SetBorderSize(0);
-        leg->SetFillColor(0);
-
-        leg->AddEntry(hL1d_chargedSJ_ref, "inclusive jets, truth", "l");
-        leg->AddEntry(hL1d_chargedSJ_reco, "inclusive jets, reco", "l");
-        leg->AddEntry(hB1d_chargedSJ_reco, "bjets, reco", "l");
-        leg->AddEntry(hB1d_merged_ref, "bjets, merged, truth", "l");
-        leg->AddEntry(hB1d_merged_reco, "bjets, merged SV only, reco", "l");
-        leg->AddEntry(hB1d_merged_ip3dSig_reco, "bjets, merged SV and ip3dSig, reco", "l");
-
-        crg->cd(i + 1);
-        crg->cd(i + 1)->SetGrid(1);
-
-        hL1d_chargedSJ_ref->Draw("hist");
-        hL1d_chargedSJ_reco->Draw("hist same");
-        hB1d_chargedSJ_reco->Draw("hist same");
-        hB1d_merged_ref->Draw("hist same");
-        hB1d_merged_reco->Draw("hist same");
-        hB1d_merged_ip3dSig_reco->Draw("hist same");
+        Float_t xmin = 0.91;
+        Float_t xmax = 4.99;
+        
+        if (var == "zg") {
+            xmin = 0.1;
+            xmax = 0.49;
+        }
+        if ((ktmin >= 0) && (var == "rg")) {
+            xmax = 3.45;
+        }
+        hs->GetXaxis()->SetLimits(xmin, xmax);
+        hs->GetYaxis()->SetTitleOffset(1.5);
 
         leg->Draw();
+        gPad->Update();
+        if (i == 2) {
+            leg->SetX1NDC(0.4);
+            leg->SetX2NDC(0.85);
+        }
+        gPad->Modified();
 
-		TPaveText *info = new TPaveText(0.2, 0.17, 0.45, 0.28, "ndc");
-		info->SetBorderSize(1);
-		info->SetFillColor(0);
-		info->SetTextSize(15);
-		info->AddText(Form("%.0f < p_{T} < %0.f (GeV)", ptmin, ptmax));
-		info->AddText("NO GSP");
+        TPaveText *info = new TPaveText(0.55, 0.45, 0.85, 0.58, "ndc");
+        info->SetBorderSize(0);
+        info->SetFillColor(0);
+        info->SetFillStyle(0);
+        info->SetTextSize(15);
+        info->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
+        info->AddText("-2 < #it{#eta^{jet}} < 2");
+        info->AddText(Form("%.0f < ln(k_{T}) < %.0f", ktmin, ktmax));
+        info->Draw();
+    } // end loop over pt ranges
+    
+    pad1->cd();
+    TPaveText *mcinfo = new TPaveText(0.35, 0.92, 0.4, 0.95, "ndc");
+    mcinfo->SetBorderSize(0);
+    mcinfo->SetFillColor(0);
+    mcinfo->SetFillStyle(0);
+    mcinfo->SetTextSize(20);
+    mcinfo->AddText("#it{#sqrt{s}} = 5.02 TeV pp MC (PYTHIA8)");
+    mcinfo->Draw();
 
-		info->Draw();
-    }
-    crg->Draw();
-
-	std::string savename = "rg_comparison.png";
-	crg->Print(savename.c_str(), "png");
+    c->Draw();
+	std::string savename = var + "_projections_" + var + noGSP + ".png";
+	c->Print(savename.c_str());
 }
