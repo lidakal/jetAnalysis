@@ -109,7 +109,7 @@ void draw_projections1d(std::string var = "zg", bool GSPincl = false)
             xmax = 0.49;
         }
         if ((ktmin >= 0) && (var == "rg")) {
-            xmax = 3.45;
+            xmax = 3.99;
         }
         hs->GetXaxis()->SetLimits(xmin, xmax);
         hs->GetYaxis()->SetTitleOffset(1.5);
@@ -129,7 +129,8 @@ void draw_projections1d(std::string var = "zg", bool GSPincl = false)
         info->SetTextSize(15);
         info->AddText(Form("%.0f < #it{p_{T}^{jet}} < %0.f (GeV)", ptmin, ptmax));
         info->AddText("-2 < #it{#eta^{jet}} < 2");
-        info->AddText(Form("%.0f < ln(k_{T}) < %.0f", ktmin, ktmax));
+        //info->AddText(Form("%.0f < ln(k_{T}) < %.0f", ktmin, ktmax));
+        info->AddText(Form("#it{k_{T}} > %.0f GeV", exp(ktmin)));
         info->Draw();
     } // end loop over pt ranges
     
