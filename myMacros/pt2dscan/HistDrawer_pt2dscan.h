@@ -157,7 +157,17 @@ void HistDrawer_pt2dscan::draw_pt2dscan(std::string flavour = "Btag", std::strin
         h2d_ref->GetXaxis()->SetTitleOffset(1.3);
         h2d_ref->Draw("col");
         if (i == 2) { 
+            h2d_ref->GetZaxis()->SetTitle(ztitle.c_str());
+            h2d_ref->GetZaxis()->SetTitleOffset(1.5);
             h2d_ref->Draw("colz");
+            gPad->Update();
+            TPaletteAxis *palette = (TPaletteAxis *) h2d_ref->GetListOfFunctions()->FindObject("palette");
+            palette->SetX1NDC(0.74);
+            palette->SetX2NDC(0.845);
+            palette->SetY1NDC(0.15);
+            palette->SetY2NDC(0.9);
+            gPad->Modified();
+            gPad->Update();
         }
         info_ref->Draw();
 
