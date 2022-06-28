@@ -106,10 +106,11 @@ void HistDrawer_pt2dscan::draw_pt2dscan(std::string flavour = "Btag", std::strin
         TLine *line = new TLine(0.91, 0, 5, 0);
         line->SetLineWidth(2);
 
-        TPaveText *info = new TPaveText(0.4, 0.7, 0.75, 0.85, "ndc");
+        TPaveText *info = new TPaveText(0.4, 0.65, 0.75, 0.85, "ndc");
         info->AddText(title.c_str());
         //info->AddLine(0., 0.7, 1., 0.7);
         info->AddText(Form("%.0f < #it{p_{T}^{jet}} < %.0f (GeV)", ptmin, ptmax));
+        info->AddText("-2 < #it{#eta^{jet}} < 2");
         info->SetFillColor(0);
         info->SetFillStyle(0);
         info->SetBorderSize(0);
