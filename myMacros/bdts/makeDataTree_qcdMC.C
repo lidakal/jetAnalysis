@@ -3,9 +3,9 @@
 
 #include "TreeAnalyzer.h"
 
-void makeDataTree()
+void makeDataTree_qcdMC()
 {
-    std::string finname = "/data_CMS/cms/kalipoliti/bJetMC/trackTaggingTraining/merged_HiForestAOD.root";
+    std::string finname = "/data_CMS/cms/kalipoliti/qcdMC/trackTaggingTraining/merged_HiForestAOD.root";
     TreeAnalyzer ta(finname, true);
 
     // Activate branches of interest
@@ -21,12 +21,11 @@ void makeDataTree()
     ta.SetBranchStatus(activeBranches, 1);
 
     // Create new file to store signal tree
-    std::string foutName = "tmva_data_complex_bJetMC.root";
+    std::string foutName = "tmva_data_complex_qcdMC.root";
     TFile *fout = new TFile(foutName.c_str(), "recreate");
     std::cout << "(Re)creating " << foutName << " file." << std::endl;
 
-    TTree *TreeS = new TTree("TreeS", "Signal tree for TMVA");
-    TTree *TreeB = new TTree("TreeB", "Background tree for TMVA");
+    TTree *bkgLight = new TTree("bkgLight", "Background tree from inclusive jets for TMVA");
 
     Float_t ip3dSig;
     Int_t ipInSV;
@@ -36,27 +35,21 @@ void makeDataTree()
     Float_t ipSvtxmcorr;
     Float_t weight;
 
-    TreeS->Branch("ip3dSig", &ip3dSig, "ip3dSig/F");
-    TreeS->Branch("ipInSV", &ipInSV, "ipInSV/I");
-    TreeS->Branch("ipSvtxdls", &ipSvtxdls, "ipSvtxdls/F");
-    TreeS->Branch("ipSvtxdls2d", &ipSvtxdls2d, "ipSvtxdls2d/F");
-    TreeS->Branch("ipSvtxm", &ipSvtxm, "ipSvtxm/F");
-    TreeS->Branch("ipSvtxmcorr", &ipSvtxmcorr, "ipSvtxmcorr/F");
-    TreeS->Branch("weight", &weight, "weight/F");
+    bkgLight->Branch("ip3dSig", &ip3dSig, "ip3dSig/F");
+    bkgLight->Branch("ipInSV", &ipInSV, "ipInSV/I");
+    bkgLight->Branch("ipSvtxdls", &ipSvtxdls, "ipSvtxdls/F");
+    bkgLight->Branch("ipSvtxdls2d", &ipSvtxdls2d, "ipSvtxdls2d/F");
+    bkgLight->Branch("ipSvtxm", &ipSvtxm, "ipSvtxm/F");
+    bkgLight->Branch("ipSvtxmcorr", &ipSvtxmcorr, "ipSvtxmcorr/F");
+    bkgLight->Branch("weight", &weight, "weight/F");
 
-    TreeB->Branch("ip3dSig", &ip3dSig, "ip3dSig/F");
-    TreeB->Branch("ipInSV", &ipInSV, "ipInSV/I");
-    TreeB->Branch("ipSvtxdls", &ipSvtxdls, "ipSvtxdls/F");
-    TreeB->Branch("ipSvtxdls2d", &ipSvtxdls2d, "ipSvtxdls2d/F");
-    TreeB->Branch("ipSvtxm", &ipSvtxm, "ipSvtxm/F");
-    TreeB->Branch("ipSvtxmcorr", &ipSvtxmcorr, "ipSvtxmcorr/F");
-    TreeB->Branch("weight", &weight, "weight/F");
+    Long64_t counts = 0;
 
     for (Long64_t ient = 0; ient < ta.nentries; ient++) {
             
         // for debugging purposes 
         //if (ient < 2) continue;
-        //if (ient > 10) break;
+        //if (ient > 100) break;
             
         // Show progress
         if (ient % 1000000 == 0) {
@@ -69,21 +62,14 @@ void makeDataTree()
         Int_t itrackOffset = 0;
 
         for (Int_t ijet = 0; ijet < ta.nref; ijet++) {
-            // bjet & eta cut 
-            // ignoring the btagging lowers the efficiency
-            bool isBjet = (ta.jtDiscDeepFlavourB[ijet] + ta.jtDiscDeepFlavourBB[ijet] + ta.jtDiscDeepFlavourLEPB[ijet]) > 0.9;
-            //bool isBjet = true; // forget about btagging for a bit 
-
-            if ((!isBjet) || (std::abs(ta.jteta[ijet]) > 2)) {
+            //std::cout << "New jet" << std::endl;
+            // flavour & eta cut 
+            if ((ta.jtHadFlav[ijet] > 0) || (std::abs(ta.jteta[ijet]) > 2)) {
                 itrackOffset += ta.nselIPtrk[ijet];
                 continue;
             }
 
-            // remove GSP 
-            if (ta.jtNbHad[ijet] != 1) {
-                itrackOffset += ta.nselIPtrk[ijet];
-                continue;
-            }
+            //std::cout << "Is a light jet with " << ta.nselIPtrk[ijet] << " tracks" << std::endl;
 
             // Go over jet tracks
             for (Int_t itrack = 0; itrack < ta.nselIPtrk[ijet]; itrack++) {
@@ -92,7 +78,6 @@ void makeDataTree()
                 ip3dSig = ta.ip3dSig[itrackOffset + itrack];
                 ipInSV = ta.ipInSV[itrackOffset + itrack];
                 Int_t sta = ta.ipMatchStatus[itrackOffset + itrack];
-                //Int_t signal = int(sta >= 100);
 
                 ipSvtxdls = ta.ipSvtxdls[itrackOffset + itrack];
                 ipSvtxdls2d = ta.ipSvtxdls2d[itrackOffset + itrack];
@@ -102,19 +87,20 @@ void makeDataTree()
                 weight = ta.weight;
 
                 if (ipInSV == 0) continue;
+                //std::cout << "Track in SV with status " << sta << std::endl;
+                counts++;
 
-                if (sta >= 100) {
-                    TreeS->Fill();
-                } else {
-                    TreeB->Fill();
+                // safety if
+                if (sta == 1) {
+                    bkgLight->Fill();
                 }
 
             } // end track loop
         } // end jet loop
     } // end entry loop
 
-    TreeS->Write("", TObject::kOverwrite);
-    TreeB->Write("", TObject::kOverwrite);
+    //std::cout << counts << " tracks found in SV" << std::endl;
+    bkgLight->Write("", TObject::kOverwrite);
 
     fout->Close();
     delete fout;
