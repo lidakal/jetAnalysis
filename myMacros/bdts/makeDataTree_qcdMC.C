@@ -96,6 +96,7 @@ void makeDataTree_qcdMC()
                 }
 
             } // end track loop
+            itrackOffset += ta.nselIPtrk[ijet];
         } // end jet loop
     } // end entry loop
 

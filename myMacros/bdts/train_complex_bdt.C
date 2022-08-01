@@ -6,7 +6,7 @@ void train_complex_bdt()
 {
     TMVA::Tools::Instance(); 
     // open file and retrieve trees
-    TFile *inputfile = new TFile("tmva_data_complex.root");
+    TFile *inputfile = new TFile("tmva_data_complex_bJetMC.root");
     //TFile *inputfile = new TFile("/home/llr/cms/kalipoliti/CMSSW_9_4_10/src/HeavyIonsAnalysis/JetAnalysis/test/HiForestAOD.root");
     TTree *signaltree = (TTree *) inputfile->Get("TreeS");
     TTree *backgroundtree = (TTree *) inputfile->Get("TreeB");
@@ -27,7 +27,7 @@ void train_complex_bdt()
 
     Double_t signalWeight     = 1.0;
     Double_t backgroundWeight = 1.0;
-    TCut mycuts = "";
+    TCut mycuts = ""; //"!TMath::IsNaN(ipSvtxmcorr)";
     // using these weights brings down the efficiency
     //loader->SetSignalWeightExpression("weight"); 
     //loader->SetBackgroundWeightExpression("weight");

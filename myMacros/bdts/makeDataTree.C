@@ -52,11 +52,13 @@ void makeDataTree()
     TreeB->Branch("ipSvtxmcorr", &ipSvtxmcorr, "ipSvtxmcorr/F");
     TreeB->Branch("weight", &weight, "weight/F");
 
+    Long64_t counts = 0;
+
     for (Long64_t ient = 0; ient < ta.nentries; ient++) {
             
         // for debugging purposes 
-        //if (ient < 2) continue;
-        //if (ient > 10) break;
+        //if (ient < 217316) continue;
+        //if (ient > 217316) break;
             
         // Show progress
         if (ient % 1000000 == 0) {
@@ -67,8 +69,11 @@ void makeDataTree()
         weight = ta.weight;
 
         Int_t itrackOffset = 0;
+        //std::cout << "nref " << ta.nref << std::endl;
 
         for (Int_t ijet = 0; ijet < ta.nref; ijet++) {
+            //std::cout << "itrackOffset " << itrackOffset << std::endl;
+            //std::cout << "nselIPtrk " << ta.nselIPtrk[ijet] << std::endl;
             // bjet & eta cut 
             // ignoring the btagging lowers the efficiency
             bool isBjet = (ta.jtDiscDeepFlavourB[ijet] + ta.jtDiscDeepFlavourBB[ijet] + ta.jtDiscDeepFlavourLEPB[ijet]) > 0.9;
@@ -101,6 +106,11 @@ void makeDataTree()
 
                 weight = ta.weight;
 
+                if (ipInSV != 0 && ipInSV != 1) {
+                    counts++;
+                    //std::cout << "Found weird track at event " << ient << ", jet " << ijet << " and track+offset " << itrack+itrackOffset << std::endl;
+                }
+
                 if (ipInSV == 0) continue;
 
                 if (sta >= 100) {
@@ -110,11 +120,14 @@ void makeDataTree()
                 }
 
             } // end track loop
+            itrackOffset += ta.nselIPtrk[ijet];
         } // end jet loop
     } // end entry loop
 
     TreeS->Write("", TObject::kOverwrite);
     TreeB->Write("", TObject::kOverwrite);
+
+    //std::cout << counts << std::endl;
 
     fout->Close();
     delete fout;
