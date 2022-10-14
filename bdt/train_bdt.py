@@ -7,81 +7,116 @@ on track-from-B MC data
 
 ## Imports
 
-import uproot3
+import uproot
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 22})
+
+import ROOT
 
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
-## Load Data
-
-fin_name = "tmva_data_complex_bJetMC.root"
-sig_tree_name = "TreeS"
-bkg_tree_name = "TreeB"
-
-data = pd.DataFrame()
+random_seed = 42
 missing_value = -1000000.
 
-with uproot3.open(fin_name) as fin:
-    _sig_tree = fin[sig_tree_name]
-    _sig_data = _sig_tree.pandas.df()
-    ## [DEBUG]: getting a smaller dataset 
-    _sig_data = _sig_data.sample(n = 10000)
-    _sig_y = np.ones(len(_sig_data.index), dtype = int)
+if __name__ == "__main__":
+    ## Load pre-treated data
 
-    _bkg_tree = fin[bkg_tree_name]
-    _bkg_data = _bkg_tree.pandas.df()
-    ## [DEBUG]: getting a smaller dataset 
-    _bkg_data = _bkg_data.sample(n = 10000)
-    _bkg_y = np.zeros(len(_bkg_data.index), dtype = int)
+    X_train = np.loadtxt('./data_csv/X_train.csv', delimiter=',')
+    y_train = np.loadtxt('./data_csv/y_train.csv', delimiter=',')
+    w_train = np.loadtxt('./data_csv/w_train.csv', delimiter=',')
 
-    data = pd.concat([_sig_data, _bkg_data])
-    data["class"] = np.concatenate([_sig_y, _bkg_y])
+    X_test = np.loadtxt('./data_csv/X_test.csv', delimiter=',')
+    y_test = np.loadtxt('./data_csv/y_test.csv', delimiter=',')
+    w_test = np.loadtxt('./data_csv/w_test.csv', delimiter=',') 
 
-## Split data into training, testing, validation
- 
-data_train, data_test = train_test_split(data, test_size = 0.5, stratify = data["class"])
-data_test, data_val = train_test_split(data_test, test_size = 0.2, stratify = data_test["class"])
+    X_val = np.loadtxt('./data_csv/X_val.csv', delimiter=',')
+    y_val = np.loadtxt('./data_csv/y_val.csv', delimiter=',')
+    w_val = np.loadtxt('./data_csv/w_val.csv', delimiter=',')   
 
-## Grab the relevant columns
+    ## Train the model (BDT)
 
-discr_variables = ["ipInSV", "ipSvtxdls", "ipSvtxm", "ip3dSig"]
-class_label = "class"
+    bdt_params = {"objective": "binary:logistic", 
+                  "missing": missing_value, 
+                  "seed": random_seed, 
+                  "max_depth": 3, 
+                  "n_estimators": 500,
+                  "learning_rate": 0.05,
+                  "gamma": 0.25,
+                  "reg_lambda": 0.,
+                  "scale_pos_weight": 3,
+                  "use_label_encoder": False}
 
-X_train = data_train[discr_variables]
-X_test = data_test[discr_variables]
-X_val = data_test[discr_variables]
+    eval_metric = "aucpr"
 
-y_train = data_train[class_label]
-y_test = data_test[class_label]
-y_val = data_val[class_label]
+    ## [DEBUG]: Simple fit
+    # bdt = XGBClassifier(max_depth=3, n_estimators=500)
+    # bdt.fit(X_train, y_train, sample_weight=w_train)
 
-## Train the BDT
-
-bdt = XGBClassifier(objective = "binary:logistic", 
-                    missing = missing_value, 
-                    seed = 42, 
-                    max_depth = 3, 
-                    n_estimators = 500,
-                    learning_rate = 0.05,
-                    gamma = 0.25,
-                    reg_lambda = 0.,
-                    scale_pos_weight = 3)
+    bdt = XGBClassifier(**bdt_params)
     
-bdt.fit(X_train, 
-        y_train,
-        verbose = False,
-        early_stopping_rounds = 10,
-        eval_metric = "aucpr",
-        eval_set = [(X_test, y_test)])
+    # Note: need to use ndarrays in the fit in order to be able to save it for TMVA
+    print("Training the model with early stopping...")
+    bdt.fit(X_train, 
+            y_train,
+            sample_weight=w_train,
+            verbose=False,
+            early_stopping_rounds=10,
+            eval_metric=eval_metric,
+            eval_set=[(X_train, y_train), (X_test, y_test)])
 
-## Print the accuracy of the BDT
+    ## Plot loss function
 
-y_pred = bdt.predict(y_val)
-y_mispred = y_pred - y_val
+    results = bdt.evals_result()
+    fig, ax = plt.subplots(figsize=(16, 9))
+    ax.plot(results["validation_0"][eval_metric], label="Training {}".format(eval_metric))
+    ax.plot(results["validation_1"][eval_metric], label="Validation {}".format(eval_metric))
+    ax.axvline(bdt.best_ntree_limit, color="gray", label="Optimal tree number")
+    ax.set_xlabel("Number of trees")
+    ax.set_ylabel(eval_metric)
+    ax.legend()
+    fig.savefig("./plots/loss_function_bdt.png")
 
-print(y_mispred)
 
 
+    bdt_params["n_estimators"] = bdt.best_ntree_limit
+    print("Re-training the model with the parameters of the best iteration...")
+    bdt.set_params(**bdt_params)
+    bdt.fit(X_train, y_train, sample_weight=w_train, verbose=False,)
 
+    ## Print the accuracy of the model
+
+    y_pred = bdt.predict(X_val)
+    acc_score = pd.DataFrame({"y_val": y_val, "y_pred": y_pred})
+
+    n_pos = y_val.tolist().count(1)
+    n_neg = y_val.tolist().count(0)
+
+    sel_pos = acc_score["y_val"] == 1
+    sel_neg = acc_score["y_val"] == 0
+    true_pos = (acc_score.loc[sel_pos, "y_pred"] == 1).tolist()
+    true_neg = (acc_score.loc[sel_neg, "y_pred"] == 0).tolist()
+
+    n_true_pos = true_pos.count(True)
+    n_false_neg = true_pos.count(False)
+
+    n_true_neg = true_neg.count(True)
+    n_false_pos = true_neg.count(False)
+
+    print("True positive rate (efficiency): {:.2f}".format(n_true_pos / n_pos))
+    print("True negative rate (background rejection): {:.2f}".format(n_true_neg / n_neg))
+    print("Accuracy score: {:.2f}".format((n_true_pos + n_true_neg) / len(acc_score.index)))
+
+    ## Save the trained model
+
+    fout_name = "./saved_models/xgboost_bdt.txt"
+    print("Saving the model as {}".format(fout_name))
+    bdt.save_model(fout_name)
+
+    ## Save for TMVA
+
+    fout_name_root = "./saved_models/xgboost_bdt.root"
+    print("Saving the model as {}".format(fout_name_root))
+    ROOT.TMVA.Experimental.SaveXGBoost(bdt, "TrackFromBClassifier", fout_name_root, num_inputs = X_train.shape[1])
