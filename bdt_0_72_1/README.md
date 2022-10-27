@@ -1,6 +1,6 @@
 Tested with python 3.6 and ROOT 6.24.
 
-To get the ROOT 6.24 easily on a CentOS machine run:
+To get the ROOT 6.24 easily on a CentOS machine (eg. lxplus) run:
 `. /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.08/x86_64-centos7-gcc48-opt/bin/thisroot.sh`
 
 More information on the cvmfs:
