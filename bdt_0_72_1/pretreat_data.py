@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     X, y, w = load_data(fname, variables)
     
-    sample_size = 100000
+    sample_size = 1000000
     X, _, y, _, w, _ = train_test_split(X, y, w, train_size=sample_size, stratify=y, random_state=random_seed)
 
     X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(X, y, w, test_size=0.5, stratify=y, random_state=random_seed)

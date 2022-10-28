@@ -38,8 +38,8 @@ if __name__ == "__main__":
     evals_result = {}
     watchlist = [(dtrain, 'train'), (dtest, 'eval')]
     epochs = 500
-    bst = xgb.train(params, dtrain, epochs, watchlist, early_stopping_rounds=50, evals_result=evals_result)
-    # Note: the feature names as successfully passed to bst
+    bst = xgb.train(params, dtrain, epochs, watchlist, early_stopping_rounds=epochs, evals_result=evals_result)
+    # Note: the feature names are successfully passed to bst
 
     ## Get best iteration
     best_iteration = bst.best_iteration
@@ -79,3 +79,4 @@ if __name__ == "__main__":
     fout = "./saved_models/trained_bst.model"
     print("Saving the model as {}".format(fout))
     bst.save_model(fout)
+    # Note: the feature names are not saved with the model
