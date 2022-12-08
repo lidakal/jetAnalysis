@@ -19,8 +19,8 @@ public :
    Float_t         nhard;
    Float_t         phi0;
    Float_t         scale;
-   Int_t           n[3];
-   Float_t         ptav[3];
+   Int_t           n[10];
+   Float_t         ptav[10];
    Int_t           mult;
    vector<float>   *pt;
    vector<float>   *eta;
@@ -68,10 +68,12 @@ public :
    TBranch        *b_vr;   //!
 
    hiTree(TString rootf);
-   virtual ~hiTree();
-   virtual Int_t    GetEntry(Long64_t entry);
-   virtual Long64_t    GetEntries();
-   virtual void     Init(TTree *tree);
+   ~hiTree();
+   Int_t GetEntry(Long64_t entry);
+   Long64_t GetEntries();
+   void Init(TTree *tree);
+   void SetBranchStatus(TString branchName, Int_t status);
+   void SetBranchStatus(std::vector<TString> branchNames, Int_t status);
 };
 
 hiTree::hiTree(TString rootf)
@@ -144,4 +146,16 @@ void hiTree::Init(TTree *tree)
    tree->SetBranchAddress("vy", &vy, &b_vy);
    tree->SetBranchAddress("vz", &vz, &b_vz);
    tree->SetBranchAddress("vr", &vr, &b_vr);
+}
+
+void hiTree::SetBranchStatus(TString branchName, Int_t status)
+{
+    tree->SetBranchStatus(branchName, status);
+}
+
+void hiTree::SetBranchStatus(vector<TString> branchNames, Int_t status)
+{
+    for (TString branchName : branchNames) {
+        tree->SetBranchStatus(branchName, status);
+    }
 }

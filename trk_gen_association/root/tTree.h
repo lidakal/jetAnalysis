@@ -165,10 +165,12 @@ public :
    TBranch        *b_jtHadFlav;   //!
 
    tTree(TString rootf);
-   virtual ~tTree();
-   virtual Int_t    GetEntry(Long64_t entry);
-   virtual Long64_t    GetEntries();
-   virtual void     Init(TTree *tree);
+   ~tTree();
+   Int_t GetEntry(Long64_t entry);
+   Long64_t GetEntries();
+   void Init(TTree *tree);
+   void SetBranchStatus(TString branchName, Int_t status);
+   void SetBranchStatus(std::vector<TString> branchNames, Int_t status);
 };
 
 tTree::tTree(TString rootf)
@@ -279,3 +281,14 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("jtHadFlav", jtHadFlav, &b_jtHadFlav);
 }
 
+void tTree::SetBranchStatus(TString branchName, Int_t status)
+{
+    tree->SetBranchStatus(branchName, status);
+}
+
+void tTree::SetBranchStatus(vector<TString> branchNames, Int_t status)
+{
+    for (TString branchName : branchNames) {
+        tree->SetBranchStatus(branchName, status);
+    }
+}
