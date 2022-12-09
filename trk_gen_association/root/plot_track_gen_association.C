@@ -7,7 +7,7 @@ void plot_track_gen_association()
 {
     // Load the tree
     TString fdir = "./rootf/";
-    TString label = "HiForestMiniAOD_LowPU_10000events";
+    TString label = "HiForestMiniAOD_HighPU_10000events";
     TString fname = label + "_matched.root";
     TString rootf = fdir + fname;
 
@@ -78,12 +78,24 @@ void plot_track_gen_association()
     TH1F *hdr = new TH1F("hdr", "dr for matches", x1bins, x1min, x1max);
     TH1F *hdrCut = new TH1F("hdrCut", "dr for matches with cuts", x1bins, x1min, x1max);
 
+    TH1F *hdr_bjets = new TH1F("hdr_bjets", "dr for matches, bjets", x1bins, x1min, x1max);
+    TH1F *hdrCut_bjets = new TH1F("hdrCut_bjets", "dr for matches with cuts, bjets", x1bins, x1min, x1max);
+
+    TH1F *hdr_fromB = new TH1F("hdr_fromB", "dr for matches, decay products", x1bins, x1min, x1max);
+    TH1F *hdrCut_fromB = new TH1F("hdrCut_fromB", "dr for matches with cuts, decay products", x1bins, x1min, x1max);
+
     Int_t x2bins = 50;
     Float_t x2min = 0.6;
     Float_t x2max = 1.4;
 
     TH1F *hpt = new TH1F("hpt", "relpt for matches", x2bins, x2min, x2max);
     TH1F *hptCut = new TH1F("hptCut", "relpt for matches with cuts", x2bins, x2min, x2max);
+
+    TH1F *hpt_bjets = new TH1F("hpt_bjets", "relpt for matches, bjets", x2bins, x2min, x2max);
+    TH1F *hptCut_bjets = new TH1F("hptCut_bjets", "relpt for matches with cuts, bjets", x2bins, x2min, x2max);
+
+    TH1F *hpt_fromB = new TH1F("hpt_fromB", "relpt for matches, decay products", x2bins, x2min, x2max);
+    TH1F *hptCut_fromB = new TH1F("hptCut_fromB", "relpt for matches with cuts, decay products", x2bins, x2min, x2max);
 
     Long64_t nentries = matches->GetEntries();
     for (Long64_t ient = 0; ient < nentries; ient++) {
@@ -99,6 +111,24 @@ void plot_track_gen_association()
 
         hpt->Fill(matchRelPt);
         hptCut->Fill(matchRelPtCut);
+
+        if (jtFlav == 5) {
+            hdr_bjets->Fill(matchDR);
+            hdrCut_bjets->Fill(matchDRCut);
+
+            hpt_bjets->Fill(matchRelPt);
+            hptCut_bjets->Fill(matchRelPtCut);
+        }
+
+        if (matchSta >= 100) {
+            hdr_fromB->Fill(matchDR);
+            hpt_fromB->Fill(matchRelPt);
+        }
+
+        if (matchStaCut >= 100) {
+            hdrCut_fromB->Fill(matchDRCut);
+            hptCut_fromB->Fill(matchRelPtCut);
+        }
     } // end entries (track) loop 
 
     // Save histograms 
@@ -106,7 +136,9 @@ void plot_track_gen_association()
     TFile *fout = new TFile(rootf_out, "recreate");
     std::cout << "(Re)creating " << rootf_out << " file." << std::endl;
 
-    for (TH1F *h : {hdr, hdrCut, hpt, hptCut}) {
+    for (TH1F *h : {hdr, hdrCut, hpt, hptCut,
+                    hdr_bjets, hdrCut_bjets, hpt_bjets, hptCut_bjets,
+                    hdr_fromB, hdrCut_fromB, hpt_fromB, hptCut_fromB}) {
         h->Write();
     }
 

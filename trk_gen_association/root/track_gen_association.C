@@ -11,7 +11,7 @@ void track_gen_association()
 {
     // Load trees with tracks and gen particles 
     TString fdir = "/home/llr/cms/kalipoliti/C10630p1_miniAOD/src/HeavyIonsAnalysis/Configuration/test/rootf/";
-    TString label = "HiForestMiniAOD_LowPU_10000events";
+    TString label = "HiForestMiniAOD_HighPU_10000events";
     TString fname = label + ".root";
     TString rootf = fdir + fname;
 
@@ -62,7 +62,7 @@ void track_gen_association()
     Float_t matchRelPtCut = 0.;
     Int_t matchStaCut = 0;
 
-    matches->Branch("evt", &evt, "evt/I");
+    matches->Branch("evt", &evt, "evt/L");
     
     matches->Branch("jtId", &jtId, "jtId/I");
     matches->Branch("jtFlav", &jtFlav, "jtFlav/I");
