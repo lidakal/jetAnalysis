@@ -45,8 +45,8 @@ void draw_track_gen_association()
     hpt_highPU->SetName(TString(hpt_highPU->GetName()) + "_highPU");
     TH1F *hptCut_highPU = (TH1F *)fin_highPU->Get("hptCut");
     hptCut_highPU->SetName(TString(hptCut_highPU->GetName()) + "_highPU");
-    
-    // Count untagged 
+
+    // Count untagged
     Float_t totalTracks_lowPU = hdrCut_lowPU->GetEntries();
     Float_t taggedTracks_lowPU = hdrCut_lowPU->Integral();
     Float_t untaggedPerc_lowPU = (1 - (taggedTracks_lowPU / totalTracks_lowPU)) * 100;
@@ -55,13 +55,13 @@ void draw_track_gen_association()
     Float_t taggedTracks_highPU = hdrCut_highPU->Integral();
     Float_t untaggedPerc_highPU = (1 - (taggedTracks_highPU / totalTracks_highPU)) * 100;
 
-    // Create the plot label 
+    // Create the plot label
     // TPaveText *info = new TPaveText(0.55, 0.7, 0.85, 0.75, "ndc");
     // info->SetFillStyle(0);
     // info->SetBorderSize(1);
     // info->SetTextSize(15);
     // info->AddText(label);
-    
+
     // ---- Draw the DR histos
     TCanvas *cdr = new TCanvas("cdr", "", 1400, 800);
 
@@ -85,25 +85,25 @@ void draw_track_gen_association()
     //           << std::endl;
 
     // Normalize histo
-    hdr_lowPU->GetXaxis()->SetRange(0, hdr_lowPU->GetNbinsX()+1);
+    hdr_lowPU->GetXaxis()->SetRange(0, hdr_lowPU->GetNbinsX() + 1);
     hdr_lowPU->Scale(1. / hdr_lowPU->Integral("width"));
     hdr_lowPU->GetXaxis()->SetRange(1, hdr_lowPU->GetNbinsX());
     // Format histo
     hdr_lowPU->SetLineColor(mykBlue);
     hdr_lowPU->SetLineWidth(2);
     hdr_lowPU->SetLineStyle(1);
-    legdr->AddEntry(hdr_lowPU, "Low PU: No matching cuts", "l");
+    legdr->AddEntry(hdr_lowPU, "Low PU: Geometrical match, p_{T, gen} > 500 MeV", "l");
     hdrStack->Add(hdr_lowPU);
 
     // Normalize histo
-    hdr_highPU->GetXaxis()->SetRange(0, hdr_highPU->GetNbinsX()+1);
+    hdr_highPU->GetXaxis()->SetRange(0, hdr_highPU->GetNbinsX() + 1);
     hdr_highPU->Scale(1. / hdr_highPU->Integral("width"));
     hdr_highPU->GetXaxis()->SetRange(1, hdr_highPU->GetNbinsX());
     // Format histo
     hdr_highPU->SetLineColor(mykBlueLight);
     hdr_highPU->SetLineWidth(2);
     hdr_highPU->SetLineStyle(1);
-    legdr->AddEntry(hdr_highPU, "High PU: No matching cuts", "l");
+    legdr->AddEntry(hdr_highPU, "High PU: Geometrical match, p_{T, gen} > 500 MeV", "l");
     hdrStack->Add(hdr_highPU);
 
     // Normalize histo
@@ -147,7 +147,7 @@ void draw_track_gen_association()
     TLegend *legdr_ratio = new TLegend(0.6, 0.77, 0.85, 0.9);
     legdr_ratio->SetFillStyle(0);
     legdr_ratio->SetBorderSize(1);
-    legdr_ratio->SetMargin(0.15);    
+    legdr_ratio->SetMargin(0.15);
 
     TH1F *hdr_ratio = (TH1F *)hdr_highPU->Clone();
     hdr_ratio->SetName("hdr_ratio");
@@ -155,7 +155,7 @@ void draw_track_gen_association()
     hdr_ratio->SetLineColor(mykBlue);
     hdr_ratio->SetLineWidth(2);
     hdr_ratio->SetLineStyle(1);
-    legdr_ratio->AddEntry(hdr_ratio, "No matching cuts", "l");
+    legdr_ratio->AddEntry(hdr_ratio, "Geometrical match, p_{T, gen} > 500 MeV", "l");
     hdrStack_ratio->Add(hdr_ratio);
 
     TH1F *hdrCut_ratio = (TH1F *)hdrCut_highPU->Clone();
@@ -192,27 +192,27 @@ void draw_track_gen_association()
     gStyle->SetLegendTextSize(15);
 
     // Normalize histo
-    hpt_lowPU->GetXaxis()->SetRange(0, hpt_lowPU->GetNbinsX()+1);
+    hpt_lowPU->GetXaxis()->SetRange(0, hpt_lowPU->GetNbinsX() + 1);
     hpt_lowPU->Scale(1. / hpt_lowPU->Integral("width"));
     hpt_lowPU->GetXaxis()->SetRange(1, hpt_lowPU->GetNbinsX());
     // Format histo
     hpt_lowPU->SetLineColor(mykBlue);
     hpt_lowPU->SetLineWidth(2);
     hpt_lowPU->SetLineStyle(1);
-    legrelpt->AddEntry(hpt_lowPU, "Low PU: No matching cuts", "l");
+    legrelpt->AddEntry(hpt_lowPU, "Low PU: Geometrical match, p_{T, gen} > 500 MeV", "l");
     hptStack->Add(hpt_lowPU);
 
     // Normalize histo
-    hpt_highPU->GetXaxis()->SetRange(0, hpt_highPU->GetNbinsX()+1);
+    hpt_highPU->GetXaxis()->SetRange(0, hpt_highPU->GetNbinsX() + 1);
     hpt_highPU->Scale(1. / hpt_highPU->Integral("width"));
     hpt_highPU->GetXaxis()->SetRange(1, hpt_highPU->GetNbinsX());
     // Format histo
     hpt_highPU->SetLineColor(mykBlueLight);
     hpt_highPU->SetLineWidth(2);
     hpt_highPU->SetLineStyle(1);
-    legrelpt->AddEntry(hpt_highPU, "High PU: No matching cuts", "l");
+    legrelpt->AddEntry(hpt_highPU, "High PU: Geometrical match, p_{T, gen} > 500 MeV", "l");
     hptStack->Add(hpt_highPU);
-    
+
     // Normalize histo
     // Note: Normalize only by tagged tracks
     // hptCut_lowPU->GetXaxis()->SetRange(0, hptCut_lowPU->GetNbinsX()+1);
@@ -254,7 +254,7 @@ void draw_track_gen_association()
     TLegend *legpt_ratio = new TLegend(0.6, 0.77, 0.85, 0.9);
     legpt_ratio->SetFillStyle(0);
     legpt_ratio->SetBorderSize(1);
-    legpt_ratio->SetMargin(0.15);    
+    legpt_ratio->SetMargin(0.15);
 
     TH1F *hpt_ratio = (TH1F *)hpt_highPU->Clone();
     hpt_ratio->SetName("hpt_ratio");
@@ -262,7 +262,7 @@ void draw_track_gen_association()
     hpt_ratio->SetLineColor(mykBlue);
     hpt_ratio->SetLineWidth(2);
     hpt_ratio->SetLineStyle(1);
-    legpt_ratio->AddEntry(hpt_ratio, "No matching cuts", "l");
+    legpt_ratio->AddEntry(hpt_ratio, "Geometrical match, p_{T, gen} > 500 MeV", "l");
     hptStack_ratio->Add(hpt_ratio);
 
     TH1F *hptCut_ratio = (TH1F *)hptCut_highPU->Clone();
@@ -281,7 +281,7 @@ void draw_track_gen_association()
     cpt_ratio->cd();
     hptStack_ratio->Draw("histo nostack");
     hptStack_ratio->SetMaximum(3.);
-    
+
     legpt_ratio->Draw();
     line_pt->Draw();
     cpt_ratio->Draw();
