@@ -87,6 +87,9 @@ public :
    Float_t         gendrjt[100];   //[ngen]
    Int_t           jtHadFlav[500];   //[nref]
 
+   Float_t         jtmB[500]; //[nref]
+   Float_t         refmB[500]; //[nref]
+
    // List of branches
    TBranch        *b_run;   //!
    TBranch        *b_evt;   //!
@@ -163,6 +166,9 @@ public :
    TBranch        *b_gendphijt;   //!
    TBranch        *b_gendrjt;   //!
    TBranch        *b_jtHadFlav;   //!
+
+   TBranch        *b_jtmB;   //!
+   TBranch        *b_refmB;   //!
 
    tTree(TString rootf);
    ~tTree();
@@ -279,6 +285,9 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("gendphijt", gendphijt, &b_gendphijt);
    tree->SetBranchAddress("gendrjt", gendrjt, &b_gendrjt);
    tree->SetBranchAddress("jtHadFlav", jtHadFlav, &b_jtHadFlav);
+
+   tree->SetBranchAddress("jtmB", jtmB, &b_jtmB);
+   tree->SetBranchAddress("refmB", refmB, &b_refmB);
 }
 
 void tTree::SetBranchStatus(TString branchName, Int_t status)
