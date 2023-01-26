@@ -19,6 +19,7 @@ public :
    Int_t           evt;
    Int_t           lumi;
    Int_t           nref;
+   Int_t           nvtx;
    Float_t         rawpt[500];   //[nref]
    Float_t         jtpt[500];   //[nref]
    Float_t         jteta[500];   //[nref]
@@ -114,11 +115,13 @@ public :
    Float_t         jtmB[500]; //[nref]
    Float_t         refmB[500]; //[nref]
 
+
    // List of branches
    TBranch        *b_run;   //!
    TBranch        *b_evt;   //!
    TBranch        *b_lumi;   //!
    TBranch        *b_nref;   //!
+   TBranch        *b_nvtx;   //!
    TBranch        *b_rawpt;   //!
    TBranch        *b_jtpt;   //!
    TBranch        *b_jteta;   //!
@@ -259,6 +262,7 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("evt", &evt, &b_evt);
    tree->SetBranchAddress("lumi", &lumi, &b_lumi);
    tree->SetBranchAddress("nref", &nref, &b_nref);
+   tree->SetBranchAddress("nvtx", &nvtx, &b_nvtx);
    tree->SetBranchAddress("rawpt", rawpt, &b_rawpt);
    tree->SetBranchAddress("jtpt", jtpt, &b_jtpt);
    tree->SetBranchAddress("jteta", jteta, &b_jteta);
