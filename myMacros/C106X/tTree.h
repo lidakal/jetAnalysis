@@ -374,7 +374,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
 {
     // Activate relevant branches
     tree->SetBranchStatus("*", 0);
-    for (auto activeBranchName : {"nref", "refpt", "jtHadFlav",
+    for (auto activeBranchName : {"nref", "refeta", "refpt", "jtHadFlav",
                                   "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
                                   "rsjt2Pt", "rsjt2Eta", "rsjt2Phi",
                                   "jtpt", "jteta",
@@ -387,10 +387,10 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
 
     // Create histograms
 
-    // rg
-    Int_t x1bins = 40;
-    Float_t x1min = 0.;
-    Float_t x1max = 0.4;
+    // ln(1/rg)
+    Int_t x1bins = 20;
+    Float_t x1min = 0.91;
+    Float_t x1max = 5.;
 
     // ln(kt)
     Int_t y1bins = 40;
@@ -402,7 +402,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     Float_t y2min = 0.1;
     Float_t y2max = 0.5;
 
-    // jtpt
+    // refpt
     Int_t z1bins = 27*2;
     Float_t z1min = 30.;
     Float_t z1max = 300.;
@@ -427,7 +427,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
 
 
     std::cout << "Creating histograms ..." << std::endl;
-   Long64_t nentries = tree->GetEntries();
+    Long64_t nentries = tree->GetEntries();
     for (Long64_t ient = 0; ient < nentries; ient++) {
         // Print progress
         if (ient % 1000 == 0) {
@@ -441,7 +441,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
 
         for (Int_t ijet = 0; ijet < nref; ijet++) {
             // universal eta cut
-            if (std::abs(jteta[ijet]) > 2) continue;
+            if (std::abs(refeta[ijet]) > 2) continue;
 
             Float_t rg = -1.;
             Float_t kt = -1.;
@@ -501,25 +501,31 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
             // Fill true-flavour histograms
             bool isBjet = (jtHadFlav[ijet] == 5);
             if (isBjet) {
-               hB_rgkt->Fill(rg, logkt, jtpt[ijet]);
-               hB_rgzg->Fill(rg, zg, jtpt[ijet]);
-               hB_zgkt->Fill(zg, logkt, jtpt[ijet]);
+               hB_rgkt->Fill(logrg, logkt, refpt[ijet]);
+               hB_rgzg->Fill(logrg, zg, refpt[ijet]);
+               hB_zgkt->Fill(zg, logkt, refpt[ijet]);
             
-               hB_rgkt_gen->Fill(rg_gen, logkt_gen, refpt[ijet]);
-               hB_rgzg_gen->Fill(rg_gen, zg_gen, refpt[ijet]);
+               hB_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
+               hB_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
                hB_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);
             
 
                // Fill the b-tag histogram
                bool passWP = ((discr_deepFlavour_b[ijet] + discr_deepFlavour_bb[ijet] + discr_deepFlavour_lepb[ijet]) > bTagWP);
                if (passWP) {
-                  hBtag_rgkt->Fill(rg, logkt, jtpt[ijet]);
-                  hBtag_rgzg->Fill(rg, zg, jtpt[ijet]);
-                  hBtag_zgkt->Fill(zg, logkt, jtpt[ijet]);
+                    hBtag_rgkt->Fill(logrg, logkt, refpt[ijet]);
+                    hBtag_rgkt->Fill(logrg, logkt, refpt[ijet]);
+                    hBtag_rgzg->Fill(logrg, zg, refpt[ijet]);
+                    hBtag_zgkt->Fill(zg, logkt, refpt[ijet]);
 
-                  hBtag_rgkt_gen->Fill(rg_gen, logkt_gen, refpt[ijet]);
-                  hBtag_rgzg_gen->Fill(rg_gen, zg_gen, refpt[ijet]);
-                  hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);
+                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
+                    hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
+                    hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);    hBtag_rgzg->Fill(logrg, zg, refpt[ijet]);
+                    hBtag_zgkt->Fill(zg, logkt, refpt[ijet]);
+
+                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
+                    hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
+                    hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);
                }
             }
         } // jet loop

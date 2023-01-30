@@ -16,7 +16,8 @@ void draw_rg()
     double ptMax = 80.;
 
     // ---- Grab histos ----
-    TString fname_bdt = "./histos/rgzgkt_bdt.root";
+    TString suffix_bdt = "_bdt";
+    TString fname_bdt = "./histos/rgzgkt" + suffix_bdt + ".root";
     TFile *fin_bdt = new TFile(fname_bdt);
     TH3D *hB_rgkt_bdt = (TH3D *) fin_bdt->Get("hB_rgkt");
 
@@ -32,7 +33,7 @@ void draw_rg()
     // ---- Prepare hStack and legend ----
 
     THStack *hStack_rg = new THStack();
-    hStack_rg->SetTitle("; R_{g}; 1/N^{jets} dN/dR_{g}");
+    hStack_rg->SetTitle("; ln(1/R_{g}); 1/N_{2-prong jets} dN/dln(1/R_{g})");
 
     TLegend *leg_rg = new TLegend(0.65, 0.7, 0.85, 0.9);
     leg_rg->SetFillStyle(0);
@@ -51,28 +52,28 @@ void draw_rg()
 
     // gen
     TH1D *hB_rg_gen_truth = (TH1D *) hB_rgkt_gen_truth->ProjectionX("hB_rgkt_gen_truth", iymin, iymax, izmin, izmax);
-    normalize_histo(hB_rg_gen_truth);
+    normalize_histo(hB_rg_gen_truth, 1, -1);
     format_histo(hB_rg_gen_truth, mykRed);
     leg_rg->AddEntry(hB_rg_gen_truth, "gen truthAggr", "l");
     hStack_rg->Add(hB_rg_gen_truth);
 
     // reco noAggr
     TH1D *hB_rg_noAggr = (TH1D *) hB_rgkt_noAggr->ProjectionX("hB_rg_noAggr", iymin, iymax, izmin, izmax);
-    normalize_histo(hB_rg_noAggr);  
+    normalize_histo(hB_rg_noAggr, 1, -1);  
     format_histo(hB_rg_noAggr, mykPink);
     leg_rg->AddEntry(hB_rg_noAggr, "reco noAggr", "l");
     hStack_rg->Add(hB_rg_noAggr);
 
     // reco truth
     TH1D *hB_rg_truth = (TH1D *) hB_rgkt_truth->ProjectionX("hB_rg_truth", iymin, iymax, izmin, izmax);
-    normalize_histo(hB_rg_truth); 
+    normalize_histo(hB_rg_truth, 1, -1); 
     format_histo(hB_rg_truth, mykBlue);
     leg_rg->AddEntry(hB_rg_truth, "reco truthAggr", "l");
     hStack_rg->Add(hB_rg_truth);
 
     // reco bdt
     TH1D *hB_rg_bdt = (TH1D *) hB_rgkt_bdt->ProjectionX("hB_rg_bdt", iymin, iymax, izmin, izmax);
-    normalize_histo(hB_rg_bdt);   
+    normalize_histo(hB_rg_bdt, 1, -1);   
     format_histo(hB_rg_bdt, mykGreen);
     leg_rg->AddEntry(hB_rg_bdt, "reco bdtAggr", "l");
     hStack_rg->Add(hB_rg_bdt);
@@ -84,6 +85,6 @@ void draw_rg()
     leg_rg->Draw();
     c->Draw();
 
-    TString cname = "./plots/rg.png";
+    TString cname = "./plots/combined_rg" + suffix_bdt + ".png";
     c->Print(cname);
 }

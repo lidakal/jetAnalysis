@@ -12,7 +12,7 @@ void plot_mB()
     // ---- Load tree
     TString fdir = "/home/llr/cms/kalipoliti/C10630p1_miniAOD/src/HeavyIonsAnalysis/Configuration/test/rootf/";
     TString label = "HiForestMiniAOD_HighPU_10000events_conmatch";
-    TString suffix = "_bdt";
+    TString suffix = "_bdt44";
     TString fname = label + suffix + ".root";
     TString rootf = fdir + fname;
 
