@@ -17,8 +17,8 @@ void draw_mB()
     float ptMin = 50.;
     float ptMax = 80.;
 
-    // float lowNvtxMax = 15.;
-    // float highNvtxMin = 35.;
+    float lowNvtxMax = 45.;
+    float highNvtxMin = 45.;
 
     gStyle->SetLegendTextSize(15);
 
@@ -60,7 +60,6 @@ void draw_mB()
 
     // ---- Load the histos
     TString fdir = "./histos/";
-    // TString label = "HiForestMiniAOD_HighPU_10000events_conmatch";
     TString label = "mB";
     TString suffix_truth = "_truth";
     TString fname_truth = label + suffix_truth + ".root";
@@ -71,7 +70,7 @@ void draw_mB()
     TH3D *hmB_truth_3d = (TH3D *)fin_truth->Get("hmBtag");
     hmB_truth_3d->SetName(TString(hmB_truth_3d->GetName()) + "_truth");
 
-    TString suffix_bdt = "_bdt";
+    TString suffix_bdt = "_bdt29";
     TString fname_bdt = label + suffix_bdt + ".root";
     TString rootf_bdt = fdir + fname_bdt;
 
@@ -81,17 +80,17 @@ void draw_mB()
     hmB_bdt_3d->SetName(TString(hmB_bdt_3d->GetName()) + "_bdt");
 
     // ---- Find bins 
-    // Int_t iyminLow = 1;
-    // Int_t iymaxLow = hmB_truth_3d->GetYaxis()->FindBin(lowNvtxMax) - 1;
-
-    // Int_t iyminHigh = hmB_truth_3d->GetYaxis()->FindBin(highNvtxMin);
-    // Int_t iymaxHigh = hmB_truth_3d->GetYaxis()->GetNbins();
-
     Int_t iyminLow = 1;
-    Int_t iymaxLow = hmB_truth_3d->GetNbinsY();
+    Int_t iymaxLow = hmB_truth_3d->GetYaxis()->FindBin(lowNvtxMax) - 1;
 
-    Int_t iyminHigh = 1;
-    Int_t iymaxHigh = hmB_truth_3d->GetNbinsY();
+    Int_t iyminHigh = hmB_truth_3d->GetYaxis()->FindBin(highNvtxMin);
+    Int_t iymaxHigh = hmB_truth_3d->GetYaxis()->GetNbins();
+
+    // Int_t iyminLow = 1;
+    // Int_t iymaxLow = hmB_truth_3d->GetNbinsY();
+
+    // Int_t iyminHigh = 1;
+    // Int_t iymaxHigh = hmB_truth_3d->GetNbinsY();
 
     Int_t izmin = hmB_truth_3d->GetZaxis()->FindBin(ptMin);
     Int_t izmax = hmB_truth_3d->GetZaxis()->FindBin(ptMax) - 1;
@@ -113,27 +112,27 @@ void draw_mB()
     normalize_histo(hmB_truth_lowNvtx, ixmin, ixmax);
     format_histo(hmB_truth_lowNvtx, mykRed);
     hmBStack->Add(hmB_truth_lowNvtx);
-    // legmB->AddEntry(hmB_truth_lowNvtx, Form("truth, nvtx < %.0f", lowNvtxMax), "l");
-    legmB->AddEntry(hmB_truth_lowNvtx, "truth", "l");
+    legmB->AddEntry(hmB_truth_lowNvtx, Form("truth, nvtx < %.0f", lowNvtxMax), "l");
+    // legmB->AddEntry(hmB_truth_lowNvtx, "truth", "l");
 
     TH1D *hmB_truth_highNvtx = (TH1D *) hmB_truth_3d->ProjectionX("hmB_truth_highNvtx", iyminHigh, iymaxHigh, izmin, izmax);
     normalize_histo(hmB_truth_highNvtx, ixmin, ixmax);
     format_histo(hmB_truth_highNvtx, mykRedLight);
-    // hmBStack->Add(hmB_truth_highNvtx);
-    // legmB->AddEntry(hmB_truth_highNvtx, Form("truth, nvtx > %.0f", highNvtxMin), "l");
+    hmBStack->Add(hmB_truth_highNvtx);
+    legmB->AddEntry(hmB_truth_highNvtx, Form("truth, nvtx > %.0f", highNvtxMin), "l");
 
     TH1D *hmB_bdt_lowNvtx = (TH1D *) hmB_bdt_3d->ProjectionX("hmB_bdt_lowNvtx", iyminLow, iymaxLow, izmin, izmax);
     normalize_histo(hmB_bdt_lowNvtx, ixmin, ixmax);
     format_histo(hmB_bdt_lowNvtx, mykBlue);
     hmBStack->Add(hmB_bdt_lowNvtx);
-    // legmB->AddEntry(hmB_bdt_lowNvtx, Form("bdt, nvtx < %.0f", lowNvtxMax), "l");
-    legmB->AddEntry(hmB_bdt_lowNvtx, "bdt", "l");
+    legmB->AddEntry(hmB_bdt_lowNvtx, Form("bdt, nvtx < %.0f", lowNvtxMax), "l");
+    // legmB->AddEntry(hmB_bdt_lowNvtx, "bdt", "l");
 
     TH1D *hmB_bdt_highNvtx = (TH1D *) hmB_bdt_3d->ProjectionX("hmB_bdt_highNvtx", iyminHigh, iymaxHigh, izmin, izmax);
     normalize_histo(hmB_bdt_highNvtx, ixmin, ixmax);
     format_histo(hmB_bdt_highNvtx, mykBlueLight);
-    // hmBStack->Add(hmB_bdt_highNvtx);
-    // legmB->AddEntry(hmB_bdt_highNvtx, Form("bdt, nvtx > %.0f", highNvtxMin), "l");
+    hmBStack->Add(hmB_bdt_highNvtx);
+    legmB->AddEntry(hmB_bdt_highNvtx, Form("bdt, nvtx > %.0f", highNvtxMin), "l");
 
     // ---- Draw the histos
     TCanvas *cmB = new TCanvas("cmB", "", 1400, 800);
@@ -143,7 +142,7 @@ void draw_mB()
     legmB->Draw();
     cmB->Draw();
 
-    // TString cname = Form("./plots/combined_mB_%.0f_nvtx_%.0f.png", lowNvtxMax, highNvtxMin);
-    TString cname = "./plots/combined_mB_no_nvtx_cut" + suffix_bdt + ".png";
+    TString cname = Form("./plots/combined_mB_%.0f_nvtx_%.0f", lowNvtxMax, highNvtxMin) + suffix_bdt + ".png";
+    // TString cname = "./plots/combined_mB_no_nvtx_cut" + suffix_bdt + ".png";
     cmB->Print(cname);
 }
