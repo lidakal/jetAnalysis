@@ -10,8 +10,8 @@
 void plot_track_stats()
 {
     // Setup 
-    float ptMin = 30.;
-    float ptMax = 700.;
+    float ptMin = 50.;
+    float ptMax = 80.;
 
     const float missing_value = -1000000.;
 
@@ -44,6 +44,10 @@ void plot_track_stats()
     float x1min = -100.;
     float x1max = 150.;
 
+    int x2bins = 25*2;
+    float x2min = 0.;
+    float x2max = 50.;
+
     int y1bins = 3;
     float y1min = 0.; 
     float y1max = 2.;
@@ -51,6 +55,9 @@ void plot_track_stats()
     // y=0.1 : not matched; y=1. : matched to bkg; y=1.9 : matched to sig 
     TH2F *hIp3dSig = new TH2F("hIp3dSig", "x=ip3dSig, y=class", x1bins, x1min, x1max, y1bins, y1min, y1max);
     TH2F *hIp3dSig_bjet = new TH2F("hIp3dSig_bjet", "x=ip3dSig, y=class", x1bins, x1min, x1max, y1bins, y1min, y1max);
+
+    TH2F *hPt = new TH2F("hPt", "x=trkpt, y=class", x2bins, x2min, x2max, y1bins, y1min, y1max);
+    TH2F *hPt_bjet = new TH2F("hPt_bjet", "x=trkpt, y=class", x2bins, x2min, x2max, y1bins, y1min, y1max);
 
     for (Long64_t ient = 0; ient < t.GetEntries(); ient++) {
         // for debugging purposes 
@@ -76,6 +83,7 @@ void plot_track_stats()
             if (skipJet) continue;
 
             float trkIp3dSig = t.trkIp3dSig[itrk];
+            float trkPt = t.trkPt[itrk];
             // int trkSvtxId = t.trkSvtxId[itrk];
             // trkInSV = int(trkSvtxId >= 0);
             Int_t sta = t.trkMatchSta[itrk];
@@ -83,24 +91,32 @@ void plot_track_stats()
 
             if (sta == 1) {
                 hIp3dSig->Fill(trkIp3dSig, 1.);
+                hPt->Fill(trkPt, 1.);
                 if (isBjet && passBtag) {
                     hIp3dSig_bjet->Fill(trkIp3dSig, 1.);
+                    hPt_bjet->Fill(trkPt, 1.);
                 }
             } else if (sta >= 100) {
                 hIp3dSig->Fill(trkIp3dSig, 1.9);
+                hPt->Fill(trkPt, 1.9);
                 if (isBjet && passBtag) {
                     hIp3dSig_bjet->Fill(trkIp3dSig, 1.9);
+                    hPt_bjet->Fill(trkPt, 1.9);
                 }
             } else {
                 hIp3dSig->Fill(trkIp3dSig, 0.1);
+                hPt->Fill(trkPt, 0.1);
                 if (isBjet && passBtag) {
                     hIp3dSig_bjet->Fill(trkIp3dSig, 0.1);
+                    hPt_bjet->Fill(trkPt, 0.1);
                 }
             }
         } // end track loop
     } // end entry loop
 
-    for (auto h : {hIp3dSig, hIp3dSig_bjet}) {
+    for (auto h : {hIp3dSig, hIp3dSig_bjet,
+                   hPt, hPt_bjet
+                   }) {
         h->Write();
     }
 
