@@ -3,7 +3,13 @@
 #include <TBranch.h>
 #include <TString.h>
 
+#include <vector>
+
 // Header file for the classes stored in the TTree if any.
+
+const Int_t MAXJETS = 100;
+const Int_t MAXNSVTX = 50;
+const Int_t MAXTRACKS = 500;
 
 class tTree {
 public :
@@ -14,89 +20,97 @@ public :
    Int_t           run;
    Int_t           evt;
    Int_t           lumi;
+   Int_t           nvtx;
    Int_t           nref;
-   Float_t         rawpt[500];   //[nref]
-   Float_t         jtpt[500];   //[nref]
-   Float_t         jteta[500];   //[nref]
-   Float_t         jty[500];   //[nref]
-   Float_t         jtphi[500];   //[nref]
-   Float_t         jtpu[500];   //[nref]
-   Float_t         jtm[500];   //[nref]
-   Float_t         jtarea[500];   //[nref]
-   Float_t         jtPfCHF[500];   //[nref]
-   Float_t         jtPfNHF[500];   //[nref]
-   Float_t         jtPfCEF[500];   //[nref]
-   Float_t         jtPfNEF[500];   //[nref]
-   Float_t         jtPfMUF[500];   //[nref]
-   Int_t           jtPfCHM[500];   //[nref]
-   Int_t           jtPfNHM[500];   //[nref]
-   Int_t           jtPfCEM[500];   //[nref]
-   Int_t           jtPfNEM[500];   //[nref]
-   Int_t           jtPfMUM[500];   //[nref]
-   Float_t         jttau1[500];   //[nref]
-   Float_t         jttau2[500];   //[nref]
-   Float_t         jttau3[500];   //[nref]
-   Int_t           jtNtrk[500];   //[nref]
+   Float_t         rawpt[MAXJETS];   //[nref]
+   Float_t         jtpt[MAXJETS];   //[nref]
+   Float_t         jteta[MAXJETS];   //[nref]
+   Float_t         jty[MAXJETS];   //[nref]
+   Float_t         jtphi[MAXJETS];   //[nref]
+   Float_t         jtpu[MAXJETS];   //[nref]
+   Float_t         jtm[MAXJETS];   //[nref]
+   Float_t         jtarea[MAXJETS];   //[nref]
+   Float_t         jtPfCHF[MAXJETS];   //[nref]
+   Float_t         jtPfNHF[MAXJETS];   //[nref]
+   Float_t         jtPfCEF[MAXJETS];   //[nref]
+   Float_t         jtPfNEF[MAXJETS];   //[nref]
+   Float_t         jtPfMUF[MAXJETS];   //[nref]
+   Int_t           jtPfCHM[MAXJETS];   //[nref]
+   Int_t           jtPfNHM[MAXJETS];   //[nref]
+   Int_t           jtPfCEM[MAXJETS];   //[nref]
+   Int_t           jtPfNEM[MAXJETS];   //[nref]
+   Int_t           jtPfMUM[MAXJETS];   //[nref]
+   Float_t         jttau1[MAXJETS];   //[nref]
+   Float_t         jttau2[MAXJETS];   //[nref]
+   Float_t         jttau3[MAXJETS];   //[nref]
+   Int_t           jtNtrk[MAXJETS];   //[nref]
    Int_t           ntrk;
-   Int_t           trkJetId[500];   //[ntrk]
-   Int_t           trkSvtxId[500];   //[ntrk]
-   Float_t         trkPt[500];   //[ntrk]
-   Float_t         trkEta[500];   //[ntrk]
-   Float_t         trkPhi[500];   //[ntrk]
-   Float_t         trkIp3d[500];   //[ntrk]
-   Float_t         trkIp3dSig[500];   //[ntrk]
-   Float_t         trkDistToAxisSig[500];   //[ntrk]
-   Float_t         trkDistToAxis[500];   //[ntrk]
-   Int_t           trkMatchSta[500];   //[ntrk]
-   Int_t           jtNsvtx[500];   //[nref]
+   Int_t           trkJetId[MAXTRACKS];   //[ntrk]
+   Int_t           trkSvtxId[MAXTRACKS];   //[ntrk]
+   Float_t         trkPt[MAXTRACKS];   //[ntrk]
+   Float_t         trkEta[MAXTRACKS];   //[ntrk]
+   Float_t         trkPhi[MAXTRACKS];   //[ntrk]
+   Float_t         trkIp3d[MAXTRACKS];   //[ntrk]
+   Float_t         trkIp3dSig[MAXTRACKS];   //[ntrk]
+   Float_t         trkIp2d[MAXTRACKS];     //[ntrk]
+   Float_t         trkIp2dSig[MAXTRACKS];   //[ntrk]
+   Float_t         trkDistToAxisSig[MAXTRACKS];   //[ntrk]
+   Float_t         trkDistToAxis[MAXTRACKS];   //[ntrk]
+   Float_t         trkDz[MAXTRACKS];   //[ntrk]
+   Int_t           trkMatchSta[MAXTRACKS];   //[ntrk]
+   Int_t           trkPdgId[MAXTRACKS];   //[ntrk]
+   Int_t           jtNsvtx[MAXJETS];   //[nref]
    Int_t           nsvtx;
-   Int_t           svtxJetId[50];   //[nsvtx]
-   Int_t           svtxNtrk[50];   //[nsvtx]
-   Float_t         svtxdl[50];   //[nsvtx]
-   Float_t         svtxdls[50];   //[nsvtx]
-   Float_t         svtxdl2d[50];   //[nsvtx]
-   Float_t         svtxdls2d[50];   //[nsvtx]
-   Float_t         svtxm[50];   //[nsvtx]
-   Float_t         svtxpt[50];   //[nsvtx]
-   Float_t         discr_deepCSV[500];   //[nref]
-   Float_t         discr_pfJP[500];   //[nref]
-   Float_t         discr_deepFlavour_b[500];   //[nref]
-   Float_t         discr_deepFlavour_bb[500];   //[nref]
-   Float_t         discr_deepFlavour_lepb[500];   //[nref]
+   Int_t           svtxJetId[MAXNSVTX];   //[nsvtx]
+   Int_t           svtxNtrk[MAXNSVTX];   //[nsvtx]
+   Float_t         svtxdl[MAXNSVTX];   //[nsvtx]
+   Float_t         svtxdls[MAXNSVTX];   //[nsvtx]
+   Float_t         svtxdl2d[MAXNSVTX];   //[nsvtx]
+   Float_t         svtxdls2d[MAXNSVTX];   //[nsvtx]
+   Float_t         svtxm[MAXNSVTX];   //[nsvtx]
+   Float_t         svtxmcorr[MAXNSVTX];   //[nsvtx]
+   Float_t         svtxpt[MAXNSVTX];   //[nsvtx]
+   Float_t         svtxnormchi2[MAXNSVTX];   //[nsvtx]
+   Float_t         discr_deepCSV[MAXJETS];   //[nref]
+   Float_t         discr_pfJP[MAXJETS];   //[nref]
+   Float_t         discr_deepFlavour_b[MAXJETS];   //[nref]
+   Float_t         discr_deepFlavour_bb[MAXJETS];   //[nref]
+   Float_t         discr_deepFlavour_lepb[MAXJETS];   //[nref]
    Float_t         pthat;
-   Float_t         refpt[500];   //[nref]
-   Float_t         refeta[500];   //[nref]
-   Float_t         refy[500];   //[nref]
-   Float_t         refphi[500];   //[nref]
-   Float_t         refm[500];   //[nref]
-   Float_t         refarea[500];   //[nref]
-   Float_t         refdphijt[500];   //[nref]
-   Float_t         refdrjt[500];   //[nref]
-   Float_t         refparton_pt[500];   //[nref]
-   Int_t           refparton_flavor[500];   //[nref]
-   Int_t           refparton_flavorForB[500];   //[nref]
-   Float_t         genChargedSum[500];   //[nref]
-   Float_t         genHardSum[500];   //[nref]
-   Float_t         signalChargedSum[500];   //[nref]
-   Float_t         signalHardSum[500];   //[nref]
+   Float_t         refpt[MAXJETS];   //[nref]
+   Float_t         refeta[MAXJETS];   //[nref]
+   Float_t         refy[MAXJETS];   //[nref]
+   Float_t         refphi[MAXJETS];   //[nref]
+   Float_t         refm[MAXJETS];   //[nref]
+   Float_t         refarea[MAXJETS];   //[nref]
+   Float_t         refdphijt[MAXJETS];   //[nref]
+   Float_t         refdrjt[MAXJETS];   //[nref]
+   Float_t         refparton_pt[MAXJETS];   //[nref]
+   Int_t           refparton_flavor[MAXJETS];   //[nref]
+   Int_t           refparton_flavorForB[MAXJETS];   //[nref]
+   Float_t         genChargedSum[MAXJETS];   //[nref]
+   Float_t         genHardSum[MAXJETS];   //[nref]
+   Float_t         signalChargedSum[MAXJETS];   //[nref]
+   Float_t         signalHardSum[MAXJETS];   //[nref]
    Int_t           ngen;
-   Int_t           genmatchindex[100];   //[ngen]
-   Float_t         genpt[100];   //[ngen]
-   Float_t         geneta[100];   //[ngen]
-   Float_t         geny[100];   //[ngen]
-   Float_t         genphi[100];   //[ngen]
-   Float_t         genm[100];   //[ngen]
-   Float_t         gendphijt[100];   //[ngen]
-   Float_t         gendrjt[100];   //[ngen]
-   Int_t           jtHadFlav[500];   //[nref]
+   Int_t           genmatchindex[MAXJETS];   //[ngen]
+   Float_t         genpt[MAXJETS];   //[ngen]
+   Float_t         geneta[MAXJETS];   //[ngen]
+   Float_t         geny[MAXJETS];   //[ngen]
+   Float_t         genphi[MAXJETS];   //[ngen]
+   Float_t         genm[MAXJETS];   //[ngen]
+   Float_t         gendphijt[MAXJETS];   //[ngen]
+   Float_t         gendrjt[MAXJETS];   //[ngen]
+   Int_t           jtHadFlav[MAXJETS];   //[nref]
 
-   Float_t         jtmB[500]; //[nref]
-   Float_t         refmB[500]; //[nref]
+   Float_t         jtmB[MAXJETS]; //[nref]
+   Float_t         refmB[MAXJETS]; //[nref]
 
    // List of branches
    TBranch        *b_run;   //!
    TBranch        *b_evt;   //!
    TBranch        *b_lumi;   //!
+   TBranch        *b_nvtx;   //!
    TBranch        *b_nref;   //!
    TBranch        *b_rawpt;   //!
    TBranch        *b_jtpt;   //!
@@ -128,9 +142,13 @@ public :
    TBranch        *b_trkPhi;   //!
    TBranch        *b_trkIp3d;   //!
    TBranch        *b_trkIp3dSig;   //!
+   TBranch        *b_trkIp2d;   //!
+   TBranch        *b_trkIp2dSig;   //!
    TBranch        *b_trkDistToAxisSig;   //!
    TBranch        *b_trkDistToAxis;   //!
+   TBranch        *b_trkDz;   //!
    TBranch        *b_trkMatchSta;   //!
+   TBranch        *b_trkPdgId;   //!
    TBranch        *b_jtNsvtx;   //!
    TBranch        *b_nsvtx;   //!
    TBranch        *b_svtxJetId;   //!
@@ -140,7 +158,9 @@ public :
    TBranch        *b_svtxdl2d;   //!
    TBranch        *b_svtxdls2d;   //!
    TBranch        *b_svtxm;   //!
+   TBranch        *b_svtxmcorr;   //!
    TBranch        *b_svtxpt;   //!
+   TBranch        *b_svtxnormchi2;   //!
    TBranch        *b_discr_deepCSV;   //!
    TBranch        *b_discr_pfJP;   //!
    TBranch        *b_discr_deepFlavour_b;   //!
@@ -219,6 +239,7 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("run", &run, &b_run);
    tree->SetBranchAddress("evt", &evt, &b_evt);
    tree->SetBranchAddress("lumi", &lumi, &b_lumi);
+   tree->SetBranchAddress("nvtx", &nvtx, &b_nvtx);
    tree->SetBranchAddress("nref", &nref, &b_nref);
    tree->SetBranchAddress("rawpt", rawpt, &b_rawpt);
    tree->SetBranchAddress("jtpt", jtpt, &b_jtpt);
@@ -250,9 +271,13 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("trkPhi", trkPhi, &b_trkPhi);
    tree->SetBranchAddress("trkIp3d", trkIp3d, &b_trkIp3d);
    tree->SetBranchAddress("trkIp3dSig", trkIp3dSig, &b_trkIp3dSig);
+   tree->SetBranchAddress("trkIp2d", trkIp2d, &b_trkIp2d);
+   tree->SetBranchAddress("trkIp2dSig", trkIp2dSig, &b_trkIp2dSig);
    tree->SetBranchAddress("trkDistToAxisSig", trkDistToAxisSig, &b_trkDistToAxisSig);
    tree->SetBranchAddress("trkDistToAxis", trkDistToAxis, &b_trkDistToAxis);
+   tree->SetBranchAddress("trkDz", trkDz, &b_trkDz);
    tree->SetBranchAddress("trkMatchSta", trkMatchSta, &b_trkMatchSta);
+   tree->SetBranchAddress("trkPdgId", trkPdgId, &b_trkPdgId);
    tree->SetBranchAddress("jtNsvtx", jtNsvtx, &b_jtNsvtx);
    tree->SetBranchAddress("nsvtx", &nsvtx, &b_nsvtx);
    tree->SetBranchAddress("svtxJetId", svtxJetId, &b_svtxJetId);
@@ -262,7 +287,9 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("svtxdl2d", svtxdl2d, &b_svtxdl2d);
    tree->SetBranchAddress("svtxdls2d", svtxdls2d, &b_svtxdls2d);
    tree->SetBranchAddress("svtxm", svtxm, &b_svtxm);
+   tree->SetBranchAddress("svtxmcorr", svtxmcorr, &b_svtxmcorr);
    tree->SetBranchAddress("svtxpt", svtxpt, &b_svtxpt);
+   tree->SetBranchAddress("svtxnormchi2", svtxnormchi2, &b_svtxnormchi2);
    tree->SetBranchAddress("discr_deepCSV", discr_deepCSV, &b_discr_deepCSV);
    tree->SetBranchAddress("discr_pfJP", discr_pfJP, &b_discr_pfJP);
    tree->SetBranchAddress("discr_deepFlavour_b", discr_deepFlavour_b, &b_discr_deepFlavour_b);
@@ -304,7 +331,7 @@ void tTree::SetBranchStatus(TString branchName, Int_t status)
     tree->SetBranchStatus(branchName, status);
 }
 
-void tTree::SetBranchStatus(vector<TString> branchNames, Int_t status)
+void tTree::SetBranchStatus(std::vector<TString> branchNames, Int_t status)
 {
     for (TString branchName : branchNames) {
         tree->SetBranchStatus(branchName, status);

@@ -1,0 +1,6 @@
+features: ["trkIp3dSig", "trkIp2dSig", "trkDistToAxis",
+            "trkIsLepton", "trkInSV",
+            "svtxdls", "svtxdls2d", "svtxm", "svtxmcorr",
+            "svtxNtrk", "svtxnormchi2", "svtxTrkPtOverSv",
+            "jtpt"]
+  
