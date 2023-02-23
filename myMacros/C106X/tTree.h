@@ -471,7 +471,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
 
                 rg = ROOT::Math::VectorUtil::DeltaR(v1, v2);
                 kt = sjt2Pt[ijet] * rg;
-                zg = sjt2Pt[ijet] / (sjt2Pt[ijet] + sjt2Pt[ijet]);
+                zg = sjt2Pt[ijet] / (sjt1Pt[ijet] + sjt2Pt[ijet]);
                 
                 // calculate logs
                 logrg = log(1/rg);
@@ -491,7 +491,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
 
                 rg_gen = ROOT::Math::VectorUtil::DeltaR(v1_gen, v2_gen);
                 kt_gen = rsjt2Pt[ijet] * rg_gen;
-                zg_gen = rsjt2Pt[ijet] / (rsjt2Pt[ijet] + rsjt2Pt[ijet]);
+                zg_gen = rsjt2Pt[ijet] / (rsjt1Pt[ijet] + rsjt2Pt[ijet]);
                 
                 // calculate logs
                 logrg_gen = log(1/rg_gen);
