@@ -387,9 +387,9 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
 
     // Create histograms
 
-    // ln(1/rg)
-    Int_t x1bins = 20;
-    Float_t x1min = 0.91;
+    // ln(0.4/rg)
+    Int_t x1bins = 25;
+    Float_t x1min = 0.;
     Float_t x1max = 5.;
 
     // ln(kt)
@@ -430,7 +430,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     Long64_t nentries = tree->GetEntries();
     for (Long64_t ient = 0; ient < nentries; ient++) {
         // Print progress
-        if (ient % 1000 == 0) {
+        if (ient % 100000 == 0) {
             std::cout << "ient = " << ient << std::endl;
         }
 
