@@ -39,18 +39,20 @@ void draw_responses()
     TString odir = "./plots_ttbar_highPU/";
     gStyle->SetPalette(57);
 
-    TCanvas *c_response_rg_bjet_aggrTMVA = new TCanvas("c_response_rg_bjet_aggrTMVA", "", 1000, 600);
+    TCanvas *c_response_rg_bjet_aggrTMVA = new TCanvas("c_response_rg_bjet_aggrTMVA", "", 1000, 1000);
     h_response_rg_bjet_aggrTMVA->Draw("colz");
     c_response_rg_bjet_aggrTMVA->Draw();
     c_response_rg_bjet_aggrTMVA->SetLogz();
+    SetRealAspectRatio(c_response_rg_bjet_aggrTMVA);
 
     TString cname_aggrTMVA = odir + label_aggrTMVA + suffix + "response_rg.png";
     c_response_rg_bjet_aggrTMVA->Print(cname_aggrTMVA);
 
-    TCanvas *c_response_rg_bjet_aggrGenNoReco = new TCanvas("c_response_rg_bjet_aggrGenNoReco", "", 1000, 600);
+    TCanvas *c_response_rg_bjet_aggrGenNoReco = new TCanvas("c_response_rg_bjet_aggrGenNoReco", "", 1000, 1000);
     h_response_rg_bjet_aggrGenNoReco->Draw("colz");
     c_response_rg_bjet_aggrGenNoReco->Draw();
     c_response_rg_bjet_aggrGenNoReco->SetLogz();
+    SetRealAspectRatio(c_response_rg_bjet_aggrGenNoReco);
 
     TString cname_aggrGenNoReco = odir + label_aggrGenNoReco + suffix + "response_rg.png";
     c_response_rg_bjet_aggrGenNoReco->Print(cname_aggrGenNoReco);

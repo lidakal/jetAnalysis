@@ -30,7 +30,7 @@ void plot_responses()
     // TString label = "HiForestMiniAOD_HighPU_50000events_conmatch_aggrGenNoReco";
     // TString label = "HiForestMiniAOD_LowPU_10000events_conmatch_newVars_truth";
 
-    TString label = "aggrGenNoReco";
+    TString label = "aggrCuts_ip3dsig_2p5";
     TString indir = "/data_CMS/cms/kalipoliti/ttbarMC/highPU/" + label + "/";
     TString fin = indir + "merged_HiForestMiniAOD.root";
 
@@ -64,9 +64,17 @@ void plot_responses()
     Int_t x2bins = 25;
     Float_t x2min = 0.;
     Float_t x2max = 5.;
+
+    // zg
+    Int_t x3bins = 25;
+    Float_t x3min = 0.;
+    Float_t x3max = 0.5;
     
     TH2F *h_response_rg = new TH2F("h_response_rg", "x=reco rg, y=ref rg", x1bins, x1min, x1max, x1bins, x1min, x1max);
     TH2F *h_response_rg_bjet = new TH2F("h_response_rg_bjet", "x=reco rg, y=ref rg", x1bins, x1min, x1max, x1bins, x1min, x1max);
+
+    TH2F *h_response_zg = new TH2F("h_response_zg", "x=reco zg, y=ref zg", x3bins, x3min, x3max, x3bins, x3min, x3max);
+    TH2F *h_response_zg_bjet = new TH2F("h_response_zg_bjet", "x=reco zg, y=ref zg", x3bins, x3min, x3max, x3bins, x3min, x3max);
 
     TH2F *h_response_mb = new TH2F("h_response_mb", "x=reco mb, y=ref mb", x2bins, x2min, x2max, x2bins, x2min, x2max);
     TH2F *h_response_mb_bjet = new TH2F("h_response_mb_bjet", "x=reco mb, y=ref mb", x2bins, x2min, x2max, x2bins, x2min, x2max);
