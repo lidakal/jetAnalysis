@@ -2,7 +2,7 @@
 #include <Math/Vector4Dfwd.h>
 #include <Math/VectorUtil.h>
 
-Float_t calc_rg(Float_t eta1, Float_t phi1, Float_t pt1, Float_t eta2, Float_t phi2, Float_t pt2) {
+Float_t calc_deltaR(Float_t eta1, Float_t phi1, Float_t pt1, Float_t eta2, Float_t phi2, Float_t pt2) {
     ROOT::Math::PtEtaPhiMVector v1;
     v1.SetPt(pt1);
     v1.SetEta(eta1);
@@ -13,7 +13,13 @@ Float_t calc_rg(Float_t eta1, Float_t phi1, Float_t pt1, Float_t eta2, Float_t p
     v2.SetEta(eta2);
     v2.SetPhi(phi2);
 
-    Float_t rg = ROOT::Math::VectorUtil::DeltaR(v1, v2);
+    Float_t deltaR = ROOT::Math::VectorUtil::DeltaR(v1, v2);
+    return deltaR;
+}
+
+Float_t calc_rg(Float_t eta1, Float_t phi1, Float_t pt1, Float_t eta2, Float_t phi2, Float_t pt2){
+    Float_t deltaR = calc_deltaR(eta1, phi1, pt1, eta2, phi2, pt2);
+    Float_t rg = deltaR;
     return rg;
 }
 

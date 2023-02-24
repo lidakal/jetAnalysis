@@ -61,37 +61,37 @@ void draw_probabilities()
     gStyle->SetPalette(57);
 
     // rg
-    // TCanvas *c_response_rg_bjet_aggrTMVA = new TCanvas("c_response_rg_bjet_aggrTMVA", "", 1000, 1000);
-    // TString cname_rg_aggrTMVA = odir + label_aggrTMVA + suffix + "probability_rg.png";
-    // draw_canvas_response(c_response_rg_bjet_aggrTMVA,h_response_rg_bjet_aggrTMVA, cname_rg_aggrTMVA);
+    TCanvas *c_response_rg_bjet_aggrTMVA = new TCanvas("c_response_rg_bjet_aggrTMVA", "", 1000, 1000);
+    TString cname_rg_aggrTMVA = odir + label_aggrTMVA + suffix + "probability_rg.png";
+    draw_canvas_response(c_response_rg_bjet_aggrTMVA,h_response_rg_bjet_aggrTMVA, cname_rg_aggrTMVA);
 
     TCanvas *c_response_rg_bjet_aggrGenNoReco = new TCanvas("c_response_rg_bjet_aggrGenNoReco", "", 1000, 1000);
     TString cname_rg_aggrGenNoReco = odir + label_aggrGenNoReco + suffix + "probability_rg.png";
     draw_canvas_response(c_response_rg_bjet_aggrGenNoReco, h_response_rg_bjet_aggrGenNoReco, cname_rg_aggrGenNoReco);
 
-    // TCanvas *c_response_rg_bjet_aggrCuts_ip3dsig_2p5 = new TCanvas("c_response_rg_bjet_aggrCuts_ip3dsig_2p5", "", 1000, 1000);
-    // TString cname_rg_aggrCuts_ip3dsig_2p5 = odir + label_aggrCuts_ip3dsig_2p5 + suffix + "probability_rg.png";
-    // draw_canvas_response(c_response_rg_bjet_aggrCuts_ip3dsig_2p5, h_response_rg_bjet_aggrCuts_ip3dsig_2p5, cname_rg_aggrCuts_ip3dsig_2p5);
+    TCanvas *c_response_rg_bjet_aggrCuts_ip3dsig_2p5 = new TCanvas("c_response_rg_bjet_aggrCuts_ip3dsig_2p5", "", 1000, 1000);
+    TString cname_rg_aggrCuts_ip3dsig_2p5 = odir + label_aggrCuts_ip3dsig_2p5 + suffix + "probability_rg.png";
+    draw_canvas_response(c_response_rg_bjet_aggrCuts_ip3dsig_2p5, h_response_rg_bjet_aggrCuts_ip3dsig_2p5, cname_rg_aggrCuts_ip3dsig_2p5);
 
     // zg
-    // TCanvas *c_response_zg_bjet_aggrTMVA = new TCanvas("c_response_zg_bjet_aggrTMVA", "", 1000, 1000);
-    // TString cname_zg_aggrTMVA = odir + label_aggrTMVA + suffix + "probability_zg.png";
-    // draw_canvas_response(c_response_zg_bjet_aggrTMVA, h_response_zg_bjet_aggrTMVA, cname_zg_aggrTMVA);
+    TCanvas *c_response_zg_bjet_aggrTMVA = new TCanvas("c_response_zg_bjet_aggrTMVA", "", 1000, 1000);
+    TString cname_zg_aggrTMVA = odir + label_aggrTMVA + suffix + "probability_zg.png";
+    draw_canvas_response(c_response_zg_bjet_aggrTMVA, h_response_zg_bjet_aggrTMVA, cname_zg_aggrTMVA);
 
-    // TCanvas *c_response_zg_bjet_aggrGenNoReco = new TCanvas("c_response_zg_bjet_aggrGenNoReco", "", 1000, 1000);
-    // TString cname_zg_aggrGenNoReco = odir + label_aggrGenNoReco + suffix + "probability_zg.png";
-    // draw_canvas_response(c_response_zg_bjet_aggrGenNoReco, h_response_zg_bjet_aggrGenNoReco, cname_zg_aggrGenNoReco);
+    TCanvas *c_response_zg_bjet_aggrGenNoReco = new TCanvas("c_response_zg_bjet_aggrGenNoReco", "", 1000, 1000);
+    TString cname_zg_aggrGenNoReco = odir + label_aggrGenNoReco + suffix + "probability_zg.png";
+    draw_canvas_response(c_response_zg_bjet_aggrGenNoReco, h_response_zg_bjet_aggrGenNoReco, cname_zg_aggrGenNoReco);
 
-    // TCanvas *c_response_zg_bjet_aggrCuts_ip3dsig_2p5 = new TCanvas("c_response_zg_bjet_aggrCuts_ip3dsig_2p5", "", 1000, 1000);
-    // TString cname_zg_aggrCuts_ip3dsig_2p5 = odir + label_aggrCuts_ip3dsig_2p5 + suffix + "probability_zg.png";
-    // draw_canvas_response(c_response_zg_bjet_aggrCuts_ip3dsig_2p5, h_response_zg_bjet_aggrCuts_ip3dsig_2p5, cname_zg_aggrCuts_ip3dsig_2p5);
+    TCanvas *c_response_zg_bjet_aggrCuts_ip3dsig_2p5 = new TCanvas("c_response_zg_bjet_aggrCuts_ip3dsig_2p5", "", 1000, 1000);
+    TString cname_zg_aggrCuts_ip3dsig_2p5 = odir + label_aggrCuts_ip3dsig_2p5 + suffix + "probability_zg.png";
+    draw_canvas_response(c_response_zg_bjet_aggrCuts_ip3dsig_2p5, h_response_zg_bjet_aggrCuts_ip3dsig_2p5, cname_zg_aggrCuts_ip3dsig_2p5);
 
     // mb
-    // TCanvas *c_response_mb_bjet_aggrTMVA = new TCanvas("c_response_mb_bjet_aggrTMVA", "", 1000, 1000);
-    // TString cname_mb_aggrTMVA = odir + label_aggrTMVA + suffix + "probability_mb.png";
-    // draw_canvas_response(c_response_mb_bjet_aggrTMVA, h_response_mb_bjet_aggrTMVA, cname_mb_aggrTMVA);
+    TCanvas *c_response_mb_bjet_aggrTMVA = new TCanvas("c_response_mb_bjet_aggrTMVA", "", 1000, 1000);
+    TString cname_mb_aggrTMVA = odir + label_aggrTMVA + suffix + "probability_mb.png";
+    draw_canvas_response(c_response_mb_bjet_aggrTMVA, h_response_mb_bjet_aggrTMVA, cname_mb_aggrTMVA);
 
-    // TCanvas *c_response_mb_bjet_aggrCuts_ip3dsig_2p5 = new TCanvas("c_response_mb_bjet_aggrCuts_ip3dsig_2p5", "", 1000, 1000);
-    // TString cname_mb_aggrCuts_ip3dsig_2p5 = odir + label_aggrCuts_ip3dsig_2p5 + suffix + "probability_mb.png";
-    // draw_canvas_response(c_response_mb_bjet_aggrCuts_ip3dsig_2p5, h_response_mb_bjet_aggrCuts_ip3dsig_2p5, cname_mb_aggrCuts_ip3dsig_2p5);
+    TCanvas *c_response_mb_bjet_aggrCuts_ip3dsig_2p5 = new TCanvas("c_response_mb_bjet_aggrCuts_ip3dsig_2p5", "", 1000, 1000);
+    TString cname_mb_aggrCuts_ip3dsig_2p5 = odir + label_aggrCuts_ip3dsig_2p5 + suffix + "probability_mb.png";
+    draw_canvas_response(c_response_mb_bjet_aggrCuts_ip3dsig_2p5, h_response_mb_bjet_aggrCuts_ip3dsig_2p5, cname_mb_aggrCuts_ip3dsig_2p5);
 }

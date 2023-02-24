@@ -30,8 +30,9 @@ void plot_responses()
     // TString label = "HiForestMiniAOD_HighPU_50000events_conmatch_aggrGenNoReco";
     // TString label = "HiForestMiniAOD_LowPU_10000events_conmatch_newVars_truth";
 
-    TString label = "aggrCuts_ip3dsig_2p5";
+    // TString label = "aggrCuts_ip3dsig_2p5";
     // TString label = "aggrGenNoReco";
+    TString label = "aggrTMVA";
     TString indir = "/data_CMS/cms/kalipoliti/ttbarMC/highPU/" + label + "/";
     TString fin = indir + "merged_HiForestMiniAOD.root";
 
@@ -62,9 +63,9 @@ void plot_responses()
     Float_t x1max = 4.;
 
     // mB
-    Int_t x2bins = 25;
+    Int_t x2bins = 14*2;
     Float_t x2min = 0.;
-    Float_t x2max = 5.;
+    Float_t x2max = 7.;
 
     // zg
     Int_t x3bins = 20;
