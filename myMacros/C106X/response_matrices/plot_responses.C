@@ -31,6 +31,7 @@ void plot_responses()
     // TString label = "HiForestMiniAOD_LowPU_10000events_conmatch_newVars_truth";
 
     TString label = "aggrCuts_ip3dsig_2p5";
+    // TString label = "aggrGenNoReco";
     TString indir = "/data_CMS/cms/kalipoliti/ttbarMC/highPU/" + label + "/";
     TString fin = indir + "merged_HiForestMiniAOD.root";
 
@@ -66,8 +67,8 @@ void plot_responses()
     Float_t x2max = 5.;
 
     // zg
-    Int_t x3bins = 25;
-    Float_t x3min = 0.;
+    Int_t x3bins = 20;
+    Float_t x3min = 0.1;
     Float_t x3max = 0.5;
     
     TH2F *h_response_rg = new TH2F("h_response_rg", "x=reco rg, y=ref rg", x1bins, x1min, x1max, x1bins, x1min, x1max);
@@ -142,7 +143,7 @@ void plot_responses()
             if (sjt2Pt > 0.) {
                 rg = calc_rg(sjt1Eta, sjt1Phi, sjt1Pt, sjt2Eta, sjt2Phi, sjt2Pt);
                 kt = sjt2Pt * rg;
-                zg = sjt2Pt / (sjt2Pt + sjt2Pt);
+                zg = sjt2Pt / (sjt1Pt + sjt2Pt);
 
                 logrg = std::log(jetR/rg);
                 logkt = std::log(kt);
@@ -151,7 +152,7 @@ void plot_responses()
             if (rsjt2Pt > 0.) {
                 rg_gen = calc_rg(rsjt1Eta, rsjt1Phi, rsjt1Pt, rsjt2Eta, rsjt2Phi, rsjt2Pt);
                 kt_gen = rsjt2Pt * rg_gen;
-                zg_gen = rsjt2Pt / (rsjt2Pt + rsjt2Pt);
+                zg_gen = rsjt2Pt / (rsjt1Pt + rsjt2Pt);
 
                 logrg_gen = std::log(jetR/rg_gen);
             }
@@ -164,9 +165,11 @@ void plot_responses()
             // Fill histos
             h_response_rg->Fill(logrg, logrg_gen);
             h_response_mb->Fill(mB, mB_gen);
+            h_response_zg->Fill(zg, zg_gen);
             if (isBjet && passBtag) {
                 h_response_rg_bjet->Fill(logrg, logrg_gen);
                 h_response_mb_bjet->Fill(mB, mB_gen);
+                h_response_zg_bjet->Fill(zg, zg_gen);
             }
             counts++;
         } // end jet loop
@@ -174,7 +177,8 @@ void plot_responses()
     std::cout << " n selected jets " << counts << std::endl;
     for (auto h : {
                    h_response_rg, h_response_rg_bjet,
-                //    h_response_mb, h_response_mb_bjet
+                   h_response_zg, h_response_zg_bjet,
+                   h_response_mb, h_response_mb_bjet
                    }) {
         h->Write();
     }
