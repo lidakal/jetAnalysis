@@ -99,18 +99,22 @@ public :
    Float_t         sjt1Pt[500];
    Float_t         sjt1Eta[500];
    Float_t         sjt1Phi[500];
+   Float_t         sjt1Y[500];
 
    Float_t         sjt2Pt[500];
    Float_t         sjt2Eta[500];
    Float_t         sjt2Phi[500];
+   Float_t         sjt2Y[500];
 
    Float_t         rsjt1Pt[500];
    Float_t         rsjt1Eta[500];
    Float_t         rsjt1Phi[500];
+   Float_t         rsjt1Y[500];
 
    Float_t         rsjt2Pt[500];
    Float_t         rsjt2Eta[500];
    Float_t         rsjt2Phi[500];
+   Float_t         rsjt2Y[500];
 
    Float_t         jtmB[500]; //[nref]
    Float_t         refmB[500]; //[nref]
@@ -200,18 +204,22 @@ public :
    TBranch        *b_sjt1Pt;
    TBranch        *b_sjt1Eta;
    TBranch        *b_sjt1Phi;
+   TBranch        *b_sjt1Y;
 
    TBranch        *b_sjt2Pt;
    TBranch        *b_sjt2Eta;
    TBranch        *b_sjt2Phi;
+   TBranch        *b_sjt2Y;
 
    TBranch        *b_rsjt1Pt;
    TBranch        *b_rsjt1Eta;
    TBranch        *b_rsjt1Phi;
+   TBranch        *b_rsjt1Y;
 
    TBranch        *b_rsjt2Pt;
    TBranch        *b_rsjt2Eta;
    TBranch        *b_rsjt2Phi;
+   TBranch        *b_rsjt2Y;
 
 
    TBranch        *b_jtmB;   //!
@@ -225,6 +233,8 @@ public :
    void SetBranchStatus(TString branchName, Int_t status);
    void SetBranchStatus(std::vector<TString> branchNames, Int_t status);
    void plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9);
+   Float_t calc_dr(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2);
+   Float_t calc_rg(Float_t y1, Float_t phi1, Float_t y2, Float_t phi2);
 };
 
 tTree::tTree(TString rootf)
@@ -341,18 +351,22 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("sjt1Pt", sjt1Pt, &b_sjt1Pt);
    tree->SetBranchAddress("sjt1Eta", sjt1Eta, &b_sjt1Eta);
    tree->SetBranchAddress("sjt1Phi", sjt1Phi, &b_sjt1Phi);
+   tree->SetBranchAddress("sjt1Y", sjt1Y, &b_sjt1Y);
 
    tree->SetBranchAddress("sjt2Pt", sjt2Pt, &b_sjt2Pt);
    tree->SetBranchAddress("sjt2Eta", sjt2Eta, &b_sjt2Eta);
    tree->SetBranchAddress("sjt2Phi", sjt2Phi, &b_sjt2Phi);
+   tree->SetBranchAddress("sjt2Y", sjt2Y, &b_sjt2Y);
 
    tree->SetBranchAddress("rsjt1Pt", rsjt1Pt, &b_rsjt1Pt);
    tree->SetBranchAddress("rsjt1Eta", rsjt1Eta, &b_rsjt1Eta);
    tree->SetBranchAddress("rsjt1Phi", rsjt1Phi, &b_rsjt1Phi);
+   tree->SetBranchAddress("rsjt1Y", rsjt1Y, &b_rsjt1Y);
 
    tree->SetBranchAddress("rsjt2Pt", rsjt2Pt, &b_rsjt2Pt);
    tree->SetBranchAddress("rsjt2Eta", rsjt2Eta, &b_rsjt2Eta);
    tree->SetBranchAddress("rsjt2Phi", rsjt2Phi, &b_rsjt2Phi);
+   tree->SetBranchAddress("rsjt2Y", rsjt2Y, &b_rsjt2Y);
 
    tree->SetBranchAddress("jtmB", jtmB, &b_jtmB);
    tree->SetBranchAddress("refmB", refmB, &b_refmB);
@@ -375,11 +389,11 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     // Activate relevant branches
     tree->SetBranchStatus("*", 0);
     for (auto activeBranchName : {"nref", "refeta", "refpt", "jtHadFlav",
-                                  "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", 
-                                  "rsjt2Pt", "rsjt2Eta", "rsjt2Phi",
+                                  "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", "rsjt1Y",
+                                  "rsjt2Pt", "rsjt2Eta", "rsjt2Phi", "rsjt2Y",
                                   "jtpt", "jteta",
-                                  "sjt1Pt", "sjt1Eta", "sjt1Phi", 
-                                  "sjt2Pt", "sjt2Eta", "sjt2Phi",
+                                  "sjt1Pt", "sjt1Eta", "sjt1Phi", "sjt1Y",
+                                  "sjt2Pt", "sjt2Eta", "sjt2Phi", "sjt2Y",
                                   "discr_deepFlavour_b", "discr_deepFlavour_bb", "discr_deepFlavour_lepb",
                                   }) {
         tree->SetBranchStatus(activeBranchName, 1);
@@ -408,23 +422,28 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     Float_t z1max = 300.;
 
     // reco level
+    TH3D *hB_drkt = new TH3D("hB_drkt", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hB_rgkt = new TH3D("hB_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hB_rgzg = new TH3D("hB_rgzg", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hB_zgkt = new TH3D("hB_zgkt", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
+    TH3D *hBtag_drkt = new TH3D("hBtag_drkt", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hBtag_rgkt = new TH3D("hBtag_rgkt", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hBtag_rgzg = new TH3D("hBtag_rgzg", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hBtag_zgkt = new TH3D("hBtag_zgkt", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     // gen level
+    TH3D *hB_drkt_gen = new TH3D("hB_drkt_gen", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hB_rgkt_gen = new TH3D("hB_rgkt_gen", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hB_rgzg_gen = new TH3D("hB_rgzg_gen", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hB_zgkt_gen = new TH3D("hB_zgkt_gen", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
+    TH3D *hBtag_drkt_gen = new TH3D("hBtag_drkt_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hBtag_rgkt_gen = new TH3D("hBtag_rgkt_gen", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hBtag_rgzg_gen = new TH3D("hBtag_rgzg_gen", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hBtag_zgkt_gen = new TH3D("hBtag_zgkt_gen", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
+    const Float_t jetR = 0.4;
 
     std::cout << "Creating histograms ..." << std::endl;
     Long64_t nentries = tree->GetEntries();
@@ -434,8 +453,10 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
             std::cout << "ient = " << ient << std::endl;
         }
 
-		// For debugging purposes
-		//if (ient > 15) break;
+        // Choose nb of events
+        const Long64_t total_events = 1000000;
+        if (ient > total_events) break;
+		// if (ient > 100) break;
  
         tree->GetEntry(ient);
 
@@ -443,68 +464,58 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
             // universal eta cut
             if (std::abs(refeta[ijet]) > 2) continue;
 
+            Float_t dr = -1.;
             Float_t rg = -1.;
             Float_t kt = -1.;
             Float_t zg = -1.;
 
+            Float_t logdr = -1.;
             Float_t logrg = -1.;
             Float_t logkt = -10.;
 
+            Float_t dr_gen = -1.;
             Float_t rg_gen = -1.;
             Float_t kt_gen = -1.;
             Float_t zg_gen = -1.;
 
+            Float_t logdr_gen = -1.;
             Float_t logrg_gen = -1.;
             Float_t logkt_gen = -10.;
 
             // Calculate rg, kt only for 2 prong jets
             if (sjt2Pt[ijet] > 0.) {
-                ROOT::Math::PtEtaPhiMVector v1;
-                v1.SetPt(sjt1Pt[ijet]);
-                v1.SetEta(sjt1Eta[ijet]);
-                v1.SetPhi(sjt1Phi[ijet]);
-
-                ROOT::Math::PtEtaPhiMVector v2;
-                v2.SetPt(sjt2Pt[ijet]);
-                v2.SetEta(sjt2Eta[ijet]);
-                v2.SetPhi(sjt2Phi[ijet]);
-
-                rg = ROOT::Math::VectorUtil::DeltaR(v1, v2);
+                dr = calc_dr(sjt1Eta[ijet], sjt1Phi[ijet], sjt2Eta[ijet], sjt2Phi[ijet]);
+                rg = calc_rg(sjt1Y[ijet], sjt1Phi[ijet], sjt2Y[ijet], sjt2Phi[ijet]);
                 kt = sjt2Pt[ijet] * rg;
                 zg = sjt2Pt[ijet] / (sjt1Pt[ijet] + sjt2Pt[ijet]);
                 
                 // calculate logs
-                logrg = log(1/rg);
-                logkt = log(kt);
+                logdr = std::log(jetR/dr);
+                logrg = std::log(jetR/rg);
+                logkt = std::log(kt);
             }
 
             if (rsjt2Pt[ijet] > 0.) {
-                ROOT::Math::PtEtaPhiMVector v1_gen;
-                v1_gen.SetPt(rsjt1Pt[ijet]);
-                v1_gen.SetEta(rsjt1Eta[ijet]);
-                v1_gen.SetPhi(rsjt1Phi[ijet]);
-
-                ROOT::Math::PtEtaPhiMVector v2_gen;
-                v2_gen.SetPt(rsjt2Pt[ijet]);
-                v2_gen.SetEta(rsjt2Eta[ijet]);
-                v2_gen.SetPhi(rsjt2Phi[ijet]);
-
-                rg_gen = ROOT::Math::VectorUtil::DeltaR(v1_gen, v2_gen);
+                dr_gen = calc_dr(rsjt1Eta[ijet], rsjt1Phi[ijet], rsjt2Eta[ijet], rsjt2Phi[ijet]);
+                rg_gen = calc_rg(rsjt1Y[ijet], rsjt1Phi[ijet], rsjt2Y[ijet], rsjt2Phi[ijet]);
                 kt_gen = rsjt2Pt[ijet] * rg_gen;
                 zg_gen = rsjt2Pt[ijet] / (rsjt1Pt[ijet] + rsjt2Pt[ijet]);
                 
                 // calculate logs
-                logrg_gen = log(1/rg_gen);
-                logkt_gen = log(kt_gen);
+                logdr_gen = std::log(jetR/dr_gen);
+                logrg_gen = std::log(jetR/rg_gen);
+                logkt_gen = std::log(kt_gen);
             }
 
             // Fill true-flavour histograms
             bool isBjet = (jtHadFlav[ijet] == 5);
             if (isBjet) {
+               hB_drkt->Fill(logdr, logkt, refpt[ijet]);
                hB_rgkt->Fill(logrg, logkt, refpt[ijet]);
                hB_rgzg->Fill(logrg, zg, refpt[ijet]);
                hB_zgkt->Fill(zg, logkt, refpt[ijet]);
             
+               hB_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet]);
                hB_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
                hB_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
                hB_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);
@@ -513,19 +524,15 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
                // Fill the b-tag histogram
                bool passWP = ((discr_deepFlavour_b[ijet] + discr_deepFlavour_bb[ijet] + discr_deepFlavour_lepb[ijet]) > bTagWP);
                if (passWP) {
-                    hBtag_rgkt->Fill(logrg, logkt, refpt[ijet]);
+                    hBtag_drkt->Fill(logdr, logkt, refpt[ijet]);
                     hBtag_rgkt->Fill(logrg, logkt, refpt[ijet]);
                     hBtag_rgzg->Fill(logrg, zg, refpt[ijet]);
                     hBtag_zgkt->Fill(zg, logkt, refpt[ijet]);
 
+                    hBtag_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet]);
                     hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
                     hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
-                    hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);    hBtag_rgzg->Fill(logrg, zg, refpt[ijet]);
-                    hBtag_zgkt->Fill(zg, logkt, refpt[ijet]);
-
-                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
-                    hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
-                    hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);
+                    hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);  
                }
             }
         } // jet loop
@@ -535,12 +542,45 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     std::cout << "\n(Re)creating file " << foutname << std::endl;
     TFile *fout = new TFile(foutname, "recreate");
 
-    for (auto h : {hB_rgkt, hB_rgzg, hB_zgkt, 
-                   hBtag_rgkt, hBtag_rgzg, hBtag_zgkt,
-                   hB_rgkt_gen, hB_rgzg_gen, hB_zgkt_gen, 
-                   hBtag_rgkt_gen, hBtag_rgzg_gen, hBtag_zgkt_gen}) {
+    for (auto h : {hB_drkt, hB_rgkt, hB_rgzg, hB_zgkt, 
+                   hBtag_drkt, hBtag_rgkt, hBtag_rgzg, hBtag_zgkt,
+                   hB_drkt_gen, hB_rgkt_gen, hB_rgzg_gen, hB_zgkt_gen, 
+                   hBtag_drkt_gen, hBtag_rgkt_gen, hBtag_rgzg_gen, hBtag_zgkt_gen}) {
         h->Write();
     }
 
     fout->Close();
+}
+
+Float_t tTree::calc_dr(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2) {
+    ROOT::Math::PtEtaPhiMVector v1;
+    v1.SetPt(1.);
+    v1.SetEta(eta1);
+    v1.SetPhi(phi1);
+
+    ROOT::Math::PtEtaPhiMVector v2;
+    v2.SetPt(1.);
+    v2.SetEta(eta2);
+    v2.SetPhi(phi2);
+
+    Float_t dr = ROOT::Math::VectorUtil::DeltaR(v1, v2);
+    return dr;
+}
+
+Float_t tTree::calc_rg(Float_t y1, Float_t phi1, Float_t y2, Float_t phi2) {
+    ROOT::Math::PtEtaPhiMVector v1;
+    v1.SetPhi(phi1);
+
+    ROOT::Math::PtEtaPhiMVector v2;
+    v2.SetPhi(phi2);
+
+    Float_t dphi = ROOT::Math::VectorUtil::DeltaPhi(v1, v2);
+    Float_t dy = y1 - y2;
+
+    // Float_t dphi_test = std::acos(std::cos(phi1-phi2));
+
+    // std::cout << "dphi = " << dphi << std::endl;
+    // std::cout << "dphi_test = " << dphi_test << std::endl;
+    Float_t rg = std::sqrt((dy*dy) + (dphi*dphi));
+    return rg;
 }

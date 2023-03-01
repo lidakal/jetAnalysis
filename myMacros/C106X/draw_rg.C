@@ -17,13 +17,13 @@ void draw_rg()
 
     // ---- Grab histos ----
     TString indir = "./histos/";
-    TString label_aggrGenNoReco = "aggrGenNoReco";
+    TString label_aggrGenNoReco = "aggrGenNoReco_withY";
     TString fname_aggrGenNoReco = indir + label_aggrGenNoReco + "_rgzgkt.root";
     TFile *fin_aggrGenNoReco = new TFile(fname_aggrGenNoReco);
     TH3D *hBtag_rgkt_aggrGen = (TH3D *) fin_aggrGenNoReco->Get("hBtag_rgkt_gen");
     TH3D *hBtag_rgkt_noAggrReco = (TH3D *) fin_aggrGenNoReco->Get("hBtag_rgkt");
 
-    TString label_aggrTMVA = "aggrTMVA";
+    TString label_aggrTMVA = "aggrTMVA_withY";
     TString fname_aggrTMVA = indir + label_aggrTMVA + "_rgzgkt.root";
     TFile *fin_aggrTMVA = new TFile(fname_aggrTMVA);
     TH3D *hBtag_rgkt_aggrTMVAReco = (TH3D *) fin_aggrTMVA->Get("hBtag_rgkt");
