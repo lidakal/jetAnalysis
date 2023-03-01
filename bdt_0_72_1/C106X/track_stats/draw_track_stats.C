@@ -13,8 +13,8 @@ void draw_track_stats()
     // Setup 
     gStyle->SetLegendTextSize(15);
 
-    float ptMin = 50.;
-    float ptMax = 80.;
+    float ptMin = 30.;
+    float ptMax = 700.;
 
     TString indir = "./histos/";
     TString label = "HiForestMiniAOD_HighPU_100000events_conmatch";
@@ -38,9 +38,9 @@ void draw_track_stats()
     hStackPt->SetTitle("; p_{T}^{trk}; 1 / N_{total tracks} dN / dp_{T}^{trk}");
 
     THStack *hStack_bjet = new THStack();
-    hStack_bjet->SetTitle("; 3D IP / #sigma; 1 / N_{total tracks} dN / d(3D IP / #sigma)");
+    hStack_bjet->SetTitle("; 3D IP / #sigma; 1 / N_{total tracks in b-jets} dN / d(3D IP / #sigma)");
     THStack *hStackPt_bjet = new THStack();
-    hStackPt_bjet->SetTitle("; p_{T}^{trk}; 1 / N_{total tracks} dN / dp_{T}^{trk}");
+    hStackPt_bjet->SetTitle("; p_{T}^{trk}; 1 / N_{total tracks in b-jets} dN / dp_{T}^{trk}");
 
     TLegend *leg = new TLegend(0.7, 0.7, 0.85, 0.9);
     leg->SetFillStyle(0);
