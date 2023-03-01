@@ -2,24 +2,31 @@
 #include <Math/Vector4Dfwd.h>
 #include <Math/VectorUtil.h>
 
-Float_t calc_deltaR(Float_t eta1, Float_t phi1, Float_t pt1, Float_t eta2, Float_t phi2, Float_t pt2) {
+Float_t calc_dr(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2) {
     ROOT::Math::PtEtaPhiMVector v1;
-    v1.SetPt(pt1);
     v1.SetEta(eta1);
     v1.SetPhi(phi1);
 
     ROOT::Math::PtEtaPhiMVector v2;
-    v2.SetPt(pt2);
     v2.SetEta(eta2);
     v2.SetPhi(phi2);
 
-    Float_t deltaR = ROOT::Math::VectorUtil::DeltaR(v1, v2);
-    return deltaR;
+    Float_t dr = ROOT::Math::VectorUtil::DeltaR(v1, v2);
+    return dr;
 }
 
-Float_t calc_rg(Float_t eta1, Float_t phi1, Float_t pt1, Float_t eta2, Float_t phi2, Float_t pt2){
-    Float_t deltaR = calc_deltaR(eta1, phi1, pt1, eta2, phi2, pt2);
-    Float_t rg = deltaR;
+Float_t calc_rg(Float_t y1, Float_t phi1, Float_t y2, Float_t phi2) {
+    ROOT::Math::PtEtaPhiMVector v1;
+    v1.SetPhi(phi1);
+
+    ROOT::Math::PtEtaPhiMVector v2;
+    v2.SetPhi(phi2);
+
+    Float_t dphi = ROOT::Math::VectorUtil::DeltaPhi(v1, v2);
+    Float_t dy = y1 - y2;
+
+    // std::cout << "dphi = " << dphi << std::endl;
+    Float_t rg = std::sqrt((dy*dy) + (dphi*dphi));
     return rg;
 }
 

@@ -32,7 +32,7 @@ void plot_responses()
 
     // TString label = "aggrCuts_ip3dsig_2p5";
     // TString label = "aggrGenNoReco";
-    TString label = "aggrTMVA";
+    TString label = "aggrGenNoReco_withY";
     TString indir = "/data_CMS/cms/kalipoliti/ttbarMC/highPU/" + label + "/";
     TString fin = indir + "merged_HiForestMiniAOD.root";
 
@@ -46,8 +46,10 @@ void plot_responses()
     std::vector<TString> activeBranches = {"nvtx",
                                            "nref", "jteta", "jtphi", "jtpt", "jtHadFlav",
                                            "discr_deepFlavour_b", "discr_deepFlavour_bb", "discr_deepFlavour_lepb", 
-                                           "sjt1Pt", "sjt1Eta", "sjt1Phi", "sjt2Pt", "sjt2Eta", "sjt2Phi", 
-                                           "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", "rsjt2Pt", "rsjt2Eta", "rsjt2Phi",
+                                           "sjt1Pt", "sjt1Eta", "sjt1Phi", "sjt1Y", 
+                                           "sjt2Pt", "sjt2Eta", "sjt2Phi",  "sjt2Y",
+                                           "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", "rsjt1Y",
+                                           "rsjt2Pt", "rsjt2Eta", "rsjt2Phi", "rsjt2Y",
                                            "jtmB", "refmB"
                                            };
     t.SetBranchStatus("*", 0);
@@ -72,6 +74,9 @@ void plot_responses()
     Float_t x3min = 0.1;
     Float_t x3max = 0.5;
     
+    TH2F *h_response_dr = new TH2F("h_response_dr", "x=reco dr, y=ref dr", x1bins, x1min, x1max, x1bins, x1min, x1max);
+    TH2F *h_response_dr_bjet = new TH2F("h_response_dr_bjet", "x=reco dr, y=ref dr", x1bins, x1min, x1max, x1bins, x1min, x1max);
+
     TH2F *h_response_rg = new TH2F("h_response_rg", "x=reco rg, y=ref rg", x1bins, x1min, x1max, x1bins, x1min, x1max);
     TH2F *h_response_rg_bjet = new TH2F("h_response_rg_bjet", "x=reco rg, y=ref rg", x1bins, x1min, x1max, x1bins, x1min, x1max);
 
@@ -85,7 +90,7 @@ void plot_responses()
     for (Long64_t ient = 0; ient < t.GetEntries(); ient++) {
         // for debugging purposes 
         //if (ient < 217316) continue;
-        // if (ient > 0) break;
+        if (ient > 10000000) break;
             
         // Show progress
         if (ient % 100000 == 0) {
@@ -113,49 +118,62 @@ void plot_responses()
             Float_t sjt1Eta = t.sjt1Eta[ijet];
             Float_t sjt1Phi = t.sjt1Phi[ijet];
             Float_t sjt1Pt = t.sjt1Pt[ijet];
+            Float_t sjt1Y = t.sjt1Y[ijet];
 
             Float_t sjt2Eta = t.sjt2Eta[ijet];
             Float_t sjt2Phi = t.sjt2Phi[ijet];
             Float_t sjt2Pt = t.sjt2Pt[ijet];
+            Float_t sjt2Y = t.sjt2Y[ijet];
 
             Float_t rsjt1Eta = t.rsjt1Eta[ijet];
             Float_t rsjt1Phi = t.rsjt1Phi[ijet];
             Float_t rsjt1Pt = t.rsjt1Pt[ijet];
+            Float_t rsjt1Y = t.rsjt1Y[ijet];
 
             Float_t rsjt2Eta = t.rsjt2Eta[ijet];
             Float_t rsjt2Phi = t.rsjt2Phi[ijet];
             Float_t rsjt2Pt = t.rsjt2Pt[ijet];
+            Float_t rsjt2Y = t.rsjt2Y[ijet];
 
             Float_t rg = -1.;
+            Float_t dr = -1.;
             Float_t kt = -1.;
             Float_t zg = -1.;
 
             Float_t logrg = -1.;
+            Float_t logdr = -1.;
             Float_t logkt = -10.;
 
             Float_t rg_gen = -1.;
+            Float_t dr_gen = -1.;
             Float_t kt_gen = -1.;
             Float_t zg_gen = -1.;
 
             Float_t logrg_gen = -1.;
+            Float_t logdr_gen = -1.;
             Float_t logkt_gen = -10.;
 
             // Calculate rg, kt only for 2 prong jets
             if (sjt2Pt > 0.) {
-                rg = calc_rg(sjt1Eta, sjt1Phi, sjt1Pt, sjt2Eta, sjt2Phi, sjt2Pt);
+                dr = calc_dr(sjt1Eta, sjt1Phi, sjt2Eta, sjt2Phi);
+                rg = calc_rg(sjt1Y, sjt1Phi, sjt2Y, sjt2Phi);
                 kt = sjt2Pt * rg;
                 zg = sjt2Pt / (sjt1Pt + sjt2Pt);
 
                 logrg = std::log(jetR/rg);
+                logdr = std::log(jetR/dr);
                 logkt = std::log(kt);
             }
 
             if (rsjt2Pt > 0.) {
-                rg_gen = calc_rg(rsjt1Eta, rsjt1Phi, rsjt1Pt, rsjt2Eta, rsjt2Phi, rsjt2Pt);
+                dr_gen = calc_dr(rsjt1Eta, rsjt1Phi, rsjt2Eta, rsjt2Phi);
+                rg_gen = calc_dr(rsjt1Y, rsjt1Phi, rsjt2Y, rsjt2Phi);
                 kt_gen = rsjt2Pt * rg_gen;
                 zg_gen = rsjt2Pt / (rsjt1Pt + rsjt2Pt);
 
                 logrg_gen = std::log(jetR/rg_gen);
+                logdr_gen = std::log(jetR/dr_gen);
+                logkt_gen = std::log(kt_gen);
             }
 
             // if (logkt < 0.) continue;
@@ -164,10 +182,12 @@ void plot_responses()
             Float_t mB_gen = t.refmB[ijet];
 
             // Fill histos
+            h_response_dr->Fill(logdr, logdr_gen);
             h_response_rg->Fill(logrg, logrg_gen);
             h_response_mb->Fill(mB, mB_gen);
             h_response_zg->Fill(zg, zg_gen);
             if (isBjet && passBtag) {
+                h_response_dr_bjet->Fill(logdr, logdr_gen);
                 h_response_rg_bjet->Fill(logrg, logrg_gen);
                 h_response_mb_bjet->Fill(mB, mB_gen);
                 h_response_zg_bjet->Fill(zg, zg_gen);
@@ -177,9 +197,10 @@ void plot_responses()
     } // end entry loop
     std::cout << " n selected jets " << counts << std::endl;
     for (auto h : {
-                   h_response_rg, h_response_rg_bjet,
-                   h_response_zg, h_response_zg_bjet,
-                   h_response_mb, h_response_mb_bjet
+                    h_response_dr, h_response_dr_bjet,
+                    h_response_rg, h_response_rg_bjet,
+                    h_response_zg, h_response_zg_bjet,
+                    h_response_mb, h_response_mb_bjet
                    }) {
         h->Write();
     }
