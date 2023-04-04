@@ -36,7 +36,8 @@ void prepare_data()
                                            "trkIp3d", "trkIp3dSig", "trkIp2d", "trkIp2dSig", "trkDistToAxis", "trkDistToAxisSig", "trkDz",
                                            "trkMatchSta", "trkPdgId",
                                            "nsvtx", "svtxJetId", "svtxNtrk", "svtxm", "svtxmcorr", "svtxpt",
-                                           "svtxdl", "svtxdls", "svtxdl2d", "svtxdls2d", "svtxnormchi2"
+                                           "svtxdl", "svtxdls", "svtxdl2d", "svtxdls2d", "svtxnormchi2",
+                                           "weight"
                                            };
     t.SetBranchStatus("*", 0);
     t.SetBranchStatus(activeBranches, 1);
@@ -67,6 +68,7 @@ void prepare_data()
     Float_t svtxTrkPtOverSv;
 
     Float_t jtpt;
+    Float_t weight;
 
     TreeS->Branch("trkIp3dSig", &trkIp3dSig, "trkIp3dSig/F");
     TreeS->Branch("trkIp2dSig", &trkIp2dSig, "trkIp2dSig/F");
@@ -84,6 +86,7 @@ void prepare_data()
     TreeS->Branch("svtxNtrk", &svtxNtrk, "svtxNtrk/F");
     TreeS->Branch("svtxTrkPtOverSv", &svtxTrkPtOverSv, "svtxTrkPtOverSv/F");
     TreeS->Branch("jtpt", &jtpt, "jtpt/F");
+    TreeS->Branch("weight", &weight, "weight/F");
 
     TreeB->Branch("trkIp3dSig", &trkIp3dSig, "trkIp3dSig/F");
     TreeB->Branch("trkIp2dSig", &trkIp2dSig, "trkIp2dSig/F");
@@ -101,6 +104,7 @@ void prepare_data()
     TreeB->Branch("svtxNtrk", &svtxNtrk, "svtxNtrk/F");
     TreeB->Branch("svtxTrkPtOverSv", &svtxTrkPtOverSv, "svtxTrkPtOverSv/F");
     TreeB->Branch("jtpt", &jtpt, "jtpt/F");
+    TreeB->Branch("weight", &weight, "weight/F");
 
     TreePU->Branch("trkIp3dSig", &trkIp3dSig, "trkIp3dSig/F");
     TreePU->Branch("trkIp2dSig", &trkIp2dSig, "trkIp2dSig/F");
@@ -118,6 +122,7 @@ void prepare_data()
     TreePU->Branch("svtxNtrk", &svtxNtrk, "svtxNtrk/F");
     TreePU->Branch("svtxTrkPtOverSv", &svtxTrkPtOverSv, "svtxTrkPtOverSv/F");
     TreePU->Branch("jtpt", &jtpt, "jtpt/F");
+    TreePU->Branch("weight", &weight, "weight/F");
     
     int sig = 0;
     int bkg = 0;
@@ -129,11 +134,12 @@ void prepare_data()
         // if (ient > 1) break;
             
         // Show progress
-        if (ient % 100000 == 0) {
+        if (ient % 1000000 == 0) {
             std::cout << "i = " << ient << std::endl;
         }
 
         t.GetEntry(ient);
+        weight = t.weight;
         for (Int_t itrk = 0; itrk < t.ntrk; itrk++) {
             int ijet = t.trkJetId[itrk];
             bool skipJet = false;
@@ -142,6 +148,7 @@ void prepare_data()
             bool isBjet = (t.jtHadFlav[ijet] == 5);
             skipJet |= (!isBjet);
             bool passBtag = (t.discr_deepFlavour_b[ijet] + t.discr_deepFlavour_bb[ijet] + t.discr_deepFlavour_lepb[ijet]) > 0.9;
+            passBtag &= (t.discr_deepFlavour_bb[ijet] < 0.2);
             skipJet |= (!passBtag);
 
             if (skipJet) continue;

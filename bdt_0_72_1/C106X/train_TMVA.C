@@ -14,6 +14,7 @@ void train_TMVA()
     // TString label = "ttbar_highPU";
     TString label = "qcd_bjet";
     TString fname = "./data_root_" + label + "_30_pt_700/data.root";
+    // TString fname = "./ntuples/" + label + "_30_pt_700.root";
     if (!gSystem->AccessPathName( fname )) {
         input = TFile::Open( fname ); // check if file in local directory exists
     }
@@ -26,6 +27,9 @@ void train_TMVA()
 
     TTree *signalTree     = (TTree*)input->Get("train_sig");
     TTree *background     = (TTree*)input->Get("train_bkg");
+
+    // TTree *signalTree     = (TTree*)input->Get("TreeS");
+    // TTree *background     = (TTree*)input->Get("TreeB");
 
     TString outfileName( "./saved_models/" + label + "_TMVA.root" );
     TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
@@ -59,6 +63,10 @@ void train_TMVA()
     dataloader->AddSignalTree    ( signalTree,     signalWeight );
     dataloader->AddBackgroundTree( background, backgroundWeight );
 
+    dataloader->SetSignalWeightExpression("weight");
+    dataloader->SetBackgroundWeightExpression("weight");
+
+
     // TCut mycuts = "trkInSV==1"; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
     // TCut mycutb = "trkInSV==1"; // for example: TCut mycutb = "abs(var1)<0.5";
 
@@ -66,7 +74,7 @@ void train_TMVA()
     TCut mycutb = mycuts;
 
     dataloader->PrepareTrainingAndTestTree( mycuts, mycutb,
-        "nTrain_Signal=150000:nTrain_Background=150000:SplitMode=Random:NormMode=NumEvents:!V" );
+        "nTrain_Signal=150000:nTrain_Background=150000:nTest_Signal=150000:nTest_Background=150000:SplitMode=Random:NormMode=NumEvents:!V" );
 
     // Book methods
     if (Use["BDTG"]) // Gradient Boost

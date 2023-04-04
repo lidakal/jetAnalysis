@@ -105,6 +105,7 @@ public :
 
    Float_t         jtmB[MAXJETS]; //[nref]
    Float_t         refmB[MAXJETS]; //[nref]
+   Float_t         weight; 
 
    // List of branches
    TBranch        *b_run;   //!
@@ -195,6 +196,7 @@ public :
 
    TBranch        *b_jtmB;   //!
    TBranch        *b_refmB;   //!
+   TBranch        *b_weight;   //!
 
    tTree(TString rootf);
    ~tTree();
@@ -209,6 +211,7 @@ tTree::tTree(TString rootf)
 {
    TFile *fin = new TFile(rootf);
    tree = (TTree*) fin->Get("ak4PFJetAnalyzer/t");
+   tree->AddFriend("hiEvtAnalyzer/HiTree");
 
    Init(tree);
 }
@@ -324,6 +327,8 @@ void tTree::Init(TTree *tree)
 
    tree->SetBranchAddress("jtmB", jtmB, &b_jtmB);
    tree->SetBranchAddress("refmB", refmB, &b_refmB);
+
+   tree->SetBranchAddress("weight", &weight, &b_weight);
 }
 
 void tTree::SetBranchStatus(TString branchName, Int_t status)

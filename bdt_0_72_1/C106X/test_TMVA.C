@@ -6,7 +6,8 @@
 void test_TMVA()
 {
     // Load data
-    TString label = "qcd_bjet";
+    // TString label = "qcd_bjet";
+    TString label = "ttbar_highPU";
     // TString fname = "./saved_models/TMVA.root";
     // TString fname = "./data_root_ttbar_highPU_30_pt_700/data.root";
     TString fname = "./data_root_" + label + "_30_pt_700/data.root";
@@ -27,7 +28,7 @@ void test_TMVA()
     Float_t svtxnormchi2_bdt;
     Float_t svtxNtrk_bdt;
     Float_t svtxTrkPtOverSv_bdt;
-    // Float_t jtpt_bdt;
+    Float_t jtpt_bdt;
 
     Int_t classID_bdt;
 
@@ -41,9 +42,10 @@ void test_TMVA()
     Double_t svtxnormchi2_tree;
     Double_t svtxNtrk_tree;
     Double_t svtxTrkPtOverSv_tree;
-    // Double_t jtpt_tree;
+    Double_t jtpt_tree;
 
     Long64_t classID_tree;
+    Float_t weight_tree;
 
     std::vector<TString> variable_names_ = {"trkIp3dSig", "trkIp2dSig", "trkDistToAxis",
                                             "svtxdls", "svtxdls2d", "svtxm", "svtxmcorr",
@@ -62,7 +64,7 @@ void test_TMVA()
     variables_bdt["svtxnormchi2"] = &svtxnormchi2_bdt;
     variables_bdt["svtxNtrk"] = &svtxNtrk_bdt;
     variables_bdt["svtxTrkPtOverSv"] = &svtxTrkPtOverSv_bdt;
-    // variables_bdt["jtpt"] = &jtpt_bdt;
+    variables_bdt["jtpt"] = &jtpt_bdt;
 
     std::map<TString, double *> variables_tree;
     variables_tree["trkIp3dSig"] = &trkIp3dSig_tree;
@@ -75,7 +77,7 @@ void test_TMVA()
     variables_tree["svtxnormchi2"] = &svtxnormchi2_tree;
     variables_tree["svtxNtrk"] = &svtxNtrk_tree;
     variables_tree["svtxTrkPtOverSv"] = &svtxTrkPtOverSv_tree;
-    // variables_tree["jtpt"] = &jtpt_tree;
+    variables_tree["jtpt"] = &jtpt_tree;
 
     for (TString var : variable_names_) {
         // std::cout << "var: " << var << std::endl;
@@ -83,22 +85,29 @@ void test_TMVA()
         testTree->SetBranchAddress(var, variables_tree[var]);
     }
     testTree->SetBranchAddress("class", &classID_tree);
+    // testTree->SetBranchAddress("weight", &weight_tree);
 
     TString weightfile = label + "_dataloader/weights/TMVAClassification_BDTG.weights.xml";
     reader->BookMVA("BDTG", weightfile);
 
     // Decalre WP
-    // float wp = -0.5;
-    float wp = 0.;
+    float wp = -0.3;
+    // float wp = 0.;
 
     // Get WP effS and effB
-    int totalS = 0;
-    int totalB = 0;
-    int passS = 0;
-    int passB = 0;
+    float totalS = 0;
+    float totalB = 0;
+    float passS = 0;
+    float passB = 0;
+
+    // Fill histo for roc curve
+    TH1F *h_discr_s = new TH1F("h_discr_s", "x=discr value, y=events with that value", 40, -1., 1.);
+    TH1F *h_discr_b = new TH1F("h_discr_b", "x=discr value, y=events with that value", 40, -1., 1.);
 
     for (Long64_t ient = 0; ient < testTree->GetEntries(); ient++) {
         testTree->GetEntry(ient);
+
+        weight_tree = 1.;
 
         // [DEBUG]
         // if (ient > 0) break;
@@ -120,19 +129,31 @@ void test_TMVA()
         bool pass = false;
         float proba = reader->EvaluateMVA("BDTG");
         // std::cout << proba << std::endl;
+
         if (proba > wp) {
             pass = true;
         }
 
         if (classID_bdt == 1) {
-            totalS++;
-            if (pass) passS++;
+            totalS += weight_tree;
+            if (pass) passS += weight_tree;
+            h_discr_s->Fill(proba, weight_tree);
         } else {
-            totalB++;
-            if (pass) passB++;
+            totalB += weight_tree;
+            if (pass) passB += weight_tree;
+            h_discr_b->Fill(proba, weight_tree);
         }
     } // end signal tree loop
 
+    // Save the histos
+    TString foutName = "./saved_models/" + label + "_roc.root";
+    TFile *fout = new TFile(foutName, "recreate");
+    
+    for (auto h : {h_discr_s, h_discr_b}) {
+        h->Write();
+    }
+    fout->Close();
+    delete fout;
 
     std::cout << "for wp : " << wp 
               << "\n\tsignal efficiency = " << (float) passS / totalS

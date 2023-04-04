@@ -25,6 +25,8 @@ def load_data(filename, variables):
 
             # branchPU = fin[f"TreePU/{var}"].array(library="pd")
             # data_pu[var] = branchPU
+        data_sig["weight"] = fin["TreeS/weight"].array(library="pd")
+        data_bkg["weight"] = fin["TreeB/weight"].array(library="pd")
  
     ## Drop tracks with NaN values 
     data_sig = data_sig.dropna().reset_index(drop=True)
@@ -32,11 +34,15 @@ def load_data(filename, variables):
     # data_pu = data_pu.dropna().reset_index(drop=True)
 
     ## Convert inputs to format readable by machine learning tools
-    x_sig = data_sig.to_numpy()
-    x_bkg = data_bkg.to_numpy()
+    x_sig = data_sig[variables].to_numpy()
+    x_bkg = data_bkg[variables].to_numpy()
     # x_pu = data_pu.to_numpy()
     x = np.vstack([x_sig, x_bkg])
     # x = np.vstack([x_sig, x_bkg, x_pu])
+
+    w_sig = data_sig["weight"].to_numpy()
+    w_bkg = data_bkg["weight"].to_numpy()
+    w = np.hstack([w_sig, w_bkg])
 
     ## Create labels
     num_sig = x_sig.shape[0]
@@ -47,8 +53,8 @@ def load_data(filename, variables):
     # y = np.hstack([np.ones(num_sig), np.zeros(num_bkg), 2 * np.ones(num_pu)])
  
     ## Compute weights balancing both classes
-    num_all = num_sig + num_bkg# + num_pu
-    w = np.hstack([np.ones(num_sig) * num_all / num_sig, np.ones(num_bkg) * num_all / num_bkg])
+    # num_all = num_sig + num_bkg# + num_pu
+    # w = np.hstack([np.ones(num_sig) * num_all / num_sig, np.ones(num_bkg) * num_all / num_bkg])
     # w = np.hstack([np.ones(num_sig) * num_all / num_sig, np.ones(num_bkg) * num_all / num_bkg, np.ones(num_pu) * num_all / num_pu])
  
     return x, y, w
@@ -56,7 +62,7 @@ def load_data(filename, variables):
 if __name__ == "__main__":
     ## Load data
     indir = "./ntuples/"
-    label = "ttbar_highPU"
+    label = "qcd_bjet"
     suffix = "_30_pt_700"
     fin = indir + label + suffix + ".root"
 
@@ -109,18 +115,21 @@ if __name__ == "__main__":
     df_train["trkIsLepton"] = df_train["trkIsLepton"].astype(int)
     df_train["trkInSV"] = df_train["trkInSV"].astype(int)
     df_train["class"] = df_train["class"].astype(int)
+    df_train["weight"] = w_train
 
     df_test = pd.DataFrame(X_test, columns=features)
     df_test["class"] = y_test
     df_test["trkIsLepton"] = df_test["trkIsLepton"].astype(int)
     df_test["trkInSV"] = df_test["trkInSV"].astype(int)
     df_test["class"] = df_test["class"].astype(int)
+    df_test["weight"] = w_test
 
     df_val = pd.DataFrame(X_val, columns=features)
     df_val["class"] = y_val
     df_val["trkIsLepton"] = df_val["trkIsLepton"].astype(int)
     df_val["trkInSV"] = df_val["trkInSV"].astype(int)
     df_val["class"] = df_val["class"].astype(int)
+    df_val["weight"] = w_val
 
     odir_root = './data_root_' + label + suffix
     if not os.path.exists(odir_root):

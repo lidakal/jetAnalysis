@@ -1,0 +1,113 @@
+#include "root_utils.h"
+
+void draw_ROC_TMVA()
+{
+    // TString label = "qcd_bjet";
+    TString label = "ttbar_highPU";
+    TString finName = "./saved_models/" + label + "_roc.root";
+    TFile *fin = new TFile (finName);
+
+    TH1F *h_discr_s = (TH1F *) fin->Get("h_discr_s");
+    TH1F *h_discr_b = (TH1F *) fin->Get("h_discr_b");
+
+    THStack *h_discr = new THStack("h_discr", "");
+    h_discr->SetTitle("; discriminator value; n_{tracks}");
+    TLegend *leg_discr = new TLegend(0.4, 0.7, 0.6, 0.8);
+
+    // Count roc graphs 
+    Int_t nbins = h_discr_s->GetNbinsX();
+
+    TGraph *gr_roc = new TGraph(nbins);
+    gr_roc->SetLineColor(kBlue+2);
+    gr_roc->SetLineWidth(2);
+    gr_roc->GetXaxis()->SetTitle("Signal efficiency");
+    gr_roc->GetYaxis()->SetTitle("Background rejection");
+
+    Float_t total_sig = h_discr_s->Integral(1, nbins);
+    Float_t total_bkg = h_discr_b->Integral(1, nbins);
+    for (Int_t ibin = 1; ibin <= nbins; ibin++) {
+        float sig_pass = h_discr_s->Integral(ibin, nbins);
+        float sig_eff = sig_pass / total_sig;
+
+        float bkg_pass = h_discr_b->Integral(ibin, nbins);
+        float bkg_rej = 1 - (bkg_pass / total_bkg);
+
+        // std::cout << "edge low " << h_discr_s->GetXaxis()->GetBinLowEdge(ibin) 
+        //           << ", edge high " << h_discr_s->GetXaxis()->GetBinUpEdge(ibin) 
+        //           << std::endl;
+        gr_roc->SetPoint(ibin - 1, sig_eff, bkg_rej);
+
+        // if (sig_eff > 0.93) std::cout << "eff: " << sig_eff << ", bkg rej: " << bkg_rej << std::endl;
+    }
+    gr_roc->SetPoint(nbins, 0., 1.); // for discr > 1
+
+    // format histos
+    h_discr_s->SetLineWidth(2);
+    h_discr_s->SetLineColor(kBlue);
+    h_discr->Add(h_discr_s);
+    leg_discr->AddEntry(h_discr_s, "Match to signal", "l");
+
+    h_discr_b->SetLineWidth(2);
+    h_discr_b->SetLineColor(kRed);
+    h_discr->Add(h_discr_b);
+    leg_discr->AddEntry(h_discr_b, "Match to background", "l");
+
+    // TCanvas *c_discr = new TCanvas("c_discr", "", 1200, 1000);
+    // h_discr->Draw("histo nostack");
+    // leg_discr->Draw();
+    // c_discr->Draw();
+    // SetRealAspectRatio(c_discr);
+    // c_discr->SetFixedAspectRatio();
+
+    TPaveText *info_top_left = new TPaveText(0.0, 1.1, 0.35, 1.15, "nb ndc");
+    info_top_left->SetTextSize(20);
+    info_top_left->SetFillStyle(0);
+    info_top_left->SetLineWidth(0);
+    info_top_left->AddText("#bf{CMS} #it{Simulation Preliminary}");
+
+    TPaveText *info_top_right = new TPaveText(0.75, 1.1, 1.1, 1.15, "nb ndc");
+    info_top_right->SetTextSize(20);
+    info_top_right->SetFillStyle(0);
+    info_top_right->SetLineWidth(0);
+    info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
+
+    TPaveText *info_bdt = new TPaveText(0.8, 1., 1.1, 1.1, "nb ndc");
+    info_bdt->SetTextSize(20);
+    info_bdt->SetFillStyle(0);
+    info_bdt->SetLineWidth(0);
+    info_bdt->AddText("#it{Gradient BDT}");
+
+    TPaveText *info_tracks = new TPaveText(0.1, 0.4, 0.7, 0.6, "nb ndc");
+    info_tracks->SetTextSize(20);
+    info_tracks->SetFillStyle(0);
+    info_tracks->SetLineWidth(0);
+    info_tracks->AddText("#bf{Charged particle classification}");
+    info_tracks->AddText("");
+    info_tracks->AddText("Tracks from b-tagged b-jets with");
+    info_tracks->AddText("#it{p}_{T}^{jet} > 30 GeV, -2 < #it{#eta}^{jet} < 2");
+    info_tracks->AddText("");
+    info_tracks->AddText("Signal : tracks from b-hadron decays");
+    info_tracks->AddText("Background : tracks from primary interaction");
+    // info_tracks->AddText("");
+    // info_tracks->AddText("Gradient BDT");
+
+    TCanvas *c_roc = new TCanvas("c_roc", "", 1200, 1000);
+    gr_roc->Draw("al");
+    info_top_left->Draw();
+    info_top_right->Draw();
+    info_tracks->Draw();
+    info_bdt->Draw();
+    SetRealAspectRatio(c_roc);
+    c_roc->Draw();
+    c_roc->SetGrid();
+    TString c_roc_name = "./plots/" + label + "_TMVA_roc.png";
+    c_roc->Print(c_roc_name);    
+
+    // Double_t x1 = c_roc->GetX1();
+    // Double_t y1 = c_roc->GetY1();
+    // Double_t x2 = c_roc->GetX2();
+    // Double_t y2 = c_roc->GetY2();
+
+    // std::cout << x1 << " " << x2 << " " << y1 << " " << y2 << std::endl;
+
+}
