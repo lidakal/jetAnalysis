@@ -69,7 +69,7 @@ void draw_ROC_TMVA()
     info_top_right->SetTextSize(20);
     info_top_right->SetFillStyle(0);
     info_top_right->SetLineWidth(0);
-    info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
+    info_top_right->AddText("PYTHIA8 #sqrt{s} = 13 TeV #it{pp}");
 
     TPaveText *info_bdt = new TPaveText(0.8, 1., 1.1, 1.1, "nb ndc");
     info_bdt->SetTextSize(20);
