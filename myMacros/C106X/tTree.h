@@ -63,6 +63,15 @@ public :
    Float_t         svtxdls2d[50];   //[nsvtx]
    Float_t         svtxm[50];   //[nsvtx]
    Float_t         svtxpt[50];   //[nsvtx]
+
+   Int_t           ntrkInSvtxNotInJet;
+   Int_t           trkInSvtxNotInJetSvId[500];
+   Int_t           trkInSvtxNotInJetOtherJetId[500];
+   Int_t           trkInSvtxNotInJetMatchSta[500];
+   Float_t         trkInSvtxNotInJetPt[500];
+   Float_t         trkInSvtxNotInJetEta[500];
+   Float_t         trkInSvtxNotInJetPhi[500];
+
    Float_t         discr_deepCSV[500];   //[nref]
    Float_t         discr_pfJP[500];   //[nref]
    Float_t         discr_deepFlavour_b[500];   //[nref]
@@ -119,6 +128,8 @@ public :
    Float_t         jtmB[500]; //[nref]
    Float_t         refmB[500]; //[nref]
 
+   Float_t         weight;
+
 
    // List of branches
    TBranch        *b_run;   //!
@@ -169,6 +180,15 @@ public :
    TBranch        *b_svtxdls2d;   //!
    TBranch        *b_svtxm;   //!
    TBranch        *b_svtxpt;   //!
+
+   TBranch        *b_ntrkInSvtxNotInJet;   //!
+   TBranch        *b_trkInSvtxNotInJetSvId;   //!
+   TBranch        *b_trkInSvtxNotInJetOtherJetId;   //!
+   TBranch        *b_trkInSvtxNotInJetMatchSta;   //!
+   TBranch        *b_trkInSvtxNotInJetPt;   //!
+   TBranch        *b_trkInSvtxNotInJetEta;   //!
+   TBranch        *b_trkInSvtxNotInJetPhi;   //!
+
    TBranch        *b_discr_deepCSV;   //!
    TBranch        *b_discr_pfJP;   //!
    TBranch        *b_discr_deepFlavour_b;   //!
@@ -225,6 +245,8 @@ public :
    TBranch        *b_jtmB;   //!
    TBranch        *b_refmB;   //!
 
+   TBranch        *b_weight;   //!
+
    tTree(TString rootf);
    ~tTree();
    Int_t GetEntry(Long64_t entry);
@@ -241,6 +263,7 @@ tTree::tTree(TString rootf)
 {
    TFile *fin = new TFile(rootf);
    tree = (TTree*) fin->Get("ak4PFJetAnalyzer/t");
+   tree->AddFriend("hiEvtAnalyzer/HiTree");
 
    Init(tree);
 }
@@ -316,6 +339,15 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("svtxdls2d", svtxdls2d, &b_svtxdls2d);
    tree->SetBranchAddress("svtxm", svtxm, &b_svtxm);
    tree->SetBranchAddress("svtxpt", svtxpt, &b_svtxpt);
+
+   tree->SetBranchAddress("ntrkInSvtxNotInJet", &ntrkInSvtxNotInJet, &b_ntrkInSvtxNotInJet);  
+   tree->SetBranchAddress("trkInSvtxNotInJetSvId", trkInSvtxNotInJetSvId, &b_trkInSvtxNotInJetSvId);  
+   tree->SetBranchAddress("trkInSvtxNotInJetOtherJetId", trkInSvtxNotInJetOtherJetId, &b_trkInSvtxNotInJetOtherJetId);  
+   tree->SetBranchAddress("trkInSvtxNotInJetMatchSta", trkInSvtxNotInJetMatchSta, &b_trkInSvtxNotInJetMatchSta);  
+   tree->SetBranchAddress("trkInSvtxNotInJetPt", trkInSvtxNotInJetPt, &b_trkInSvtxNotInJetPt);  
+   tree->SetBranchAddress("trkInSvtxNotInJetEta", trkInSvtxNotInJetEta, &b_trkInSvtxNotInJetEta);  
+   tree->SetBranchAddress("trkInSvtxNotInJetPhi", trkInSvtxNotInJetPhi, &b_trkInSvtxNotInJetPhi);  
+
    tree->SetBranchAddress("discr_deepCSV", discr_deepCSV, &b_discr_deepCSV);
    tree->SetBranchAddress("discr_pfJP", discr_pfJP, &b_discr_pfJP);
    tree->SetBranchAddress("discr_deepFlavour_b", discr_deepFlavour_b, &b_discr_deepFlavour_b);
@@ -370,6 +402,8 @@ void tTree::Init(TTree *tree)
 
    tree->SetBranchAddress("jtmB", jtmB, &b_jtmB);
    tree->SetBranchAddress("refmB", refmB, &b_refmB);
+
+   tree->SetBranchAddress("weight", &weight, &b_weight);
 }
 
 void tTree::SetBranchStatus(TString branchName, Int_t status)
@@ -402,9 +436,14 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     // Create histograms
 
     // ln(0.4/rg)
-    Int_t x1bins = 25;
+    // Int_t x1bins = 10;
+    // Float_t x1min = 0.;
+    // Float_t x1max = 5.;
+
+    // rg
+    Int_t x1bins = 10;
     Float_t x1min = 0.;
-    Float_t x1max = 5.;
+    Float_t x1max = 0.4;
 
     // ln(kt)
     Int_t y1bins = 40;
@@ -432,6 +471,8 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     TH3D *hBtag_rgzg = new TH3D("hBtag_rgzg", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hBtag_zgkt = new TH3D("hBtag_zgkt", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
+    TH3D *hBtagNoBB_drkt = new TH3D("hBtagNoBB_drkt", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+
     // gen level
     TH3D *hB_drkt_gen = new TH3D("hB_drkt_gen", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
     TH3D *hB_rgkt_gen = new TH3D("hB_rgkt_gen", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
@@ -443,18 +484,26 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     TH3D *hBtag_rgzg_gen = new TH3D("hBtag_rgzg_gen", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hBtag_zgkt_gen = new TH3D("hBtag_zgkt_gen", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
+    TH3D *hL_drkt_gen = new TH3D("hL_drkt_gen", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_rgkt_gen = new TH3D("hL_rgkt_gen", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_rgzg_gen = new TH3D("hL_rgzg_gen", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+    TH3D *hL_zgkt_gen = new TH3D("hL_zgkt_gen", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+
+    TH3D *hSingleB_drkr_gen = new TH3D("hSingleB_drkr_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hSingleBtag_drkr_gen = new TH3D("hSingleBtag_drkr_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+
     const Float_t jetR = 0.4;
 
     std::cout << "Creating histograms ..." << std::endl;
     Long64_t nentries = tree->GetEntries();
     for (Long64_t ient = 0; ient < nentries; ient++) {
         // Print progress
-        if (ient % 100000 == 0) {
+        if (ient % 1000000 == 0) {
             std::cout << "ient = " << ient << std::endl;
         }
 
         // Choose nb of events
-        const Long64_t total_events = 1000000;
+        const Long64_t total_events = 100000;
         if (ient > total_events) break;
 		// if (ient > 100) break;
  
@@ -493,6 +542,9 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
                 logdr = std::log(jetR/dr);
                 logrg = std::log(jetR/rg);
                 logkt = std::log(kt);
+
+                // for poster
+                logrg = rg;
             }
 
             if (rsjt2Pt[ijet] > 0.) {
@@ -505,6 +557,9 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
                 logdr_gen = std::log(jetR/dr_gen);
                 logrg_gen = std::log(jetR/rg_gen);
                 logkt_gen = std::log(kt_gen);
+
+                // for poster
+                logrg_gen = rg_gen;
             }
 
             // Fill true-flavour histograms
@@ -534,6 +589,19 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
                     hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
                     hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);  
                }
+
+               if (passWP && (discr_deepFlavour_bb[ijet] < 0.2)) {
+                    hBtagNoBB_drkt->Fill(logdr, logkt, refpt[ijet]);
+                    hSingleBtag_drkr_gen->Fill(logdr_gen, logkt_gen, refpt[ijet]);
+               }
+            } // end if is b jet
+
+            bool isLightJet = (jtHadFlav[ijet] == 0);
+            if (isLightJet) {
+                hL_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet]);
+                hL_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
+                hL_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
+                hL_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);
             }
         } // jet loop
     } // entry loop
@@ -545,7 +613,10 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     for (auto h : {hB_drkt, hB_rgkt, hB_rgzg, hB_zgkt, 
                    hBtag_drkt, hBtag_rgkt, hBtag_rgzg, hBtag_zgkt,
                    hB_drkt_gen, hB_rgkt_gen, hB_rgzg_gen, hB_zgkt_gen, 
-                   hBtag_drkt_gen, hBtag_rgkt_gen, hBtag_rgzg_gen, hBtag_zgkt_gen}) {
+                   hBtag_drkt_gen, hBtag_rgkt_gen, hBtag_rgzg_gen, hBtag_zgkt_gen,
+                   hL_drkt_gen, hL_rgkt_gen, hL_rgzg_gen, hL_zgkt_gen, 
+                   hBtagNoBB_drkt,
+                   hSingleBtag_drkr_gen}) {
         h->Write();
     }
 
