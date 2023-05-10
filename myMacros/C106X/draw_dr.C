@@ -5,7 +5,7 @@
 #include <TAxis.h>
 
 #include "hist_utils.h"
-#include "myPalette.h"
+// #include "myPalette.h"
 
 void draw_dr()
 {
@@ -17,16 +17,19 @@ void draw_dr()
 
     // ---- Grab histos ----
     TString indir = "./histos/";
-    TString label_aggrGenNoReco = "aggrGenNoReco_withY";
+    TString label_aggrGenNoReco = "aggrGenNoReco";
     TString fname_aggrGenNoReco = indir + label_aggrGenNoReco + "_rgzgkt.root";
     TFile *fin_aggrGenNoReco = new TFile(fname_aggrGenNoReco);
     TH3D *hBtag_drkt_aggrGen = (TH3D *) fin_aggrGenNoReco->Get("hBtag_drkt_gen");
     TH3D *hBtag_drkt_noAggrReco = (TH3D *) fin_aggrGenNoReco->Get("hBtag_drkt");
 
-    TString label_aggrTMVA = "aggrTMVA_withY";
-    TString fname_aggrTMVA = indir + label_aggrTMVA + "_rgzgkt.root";
-    TFile *fin_aggrTMVA = new TFile(fname_aggrTMVA);
-    TH3D *hBtag_drkt_aggrTMVAReco = (TH3D *) fin_aggrTMVA->Get("hBtag_drkt");
+    TH3D *hBtagNoBB_drkt_aggrGen = (TH3D *) fin_aggrGenNoReco->Get("hBtagNoBB_drkt_gen");
+    TH3D *hBtagNoBB_drkt_noAggrReco = (TH3D *) fin_aggrGenNoReco->Get("hBtagNoBB_drkt");
+
+    // TString label_aggrTMVA = "aggrTMVA_withY";
+    // TString fname_aggrTMVA = indir + label_aggrTMVA + "_rgzgkt.root";
+    // TFile *fin_aggrTMVA = new TFile(fname_aggrTMVA);
+    // TH3D *hBtag_drkt_aggrTMVAReco = (TH3D *) fin_aggrTMVA->Get("hBtag_drkt");
 
     // ---- Prepare hStack and legend ----
     THStack *hStack_dr = new THStack();
@@ -60,6 +63,13 @@ void draw_dr()
     leg_dr->AddEntry(hBtag_dr_aggrGen, "Particle level", "l");
     hStack_dr->Add(hBtag_dr_aggrGen);
 
+    // NO BB
+    TH1D *hBtagNoBB_dr_aggrGen = (TH1D *) hBtagNoBB_drkt_aggrGen->ProjectionX("hBtagNoBB_dr_aggrGen", iymin, iymax, izmin, izmax);
+    normalize_histo(hBtagNoBB_dr_aggrGen, 1, -1);
+    format_histo(hBtagNoBB_dr_aggrGen, mykRedLight);
+    leg_dr->AddEntry(hBtagNoBB_dr_aggrGen, "Particle level, no bb", "l");
+    hStack_dr->Add(hBtagNoBB_dr_aggrGen);
+
     // reco noAggr
     TH1D *hBtag_dr_noAggrReco = (TH1D *) hBtag_drkt_noAggrReco->ProjectionX("hBtag_dr_noAggrReco", iymin, iymax, izmin, izmax);
     normalize_histo(hBtag_dr_noAggrReco, 1, -1);  
@@ -67,12 +77,19 @@ void draw_dr()
     leg_dr->AddEntry(hBtag_dr_noAggrReco, "Detector level, non-aggregated", "l");
     hStack_dr->Add(hBtag_dr_noAggrReco);
 
+    // no BB
+    TH1D *hBtagNoBB_dr_noAggrReco = (TH1D *) hBtagNoBB_drkt_noAggrReco->ProjectionX("hBtagNoBB_dr_noAggrReco", iymin, iymax, izmin, izmax);
+    normalize_histo(hBtagNoBB_dr_noAggrReco, 1, -1);  
+    format_histo(hBtagNoBB_dr_noAggrReco, mykPinkLight);
+    leg_dr->AddEntry(hBtagNoBB_dr_noAggrReco, "Detector level, non-aggregated, no bb", "l");
+    hStack_dr->Add(hBtagNoBB_dr_noAggrReco);
+
     // reco aggrTMVA
-    TH1D *hBtag_dr_aggrTMVAReco = (TH1D *) hBtag_drkt_aggrTMVAReco->ProjectionX("hBtag_dr_aggrTMVAReco", iymin, iymax, izmin, izmax);
-    normalize_histo(hBtag_dr_aggrTMVAReco, 1, -1);   
-    format_histo(hBtag_dr_aggrTMVAReco, mykBlue);
-    leg_dr->AddEntry(hBtag_dr_aggrTMVAReco, "Detector level, aggregated with TMVA", "l");
-    hStack_dr->Add(hBtag_dr_aggrTMVAReco);
+    // TH1D *hBtag_dr_aggrTMVAReco = (TH1D *) hBtag_drkt_aggrTMVAReco->ProjectionX("hBtag_dr_aggrTMVAReco", iymin, iymax, izmin, izmax);
+    // normalize_histo(hBtag_dr_aggrTMVAReco, 1, -1);   
+    // format_histo(hBtag_dr_aggrTMVAReco, mykBlue);
+    // leg_dr->AddEntry(hBtag_dr_aggrTMVAReco, "Detector level, aggregated with TMVA", "l");
+    // hStack_dr->Add(hBtag_dr_aggrTMVAReco);
 
     // ---- Draw the histos ----
 

@@ -5,25 +5,33 @@
 #include <TAxis.h>
 
 #include "hist_utils.h"
-#include "myPalette.h"
+// #include "myPalette.h"
 
 void draw_rg()
 {
     // Setup 
-    gStyle->SetLegendTextSize(15);
+    double ptMin = 100.;
+    double ptMax = 120.;
 
-    double ptMin = 50.;
-    double ptMax = 80.;
+    double ktMin = 1.;
+
+    Float_t text_size = 26.;
+    gStyle->SetTextSize(text_size);
+    gStyle->SetLegendTextSize(text_size);
+    gStyle->SetLabelSize(text_size, "XYZ");
+    gStyle->SetTitleSize(text_size, "XYZ");
 
     // ---- Grab histos ----
-    TString indir = "./histos/";
-    TString label_aggrGenNoReco = "aggrGenNoReco_withY";
+    TString sample = "bjet";
+    TString label = "lateKt";
+    TString indir = "./histos/qcd_" + sample + "_";
+    TString label_aggrGenNoReco = "aggrGenNoReco_lateKt";
     TString fname_aggrGenNoReco = indir + label_aggrGenNoReco + "_rgzgkt.root";
     TFile *fin_aggrGenNoReco = new TFile(fname_aggrGenNoReco);
     TH3D *hBtag_rgkt_aggrGen = (TH3D *) fin_aggrGenNoReco->Get("hBtag_rgkt_gen");
     TH3D *hBtag_rgkt_noAggrReco = (TH3D *) fin_aggrGenNoReco->Get("hBtag_rgkt");
 
-    TString label_aggrTMVA = "aggrTMVA_withY";
+    TString label_aggrTMVA = "aggrTMVA_lateKt";
     TString fname_aggrTMVA = indir + label_aggrTMVA + "_rgzgkt.root";
     TFile *fin_aggrTMVA = new TFile(fname_aggrTMVA);
     TH3D *hBtag_rgkt_aggrTMVAReco = (TH3D *) fin_aggrTMVA->Get("hBtag_rgkt");
@@ -32,10 +40,11 @@ void draw_rg()
     THStack *hStack_rg = new THStack();
     hStack_rg->SetTitle("; ln(R/R_{g}); 1/N_{2-prong jets} dN/dln(R/R_{g})");
 
-    TLegend *leg_rg = new TLegend(0.5, 0.7, 0.85, 0.9);
+    TLegend *leg_rg = new TLegend(0.4, 0.7, 0.8, 0.85);
     leg_rg->SetFillStyle(0);
-    leg_rg->SetBorderSize(1);
+    leg_rg->SetBorderSize(0);
     leg_rg->SetMargin(0.15);
+    leg_rg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV), k_{T} > %.0f, b tagged jets", ptMin, ptMax, ktMin));
 
     // ---- Get the bins of the pt range ----
 
@@ -44,12 +53,9 @@ void draw_rg()
     Int_t izmax = zaxis->FindBin(ptMax) - 1;
 
     // ---- Get the bins of the ln(kt) range
-
-    TAxis *yaxis = (TAxis *) hBtag_rgkt_aggrGen->GetYaxis();
-    Float_t lnktMin = 0.;
-    // Int_t iymin = 0;
-    Int_t iymax = -1;
-    Int_t iymin = yaxis->FindBin(lnktMin);
+    Int_t iymin = hBtag_rgkt_aggrGen->GetYaxis()->FindBin(std::log(ktMin));
+    Int_t iymax = hBtag_rgkt_aggrGen->GetNbinsY() + 1;
+    
 
     // ---- Make the projections ----
 
@@ -76,11 +82,12 @@ void draw_rg()
 
     // ---- Draw the histos ----
 
-    TCanvas *c = new TCanvas("c", "", 1000, 600);
+    TCanvas *c = new TCanvas("c", "", 1200, 1000);
     hStack_rg->Draw("histo nostack");
+    hStack_rg->SetMaximum(1.2);
     leg_rg->Draw();
     c->Draw();
 
-    TString cname = "./plots/combined_rg.png";
+    TString cname = "./plots/qcd_" + sample + "_" + label + "_rg.png";
     c->Print(cname);
 }

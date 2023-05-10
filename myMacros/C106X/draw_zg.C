@@ -5,25 +5,31 @@
 #include <TAxis.h>
 
 #include "hist_utils.h"
-#include "myPalette.h"
+// #include "myPalette.h"
 
 void draw_zg()
 {
-    // Setup 
-    gStyle->SetLegendTextSize(15);
+    // ---- Setup ---- 
+    double ptMin = 100.;
+    double ptMax = 120.;
 
-    double ptMin = 50.;
-    double ptMax = 80.;
+    Float_t text_size = 26.;
+    gStyle->SetTextSize(text_size);
+    gStyle->SetLegendTextSize(text_size);
+    gStyle->SetLabelSize(text_size, "XYZ");
+    gStyle->SetTitleSize(text_size, "XYZ");
 
     // ---- Grab histos ----
-    TString indir = "./histos/";
-    TString label_aggrGenNoReco = "aggrGenNoReco";
+    TString sample = "bjet";
+    TString label = "lateKt";
+    TString indir = "./histos/qcd_" + sample + "_";
+    TString label_aggrGenNoReco = "aggrGenNoReco_lateKt";
     TString fname_aggrGenNoReco = indir + label_aggrGenNoReco + "_rgzgkt.root";
     TFile *fin_aggrGenNoReco = new TFile(fname_aggrGenNoReco);
     TH3D *hBtag_zgkt_aggrGen = (TH3D *) fin_aggrGenNoReco->Get("hBtag_zgkt_gen");
     TH3D *hBtag_zgkt_noAggrReco = (TH3D *) fin_aggrGenNoReco->Get("hBtag_zgkt");
 
-    TString label_aggrTMVA = "aggrTMVA";
+    TString label_aggrTMVA = "aggrTMVA_lateKt";
     TString fname_aggrTMVA = indir + label_aggrTMVA + "_rgzgkt.root";
     TFile *fin_aggrTMVA = new TFile(fname_aggrTMVA);
     TH3D *hBtag_zgkt_aggrTMVAReco = (TH3D *) fin_aggrTMVA->Get("hBtag_zgkt");
@@ -32,10 +38,11 @@ void draw_zg()
     THStack *hStack_zg = new THStack();
     hStack_zg->SetTitle("; z_{g}=p_{T,2}/(p_{T,1}+p_{T,2}); 1/N_{2-prong jets} dN/dz_{g}");
 
-    TLegend *leg_zg = new TLegend(0.5, 0.7, 0.85, 0.9);
+    TLegend *leg_zg = new TLegend(0.4, 0.7, 0.8, 0.85);
     leg_zg->SetFillStyle(0);
-    leg_zg->SetBorderSize(1);
+    leg_zg->SetBorderSize(0);
     leg_zg->SetMargin(0.15);
+    leg_zg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV), b tagged jets", ptMin, ptMax));
 
     // ---- Get the bins of the pt range ----
 
@@ -46,10 +53,10 @@ void draw_zg()
     // ---- Get the bins of the ln(kt) range
 
     TAxis *yaxis = (TAxis *) hBtag_zgkt_aggrGen->GetYaxis();
-    Float_t lnktMin = 0.;
-    // Int_t iymin = 0;
+    // Float_t lnktMin = 0.;
+    Int_t iymin = 0;
     Int_t iymax = -1;
-    Int_t iymin = yaxis->FindBin(lnktMin);
+    // Int_t iymin = yaxis->FindBin(lnktMin);
 
     // ---- Make the projections ----
 
@@ -76,11 +83,12 @@ void draw_zg()
 
     // ---- Draw the histos ----
 
-    TCanvas *c = new TCanvas("c", "", 1000, 600);
+    TCanvas *c = new TCanvas("c", "", 1200, 1000);
     hStack_zg->Draw("histo nostack");
+    hStack_zg->SetMaximum(6);
     leg_zg->Draw();
     c->Draw();
 
-    TString cname = "./plots/combined_zg.png";
+    TString cname = "./plots/qcd_" + sample + "_" + label + "_zg.png";
     c->Print(cname);
 }

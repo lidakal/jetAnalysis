@@ -72,6 +72,11 @@ public :
    Float_t         trkInSvtxNotInJetEta[500];
    Float_t         trkInSvtxNotInJetPhi[500];
 
+   // aod compatibility
+   Float_t         jtDiscDeepFlavourB[500];   //[nref]
+   Float_t         jtDiscDeepFlavourBB[500];   //[nref]
+   Float_t         jtDiscDeepFlavourLEPB[500];   //[nref]
+
    Float_t         discr_deepCSV[500];   //[nref]
    Float_t         discr_pfJP[500];   //[nref]
    Float_t         discr_deepFlavour_b[500];   //[nref]
@@ -102,7 +107,18 @@ public :
    Float_t         genm[100];   //[ngen]
    Float_t         gendphijt[100];   //[ngen]
    Float_t         gendrjt[100];   //[ngen]
+
+   // True flavour
    Int_t           jtHadFlav[500];   //[nref]
+   Int_t           jtParFlav[500];   //[nref]
+   Int_t           jtNbHad[500];   //[nref]
+   Int_t           jtNcHad[500];   //[nref]
+   Int_t           jtNbPar[500];   //[nref]
+   Int_t           jtNcPar[500];   //[nref]
+
+   // aod compatibility
+//    Float_t jtHadFlav[500]; //[nref]
+//    Float_t jtParFlav[500]; //[nref]
 
    // Subjets
    Float_t         sjt1Pt[500];
@@ -126,7 +142,12 @@ public :
    Float_t         rsjt2Y[500];
 
    Float_t         jtmB[500]; //[nref]
+   Float_t         jtBpt[500]; //[nref]
+   Float_t         jtptCh[500]; //[nref]
    Float_t         refmB[500]; //[nref]
+   Float_t         refBpt[500]; //[nref]
+   Float_t         refptCh[500]; //[nref]
+   Int_t           refNtrk[500]; //[nref]
 
    Float_t         weight;
 
@@ -189,6 +210,11 @@ public :
    TBranch        *b_trkInSvtxNotInJetEta;   //!
    TBranch        *b_trkInSvtxNotInJetPhi;   //!
 
+   // aod compatibily
+   TBranch        *b_jtDiscDeepFlavourB;   //!
+   TBranch        *b_jtDiscDeepFlavourBB;   //!
+   TBranch        *b_jtDiscDeepFlavourLEPB;   //!
+
    TBranch        *b_discr_deepCSV;   //!
    TBranch        *b_discr_pfJP;   //!
    TBranch        *b_discr_deepFlavour_b;   //!
@@ -219,7 +245,13 @@ public :
    TBranch        *b_genm;   //!
    TBranch        *b_gendphijt;   //!
    TBranch        *b_gendrjt;   //!
+
    TBranch        *b_jtHadFlav;   //!
+   TBranch        *b_jtParFlav;   //!
+   TBranch        *b_jtNbHad;   //!
+   TBranch        *b_jtNcHad;   //!
+   TBranch        *b_jtNbPar;   //!
+   TBranch        *b_jtNcPar;   //!
 
    TBranch        *b_sjt1Pt;
    TBranch        *b_sjt1Eta;
@@ -243,7 +275,12 @@ public :
 
 
    TBranch        *b_jtmB;   //!
+   TBranch        *b_jtBpt;   //!
+   TBranch        *b_jtptCh;   //!
    TBranch        *b_refmB;   //!
+   TBranch        *b_refBpt;   //!
+   TBranch        *b_refptCh;   //!
+   TBranch        *b_refNtrk;   //!
 
    TBranch        *b_weight;   //!
 
@@ -348,6 +385,11 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("trkInSvtxNotInJetEta", trkInSvtxNotInJetEta, &b_trkInSvtxNotInJetEta);  
    tree->SetBranchAddress("trkInSvtxNotInJetPhi", trkInSvtxNotInJetPhi, &b_trkInSvtxNotInJetPhi);  
 
+   // aod compatibility
+   tree->SetBranchAddress("jtDiscDeepFlavourB", jtDiscDeepFlavourB, &b_jtDiscDeepFlavourB);
+   tree->SetBranchAddress("jtDiscDeepFlavourBB", jtDiscDeepFlavourBB, &b_jtDiscDeepFlavourBB);
+   tree->SetBranchAddress("jtDiscDeepFlavourLEPB", jtDiscDeepFlavourLEPB, &b_jtDiscDeepFlavourLEPB);
+
    tree->SetBranchAddress("discr_deepCSV", discr_deepCSV, &b_discr_deepCSV);
    tree->SetBranchAddress("discr_pfJP", discr_pfJP, &b_discr_pfJP);
    tree->SetBranchAddress("discr_deepFlavour_b", discr_deepFlavour_b, &b_discr_deepFlavour_b);
@@ -378,7 +420,13 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("genm", genm, &b_genm);
    tree->SetBranchAddress("gendphijt", gendphijt, &b_gendphijt);
    tree->SetBranchAddress("gendrjt", gendrjt, &b_gendrjt);
+
    tree->SetBranchAddress("jtHadFlav", jtHadFlav, &b_jtHadFlav);
+   tree->SetBranchAddress("jtParFlav", jtParFlav, &b_jtParFlav);
+   tree->SetBranchAddress("jtNbHad", jtNbHad, &b_jtNbHad);
+   tree->SetBranchAddress("jtNcHad", jtNcHad, &b_jtNcHad);
+   tree->SetBranchAddress("jtNbPar", jtNbPar, &b_jtNbPar);
+   tree->SetBranchAddress("jtNcPar", jtNcPar, &b_jtNcPar);
 
    tree->SetBranchAddress("sjt1Pt", sjt1Pt, &b_sjt1Pt);
    tree->SetBranchAddress("sjt1Eta", sjt1Eta, &b_sjt1Eta);
@@ -401,7 +449,12 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("rsjt2Y", rsjt2Y, &b_rsjt2Y);
 
    tree->SetBranchAddress("jtmB", jtmB, &b_jtmB);
+   tree->SetBranchAddress("jtBpt", jtBpt, &b_jtBpt);
+   tree->SetBranchAddress("jtptCh", jtptCh, &b_jtptCh);
    tree->SetBranchAddress("refmB", refmB, &b_refmB);
+   tree->SetBranchAddress("refBpt", refBpt, &b_refBpt);
+   tree->SetBranchAddress("refptCh", refptCh, &b_refptCh);
+   tree->SetBranchAddress("refNtrk", refNtrk, &b_refNtrk);
 
    tree->SetBranchAddress("weight", &weight, &b_weight);
 }
@@ -429,6 +482,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
                                   "sjt1Pt", "sjt1Eta", "sjt1Phi", "sjt1Y",
                                   "sjt2Pt", "sjt2Eta", "sjt2Phi", "sjt2Y",
                                   "discr_deepFlavour_b", "discr_deepFlavour_bb", "discr_deepFlavour_lepb",
+                                  "weight"
                                   }) {
         tree->SetBranchStatus(activeBranchName, 1);
     }
@@ -436,14 +490,14 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     // Create histograms
 
     // ln(0.4/rg)
-    // Int_t x1bins = 10;
-    // Float_t x1min = 0.;
-    // Float_t x1max = 5.;
-
-    // rg
     Int_t x1bins = 10;
     Float_t x1min = 0.;
-    Float_t x1max = 0.4;
+    Float_t x1max = 2.5;
+
+    // rg
+    // Int_t x1bins = 10;
+    // Float_t x1min = 0.;
+    // Float_t x1max = 0.4;
 
     // ln(kt)
     Int_t y1bins = 40;
@@ -451,7 +505,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     Float_t y1max = 5.;
 
     // zg
-    Int_t y2bins = 40;
+    Int_t y2bins = 10;
     Float_t y2min = 0.1;
     Float_t y2max = 0.5;
 
@@ -472,6 +526,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     TH3D *hBtag_zgkt = new TH3D("hBtag_zgkt", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     TH3D *hBtagNoBB_drkt = new TH3D("hBtagNoBB_drkt", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hBtagNoBB_rgkt = new TH3D("hBtagNoBB_rgkt", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     // gen level
     TH3D *hB_drkt_gen = new TH3D("hB_drkt_gen", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
@@ -484,13 +539,18 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
     TH3D *hBtag_rgzg_gen = new TH3D("hBtag_rgzg_gen", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
     TH3D *hBtag_zgkt_gen = new TH3D("hBtag_zgkt_gen", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hL_drkt_gen = new TH3D("hL_drkt_gen", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hL_rgkt_gen = new TH3D("hL_rgkt_gen", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hL_rgzg_gen = new TH3D("hL_rgzg_gen", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-    TH3D *hL_zgkt_gen = new TH3D("hL_zgkt_gen", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_drkt_gen = new TH3D("hL_drkt_gen", "dr, kt, pt, guds jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_rgkt_gen = new TH3D("hL_rgkt_gen", "rg, kt, pt, guds jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hL_rgzg_gen = new TH3D("hL_rgzg_gen", "rg, zg, pt, guds jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+    TH3D *hL_zgkt_gen = new TH3D("hL_zgkt_gen", "zg, kt, pt, guds jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hSingleB_drkr_gen = new TH3D("hSingleB_drkr_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hSingleBtag_drkr_gen = new TH3D("hSingleBtag_drkr_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hC_drkt_gen = new TH3D("hC_drkt_gen", "dr, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hC_rgkt_gen = new TH3D("hC_rgkt_gen", "rg, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hC_rgzg_gen = new TH3D("hC_rgzg_gen", "rg, zg, pt, cjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+    TH3D *hC_zgkt_gen = new TH3D("hC_zgkt_gen", "zg, kt, pt, cjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+
+    TH3D *hSingleBtag_rgkt_gen = new TH3D("hSingleBtag_rgkt_gen", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+    TH3D *hSingleBtag_drkt_gen = new TH3D("hSingleBtag_drkt_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
     const Float_t jetR = 0.4;
 
@@ -503,7 +563,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
         }
 
         // Choose nb of events
-        const Long64_t total_events = 100000;
+        const Long64_t total_events = 1000000;
         if (ient > total_events) break;
 		// if (ient > 100) break;
  
@@ -544,7 +604,7 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
                 logkt = std::log(kt);
 
                 // for poster
-                logrg = rg;
+                // logrg = rg;
             }
 
             if (rsjt2Pt[ijet] > 0.) {
@@ -559,49 +619,61 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
                 logkt_gen = std::log(kt_gen);
 
                 // for poster
-                logrg_gen = rg_gen;
+                // logrg_gen = rg_gen;
             }
 
             // Fill true-flavour histograms
             bool isBjet = (jtHadFlav[ijet] == 5);
             if (isBjet) {
-               hB_drkt->Fill(logdr, logkt, refpt[ijet]);
-               hB_rgkt->Fill(logrg, logkt, refpt[ijet]);
-               hB_rgzg->Fill(logrg, zg, refpt[ijet]);
-               hB_zgkt->Fill(zg, logkt, refpt[ijet]);
+               hB_drkt->Fill(logdr, logkt, refpt[ijet], weight);
+               hB_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
+               hB_rgzg->Fill(logrg, zg, refpt[ijet], weight);
+               hB_zgkt->Fill(zg, logkt, refpt[ijet], weight);
             
-               hB_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet]);
-               hB_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
-               hB_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
-               hB_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);
+               hB_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+               hB_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+               hB_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
+               hB_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
             
 
                // Fill the b-tag histogram
                bool passWP = ((discr_deepFlavour_b[ijet] + discr_deepFlavour_bb[ijet] + discr_deepFlavour_lepb[ijet]) > bTagWP);
+            //    bool passWP = ((discr_deepFlavour_b[ijet] + discr_deepFlavour_lepb[ijet]) > 0.7);
                if (passWP) {
-                    hBtag_drkt->Fill(logdr, logkt, refpt[ijet]);
-                    hBtag_rgkt->Fill(logrg, logkt, refpt[ijet]);
-                    hBtag_rgzg->Fill(logrg, zg, refpt[ijet]);
-                    hBtag_zgkt->Fill(zg, logkt, refpt[ijet]);
+                    hBtag_drkt->Fill(logdr, logkt, refpt[ijet], weight);
+                    hBtag_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
+                    hBtag_rgzg->Fill(logrg, zg, refpt[ijet], weight);
+                    hBtag_zgkt->Fill(zg, logkt, refpt[ijet], weight);
 
-                    hBtag_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet]);
-                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
-                    hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
-                    hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);  
+                    hBtag_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+                    hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
+                    hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);  
                }
 
                if (passWP && (discr_deepFlavour_bb[ijet] < 0.2)) {
-                    hBtagNoBB_drkt->Fill(logdr, logkt, refpt[ijet]);
-                    hSingleBtag_drkr_gen->Fill(logdr_gen, logkt_gen, refpt[ijet]);
+                    hBtagNoBB_drkt->Fill(logdr, logkt, refpt[ijet], weight);
+                    hSingleBtag_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+
+                    hBtagNoBB_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
+                    hSingleBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
                }
             } // end if is b jet
 
             bool isLightJet = (jtHadFlav[ijet] == 0);
             if (isLightJet) {
-                hL_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet]);
-                hL_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet]);
-                hL_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet]);
-                hL_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet]);
+                hL_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+                hL_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+                hL_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
+                hL_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
+            }
+
+            bool isCJet = (jtHadFlav[ijet] == 4);
+            if (isCJet) {
+                hC_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+                hC_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+                hC_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
+                hC_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
             }
         } // jet loop
     } // entry loop
@@ -615,8 +687,11 @@ void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
                    hB_drkt_gen, hB_rgkt_gen, hB_rgzg_gen, hB_zgkt_gen, 
                    hBtag_drkt_gen, hBtag_rgkt_gen, hBtag_rgzg_gen, hBtag_zgkt_gen,
                    hL_drkt_gen, hL_rgkt_gen, hL_rgzg_gen, hL_zgkt_gen, 
+                   hC_drkt_gen, hC_rgkt_gen, hC_rgzg_gen, hC_zgkt_gen, 
                    hBtagNoBB_drkt,
-                   hSingleBtag_drkr_gen}) {
+                   hSingleBtag_drkt_gen,
+                   hBtagNoBB_rgkt,
+                   hSingleBtag_rgkt_gen}) {
         h->Write();
     }
 
