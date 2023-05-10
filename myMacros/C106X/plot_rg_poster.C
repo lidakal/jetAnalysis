@@ -3,6 +3,7 @@
 void plot_rg_poster()
 {
     TString label = "aggrGenNoReco_withY";
+    // TString label = "noAggr_withY";
     TString indir = "/data_CMS/cms/kalipoliti/ttbarMC/highPU/" + label + "/";
     TString fin = indir + "merged_HiForestMiniAOD.root";
     tTree tree(fin);
@@ -18,9 +19,13 @@ void plot_rg_poster()
     tree.SetBranchStatus("*", 0);
     tree.SetBranchStatus(activeBranches, 1);
 
-    Int_t x1bins = 15;
+    Int_t x1bins = 30;
     Float_t x1min = 0.9;
     Float_t x1max = 4.;
+
+    Int_t x2bins = 24;
+    Float_t x2min = -3.;
+    Float_t x2max = 3.;
 
     // Int_t x1bins = 10;
     // Float_t x1min = 0.;
@@ -31,6 +36,8 @@ void plot_rg_poster()
 
     TH1F *hBtag = new TH1F("hBtag", "x=log(1/rg)", x1bins, x1min, x1max);
     // TH1F *hL = new TH1F("hL", "x=log(1/rg)", x1bins, x1min, x1max);
+    TH2F *hBtag_rgkt = new TH2F("hBtag_rgkt", "x=log(1/rg), y=log(kt)", x1bins, x1min, x1max, x2bins, x2min, x2max);
+    TH2F *hBtag_rgkt_gen = new TH2F("hBtag_rgkt_gen", "x=log(1/rg), y=log(kt)", x1bins, x1min, x1max, x2bins, x2min, x2max);
 
     TH2F *hBtag_2d = new TH2F("hBtag_2d", "x=reco, y=gen", x1bins, x1min, x1max, x1bins, x1min, x1max);
 
@@ -48,6 +55,7 @@ void plot_rg_poster()
             Float_t kt_gen = tree.rsjt2Pt[ijet] * rg_gen;
 
             Float_t logrg_gen = std::log(1 / rg_gen);
+            Float_t logkt_gen = std::log(kt_gen);
 
             Float_t dphi = std::acos(std::cos(tree.sjt1Phi[ijet] - tree.sjt2Phi[ijet]));
             Float_t dy = tree.sjt1Y[ijet] - tree.sjt2Y[ijet];
@@ -56,6 +64,7 @@ void plot_rg_poster()
             Float_t kt = tree.sjt2Pt[ijet] * rg;
 
             Float_t logrg = std::log(1 / rg);
+            Float_t logkt = std::log(kt);
 
             bool passTag = (tree.discr_deepFlavour_b[ijet] + tree.discr_deepFlavour_bb[ijet] + tree.discr_deepFlavour_lepb[ijet]) > 0.9;
             
@@ -67,6 +76,9 @@ void plot_rg_poster()
                         hBtag_gen->Fill(logrg_gen);
                     }
                 }
+                if (tree.jtpt[ijet] > 50 && tree.jtpt[ijet] < 80 && tree.jtHadFlav[ijet] == 5 && passTag) {
+                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen);
+                }
             }
 
             if (tree.sjt2Pt[ijet] > 0) {
@@ -76,6 +88,9 @@ void plot_rg_poster()
                     } else if (tree.jtHadFlav[ijet] == 5 && passTag) {
                         hBtag->Fill(logrg);
                     }
+                }
+                if (tree.jtpt[ijet] > 50 && tree.jtpt[ijet] < 80 && tree.jtHadFlav[ijet] == 5 && passTag) {
+                    hBtag_rgkt->Fill(logrg, logkt);
                 }
             }
 
@@ -91,7 +106,9 @@ void plot_rg_poster()
     for (auto h : {hBtag, hBtag_gen, hL_gen}) {
         h->Write();
     }
-    hBtag_2d->Write();
+    for (auto h : {hBtag_2d, hBtag_rgkt, hBtag_rgkt_gen}) {
+        h->Write();
+    }
 
     fout->Close();
     delete fout;
