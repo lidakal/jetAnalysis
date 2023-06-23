@@ -10,8 +10,8 @@ void draw_response_poster()
     TH2F *hBtag_response_noAggr = (TH2F *) fin_aggrGenNoReco->Get("hBtag_2d");
     TString temp2 = hBtag_response_noAggr->GetName() + (TString) "_noAggr";
     hBtag_response_noAggr->SetName(temp2);
-    format_probability(hBtag_response_noAggr, "ln(1/R_{g})");
-    hBtag_response_noAggr->GetXaxis()->SetTitle("Detector level, non-aggregated, ln(1/R_{g})");
+    format_probability(hBtag_response_noAggr, "ln(0.4/R_{g})");
+    hBtag_response_noAggr->GetXaxis()->SetTitle("Detector level, non-aggregated, ln(0.4/R_{g})");
     hBtag_response_noAggr->GetXaxis()->SetTitleSize(font_size);
     hBtag_response_noAggr->GetXaxis()->SetLabelSize(font_size);
     hBtag_response_noAggr->GetYaxis()->SetTitleSize(font_size);
@@ -23,8 +23,8 @@ void draw_response_poster()
 
     TFile *fin_aggrTMVA = new TFile("./histos_for_poster/aggrTMVA_withY.root");
     TH2F *hBtag_response_aggrTMVA = (TH2F *) fin_aggrTMVA->Get("hBtag_2d");
-    format_probability(hBtag_response_aggrTMVA, "ln(1/R_{g})");
-    hBtag_response_aggrTMVA->GetXaxis()->SetTitle("Detector level, aggregated with MVA, ln(1/R_{g})");
+    format_probability(hBtag_response_aggrTMVA, "ln(0.4/R_{g})");
+    hBtag_response_aggrTMVA->GetXaxis()->SetTitle("Detector level, aggregated with MVA, ln(0.4/R_{g})");
     hBtag_response_aggrTMVA->GetXaxis()->SetTitleSize(font_size);
     hBtag_response_aggrTMVA->GetXaxis()->SetLabelSize(font_size);
     hBtag_response_aggrTMVA->GetYaxis()->SetTitleSize(font_size);
@@ -34,24 +34,24 @@ void draw_response_poster()
     // hBtag_response_aggrTMVA->GetXaxis()->SetRangeUser(0.91, 3.8);
     // hBtag_response_aggrTMVA->GetXaxis()->CenterTitle(true);
 
-    TPaveText *info_top_left = new TPaveText(0.9, 4.05, 2.25, 4.15, "nb ndc");
+    TPaveText *info_top_left = new TPaveText(0., 4.05, 1.8, 4.15, "nb ndc");
     info_top_left->SetTextSize(font_size);
     info_top_left->SetFillStyle(0);
     info_top_left->SetLineWidth(0);
     info_top_left->AddText("#bf{CMS} #it{Internal Simulation}");
 
-    TPaveText *info_top_right = new TPaveText(2.55, 4.05, 4., 4.15, "nb ndc");
+    TPaveText *info_top_right = new TPaveText(2., 4.05, 4., 4.15, "nb ndc");
     info_top_right->SetTextSize(font_size);
     info_top_right->SetFillStyle(0);
     info_top_right->SetLineWidth(0);
-    info_top_right->AddText("PYTHIA8 #sqrt{s} = 13 TeV #it{pp}");
+    info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
 
-    TPaveText *info_jets = new TPaveText(3., 0.6, 4., 0.9, "nb ndc");
+    TPaveText *info_jets = new TPaveText(2.2, 0.5, 3.6, 1.5, "nb ndc");
     info_jets->SetTextSize(font_size);
     info_jets->SetFillStyle(0);
     info_jets->SetLineWidth(0);
     info_jets->AddText("b-tagged b-jets ");
-    info_jets->AddText("50 < #it{p}_{T}^{jet} < 80 GeV");
+    info_jets->AddText("80 < #it{p}_{T}^{jet} < 100 GeV");
     info_jets->AddText("-2 < #it{#eta}^{jet} < 2");
     info_jets->AddText("");
     info_jets->AddText("#it{k}_{T} > 1 GeV");
@@ -60,7 +60,7 @@ void draw_response_poster()
     hBtag_response_noAggr->Draw("colz");
     info_top_left->Draw();
     info_top_right->Draw();
-    // info_jets->Draw();
+    info_jets->Draw();
     c->Draw();
     SetRealAspectRatio(c);
     // c->SetGrid();
@@ -70,7 +70,7 @@ void draw_response_poster()
     hBtag_response_aggrTMVA->Draw("colz");
     info_top_left->Draw();
     info_top_right->Draw();
-    // info_jets->Draw();
+    info_jets->Draw();
     c_tmva->Draw();
     // c_tmva->SetLogz();
     SetRealAspectRatio(c_tmva);

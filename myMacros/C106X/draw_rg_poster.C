@@ -16,7 +16,7 @@ void draw_rg_poster()
     TH1F *hBtag_aggrTMVA = (TH1F *) fin_aggrTMVA->Get("hBtag");
 
     THStack *h = new THStack("h", "");
-    h->SetTitle("; ln(1/R_{g}); 1/N_{2-prong jets} dN / d(ln(1/R_{g}))");
+    h->SetTitle("; ln(0.4/R_{g}); 1/N_{2-prong jets} dN / d(ln(0.4/R_{g}))");
     TLegend *leg = new TLegend(0.3, 0.75, 0.8, 0.85);
     leg->SetFillStyle(0);
     gStyle->SetLegendTextSize(font_size);
@@ -31,46 +31,46 @@ void draw_rg_poster()
     hBtag_gen->SetLineColor(mykBlue);
     hBtag_gen->SetLineWidth(3);
     h->Add(hBtag_gen);
-    leg->AddEntry(hBtag_gen, "particle level", "l");
+    leg->AddEntry(hBtag_gen, "Particle level", "l");
 
     hBtag_noAggr->Scale(1/hBtag_noAggr->Integral("width"));
     hBtag_noAggr->SetLineColor(mykGreen);
     hBtag_noAggr->SetLineWidth(3);
     hBtag_noAggr->SetLineStyle(1);
     h->Add(hBtag_noAggr);
-    leg->AddEntry(hBtag_noAggr, "detector level, non-aggregated", "l");
+    leg->AddEntry(hBtag_noAggr, "Detector level, non-aggregated", "l");
 
     hBtag_aggrTMVA->Scale(1/hBtag_aggrTMVA->Integral("width"));
     hBtag_aggrTMVA->SetLineColor(mykRed);
     hBtag_aggrTMVA->SetLineWidth(3);
     h->Add(hBtag_aggrTMVA);
-    leg->AddEntry(hBtag_aggrTMVA, "detector level, aggregated with MVA", "l");
+    leg->AddEntry(hBtag_aggrTMVA, "Detector level, aggregated with MVA", "l");
 
-    TPaveText *info_top_left = new TPaveText(0.9, 1.4, 2.15, 1.5, "nb ndc");
+    TPaveText *info_top_left = new TPaveText(0., 1.2, 1.6, 1.3, "nb ndc");
     info_top_left->SetTextSize(font_size);
     info_top_left->SetFillStyle(0);
     info_top_left->SetLineWidth(0);
     info_top_left->AddText("#bf{CMS} #it{Internal Simulation}");
 
-    TPaveText *info_top_right = new TPaveText(2.7, 1.4, 4., 1.5, "nb ndc");
+    TPaveText *info_top_right = new TPaveText(2.1, 1.2, 4., 1.3, "nb ndc");
     info_top_right->SetTextSize(font_size);
     info_top_right->SetFillStyle(0);
     info_top_right->SetLineWidth(0);
-    info_top_right->AddText("PYTHIA8 #sqrt{s} = 13 TeV #it{pp}");
+    info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
 
-    TPaveText *info_jets = new TPaveText(2.5, 0.5, 4., 0.9, "nb ndc");
+    TPaveText *info_jets = new TPaveText(2., 0.2, 3.7, 0.6, "nb ndc");
     info_jets->SetTextSize(font_size);
     info_jets->SetFillStyle(0);
     info_jets->SetLineWidth(0);
     info_jets->AddText("b-tagged b-jets ");
-    info_jets->AddText("50 < #it{p}_{T}^{jet} < 80 GeV");
+    info_jets->AddText("80 < #it{p}_{T}^{jet} < 100 GeV");
     info_jets->AddText("-2 < #it{#eta}^{jet} < 2");
     info_jets->AddText("");
     info_jets->AddText("#it{k}_{T} > 1 GeV");
 
     TCanvas *c = new TCanvas("c", "", 1200, 1000);
     h->Draw("histo nostack");
-    h->SetMaximum(1.4);
+    h->SetMaximum(1.2);
     h->GetXaxis()->SetLabelSize(font_size);
     h->GetXaxis()->SetTitleSize(font_size);
     h->GetYaxis()->SetLabelSize(font_size);
