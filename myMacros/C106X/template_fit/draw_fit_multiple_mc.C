@@ -63,7 +63,7 @@ void draw_fit_multiple_mc()
 
     Int_t npads = std::round((nbins_rg + 1) / 2) * 2;
 
-    Int_t choose_bin = 3;
+    Int_t choose_bin = 2;
     for (Int_t ibin_pt = choose_bin; ibin_pt <= choose_bin; ibin_pt++) {
         TCanvas *c_mb = new TCanvas(Form("c_mb_%d", ibin_pt), "", 1600, 1000);
         // c_mb->Divide(npads / 2, 2, 0.0001, 0.0001);
@@ -169,7 +169,7 @@ void draw_fit_multiple_mc()
             rg_range_text->SetBorderSize(0);
             // rg_range_text->AddText(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", pt_min, pt_max));
             if (ibin_rg > 1) rg_range_text->AddText(Form("%.2f < ln(#frac{0.4}{R_{g}}) < %.2f", rg_min, rg_max));
-            else rg_range_text->AddText("fail SD or k_{T} < 1");
+            else rg_range_text->AddText("fail SD or k_{T} < 1 GeV");
 
             // Format histos
             for (auto h : {h_testing_mb, h_sig_training_mb, h_bkg_bb_training_mb, h_bkg_rest_training_mb}) {
