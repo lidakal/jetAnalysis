@@ -3,8 +3,16 @@
 
 void create_histograms_fast()
 {
-    TString sample = "dijet";
-    TString label = "aggrTMVA_withHLT_v2_inclusive";
+    // TString sample = "dijet";
+    // TString label = "aggrTMVA_withHLT_v2";
+    // TString sample = "dijet";
+    // TString label = "aggrTMVA_withHLT_v2_inclusive";
+    // TString sample = "bjet";
+    // TString label = "aggrTMVA_withHLT";
+    // TString sample = "data";
+    // TString label = "aggrTMVA_v2";
+    TString sample = "data";
+    TString label = "aggrTMVA_v2_inclusive";
     TString fin_name = "/data_CMS/cms/kalipoliti/compact_trees/" + sample + "_" + label + "_tree_template_fit.root";   
     TString fout_name = "./histos/" + sample + "_" + label + "_histograms.root";
 
@@ -17,17 +25,17 @@ void create_histograms_fast()
     Double_t weight;
 
     // jet pt bins : no underflow or overflow
-    const Int_t z1bins = 3;
+    const Int_t z1bins = 4;
     Double_t z1min = 60.;
-    Double_t z1max = 120.; 
+    Double_t z1max = 140.; 
 
     // ln(0.4/rg) bins : 1st bin untagged (unphysical)
-    const Int_t x1bins = 5;
-    Double_t x1min = -0.4; // if untagged or kT < cut : ln(R/Rg) = -0.2
-    Double_t x1max = 1.6; 
+    const Int_t x1bins = 9;
+    Double_t x1min = -0.3; // if untagged or kT < cut : ln(R/Rg) = -0.2
+    Double_t x1max = 2.4; 
 
     // mBch bins : 
-    const Int_t y1bins = 7;
+    const Int_t y1bins = 10;
     Double_t y1min = 0.;
     Double_t y1max = 7.;
 
@@ -63,6 +71,18 @@ void create_histograms_fast()
 
         if (!mc) h_training->SetName(hist_name);
 
+        // sum of weights
+        double ntest = 0;
+        double ntrain = 0;
+
+        // sum of squared weights
+        double ntest2 = 0.; 
+        double ntrain2 = 0.;
+
+        // sum of entries 
+        Long64_t nent_test = 0;
+        Long64_t nent_train = 0;
+
         Long64_t nentries = tree->GetEntries();
         for (Long64_t ient = 0; ient < nentries; ient++) {
             tree->GetEntry(ient);
@@ -72,19 +92,53 @@ void create_histograms_fast()
             // Check for mb
             if (mb < 0. || mb > 7.) continue;
 
+            bool in_range = (jtpt >= z1min && jtpt < z1max) && (logrg >= x1min && logrg < x1max);
+
             if (mc) {
                 // weight = 1.; //debug
-                if (ient > (nentries / 2))
+                if (weight > 0.2) continue;
+                if (ient > (nentries / 2)) {
+                    // templates
                     h_training->Fill(logrg, mb, jtpt, weight);
-                else
+                    if (in_range) {
+                        ntrain += weight;
+                        ntrain2 += weight * weight;
+                        nent_train++;
+                    }
+                    
+                }
+                else {
+                    // pseudo data
+                    // weight = 1.; // debug
                     h_testing->Fill(logrg, mb, jtpt, weight);
+                    if (in_range) {
+                        nent_test++;
+                        ntest += weight;
+                        ntest2 += weight * weight;
+
+                        if (weight > 0.2) {
+                            std::cout << "weight = " << weight << ", jtpt = " << jtpt << std::endl; 
+                        }
+                    }
+                    
+                }
             } else {
                 h_training->Fill(logrg, mb, jtpt);
             }
         } // tree entry loop
         h_training->Write();
         if (mc) h_testing->Write();
+        // std::cout << tree_name 
+        //           << " : ntest = " << ntest << " +- " << std::sqrt(ntest2)
+        //           << ", ntrain = " << ntrain  << " +- " << std::sqrt(ntrain2) 
+        //           << std::endl;
+        // std::cout << tree_name 
+        //           << " : nent_test = " << nent_test 
+        //           << ", nent_train = " << nent_train   
+        //           << std::endl;
     } // tree loop
+
+    
 
     fout->Close();
     delete fout;
