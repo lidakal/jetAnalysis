@@ -1,5 +1,7 @@
 void draw_fit_multiple_mc()
 {
+    // MADE FOR 5 RG BINS (INCLUDING UNTAGGED)
+
     Float_t text_size = 26.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
@@ -120,7 +122,7 @@ void draw_fit_multiple_mc()
             TH1D *h_bkg_rest_training_mb = (TH1D *) h_bkg_rest_training_dijet_mb->Clone("h_bkg_rest_training_mb");
             h_bkg_rest_training_mb->Add(h_bkg_rest_training_bjet_mb);
 
-            // Compile dijet + bjet testing - add them all together with original fractions
+            // Compile dijet + bjet testing - add them all together with original fractions for pseudo_data
             double int1 = h_sig_testing_dijet_mb->Integral(1, nbins_mb);
             double int2 = h_bkg_bb_testing_dijet_mb->Integral(1, nbins_mb);
             double int3 = h_bkg_rest_testing_dijet_mb->Integral(1, nbins_mb);
@@ -146,13 +148,16 @@ void draw_fit_multiple_mc()
             h_testing_mb->Add(h_bkg_bb_testing_mb, c2);
             h_testing_mb->Add(h_bkg_rest_testing_mb, c3);
 
-            h_testing_mb->Scale(total);
+            h_testing_mb->Scale(total / h_testing_mb->Integral(1, nbins_mb));
 
             // Get fractions from fit for this pt, rg bin
             Double_t ndata = h_testing_mb->Integral(1, nbins_mb);
+            std::cout << "total = " << total << ", ndata = " << ndata << std::endl;
             Double_t sig_fraction = h_sig_fraction->GetBinContent(ibin_rg, ibin_pt);
             Double_t bkg_bb_fraction = h_bkg_bb_fraction->GetBinContent(ibin_rg, ibin_pt);
             Double_t bkg_rest_fraction = h_bkg_rest_fraction->GetBinContent(ibin_rg, ibin_pt);
+
+            std::cout << "total fractions = " << sig_fraction+bkg_bb_fraction+bkg_rest_fraction << std::endl;
 
             THStack *h_stack_mb = new THStack(Form("h_stack_mb_%d_%d", ibin_pt, ibin_rg), "");
             h_stack_mb->SetTitle("; m_{B}^{ch}; entries");
@@ -181,21 +186,21 @@ void draw_fit_multiple_mc()
             h_testing_mb->SetMarkerSize(1);
             leg_mb->AddEntry(h_testing_mb, label_in, "pe1");
 
-            h_sig_training_mb->Scale(ndata*sig_fraction/h_sig_training_mb->Integral(1, nbins_mb, "width"));
+            h_sig_training_mb->Scale(ndata*sig_fraction/h_sig_training_mb->Integral(1, nbins_mb));
             h_sig_training_mb->SetFillStyle(1001);
             h_sig_training_mb->SetFillColor(kRed-7);
             h_sig_training_mb->SetMarkerStyle(1);
             h_stack_mb->Add(h_sig_training_mb);
             leg_mb->AddEntry(h_sig_training_mb, "signal", "f");
 
-            h_bkg_bb_training_mb->Scale(ndata*bkg_bb_fraction/h_bkg_bb_training_mb->Integral(1, nbins_mb, "width"));
+            h_bkg_bb_training_mb->Scale(ndata*bkg_bb_fraction/h_bkg_bb_training_mb->Integral(1, nbins_mb));
             h_bkg_bb_training_mb->SetFillStyle(1001);
             h_bkg_bb_training_mb->SetFillColor(kBlue-3);
             h_bkg_bb_training_mb->SetMarkerStyle(1);
             h_stack_mb->Add(h_bkg_bb_training_mb);
             leg_mb->AddEntry(h_bkg_bb_training_mb, "bb bkg", "f");
 
-            h_bkg_rest_training_mb->Scale(ndata*bkg_rest_fraction/h_bkg_rest_training_mb->Integral(1, nbins_mb, "width"));
+            h_bkg_rest_training_mb->Scale(ndata*bkg_rest_fraction/h_bkg_rest_training_mb->Integral(1, nbins_mb));
             h_bkg_rest_training_mb->SetFillStyle(1001);
             h_bkg_rest_training_mb->SetFillColor(kGreen-6);
             h_bkg_rest_training_mb->SetMarkerStyle(1);

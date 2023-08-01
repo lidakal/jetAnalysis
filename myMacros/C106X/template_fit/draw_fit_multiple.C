@@ -7,56 +7,79 @@ void draw_fit_multiple()
     gStyle->SetTitleSize(text_size, "XYZ");
 
     TString label_in = "data";
-    TString sample = "dijet";
-    TString label = "aggrTMVA_withNb";
-    TString fin_name = "histos/qcd_" + sample + "_" + label + "_fitted_parameters_RooFit_" + label_in + ".root";
+    TString method = "RooFit";
+    TString fin_name = "histos/fitted_parameters_" + method + "_" + label_in + ".root";
     TFile *fin = new TFile(fin_name);
 
-    TH3D *hdata = (TH3D *) fin->Get("hdata");
-    TH3D *hsig = (TH3D *) fin->Get("hsig");
-    TH3D *hbkg_bb = (TH3D *) fin->Get("hbkg_bb");
-    TH3D *hbkg_rest = (TH3D *) fin->Get("hbkg_rest");
+    TH3D *h_data = (TH3D *) fin->Get(TString("h_" + label_in));
+    TH3D *h_sig_training_dijet = (TH3D *) fin->Get("h_sig_training_dijet");
+    TH3D *h_bkg_bb_training_dijet = (TH3D *) fin->Get("h_bkg_bb_training_dijet");
+    TH3D *h_bkg_rest_training_dijet = (TH3D *) fin->Get("h_bkg_rest_training_dijet");
+    TH3D *h_sig_training_bjet = (TH3D *) fin->Get("h_sig_training_bjet");
+    TH3D *h_bkg_bb_training_bjet = (TH3D *) fin->Get("h_bkg_bb_training_bjet");
+    TH3D *h_bkg_rest_training_bjet = (TH3D *) fin->Get("h_bkg_rest_training_bjet");
+
+    // Note: combine after making the projections
 
     TH2D *h_sig_fraction = (TH2D *) fin->Get("h_sig_fraction");
     TH2D *h_sig_fraction_error = (TH2D *) fin->Get("h_sig_fraction_error");
     TH2D *h_bkg_bb_fraction = (TH2D *) fin->Get("h_bkg_bb_fraction");
-    TH2D *h_bkg_bb_fraction_error = (TH2D *) fin->Get("h_bkg_bb_fraction_error");
+    // TH2D *h_bkg_bb_fraction_error = (TH2D *) fin->Get("h_bkg_bb_fraction_error");
     TH2D *h_bkg_rest_fraction = (TH2D *) fin->Get("h_bkg_rest_fraction");
-    TH2D *h_bkg_rest_fraction_error = (TH2D *) fin->Get("h_bkg_rest_fraction_error");
+    // TH2D *h_bkg_rest_fraction_error = (TH2D *) fin->Get("h_bkg_rest_fraction_error");
 
-    Int_t nbins_rg = hdata->GetNbinsX();
-    Int_t nbins_pt = hdata->GetNbinsZ();
+    Int_t nbins_rg = h_data->GetNbinsX();
+    Int_t nbins_pt = h_data->GetNbinsZ();
 
-    for (Int_t ibin_pt = 2; ibin_pt <= 2; ibin_pt++) {
-        TCanvas *c_mB = new TCanvas(Form("c_mB_%d", ibin_pt), "", 1600, 1000);
-        c_mB->Divide(nbins_rg / 2, 2, 0., 0.);
+    Int_t npads = std::round((nbins_rg + 1) / 2) * 2;
+
+    Int_t choose_bin = 2;
+    for (Int_t ibin_pt = choose_bin; ibin_pt <= choose_bin; ibin_pt++) {
+        TCanvas *c_mb = new TCanvas(Form("c_mb_%d", ibin_pt), "", 1600, 1000);
+        c_mb->Divide(npads / 2, 2, 0.0001, 0.0001);
+
+        TCanvas *c_mb_ratio = new TCanvas(Form("c_mb_ratio_%d", ibin_pt), "", 1600, 1000);
+        c_mb_ratio->Divide(npads / 2, 2, 0.0001, 0.0001);
 
         for (Int_t ibin_rg = 1; ibin_rg <= nbins_rg; ibin_rg++) {
-            Double_t pt_min = hdata->GetZaxis()->GetBinLowEdge(ibin_pt);
-            Double_t pt_max = hdata->GetZaxis()->GetBinUpEdge(ibin_pt);
+            Double_t pt_min = h_data->GetZaxis()->GetBinLowEdge(ibin_pt);
+            Double_t pt_max = h_data->GetZaxis()->GetBinUpEdge(ibin_pt);
 
-            Double_t rg_min = hdata->GetXaxis()->GetBinLowEdge(ibin_rg);
-            Double_t rg_max = hdata->GetXaxis()->GetBinUpEdge(ibin_rg);
+            Double_t rg_min = h_data->GetXaxis()->GetBinLowEdge(ibin_rg);
+            Double_t rg_max = h_data->GetXaxis()->GetBinUpEdge(ibin_rg);
 
-            TH1D *hdata_mB = (TH1D *) hdata->ProjectionY(Form("hdata_mB_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
-            TH1D *hsig_mB = (TH1D *) hsig->ProjectionY(Form("hsig_mB_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
-            TH1D *hbkg_bb_mB = (TH1D *) hbkg_bb->ProjectionY(Form("hbkg_bb_mB_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
-            TH1D *hbkg_rest_mB = (TH1D *) hbkg_rest->ProjectionY(Form("hbkg_rest_mB_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
-            
-            Int_t nbins_mB = hdata_mB->GetNbinsX();
-            Double_t ndata = hdata_mB->Integral(1, nbins_mB);
+            TH1D *h_data_mb = (TH1D *) h_data->ProjectionY(Form("h_data_mb_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
+            TH1D *h_sig_training_dijet_mb = (TH1D *) h_sig_training_dijet->ProjectionY(Form("h_sig_training_dijet_mb_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
+            TH1D *h_bkg_bb_training_dijet_mb = (TH1D *) h_bkg_bb_training_dijet->ProjectionY(Form("h_bkg_bb_training_dijet_mb_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
+            TH1D *h_bkg_rest_training_dijet_mb = (TH1D *) h_bkg_rest_training_dijet->ProjectionY(Form("h_bkg_rest_training_dijet_mb_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
+            TH1D *h_sig_training_bjet_mb = (TH1D *) h_sig_training_bjet->ProjectionY(Form("h_sig_training_bjet_mb_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
+            TH1D *h_bkg_bb_training_bjet_mb = (TH1D *) h_bkg_bb_training_bjet->ProjectionY(Form("h_bkg_bb_training_bjet_mb_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
+            TH1D *h_bkg_rest_training_bjet_mb = (TH1D *) h_bkg_rest_training_bjet->ProjectionY(Form("h_bkg_rest_training_bjet_mb_%d_%d", ibin_pt, ibin_rg), ibin_rg, ibin_rg, ibin_pt, ibin_pt);
+
+            // Compile dijet + bjet training - no need to add them all together
+            TH1D *h_sig_training_mb = (TH1D *) h_sig_training_dijet_mb->Clone("h_sig_training_mb");
+            h_sig_training_mb->Add(h_sig_training_bjet_mb);
+
+            TH1D *h_bkg_bb_training_mb = (TH1D *) h_bkg_bb_training_dijet_mb->Clone("h_bkg_bb_training_mb");
+            h_bkg_bb_training_mb->Add(h_bkg_bb_training_bjet_mb);
+
+            TH1D *h_bkg_rest_training_mb = (TH1D *) h_bkg_rest_training_dijet_mb->Clone("h_bkg_rest_training_mb");
+            h_bkg_rest_training_mb->Add(h_bkg_rest_training_bjet_mb);
+
+            Int_t nbins_mb = h_data_mb->GetNbinsX();
+            Double_t ndata = h_data_mb->Integral(1, nbins_mb);
             Double_t sig_fraction = h_sig_fraction->GetBinContent(ibin_rg, ibin_pt);
             Double_t bkg_bb_fraction = h_bkg_bb_fraction->GetBinContent(ibin_rg, ibin_pt);
             Double_t bkg_rest_fraction = h_bkg_rest_fraction->GetBinContent(ibin_rg, ibin_pt);
 
-            THStack *hStack_mB = new THStack(Form("hStack_mB_%d_%d", ibin_pt, ibin_rg), "");
-            hStack_mB->SetTitle("; m_{B}^{ch}; entries");
+            THStack *hStack_mb = new THStack(Form("hStack_mb_%d_%d", ibin_pt, ibin_rg), "");
+            hStack_mb->SetTitle("; m_{B}^{ch}; entries");
 
-            TLegend *leg_mB = new TLegend(0.6, 0.7, 1., 0.9, "ndc");
-            leg_mB->SetFillStyle(0);
-            leg_mB->SetBorderSize(0);
-            leg_mB->SetMargin(0.15);
-            leg_mB->SetHeader(Form("b tagged jets, k_{T} > 1 GeV"));
+            TLegend *leg_mb = new TLegend(0.6, 0.7, 1., 0.9, "ndc");
+            leg_mb->SetFillStyle(0);
+            leg_mb->SetBorderSize(0);
+            leg_mb->SetMargin(0.15);
+            leg_mb->SetHeader(Form("b tagged jets, k_{T} > 1 GeV"));
 
             TPaveText *rg_range_text = new TPaveText(0.2, 0.75, 0.5, 0.9, "ndc");
             rg_range_text->SetTextSize(text_size);
@@ -66,42 +89,69 @@ void draw_fit_multiple()
             rg_range_text->AddText(Form("%.2f < ln(0.4/R_{g}) < %.2f", rg_min, rg_max));
 
             // Format histos
-            hdata_mB->Sumw2();
-            hdata_mB->SetMarkerStyle(kFullCircle);
-            hdata_mB->SetMarkerColor(kBlack);
-            hdata_mB->SetMarkerSize(2);
-            leg_mB->AddEntry(hdata_mB, label_in, "pe1");
+            // for (auto h : {h_data_mb, h_sig_mb, h_bkg_bb_mb, h_bkg_rest_mb}) {
+            //     h->Sumw2();
+            // }
+            // h_data_mb->Sumw2();
+            h_data_mb->SetMarkerStyle(kFullCircle);
+            h_data_mb->SetMarkerColor(kBlack);
+            h_data_mb->SetMarkerSize(1);
+            leg_mb->AddEntry(h_data_mb, label_in, "pe1");
 
-            hsig_mB->Scale(ndata*sig_fraction/hsig_mB->Integral(1, nbins_mB, "width"));
-            hsig_mB->SetFillStyle(1001);
-            hsig_mB->SetFillColor(kRed-7);
-            hsig_mB->SetMarkerStyle(1);
-            hStack_mB->Add(hsig_mB);
-            leg_mB->AddEntry(hsig_mB, "signal", "f");
+            h_sig_training_mb->Scale(ndata*sig_fraction/h_sig_training_mb->Integral(1, nbins_mb));
+            h_sig_training_mb->SetFillStyle(1001);
+            h_sig_training_mb->SetFillColor(kRed-7);
+            h_sig_training_mb->SetMarkerStyle(1);
+            hStack_mb->Add(h_sig_training_mb);
+            leg_mb->AddEntry(h_sig_training_mb, "signal", "f");
 
-            hbkg_bb_mB->Scale(ndata*bkg_bb_fraction/hbkg_bb_mB->Integral(1, nbins_mB, "width"));
-            hbkg_bb_mB->SetFillStyle(1001);
-            hbkg_bb_mB->SetFillColor(kBlue-3);
-            hbkg_bb_mB->SetMarkerStyle(1);
-            hStack_mB->Add(hbkg_bb_mB);
-            leg_mB->AddEntry(hbkg_bb_mB, "bb bkg", "f");
+            h_bkg_bb_training_mb->Scale(ndata*bkg_bb_fraction/h_bkg_bb_training_mb->Integral(1, nbins_mb));
+            h_bkg_bb_training_mb->SetFillStyle(1001);
+            h_bkg_bb_training_mb->SetFillColor(kBlue-3);
+            h_bkg_bb_training_mb->SetMarkerStyle(1);
+            hStack_mb->Add(h_bkg_bb_training_mb);
+            leg_mb->AddEntry(h_bkg_bb_training_mb, "bb bkg", "f");
 
-            hbkg_rest_mB->Scale(ndata*bkg_rest_fraction/hbkg_rest_mB->Integral(1, nbins_mB, "width"));
-            hbkg_rest_mB->SetFillStyle(1001);
-            hbkg_rest_mB->SetFillColor(kGreen-6);
-            hbkg_rest_mB->SetMarkerStyle(1);
-            hStack_mB->Add(hbkg_rest_mB);
-            leg_mB->AddEntry(hbkg_rest_mB, "light+c+PU bkg", "f");
+            h_bkg_rest_training_mb->Scale(ndata*bkg_rest_fraction/h_bkg_rest_training_mb->Integral(1, nbins_mb));
+            h_bkg_rest_training_mb->SetFillStyle(1001);
+            h_bkg_rest_training_mb->SetFillColor(kGreen-6);
+            h_bkg_rest_training_mb->SetMarkerStyle(1);
+            hStack_mb->Add(h_bkg_rest_training_mb);
+            leg_mb->AddEntry(h_bkg_rest_training_mb, "light+c bkg", "f");
 
-            c_mB->cd(ibin_rg);
-            hStack_mB->Draw("hist e1");
-            // hStack_mB->SetMaximum(0.45);
-            // hStack_mB->SetMaximum(0.05);
-            hdata_mB->Draw("pe1 same");
-            leg_mB->Draw();
+            c_mb->cd(ibin_rg);
+            hStack_mb->Draw("hist e1");
+            // hStack_mb->SetMaximum(0.45);
+            // hStack_mb->SetMaximum(0.05);
+            h_data_mb->Draw("pe1 same");
+            leg_mb->Draw();
+            rg_range_text->Draw();
+
+            // Plot ratio
+            TLine *line = new TLine(0., 1., 7., 1.);
+            line->SetLineColor(kGray);
+            line->SetLineStyle(kDashed);
+
+            TH1D *h_fit_mb = (TH1D *) h_sig_training_mb->Clone("h_fit_mb");
+            h_fit_mb->Add(h_bkg_bb_training_mb);
+            h_fit_mb->Add(h_bkg_rest_training_mb);
+            h_fit_mb->Sumw2();
+
+            TH1D *h_ratio = (TH1D *) h_data_mb->Clone("h_ratio");
+            h_ratio->Divide(h_fit_mb);
+
+            h_ratio->GetXaxis()->SetTitle("m_{B}^{ch}");
+            h_ratio->GetYaxis()->SetTitle(TString(label_in + " / fit"));
+            
+            c_mb_ratio->cd(ibin_rg);
+            h_ratio->Draw("pe1");
+            line->Draw();
+            // hStack_mb->SetMaximum(0.45);
+            // hStack_mb->SetMaximum(0.05);
             rg_range_text->Draw();
         }
-        c_mB->Draw();
+        c_mb->Draw();
+        c_mb_ratio->Draw();
     }
 
 }

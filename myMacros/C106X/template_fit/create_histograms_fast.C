@@ -9,10 +9,12 @@ void create_histograms_fast()
     // TString label = "aggrTMVA_withHLT_v2_inclusive";
     // TString sample = "bjet";
     // TString label = "aggrTMVA_withHLT";
-    // TString sample = "data";
-    // TString label = "aggrTMVA_v2";
+    // TString sample = "bjet";
+    // TString label = "aggrTMVA_withHLT_inclusive";
     TString sample = "data";
-    TString label = "aggrTMVA_v2_inclusive";
+    TString label = "aggrTMVA_v2";
+    // TString sample = "data";
+    // TString label = "aggrTMVA_v2_inclusive";
     TString fin_name = "/data_CMS/cms/kalipoliti/compact_trees/" + sample + "_" + label + "_tree_template_fit.root";   
     TString fout_name = "./histos/" + sample + "_" + label + "_histograms.root";
 
@@ -25,14 +27,14 @@ void create_histograms_fast()
     Double_t weight;
 
     // jet pt bins : no underflow or overflow
-    const Int_t z1bins = 4;
-    Double_t z1min = 60.;
+    const Int_t z1bins = 3;
+    Double_t z1min = 80.;
     Double_t z1max = 140.; 
 
     // ln(0.4/rg) bins : 1st bin untagged (unphysical)
-    const Int_t x1bins = 9;
-    Double_t x1min = -0.3; // if untagged or kT < cut : ln(R/Rg) = -0.2
-    Double_t x1max = 2.4; 
+    const Int_t x1bins = 5;
+    Double_t x1min = -0.4; // if untagged or kT < cut : ln(R/Rg) = -0.2
+    Double_t x1max = 1.6; 
 
     // mBch bins : 
     const Int_t y1bins = 10;
