@@ -1,11 +1,14 @@
-void do_template_fit_RooFit()
+#include "Purity.h"
+
+void do_template_fit_RooFit_glued(TString observable="rg")
 {
+    // glue light+c to sig 
+
     // Setup 
-    TString observable = "zg";
     TString sample = "aggrTMVA_XXT";
     TString label_out = "data";
     label_out += "_" + sample;
-    TString fout_name = "histos/fitted_parameters_RooFit_" + label_out + "_" + observable + ".root";
+    TString fout_name = "histos/fitted_parameters_RooFit_" + label_out + "_" + observable + "_glued.root";
 
     // Load data
     TString fin_name_data = "./histos/" + label_out + "_histograms.root";
@@ -23,8 +26,6 @@ void do_template_fit_RooFit()
     TH3D *h_sig_testing_dijet = (TH3D *) fin_mc_dijet->Get("h_sig_" + observable + "_testing")->Clone("h_sig_testing_dijet");
     TH3D *h_bkg_bb_testing_dijet = (TH3D *) fin_mc_dijet->Get("h_bkg_bb_" + observable + "_testing")->Clone("h_bkg_bb_testing_dijet");
     TH3D *h_bkg_rest_testing_dijet = (TH3D *) fin_mc_dijet->Get("h_bkg_rest_" + observable + "_testing")->Clone("h_bkg_rest_testing_dijet");
-
-    std::cout << "\th_sig_training_dijet->GetEntries()=" << h_sig_training_dijet->GetEntries() << std::endl;
 
     // Load bjet MC 
     TString fin_mc_bjet_name = "./histos/bjet_" + sample + "_histograms.root";
@@ -107,8 +108,8 @@ void do_template_fit_RooFit()
 
     for (Int_t ibin_pt = 1; ibin_pt <= nbins_pt; ibin_pt++) {
         for (Int_t ibin_x = 1; ibin_x <= nbins_x; ibin_x++) {
-            // if (ibin_pt != 1) continue;
-            // if (ibin_x != 1) continue;
+            // if (ibin_pt != 2) continue;
+            // if (ibin_x != 7) continue;
 
             std::cout << "\n\n\n\n -------- Beginning the fit of (" << ibin_pt << ", " << ibin_x << ")\n\n\n\n" << std::endl; 
 
@@ -139,31 +140,30 @@ void do_template_fit_RooFit()
             double sig_fraction_true = int0 / (int0 + int1 + int2); 
             double bkg_bb_fraction_true = int1 / (int0 + int1 + int2);
 
-            std::cout << "(" << ibin_pt << ", " << ibin_x << "):" << std::endl;
-            std::cout << "\tsignal fraction true = " << sig_fraction_true << std::endl;
-            std::cout << "\tbb fraction true = " << bkg_bb_fraction_true << std::endl;
-            std::cout << "\tint0=" << int0 << ", int1=" << int1<< ", int2=" << int2  << std::endl;
-            std::cout << "\th_sig_training_dijet_mb->GetEntries()=" << h_sig_training_dijet_mb->GetEntries() << std::endl;
-            std::cout << "\n" << std::endl;
-
             // Compile dijet + bjet training and testing - no need to add them all together
             TH1D *h_sig_mb = (TH1D *) h_sig_training_dijet_mb->Clone(Form("h_sig_mb_%d_%d", ibin_pt, ibin_x));
             h_sig_mb->Add(h_sig_testing_dijet_mb);
             h_sig_mb->Add(h_sig_training_bjet_mb);
             h_sig_mb->Add(h_sig_testing_bjet_mb);
-            h_sig_mb->Scale(1/h_sig_mb->Integral(1,nbins_mb));
+            h_sig_mb->Scale(1/h_sig_mb->Integral(1, nbins_mb));
 
             TH1D *h_bkg_bb_mb = (TH1D *) h_bkg_bb_training_dijet_mb->Clone(Form("h_bkg_bb_mb_%d_%d", ibin_pt, ibin_x));
             h_bkg_bb_mb->Add(h_bkg_bb_testing_dijet_mb);
             h_bkg_bb_mb->Add(h_bkg_bb_training_bjet_mb);
             h_bkg_bb_mb->Add(h_bkg_bb_testing_bjet_mb);
-            h_bkg_bb_mb->Scale(1/h_bkg_bb_mb->Integral(1,nbins_mb));
+            h_bkg_bb_mb->Scale(1/h_bkg_bb_mb->Integral(1, nbins_mb));
 
             TH1D *h_bkg_rest_mb = (TH1D *) h_bkg_rest_training_dijet_mb->Clone(Form("h_bkg_rest_mb_%d_%d", ibin_pt, ibin_x));
             h_bkg_rest_mb->Add(h_bkg_rest_testing_dijet_mb);
             h_bkg_rest_mb->Add(h_bkg_rest_training_bjet_mb);
             h_bkg_rest_mb->Add(h_bkg_rest_testing_bjet_mb);
-            h_bkg_rest_mb->Scale(1/h_bkg_rest_mb->Integral(1,nbins_mb));
+            h_bkg_rest_mb->Scale(1/h_bkg_rest_mb->Integral(1, nbins_mb));
+
+            // add together light+c to sig with nominal MC ratio
+            // a sig + b bb + c light = n, a+b+c=1, a+c=1-b
+            // a'=a/(a+c)=a/(1-b)
+            double sig_frac = sig_fraction_true/(1 - bkg_bb_fraction_true);
+            h_sig_mb->Add(h_sig_mb, h_bkg_rest_mb, sig_frac, 1-sig_frac);
 
             // ***** Case 0 - 'Binned fitting' *****
 
@@ -173,56 +173,39 @@ void do_template_fit_RooFit()
             RooRealVar mb(Form("mb_%d_%d", ibin_pt, ibin_x), "mb", min_mb, max_mb);
             mb.setBins(nbins_mb);
 
-            // h_data_mb->Sumw2();
-            // Normalize distributions
-            // for (auto h : {
-            //                 // h_data_mb, 
-            //                 h_sig_mb, h_bkg_bb_mb, h_bkg_rest_mb
-            //                 }) {
-            //     h->Sumw2();
-                // h->Scale(1/h->Integral());
-            // }
-
             // Create the RooDataHist object for the observed data + templates
             RooDataHist *dh_data_mb = new RooDataHist(Form("dh_data_mb_%d_%d", ibin_pt, ibin_x), "dh_data_mb", mb, RooFit::Import(*h_data_mb));
             RooDataHist *dh_sig_mb = new RooDataHist(Form("dh_sig_mb_%d_%d", ibin_pt, ibin_x), "dh_sig_mb", mb, RooFit::Import(*h_sig_mb));
-            RooDataHist *dh_bkg_bb_mb = new RooDataHist(Form("dh_bkg_bb_mb_%d_%d", ibin_pt, ibin_x), "dh_bkg_bb_mb", mb, RooFit::Import(*h_bkg_bb_mb));
-            RooDataHist *dh_bkg_rest_mb = new RooDataHist(Form("dh_bkg_rest_mb_%d_%d", ibin_pt, ibin_x), "dh_bkg_rest_mb", mb, RooFit::Import(*h_bkg_rest_mb));
+            RooDataHist *dh_bkg_mb = new RooDataHist(Form("h_bkg_mb_%d_%d", ibin_pt, ibin_x), "dh_bkg_mb", mb, RooFit::Import(*h_bkg_bb_mb));
  
             // Create the RooHistPdf objects for the template PDFs
             RooHistPdf sig_template(Form("sig_template_%d_%d", ibin_pt, ibin_x), "sig_template", mb, *dh_sig_mb);
-            RooHistPdf bkg_bb_template(Form("bkg_bb_template_%d_%d", ibin_pt, ibin_x), "bkg_bb_template", mb, *dh_bkg_bb_mb);
-            RooHistPdf bkg_rest_template(Form("bkg_rest_template_%d_%d", ibin_pt, ibin_x), "bkg_rest_template", mb, *dh_bkg_rest_mb);
-            RooArgList template_list(sig_template, bkg_bb_template, bkg_rest_template, Form("template_list_%d_%d", ibin_pt, ibin_x));
+            RooHistPdf bkg_template(Form("bkg_template_%d_%d", ibin_pt, ibin_x), "bkg_template", mb, *dh_bkg_mb);
+            RooArgList template_list(sig_template, bkg_template, Form("template_list_%d_%d", ibin_pt, ibin_x));
 
             // Create the RooRealVar for the fit parameter (e.g., fraction of template A)
             // debug 
             // sig_fraction_true = 0.5;
-            RooRealVar sig_fraction_val(Form("sig_fraction_val_%d_%d", ibin_pt, ibin_x),"sig_fraction_val",sig_fraction_true,0.,1.);
-            RooRealVar bkg_bb_fraction_val(Form("bkg_bb_fraction_val_%d_%d", ibin_pt, ibin_x),"bkg_bb_fraction_val",bkg_bb_fraction_true,0.,1.);
-            RooArgList coeff_list(sig_fraction_val, bkg_bb_fraction_val, Form("coeff_list_%d_%d", ibin_pt, ibin_x));
+            RooRealVar sig_fraction_val(Form("sig_fraction_val_%d_%d", ibin_pt, ibin_x),"sig_fraction_val",1-bkg_bb_fraction_true,0.,1.);
 
             // Create the composite PDF using a linear combination of the template PDFs
-            RooAddPdf model0(Form("model0_%d_%d", ibin_pt, ibin_x), "model0", template_list, coeff_list, true);
-            RooFitResult* result = model0.fitTo(*dh_data_mb, RooFit::SumW2Error(true), RooFit::Save(), RooFit::CloneData(true), RooFit::PrintLevel(-1), RooFit::Strategy(1), RooFit::Minos(false)); // result is already given a unique name
+            RooAddPdf model0(Form("model0_%d_%d", ibin_pt, ibin_x), "model0", template_list, sig_fraction_val, true);
+            RooFitResult* result = model0.fitTo(*dh_data_mb, RooFit::SumW2Error(true), RooFit::Save(), RooFit::CloneData(true), RooFit::PrintLevel(2), RooFit::Strategy(1), RooFit::Minos(false)); // result is already given a unique name
             Int_t status = result->status();
             result->Print();
 
             std::cout << "covariance matrix:" << std::endl;
             (result->covarianceMatrix().Print());
 
-            if (result->edm()>1e-3) {
-                std::pair<int, int> bin(ibin_pt, ibin_x);
-                std::pair<std::pair<int, int>, double> edm(bin, result->edm());
-                large_edms.push_back(edm);
-            }
+            // if (result->edm()>1e-3) {
+            //     std::pair<int, int> bin(ibin_pt, ibin_x);
+            //     std::pair<std::pair<int, int>, double> edm(bin, result->edm());
+            //     large_edms.push_back(edm);
+            // }
 
             // Get the fitted parameter values
             double a = sig_fraction_val.getValV();
             double da = sig_fraction_val.getError();
-
-            double b = bkg_bb_fraction_val.getValV();
-            double db = bkg_bb_fraction_val.getError();
 
             if (status != 0) {
                 std::cout << "\n\n\n\n!!!Fitting for ipt = " << ibin_pt 
@@ -233,13 +216,13 @@ void do_template_fit_RooFit()
             }
 
             Double_t p0, p1, p2, errP0, errP1, errP2;
-            p0 = a;
-            p1 = (1-a)*b;
-            p2 = (1-a)*(1-b);
+            p0 = a*sig_frac;
+            p1 = 1-a;
+            p2 = a*(1-sig_frac);
 
-            errP0 = da;
-            errP1 = std::sqrt((b*b*da*da) + ((1-a)*(1-a)*db*db));
-            errP2 = std::sqrt(((1-b)*(1-b)*da*da)+((1-a)*(1-a)*db*db));
+            errP0 = da*sig_frac;
+            errP1 = da;
+            errP2 = da*(1-sig_frac);
             // std::cout << "errP0 = " << errP0 << std::endl;
 
             h_sig_fraction->SetBinContent(ibin_x, ibin_pt, p0);
@@ -255,14 +238,14 @@ void do_template_fit_RooFit()
         } // observable bin loop 
     } // jet pt loop
 
-    // for (auto p : non_converge_bins) {
-    //     std::cout << "Fit did not converge for (" << p.first << ", " << p.second << ")" << std::endl;
-    // }
+    for (auto p : non_converge_bins) {
+        std::cout << "Fit did not converge for (" << p.first << ", " << p.second << ")" << std::endl;
+    }
 
-    // std::cout << "bins with large edm:" << std::endl;
-    // for (auto p : large_edms) {
-    //     std::cout << "(" << (p.first).first << ", " << (p.first).second << ") = " << p.second << std::endl;
-    // }
+    std::cout << "bins with large edm:" << std::endl;
+    for (auto p : large_edms) {
+        std::cout << "(" << (p.first).first << ", " << (p.first).second << ") = " << p.second << std::endl;
+    }
 
     std::cout << "Creating file " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "recreate");
