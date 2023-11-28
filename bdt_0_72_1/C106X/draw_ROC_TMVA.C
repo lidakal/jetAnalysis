@@ -2,8 +2,10 @@
 
 void draw_ROC_TMVA()
 {
+    Float_t font_size = 27.;
+    
     // TString label = "qcd_bjet";
-    TString label = "ttbar_highPU";
+    TString label = "qcd_bjet";
     TString finName = "./saved_models/" + label + "_roc.root";
     TFile *fin = new TFile (finName);
 
@@ -19,7 +21,7 @@ void draw_ROC_TMVA()
 
     TGraph *gr_roc = new TGraph(nbins);
     gr_roc->SetLineColor(kBlue+2);
-    gr_roc->SetLineWidth(2);
+    gr_roc->SetLineWidth(4);
     gr_roc->GetXaxis()->SetTitle("Signal efficiency");
     gr_roc->GetYaxis()->SetTitle("Background rejection");
 
@@ -37,7 +39,9 @@ void draw_ROC_TMVA()
         //           << std::endl;
         gr_roc->SetPoint(ibin - 1, sig_eff, bkg_rej);
 
-        // if (sig_eff > 0.93) std::cout << "eff: " << sig_eff << ", bkg rej: " << bkg_rej << std::endl;
+        float purity = sig_pass / (sig_pass + bkg_pass);
+
+        if (sig_eff > 0.92) std::cout << "eff: " << sig_eff << ", bkg rej: " << bkg_rej << ", pur: " << purity << std::endl;
     }
     gr_roc->SetPoint(nbins, 0., 1.); // for discr > 1
 
@@ -59,26 +63,26 @@ void draw_ROC_TMVA()
     // SetRealAspectRatio(c_discr);
     // c_discr->SetFixedAspectRatio();
 
-    TPaveText *info_top_left = new TPaveText(0.0, 1.1, 0.35, 1.15, "nb ndc");
-    info_top_left->SetTextSize(20);
+    TPaveText *info_top_left = new TPaveText(0.0, 1.1, 0.58, 1.18, "nb ndc");
+    info_top_left->SetTextSize(font_size);
     info_top_left->SetFillStyle(0);
     info_top_left->SetLineWidth(0);
-    info_top_left->AddText("#bf{CMS} #it{Simulation Preliminary}");
+    info_top_left->AddText("#bf{CMS} #it{Work in Progress Simulation}");
 
-    TPaveText *info_top_right = new TPaveText(0.75, 1.1, 1.1, 1.15, "nb ndc");
-    info_top_right->SetTextSize(20);
+    TPaveText *info_top_right = new TPaveText(0.6, 1.1, 1.1, 1.18, "nb ndc");
+    info_top_right->SetTextSize(font_size);
     info_top_right->SetFillStyle(0);
     info_top_right->SetLineWidth(0);
-    info_top_right->AddText("PYTHIA8 #sqrt{s} = 13 TeV #it{pp}");
+    info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
 
-    TPaveText *info_bdt = new TPaveText(0.8, 1., 1.1, 1.1, "nb ndc");
-    info_bdt->SetTextSize(20);
+    TPaveText *info_bdt = new TPaveText(0.75, 1., 1.1, 1.1, "nb ndc");
+    info_bdt->SetTextSize(font_size);
     info_bdt->SetFillStyle(0);
     info_bdt->SetLineWidth(0);
     info_bdt->AddText("#it{Gradient BDT}");
 
-    TPaveText *info_tracks = new TPaveText(0.1, 0.4, 0.7, 0.6, "nb ndc");
-    info_tracks->SetTextSize(20);
+    TPaveText *info_tracks = new TPaveText(0.1, 0.2, 0.9, 0.6, "nb ndc");
+    info_tracks->SetTextSize(font_size);
     info_tracks->SetFillStyle(0);
     info_tracks->SetLineWidth(0);
     info_tracks->AddText("#bf{Charged particle classification}");
@@ -86,10 +90,17 @@ void draw_ROC_TMVA()
     info_tracks->AddText("Tracks from b-tagged b-jets with");
     info_tracks->AddText("#it{p}_{T}^{jet} > 30 GeV, -2 < #it{#eta}^{jet} < 2");
     info_tracks->AddText("");
-    info_tracks->AddText("Signal : tracks from b-hadron decays");
+    info_tracks->AddText("Signal : tracks from b hadron decays");
     info_tracks->AddText("Background : tracks from primary interaction");
     // info_tracks->AddText("");
     // info_tracks->AddText("Gradient BDT");
+
+    // std::cout << gr_roc->GetXaxis()->GetLabelSize() << std::endl;
+
+    gr_roc->GetXaxis()->SetLabelSize(font_size);
+    gr_roc->GetYaxis()->SetLabelSize(font_size);
+    gr_roc->GetXaxis()->SetTitleSize(font_size);
+    gr_roc->GetYaxis()->SetTitleSize(font_size);
 
     TCanvas *c_roc = new TCanvas("c_roc", "", 1200, 1000);
     gr_roc->Draw("al");
