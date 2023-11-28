@@ -2,10 +2,11 @@
 
 void plot_rg_poster()
 {
+    TString sample = "bjet";
     // TString label = "aggrGenNoReco_withY";
-    // TString label = "noAggr_withY";
-    TString label = "aggrTMVA_withY";
-    TString indir = "/data_CMS/cms/kalipoliti/qcdMC/bjet/" + label + "/";
+    TString label = "noAggr_withY";
+    // TString label = "aggrTMVA_particleNet";
+    TString indir = "/data_CMS/cms/kalipoliti/qcdMC/"+sample+"/" + label + "/";
     TString fin = indir + "merged_HiForestMiniAOD.root";
     tTree tree(fin);
     std::vector<TString> activeBranches = {"nref",
@@ -15,13 +16,14 @@ void plot_rg_poster()
                                            "rsjt2Phi", "rsjt2Y", "rsjt2Pt", "rsjt2Eta",
                                            "sjt1Phi", "sjt1Y", "sjt1Pt", "sjt1Eta",
                                            "sjt2Phi", "sjt2Y", "sjt2Pt", "sjt2Eta",
+                                           "weight"
                                            };
 
     tree.SetBranchStatus("*", 0);
     tree.SetBranchStatus(activeBranches, 1);
 
-    double ptMin = 80.;
-    double ptMax = 100.;
+    double ptMin = 100.;
+    double ptMax = 120.;
 
     double jetR = 0.4;
 
@@ -37,18 +39,25 @@ void plot_rg_poster()
     // Float_t x1min = 0.;
     // Float_t x1max = 0.5;
 
-    TH1F *hBtag_gen = new TH1F("hBtag_gen", "x=log(1/rg)", x1bins, x1min, x1max);
+    TH1F *hB_gen = new TH1F("hB_gen", "x=log(1/rg)", x1bins, x1min, x1max);
     TH1F *hL_gen = new TH1F("hL_gen", "x=log(1/rg)", x1bins, x1min, x1max);
+    TH1F *hC_gen = new TH1F("hC_gen", "x=log(1/rg)", x1bins, x1min, x1max);
+
+    TH1F *hBtag_gen = new TH1F("hBtag_gen", "x=log(1/rg)", x1bins, x1min, x1max);
+    
+    TH1F *hB = new TH1F("hB", "x=log(1/rg)", x1bins, x1min, x1max);
+    TH1F *hL = new TH1F("hL", "x=log(1/rg)", x1bins, x1min, x1max);
+    TH1F *hC = new TH1F("hC", "x=log(1/rg)", x1bins, x1min, x1max);
 
     TH1F *hBtag = new TH1F("hBtag", "x=log(1/rg)", x1bins, x1min, x1max);
-    // TH1F *hL = new TH1F("hL", "x=log(1/rg)", x1bins, x1min, x1max);
+
     TH2F *hBtag_rgkt = new TH2F("hBtag_rgkt", "x=log(1/rg), y=log(kt)", x1bins, x1min, x1max, x2bins, x2min, x2max);
     TH2F *hBtag_rgkt_gen = new TH2F("hBtag_rgkt_gen", "x=log(1/rg), y=log(kt)", x1bins, x1min, x1max, x2bins, x2min, x2max);
 
     TH2F *hBtag_2d = new TH2F("hBtag_2d", "x=reco, y=gen", x1bins, x1min, x1max, x1bins, x1min, x1max);
 
     for (Long64_t ient = 0; ient < tree.GetEntries(); ient++) {
-        if (ient > 1000000) break;
+        // if (ient > 1000000) break;
 
         if ((ient % 1000000) == 0) {
                 std::cout << "ient = " << ient << std::endl;
@@ -76,44 +85,53 @@ void plot_rg_poster()
             Float_t logrg = std::log(jetR / rg);
             Float_t logkt = std::log(kt);
 
-            bool passTag = (tree.discr_deepFlavour_b[ijet] + tree.discr_deepFlavour_bb[ijet] + tree.discr_deepFlavour_lepb[ijet]) > 0.9;
+            bool passTag = (tree.discr_deepFlavour_b[ijet] + tree.discr_deepFlavour_lepb[ijet]) > 0.7;
             
             if (tree.rsjt2Pt[ijet] > 0) {
                 if (tree.jtpt[ijet] > ptMin && tree.jtpt[ijet] < ptMax && kt_gen>1) {
                     if (tree.jtHadFlav[ijet] == 0) {
-                        hL_gen->Fill(logrg_gen);
-                    } else if (tree.jtHadFlav[ijet] == 5 && passTag) {
-                        hBtag_gen->Fill(logrg_gen);
+                        hL_gen->Fill(logrg_gen, tree.weight);
+                    } else if (tree.jtHadFlav[ijet] == 4) {
+                        hC_gen->Fill(logrg_gen, tree.weight);
+                    } else if (tree.jtHadFlav[ijet] == 5) {
+                        hB_gen->Fill(logrg_gen, tree.weight);
+                        if (passTag) hBtag_gen->Fill(logrg_gen, tree.weight);
                     }
                 }
                 if (tree.jtpt[ijet] > ptMin && tree.jtpt[ijet] < ptMax && tree.jtHadFlav[ijet] == 5 && passTag) {
-                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen);
+                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, tree.weight);
                 }
             }
 
             if (tree.sjt2Pt[ijet] > 0) {
                 if (tree.jtpt[ijet] > ptMin && tree.jtpt[ijet] < ptMax && kt>1) {
                     if (tree.jtHadFlav[ijet] == 0) {
-                        // hL->Fill(rg);
-                    } else if (tree.jtHadFlav[ijet] == 5 && passTag) {
-                        hBtag->Fill(logrg);
+                        hL->Fill(rg, tree.weight);
+                    } else if (tree.jtHadFlav[ijet] == 4) {
+                        hC->Fill(rg, tree.weight);
+                    } else if (tree.jtHadFlav[ijet] == 5) {
+                        hB->Fill(logrg, tree.weight);
+                        if (passTag) hBtag->Fill(logrg, tree.weight);
                     }
                 }
                 if (tree.jtpt[ijet] > ptMin && tree.jtpt[ijet] < ptMax && tree.jtHadFlav[ijet] == 5 && passTag) {
-                    hBtag_rgkt->Fill(logrg, logkt);
+                    hBtag_rgkt->Fill(logrg, logkt, tree.weight);
                 }
             }
 
             if (tree.sjt2Pt[ijet] > 0 && tree.rsjt2Pt[ijet] > 0 && tree.jtHadFlav[ijet] == 5 && passTag) {
-                hBtag_2d->Fill(logrg, logrg_gen);
+                hBtag_2d->Fill(logrg, logrg_gen, tree.weight);
             }
         } // end jet loop
     } // end entry loop
 
-    TString foutName = "./histos_for_poster/" + label + ".root";
+    TString foutName = "./histos_for_poster/" +sample + "_" + label + "_rg.root";
     TFile *fout = new TFile(foutName, "recreate");
 
-    for (auto h : {hBtag, hBtag_gen, hL_gen}) {
+    for (auto h : {hB, hB_gen, 
+                   hBtag, hBtag_gen, 
+                   hL, hL_gen,
+                   hC, hC_gen}) {
         h->Write();
     }
     for (auto h : {hBtag_2d, hBtag_rgkt, hBtag_rgkt_gen}) {
