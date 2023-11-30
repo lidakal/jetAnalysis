@@ -34,6 +34,8 @@ void draw_unfolded(TString observable="rg")
     // Load gen level histograms 
     TFile *fin_bjet_btag = new TFile("./histos/bjet_aggrTMVA_XXT_response_full.root");
     TH2D *h_sig_true_bjet_btag = (TH2D *) fin_bjet_btag->Get("h_sig_training_true_"+observable+"pt")->Clone("h_sig_true_bjet_btag");
+    h_sig_true_bjet_btag->Multiply(h_btag_correction);
+
 
     TFile *fin_dijet_inclusive;
     TH2D *h_true_dijet_inclusive;
