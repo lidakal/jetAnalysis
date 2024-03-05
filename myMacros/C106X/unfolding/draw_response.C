@@ -1,3 +1,5 @@
+#include "../draw_utils.h"
+
 void draw_response(TString observable="rg")
 {
     Float_t font_size = 26.;
@@ -5,21 +7,27 @@ void draw_response(TString observable="rg")
     gStyle->SetPaintTextFormat(".2f"); 
 
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(#frac{0.4}{R_{g}})";
+    if (observable=="rg") xlabel = "ln(0.4/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
     else if (observable=="zpt") xlabel = "z";
 
     TString sample = "bjet";
     TString label = "aggrTMVA_XXT";
-    TString fin_name = "./histos/" + sample + "_" + label + "_response.root";   
+    TString split_option = "full";
+    TString fin_name = "./histos/" + sample + "_" + label + "_response_" + split_option + "_jer_nom_jec_nom.root";   
 
+    std::cout << "File in: " << fin_name << std::endl;
     TFile *fin = new TFile(fin_name);
-    TH2D *h_sig_training_purity = (TH2D *) fin->Get("h_sig_training_purity_" + observable + "pt");
-    TH2D *h_sig_training_efficiency = (TH2D *) fin->Get("h_sig_training_efficiency_" + observable + "pt");
+    TH2D *h_training_purity;
+    TH2D *h_training_efficiency;
+
+    h_training_purity = (TH2D *) fin->Get("h_sig_training_purity_" + observable + "pt");
+    h_training_efficiency = (TH2D *) fin->Get("h_sig_training_efficiency_" + observable + "pt");
+    
     RooUnfoldResponse *response = (RooUnfoldResponse *) fin->Get("response_" + observable + "pt");
 
     // Draw purity + efficiency 
-    for (auto h : {h_sig_training_purity, h_sig_training_efficiency}) {
+    for (auto h : {h_training_purity, h_training_efficiency}) {
         h->GetXaxis()->SetTitleSize(font_size);    
         h->GetXaxis()->SetLabelSize(font_size);
         h->GetXaxis()->SetTitle(xlabel);
@@ -32,22 +40,29 @@ void draw_response(TString observable="rg")
     }
 
     TCanvas *c_purity = new TCanvas("c_purity", "purity", 800, 600);
-    h_sig_training_purity->Draw("colz texte");
+    h_training_purity->GetZaxis()->SetTitle("Reconstruction purity");
+    h_training_purity->Draw("colz texte");
+    drawHeaderSimulation();
     c_purity->Draw();
+    c_purity->Print("plots_an/"+sample+"_"+label+"_purity_"+observable+".png");
 
     TCanvas *c_efficiency = new TCanvas("c_efficiency", "efficiency", 800, 600);
-    h_sig_training_efficiency->Draw("colz texte");
+    h_training_efficiency->GetZaxis()->SetTitle("Reconstruction efficiency");
+    h_training_efficiency->Draw("colz texte");
+    drawHeaderSimulation();
     c_efficiency->Draw();
+    c_efficiency->Print("plots_an/"+sample+"_"+label+"_efficiency_"+observable+".png");
 
     // Draw the response matrix
-    Int_t nbins_x = h_sig_training_purity->GetNbinsX(); 
-    Int_t nbins_pt = h_sig_training_purity->GetNbinsY(); 
+    Int_t nbins_x = h_training_purity->GetNbinsX(); 
+    Int_t nbins_pt = h_training_purity->GetNbinsY(); 
 
     TMatrixD response_matrix = response->Mresponse();
     TH2D *response_histogram = new TH2D(response_matrix);
     TCanvas *c_response = new TCanvas("c_response", "response", 800, 600);
-    response_histogram->GetXaxis()->SetTitle("Detector level " + observable + " * p_{T}^{jet} bins");
-    response_histogram->GetYaxis()->SetTitle("Particle level " + observable + " * p_{T}^{jet} bins");
+    response_histogram->GetXaxis()->SetTitle("Detector level " + xlabel + " * p_{T}^{jet} bins");
+    response_histogram->GetYaxis()->SetTitle("Particle level " + xlabel + " * p_{T}^{jet} bins");
+    response_histogram->GetZaxis()->SetTitle("Migration probability");
     response_histogram->Draw("colz");
     for (int i = 1; i < nbins_pt; i++) {
         double coord = i * nbins_x;
@@ -61,11 +76,17 @@ void draw_response(TString observable="rg")
         hline->SetLineWidth(2);
         hline->Draw();
     }
+    drawHeaderSimulation();
+    c_response->Print("plots_an/"+sample+"_"+label+"_response_"+observable+".png");
 
     // Print condition number
     TDecompSVD *svd= new TDecompSVD(response->Mresponse());  // response is a RooUnfold response object, svd is the singular value decomposition (SVD) matrix. the response->Mresponse() returns the normalized migration matrix
     auto singular_values = svd->GetSig(); //this is a vector with the singular values, i.e., the diagonal elements of S. They are ordered from largest to smallest.
     double cond_number = singular_values.Max() / singular_values.Min();
+    for (int i=0; i < singular_values.GetNrows(); i++) {
+        double val = singular_values[i];
+        // std::cout << val << std::endl;
+    }
     std::cout << "Largest value = " << singular_values.Max() 
               << "\nSmallest value = " << singular_values.Min()
               << "\nCondition number = " << cond_number
