@@ -27,7 +27,7 @@ void trivial_test_inclusive(TString observable="rg")
     gStyle->SetTitleSize(text_size, "XYZ");
 
     // ---- Grab raw histos
-    TString sample = "dijet";
+    TString sample = "herwig_dijet";
     TString label = "aggrTMVA_inclusive";
     TString option = "_full";
     TString fname = "./histos/" + sample + "_" + label + "_response" + option + "_jer_nom_jec_nom.root";
@@ -160,26 +160,11 @@ void trivial_test_inclusive(TString observable="rg")
     hStack->Add(h_testing_reco_refolded_1d, "pe1");
     leg->AddEntry(h_testing_reco_refolded_1d, "Refolded pseudo data", "p");
 
-    // Make decorations
-    TPaveText *info_top_left = new TPaveText(-0.4, 0.27, 0.3, 0.285, "br ndc");
-    info_top_left->SetTextSize(text_size);
-    info_top_left->SetFillStyle(0);
-    info_top_left->SetLineWidth(0);
-    info_top_left->SetBorderSize(0);
-    info_top_left->AddText("#bf{CMS} #it{Internal Simulation}");
-
-    TPaveText *info_top_right = new TPaveText(0.8, 0.27, 1.6, 0.285, "br ndc");
-    info_top_right->SetTextSize(text_size);
-    info_top_right->SetFillStyle(0);
-    info_top_right->SetLineWidth(0);
-    info_top_right->SetBorderSize(0);
-    info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
-
-    TPaveText *test_info_text = new TPaveText(-1, 0.23, 0, 0.25, "br ndc");
-    test_info_text->SetTextSize(text_size);
-    test_info_text->SetFillStyle(0);
-    test_info_text->SetBorderSize(0);
-    test_info_text->AddText("TRIVIAL TEST");
+    // TPaveText *test_info_text = new TPaveText(-1, 0.23, 0, 0.25, "br ndc");
+    // test_info_text->SetTextSize(text_size);
+    // test_info_text->SetFillStyle(0);
+    // test_info_text->SetBorderSize(0);
+    // test_info_text->AddText("TRIVIAL TEST");
 
     // ------- RATIO PLOTS
 
@@ -238,6 +223,10 @@ void trivial_test_inclusive(TString observable="rg")
     pad2->cd();
     hStack->Draw("nostack");
     leg->Draw();
+    TLatex *test_info_text = new TLatex;
+    test_info_text->SetNDC();
+    test_info_text->SetTextSize(text_size);
+    test_info_text->DrawLatex(0.25, 0.45, "TRIVIAL TEST");
     test_info_text->Draw();
     if (sample.Contains("herwig")) drawHeaderHerwig();
     else drawHeaderSimulation();
