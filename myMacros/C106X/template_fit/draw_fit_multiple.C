@@ -1,5 +1,17 @@
-void draw_fit_multiple(TString observable = "rg")
+#include <chrono>
+#include "../draw_utils.h"
+
+void draw_fit_multiple(TString observable = "rg", TString jer_opt="nom", TString jec_opt="nom")
 {
+    TString suffix = "_jer_" + jer_opt + "_jec_" + jec_opt;
+    // current date/time based on current system
+    time_t now = time(0);
+
+    // convert now to string form
+    char* dt = ctime(&now);
+
+    std::cout << "The local date and time is: " << dt << std::endl;
+
     Float_t text_size = 26.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
@@ -9,9 +21,9 @@ void draw_fit_multiple(TString observable = "rg")
     TString option = "_glued";
     TString sample = "aggrTMVA_XXT";
     TString label_in = "data";
-    label_in += "_" + sample;
+    label_in += "_herwig_" + sample;
     TString method = "RooFit";
-    TString fin_name = "histos/fitted_parameters_" + method + "_" + label_in + "_" + observable + option + ".root";
+    TString fin_name = "histos/fitted_parameters_" + method + "_" + label_in + "_" + observable + option + suffix + ".root";
     std::cout << "fin = " << fin_name << std::endl;
     TFile *fin = new TFile(fin_name);
 
@@ -35,19 +47,13 @@ void draw_fit_multiple(TString observable = "rg")
     TH2D *h_bkg_bb_fraction = (TH2D *) fin->Get("h_bkg_bb_fraction");
     TH2D *h_bkg_rest_fraction = (TH2D *) fin->Get("h_bkg_rest_fraction");
 
-    TH2D *h_sig_fraction_true_training = (TH2D *) fin->Get("h_sig_fraction_true_training");
-    TH2D *h_bkg_bb_fraction_true_training = (TH2D *) fin->Get("h_bkg_bb_fraction_true_training");
-
     Int_t nbins_x = h_data->GetNbinsX();
     Int_t nbins_pt = h_data->GetNbinsZ();
-
-    Int_t npads = std::round((nbins_x + 1) / 2) * 2;
 
     Int_t choose_bin = 2;
     for (Int_t ibin_pt = choose_bin; ibin_pt <= choose_bin; ibin_pt++) {
         TCanvas *c_mb = new TCanvas(Form("c_mb_%d", ibin_pt), "", 1600, 1000);
-        // c_mb->Divide(npads / 2, 2, 0.0001, 0.0001);
-
+        
         TPad *pad1 = new TPad("pad1", "",0.0,0.0,0.33,0.2);
         TPad *pad2 = new TPad("pad2", "",0.0,0.2,0.33,0.5);
         TPad *pad3 = new TPad("pad3", "",0.0,0.5,0.33,0.7);
@@ -273,4 +279,12 @@ void draw_fit_multiple(TString observable = "rg")
         TString c_mb_name = Form("./plots/data_fit_mb_%.0f_pt_%.0f.png", pt_min, pt_max);
         c_mb->Print(c_mb_name);
     }
+
+    // current date/time based on current system
+    time_t now2 = time(0);
+
+    // convert now to string form
+    char* dt2 = ctime(&now2);
+
+    std::cout << "The local date and time is: " << dt2 << std::endl;
 }
