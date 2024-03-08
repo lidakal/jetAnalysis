@@ -1,8 +1,9 @@
 #include "myPalette.h"
+#include "draw_utils.h"
 
 void draw_rgkt_poster()
 {
-    Float_t font_size = 32.;
+    Float_t font_size = 20.;
     gStyle->SetPalette(57);
 
     TFile *fin_aggrGenNoReco = new TFile("./histos_for_poster/aggrGenNoReco_withY.root");
@@ -34,13 +35,13 @@ void draw_rgkt_poster()
     hBtag_noAggr->GetZaxis()->SetRangeUser(0, 0.015);
 
 
-    TPaveText *info_top_left = new TPaveText(0., 3., 1.6, 3.4, "nb ndc");
+    TPaveText *info_top_left = new TPaveText(0., 3., 2.1, 3.4, "nb ndc");
     info_top_left->SetTextSize(font_size);
     info_top_left->SetFillStyle(0);
     info_top_left->SetLineWidth(0);
-    info_top_left->AddText("#bf{CMS} #it{Internal Simulation}");
+    info_top_left->AddText("#bf{CMS} #it{Work in Progress Simulation}");
 
-    TPaveText *info_top_right = new TPaveText(2.2, 3., 4., 3.4, "nb ndc");
+    TPaveText *info_top_right = new TPaveText(2.3, 3., 4., 3.4, "nb ndc");
     info_top_right->SetTextSize(font_size);
     info_top_right->SetFillStyle(0);
     info_top_right->SetLineWidth(0);
@@ -51,29 +52,33 @@ void draw_rgkt_poster()
     info_jets->SetFillStyle(0);
     info_jets->SetLineWidth(0);
     info_jets->AddText("Particle level b-tagged b-jets ");
-    info_jets->AddText("80 < #it{p}_{T}^{jet} < 100 GeV");
+    info_jets->AddText("100 < #it{p}_{T}^{jet} < 120 GeV");
     info_jets->AddText("-2 < #it{#eta}^{jet} < 2");
     info_jets->AddText("");
 
     double max_z = 0.03;
 
-    TCanvas *c_aggr = new TCanvas("c_aggr", "", 1200, 1000);
+    TCanvas *c_aggr = new TCanvas("c_aggr", "", 800, 600);
     hBtag_aggr->Draw("colz");
     hBtag_aggr->SetMaximum(max_z);
-    info_top_left->Draw();
-    info_top_right->Draw();
+    // info_top_left->Draw();
+    // info_top_right->Draw();
     info_jets->Draw();
+    drawHeaderSimulation();
     c_aggr->Draw();
     c_aggr->SetGrid();
-    c_aggr->Print("./plots_for_poster/rgkt_aggr.png");
+    // c_aggr->Print("./plots_for_poster/rgkt_aggr.png");
+    c_aggr->Print("plots_an/rgkt_gen_aggr.png");
 
-    TCanvas *c_noAggr = new TCanvas("c_noAggr", "", 1200, 1000);
+    TCanvas *c_noAggr = new TCanvas("c_noAggr", "", 800, 600);
     hBtag_noAggr->Draw("colz");
     hBtag_noAggr->SetMaximum(max_z);
-    info_top_left->Draw();
-    info_top_right->Draw();
+    // info_top_left->Draw();
+    // info_top_right->Draw();
     info_jets->Draw();
+    drawHeaderSimulation();
     c_noAggr->Draw();
     c_noAggr->SetGrid();
-    c_noAggr->Print("./plots_for_poster/rgkt_noAggr.png");
+    // c_noAggr->Print("./plots_for_poster/rgkt_noAggr.png");
+    c_noAggr->Print("plots_an/rgkt_gen_noAggr.png");
 }
