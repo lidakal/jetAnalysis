@@ -1,8 +1,9 @@
 #include "root_utils.h"
+#include "../../myMacros/C106X/draw_utils.h"
 
 void draw_ROC_TMVA()
 {
-    Float_t font_size = 27.;
+    Float_t font_size = 20.;
     
     // TString label = "qcd_bjet";
     TString label = "qcd_bjet";
@@ -102,13 +103,14 @@ void draw_ROC_TMVA()
     gr_roc->GetXaxis()->SetTitleSize(font_size);
     gr_roc->GetYaxis()->SetTitleSize(font_size);
 
-    TCanvas *c_roc = new TCanvas("c_roc", "", 1200, 1000);
+    TCanvas *c_roc = new TCanvas("c_roc", "", 800, 600);
     gr_roc->Draw("al");
-    info_top_left->Draw();
-    info_top_right->Draw();
+    // info_top_left->Draw();
+    // info_top_right->Draw();
     info_tracks->Draw();
     info_bdt->Draw();
     SetRealAspectRatio(c_roc);
+    drawHeaderSimulation();
     c_roc->Draw();
     c_roc->SetGrid();
     TString c_roc_name = "./plots/" + label + "_TMVA_roc.png";
