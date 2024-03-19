@@ -27,6 +27,10 @@ void draw_unc_inclusive(TString observable="rg")
 
     std::vector<TPad *> pads = {pad11, pad12, pad13};
 
+    TString fout_name = "histos/total_unc_incl_"+observable+".root";
+    std::cout << "Creating file: " << fout_name << std::endl;
+    TFile *fout = new TFile(fout_name, "recreate");
+
     for (int ibin_pt=1; ibin_pt<=nbins_pt; ibin_pt++) {
         if (ibin_pt!=2) continue;
         int ipad = ibin_pt - 1;
@@ -126,6 +130,8 @@ void draw_unc_inclusive(TString observable="rg")
             h_total_unc_up->SetBinContent(ibin_x, total_unc_up);
             h_total_unc_down->SetBinContent(ibin_x, total_unc_down);
         }
+        h_total_unc_up->Write();
+        h_total_unc_down->Write();
 
         leg->AddEntry(h_total_unc_up, "total unc.", "f");
 
