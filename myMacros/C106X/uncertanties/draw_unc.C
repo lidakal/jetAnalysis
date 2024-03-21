@@ -181,6 +181,34 @@ void draw_unc(TString observable="rg")
         h_total_unc_up->Write();
         h_total_unc_down->Write();
 
+        //---------------------- NEEDS CLEANUP: save syst total only 
+        TH1D *h_syst_unc_rel_up = (TH1D *) h_stat_unc_rel->Clone(Form("h_syst_unc_rel_up_%d", ibin_pt));
+        h_syst_unc_rel_up->Reset();
+        TH1D *h_syst_unc_rel_down = (TH1D *) h_syst_unc_rel_up->Clone(Form("h_syst_unc_rel_down_%d", ibin_pt));
+        for (int ibin_x = 1; ibin_x <= h_syst_unc_rel_up->GetNbinsX(); ibin_x++) {
+            double syst_unc_rel_up = 0;
+            double syst_unc_rel_down = 0;
+
+            for (auto h : histos) {
+                double unc_h = h->GetBinContent(ibin_x);
+                if (unc_h>0) {
+                    syst_unc_rel_up += unc_h*unc_h;
+                } else {
+                    syst_unc_rel_down += unc_h*unc_h;
+                }
+            }
+
+            syst_unc_rel_up = std::sqrt(syst_unc_rel_up);
+            syst_unc_rel_down = std::sqrt(syst_unc_rel_down);
+            syst_unc_rel_down *= -1;
+
+            h_syst_unc_rel_up->SetBinContent(ibin_x, syst_unc_rel_up);
+            h_syst_unc_rel_down->SetBinContent(ibin_x, syst_unc_rel_down);
+        }
+        h_syst_unc_rel_up->Write();
+        h_syst_unc_rel_down->Write();
+        //--------------------------------
+
         leg->AddEntry(h_total_unc_up, "total unc.", "f");
 
         double ymin=-1;
