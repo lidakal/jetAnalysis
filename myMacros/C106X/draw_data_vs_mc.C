@@ -2,8 +2,8 @@
 
 void draw_data_vs_mc(TString observable="zpt")
 {
-    TString sample = "bjet";
-    TString label = "aggrTMVA_XXT";
+    TString sample = "dijet";
+    TString label = "aggrTMVA_inclusive";
 
     TString xlabel;
     if (observable=="rg") xlabel = "ln(0.4/R_{g})";
@@ -22,6 +22,7 @@ void draw_data_vs_mc(TString observable="zpt")
 
     // Grab unfolded data
     TString fin_data_name = "unfolding/histos/"+sample+"_"+label+"_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root";
+    if (label.Contains("inclusive")) fin_data_name = "unfolding/histos/"+sample+"_"+label+"_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root";
     std::cout << "Reading b jet data from : " << fin_data_name << std::endl;
     TFile *fin_data = new TFile(fin_data_name);
     TH2D *h_data = (TH2D *) fin_data->Get("h_data_unfolded")->Clone("h_data");
@@ -31,11 +32,13 @@ void draw_data_vs_mc(TString observable="zpt")
     std::cout << "Reading pythia from : " << fin_pythia_name << std::endl;
     TFile *fin_pythia = new TFile(fin_pythia_name);
     TH2D *h_pythia = (TH2D *) fin_pythia->Get("h_sig_training_true_"+observable+"pt");
+    if (label.Contains("inclusive")) h_pythia = (TH2D *) fin_pythia->Get("h_training_true_"+observable+"pt");
 
     TString fin_herwig_name = "unfolding/histos/herwig_"+sample+"_aggrTMVA_inclusive_response_full_jer_nom_jec_nom.root";
     std::cout << "Reading herwig from : " << fin_herwig_name << std::endl;
     TFile *fin_herwig = new TFile(fin_herwig_name);
     TH2D *h_herwig = (TH2D *) fin_herwig->Get("h_sig_training_true_"+observable+"pt");
+    if (label.Contains("inclusive")) h_herwig = (TH2D *) fin_herwig->Get("h_training_true_"+observable+"pt");
 
     // Make projections 
     int ibin_pt = 2;
@@ -72,7 +75,9 @@ void draw_data_vs_mc(TString observable="zpt")
     }) {
         h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
         h->Scale(1/h->Integral(ibin_x_min, ibin_x_max), "width");
-        h->GetYaxis()->SetRangeUser(0, 6.);
+        if (observable=="zg") h->GetYaxis()->SetRangeUser(0, 6.);
+        else if (observable=="rg") h->GetYaxis()->SetRangeUser(0, 1.5);
+        else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 4.);
         h->GetYaxis()->SetTitle(ylabel);
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetLabelOffset(10);
@@ -180,7 +185,9 @@ void draw_data_vs_mc(TString observable="zpt")
     line->SetLineColor(kBlack);
 
     // Make a legend
-    TLegend *leg = new TLegend(0.5, 0.5, 0.8, 0.9);
+    TLegend *leg;
+    if (observable=="zpt") leg = new TLegend(0.2, 0.5, 0.5, 0.9);
+    else leg = new TLegend(0.5, 0.5, 0.8, 0.9);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
     leg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", min_pt, max_pt));
@@ -239,5 +246,5 @@ void draw_data_vs_mc(TString observable="zpt")
     bottom_pad->Draw();
 
     c_result->Draw();
-    c_result->Print("plots_an/full_results_"+observable+".png");
+    c_result->Print("plots_an/"+label+"_data_vs_mc_"+observable+".png");
 }
