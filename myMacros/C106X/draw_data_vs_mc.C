@@ -76,7 +76,7 @@ void draw_data_vs_mc(TString observable="zpt")
         h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
         h->Scale(1/h->Integral(ibin_x_min, ibin_x_max), "width");
         if (observable=="zg") h->GetYaxis()->SetRangeUser(0, 6.);
-        else if (observable=="rg") h->GetYaxis()->SetRangeUser(0, 1.5);
+        else if (observable=="rg") h->GetYaxis()->SetRangeUser(0, 1.1);
         else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 4.);
         h->GetYaxis()->SetTitle(ylabel);
         h->GetYaxis()->SetTitleOffset(1.5);
@@ -191,9 +191,15 @@ void draw_data_vs_mc(TString observable="zpt")
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
     leg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", min_pt, max_pt));
-    leg->AddEntry(h_data_1d, "single b jets", "pe1");
-    leg->AddEntry(h_pythia_1d, "PYTHIA8 single b jets", "pe1");
-    leg->AddEntry(h_herwig_1d, "HERWIG7 single b jets", "pe1");
+    if (label.Contains("inclusive")) {
+        leg->AddEntry(h_data_1d, "inclusive jets", "pe1");
+        leg->AddEntry(h_pythia_1d, "PYTHIA8 inclusive jets", "pe1");
+        leg->AddEntry(h_herwig_1d, "HERWIG7 inclusive jets", "pe1");
+    } else {
+        leg->AddEntry(h_data_1d, "single b jets", "pe1");
+        leg->AddEntry(h_pythia_1d, "PYTHIA8 single b jets", "pe1");
+        leg->AddEntry(h_herwig_1d, "HERWIG7 single b jets", "pe1");
+    }
     leg->AddEntry(gr_unc, "systematic uncertainty", "f");
 
     for (auto h : {
