@@ -57,6 +57,7 @@ void draw_unc(TString observable="rg")
         h_stat_unc_rel->GetYaxis()->SetTitle("relative uncertainty");
         h_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
         leg->AddEntry(h_stat_unc_rel, "statistical (sym)", "f");
+        leg->AddEntry(h_stat_unc_rel, " ", "");
 
         TH1D *h_stat_unc_rel_down = (TH1D *) h_stat_unc_rel->Clone(Form("h_stat_unc_rel_down_%d", ibin_pt));
         h_stat_unc_rel_down->Scale(-1.);
