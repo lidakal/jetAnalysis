@@ -24,7 +24,7 @@ void draw_unc(TString observable="rg")
 
     int nbins_pt = 3;
     
-    TCanvas *c_unc = new TCanvas("c_unc", "", 1600,1200);
+    TCanvas *c_unc = new TCanvas("c_unc", "", 800,600);
     // TPad *pad11 = new TPad("pad11", "", 0., 0., 0.33, 1.);
     TPad *pad12 = new TPad("pad12", "", 0., 0., 1., 1.);
     // TPad *pad13 = new TPad("pad13", "", 0.66, 0., 0.99, 1.);
@@ -41,7 +41,9 @@ void draw_unc(TString observable="rg")
         if (ibin_pt!=2) continue;
         int ipad = ibin_pt - 1;
 
-        TLegend *leg = new TLegend(0.2, 0.6, 0.6, 0.9);
+        TLegend *leg = new TLegend(0.2, 0.63, 0.6, 0.87);
+        leg->SetNColumns(2);
+        leg->SetColumnSeparation(0.3); 
         leg->SetFillStyle(0);
         leg->SetBorderSize(0);
         leg->SetMargin(0.15);
@@ -53,7 +55,7 @@ void draw_unc(TString observable="rg")
         h_stat_unc_rel->SetFillStyle(3244);
         h_stat_unc_rel->SetMarkerStyle(1);
         h_stat_unc_rel->GetYaxis()->SetTitle("relative uncertainty");
-        h_stat_unc_rel->GetYaxis()->SetTitleOffset(2.5);
+        h_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
         leg->AddEntry(h_stat_unc_rel, "statistical (sym)", "f");
 
         TH1D *h_stat_unc_rel_down = (TH1D *) h_stat_unc_rel->Clone(Form("h_stat_unc_rel_down_%d", ibin_pt));
@@ -65,7 +67,7 @@ void draw_unc(TString observable="rg")
         h_raw_stat_unc_rel->SetFillStyle(3002);
         h_raw_stat_unc_rel->SetMarkerStyle(1);
         h_raw_stat_unc_rel->GetYaxis()->SetTitle("relative uncertainty");
-        h_raw_stat_unc_rel->GetYaxis()->SetTitleOffset(2.5);
+        h_raw_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
         // leg->AddEntry(h_raw_stat_unc_rel, "raw statistical (sym)", "f");
 
         TH1D *h_raw_stat_unc_rel_down = (TH1D *) h_raw_stat_unc_rel->Clone(Form("h_raw_stat_unc_rel_down_%d", ibin_pt));
@@ -100,7 +102,7 @@ void draw_unc(TString observable="rg")
         TH1D *h_mc_stat_unc_up_rel = (TH1D *) fin_mc_stat_unc->Get(Form("h_mc_stat_unc_up_rel_%d", ibin_pt))->Clone(Form("h_mc_stat_unc_up_rel_%d", ibin_pt));
         h_mc_stat_unc_up_rel->SetLineColor(kGreen);
         h_mc_stat_unc_up_rel->SetMarkerStyle(kOpenDiamond);
-        leg->AddEntry(h_mc_stat_unc_up_rel, "response matrix stat (sym)", "pl");
+        leg->AddEntry(h_mc_stat_unc_up_rel, "response stats (sym)", "pl");
 
         TH1D *h_mc_stat_unc_down_rel = (TH1D *) h_mc_stat_unc_up_rel->Clone(Form("h_stat_unc_down_rel_%d", ibin_pt));
         h_mc_stat_unc_down_rel->Scale(-1.);
@@ -123,7 +125,7 @@ void draw_unc(TString observable="rg")
         TH1D *h_model_fit_unc_rel = (TH1D *) fin_model_fit_unc->Get(Form("h_model_fit_unc_rel_%d", ibin_pt))->Clone(Form("h_model_fit_unc_rel_%d", ibin_pt));
         h_model_fit_unc_rel->SetLineColor(kOrange-3);
         h_model_fit_unc_rel->SetMarkerStyle(kFullDoubleDiamond);
-        leg->AddEntry(h_model_fit_unc_rel, "modelling template fit shape", "pl");
+        leg->AddEntry(h_model_fit_unc_rel, "modelling template", "pl");
 
         TH1D *h_cl_frac_up_rel = (TH1D *) fin_cl_frac->Get(Form("h_unc_up_rel_%d", ibin_pt))->Clone(Form("h_cl_frac_up_rel_%d", ibin_pt));
         h_cl_frac_up_rel->SetLineColor(kSpring+10);
