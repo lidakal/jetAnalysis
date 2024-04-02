@@ -35,19 +35,19 @@ void draw_unc_inclusive(TString observable="rg")
         if (ibin_pt!=2) continue;
         int ipad = ibin_pt - 1;
 
-        TLegend *leg = new TLegend(0.2, 0.6, 0.6, 0.9);
+        TLegend *leg = new TLegend(0.2, 0.55, 0.6, 0.85);
         leg->SetFillStyle(0);
         leg->SetBorderSize(0);
         leg->SetMargin(0.15);
         // leg->SetHeader(Form("jet pt bin %d", ibin_pt));
-        leg->SetHeader("100 < p_{T}^{jet} < 120 (GeV)");
+        // leg->SetHeader("100 < p_{T}^{jet} < 120 (GeV)");
 
         TH1D *h_stat_unc_rel = (TH1D *) fin_stat_unc->Get(Form("h_stat_unc_rel_%d", ibin_pt))->Clone(Form("h_stat_unc_rel_%d", ibin_pt));
         h_stat_unc_rel->SetLineColor(kBlack);
         h_stat_unc_rel->SetFillStyle(3244);
         h_stat_unc_rel->SetMarkerStyle(1);
         h_stat_unc_rel->GetYaxis()->SetTitle("relative uncertainty");
-        h_stat_unc_rel->GetYaxis()->SetTitleOffset(2.5);
+        h_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
         leg->AddEntry(h_stat_unc_rel, "statistical (sym)", "f");
 
         TH1D *h_stat_unc_rel_down = (TH1D *) h_stat_unc_rel->Clone(Form("h_stat_unc_rel_down_%d", ibin_pt));
@@ -107,6 +107,20 @@ void draw_unc_inclusive(TString observable="rg")
         
         std::vector<TH1D *> all_histos = {h_stat_unc_rel, h_stat_unc_rel_down};
         all_histos.insert(all_histos.end(), histos.begin(), histos.end());
+
+        // fix x axis
+        int nbins_x = h_stat_unc_rel->GetNbinsX();
+
+        int ibin_x_min = 1;
+        int ibin_x_max = nbins_x;
+
+        if (observable!="zpt") ibin_x_min = 2;
+        if (observable=="rg") ibin_x_max = nbins_x - 1;
+
+        for (auto h : all_histos) {
+            h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
+        }
+
         TH1D *h_total_unc_up = (TH1D *) h_stat_unc_rel->Clone(Form("h_total_unc_up_%d", ibin_pt));
         h_total_unc_up->Reset();
         TH1D *h_total_unc_down = (TH1D *) h_total_unc_up->Clone(Form("h_total_unc_down_%d", ibin_pt));
@@ -133,11 +147,39 @@ void draw_unc_inclusive(TString observable="rg")
         h_total_unc_up->Write();
         h_total_unc_down->Write();
 
+        //---------------------- NEEDS CLEANUP: save syst total only 
+        TH1D *h_syst_unc_rel_up = (TH1D *) h_stat_unc_rel->Clone(Form("h_syst_unc_rel_up_%d", ibin_pt));
+        h_syst_unc_rel_up->Reset();
+        TH1D *h_syst_unc_rel_down = (TH1D *) h_syst_unc_rel_up->Clone(Form("h_syst_unc_rel_down_%d", ibin_pt));
+        for (int ibin_x = 1; ibin_x <= h_syst_unc_rel_up->GetNbinsX(); ibin_x++) {
+            double syst_unc_rel_up = 0;
+            double syst_unc_rel_down = 0;
+
+            for (auto h : histos) {
+                double unc_h = h->GetBinContent(ibin_x);
+                if (unc_h>0) {
+                    syst_unc_rel_up += unc_h*unc_h;
+                } else {
+                    syst_unc_rel_down += unc_h*unc_h;
+                }
+            }
+
+            syst_unc_rel_up = std::sqrt(syst_unc_rel_up);
+            syst_unc_rel_down = std::sqrt(syst_unc_rel_down);
+            syst_unc_rel_down *= -1;
+
+            h_syst_unc_rel_up->SetBinContent(ibin_x, syst_unc_rel_up);
+            h_syst_unc_rel_down->SetBinContent(ibin_x, syst_unc_rel_down);
+        }
+        h_syst_unc_rel_up->Write();
+        h_syst_unc_rel_down->Write();
+        //--------------------------------
+
         leg->AddEntry(h_total_unc_up, "total unc.", "f");
 
-        double ymax=0.2;
-        double ymin=-0.2;
-
+        double ymin=-0.05;
+        double ymax=0.17;
+        
         pads[ipad]->cd();
 
         for (auto h : {h_total_unc_up, h_total_unc_down}) {
@@ -159,7 +201,7 @@ void draw_unc_inclusive(TString observable="rg")
             h->Draw("hist same");
         }
 
-        TLine *line = new TLine(h_jer_up_rel->GetXaxis()->GetBinLowEdge(1), 0, h_jer_up_rel->GetXaxis()->GetBinUpEdge(h_jer_up_rel->GetNbinsX()), 0);
+        TLine *line = new TLine(h_jer_up_rel->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         // line->SetLineStyle(kDashed);
         line->Draw();
 
@@ -171,23 +213,23 @@ void draw_unc_inclusive(TString observable="rg")
             h->SetLineStyle(kDashed);
             h->SetMarkerSize(2);
             h->GetYaxis()->SetTitle("relative uncertainty");
-            h->GetYaxis()->SetTitleOffset(2);
+            h->GetYaxis()->SetTitleOffset(1.5);
             h->Draw("p l hist same");
         }
         // h_stat_unc_rel->Draw("pe2 same");
         leg->Draw();
         drawHeader();
 
-        for (int ibin_x=1; ibin_x<h_jer_up_rel->GetNbinsX(); ibin_x++) {
+        for (int ibin_x=ibin_x_min; ibin_x<ibin_x_max; ibin_x++) {
             double x = h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x);
             TLine *line_x = new TLine(x, ymin, x, ymax);
             line_x->SetLineColor(kGray);
             line_x->SetLineStyle(kDashed);
-            line_x->Draw();
+            // line_x->Draw();
         }
 
-        double x1 = h_jer_up_rel->GetXaxis()->GetBinLowEdge(h_jer_up_rel->GetNbinsX());
-        double x2 = h_jer_up_rel->GetXaxis()->GetBinUpEdge(h_jer_up_rel->GetNbinsX());
+        double x1 = h_jer_up_rel->GetXaxis()->GetBinLowEdge(ibin_x_max);
+        double x2 = h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x_max);
         double y1 = ymin;
         double y2 = ymax;
         TPaveText *overflow = new TPaveText(x1, y1, x2, y2);
@@ -198,10 +240,19 @@ void draw_unc_inclusive(TString observable="rg")
         overflow_txt->SetTextSize(20);
         // if (observable=="rg") overflow->Draw();
 
+        // Jets text
+        TLatex *jet_info = new TLatex;
+        jet_info->SetNDC();
+        jet_info->SetTextSize(20);
+        jet_info->DrawLatex(0.5, 0.82, "anti-k_{T}, R=0.4 inclusive jets");
+        jet_info->DrawLatex(0.5, 0.77, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.5, 0.72, "k_{T} > 1 GeV");
+        jet_info->Draw();
+
         c_unc->cd();
         pads[ipad]->Draw();
     }
 
     c_unc->Draw();
-    c_unc->Print("plots_an/total_unc_incl_"+observable+".png");
+    c_unc->Print("plots_an/total_unc_incl_"+observable+".pdf");
 }

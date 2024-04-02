@@ -5,7 +5,7 @@ void draw_unc(TString observable="rg")
     TString xlabel;
     if (observable=="rg") xlabel = "ln(0.4/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z";
+    else if (observable=="zpt") xlabel = "z^{ch}=p_{T}^{B,ch}/p_{T}^{jet,ch}";
     
     gStyle->SetErrorX(0.5);
 
@@ -48,7 +48,7 @@ void draw_unc(TString observable="rg")
         leg->SetBorderSize(0);
         leg->SetMargin(0.15);
         // leg->SetHeader(Form("jet pt bin %d", ibin_pt));
-        leg->SetHeader("100 < p_{T}^{jet} < 120 (GeV)");
+        // leg->SetHeader("100 < p_{T}^{jet} < 120 (GeV)");
 
         TH1D *h_stat_unc_rel = (TH1D *) fin_stat_unc->Get(Form("h_stat_unc_rel_%d", ibin_pt))->Clone(Form("h_stat_unc_rel_%d", ibin_pt));
         h_stat_unc_rel->SetLineColor(kBlack);
@@ -158,6 +158,20 @@ void draw_unc(TString observable="rg")
         
         std::vector<TH1D *> all_histos = {h_stat_unc_rel, h_stat_unc_rel_down};
         all_histos.insert(all_histos.end(), histos.begin(), histos.end());
+
+        // fix x axis
+        int nbins_x = h_stat_unc_rel->GetNbinsX();
+
+        int ibin_x_min = 1;
+        int ibin_x_max = nbins_x;
+
+        if (observable!="zpt") ibin_x_min = 2;
+        if (observable=="rg") ibin_x_max = nbins_x - 1;
+
+        for (auto h : all_histos) {
+            h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
+        }
+
         TH1D *h_total_unc_up = (TH1D *) h_stat_unc_rel->Clone(Form("h_total_unc_up_%d", ibin_pt));
         h_total_unc_up->Reset();
         TH1D *h_total_unc_down = (TH1D *) h_total_unc_up->Clone(Form("h_total_unc_down_%d", ibin_pt));
@@ -214,7 +228,7 @@ void draw_unc(TString observable="rg")
 
         leg->AddEntry(h_total_unc_up, "total unc.", "f");
 
-        double ymin=-1;
+        double ymin=-0.5;
         double ymax=1;
 
         pads[ipad]->cd();
@@ -240,7 +254,7 @@ void draw_unc(TString observable="rg")
             h->Draw("hist same");
         }
 
-        TLine *line = new TLine(h_jer_up_rel->GetXaxis()->GetBinLowEdge(1), 0, h_jer_up_rel->GetXaxis()->GetBinUpEdge(h_jer_up_rel->GetNbinsX()), 0);
+        TLine *line = new TLine(h_jer_up_rel->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         // line->SetLineStyle(kDashed);
         line->Draw();
 
@@ -259,16 +273,16 @@ void draw_unc(TString observable="rg")
         leg->Draw();
         drawHeader();
 
-        for (int ibin_x=1; ibin_x<h_jer_up_rel->GetNbinsX(); ibin_x++) {
+        for (int ibin_x=1; ibin_x<ibin_x_max; ibin_x++) {
             double x = h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x);
             TLine *line_x = new TLine(x, ymin, x, ymax);
             line_x->SetLineColor(kGray);
             line_x->SetLineStyle(kDashed);
-            line_x->Draw();
+            // line_x->Draw();
         }
 
-        double x1 = h_jer_up_rel->GetXaxis()->GetBinLowEdge(h_jer_up_rel->GetNbinsX());
-        double x2 = h_jer_up_rel->GetXaxis()->GetBinUpEdge(h_jer_up_rel->GetNbinsX());
+        double x1 = h_jer_up_rel->GetXaxis()->GetBinLowEdge(ibin_x_max);
+        double x2 = h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x_max);
         double y1 = ymin;
         double y2 = ymax;
         TPaveText *overflow = new TPaveText(x1, y1, x2, y2);
@@ -279,10 +293,26 @@ void draw_unc(TString observable="rg")
         overflow_txt->SetTextSize(20);
         // if (observable=="rg") overflow->Draw();
 
+        // Jets text
+        TLatex *jet_info = new TLatex;
+        jet_info->SetNDC();
+        jet_info->SetTextSize(20);
+        if (observable!="zpt") {
+            jet_info->DrawLatex(0.21, 0.58, "anti-k_{T}, R=0.4 single b jets");
+            jet_info->DrawLatex(0.21, 0.53, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+            jet_info->DrawLatex(0.21, 0.48, "k_{T} > 1 GeV");
+        } else {
+            jet_info->DrawLatex(0.5, 0.28, "anti-k_{T}, R=0.4 single b jets");
+            jet_info->DrawLatex(0.5, 0.23, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+            jet_info->DrawLatex(0.5, 0.18, "k_{T} > 1 GeV");
+        }
+        jet_info->Draw();
+        
+
         c_unc->cd();
         pads[ipad]->Draw();
     }
 
     c_unc->Draw();
-    c_unc->Print("plots_an/total_unc_XXT_"+observable+".png");
+    c_unc->Print("plots_an/total_unc_XXT_"+observable+".pdf");
 }
