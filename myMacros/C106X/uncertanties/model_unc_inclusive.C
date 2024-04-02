@@ -16,9 +16,9 @@ void model_unc_inclusive(TString observable="rg")
     else if (observable=="zpt") xlabel = "z";
     TString ylabel = "1/N dN/d" + xlabel;
 
-    TFile *fin_nom = new TFile("../unfolding/histos/aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
+    TFile *fin_nom = new TFile("../unfolding/histos/dijet_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_her = new TFile("../unfolding/histos/herwig_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
+    TFile *fin_her = new TFile("../unfolding/histos/herwig_dijet_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
     TH2D *h_her = (TH2D *) fin_her->Get("h_data_unfolded")->Clone("h_her");
     
     int nbins_x = h_nom->GetNbinsX();
@@ -63,10 +63,8 @@ void model_unc_inclusive(TString observable="rg")
         int ibin_x_min = 1;
         int ibin_x_max = nbins_x;
 
-        // if (observable=="rg") {
-        //     ibin_x_min = 2;
-        //     ibin_x_max = nbins_x - 1;
-        // }
+        if (observable!="zpt") ibin_x_min = 2;
+        if (observable=="rg") ibin_x_max = nbins_x - 1;
 
         h_nom_1d->SetMarkerStyle(kFullCircle); 
         h_nom_1d->SetMarkerColor(kBlack);
@@ -131,6 +129,8 @@ void model_unc_inclusive(TString observable="rg")
         top_pads[ipad]->Draw();
         bottom_pads[ipad]->Draw();
     }
+    c_model->cd();
+    c_model->Print("plots_an/model_response_unc_incl_"+observable+".png");
     // fout->Close();
     // delete fout;
 }

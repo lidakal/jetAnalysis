@@ -38,6 +38,11 @@ void model_unc(TString observable="rg")
     std::vector<TPad *> top_pads = {pad21, pad22, pad23};
     
     TFile *fout = new TFile("./histos/"+observable+"_model_unc_XXT.root", "recreate");
+
+    int ibin_x_min = 1;
+    int ibin_x_max = h_nom->GetNbinsX();
+    // if (observable != "zpt") ibin_x_min = 2;
+    // if (observable == "rg") ibin_x_max = h_nom->GetNbinsX() - 1;
     
     for (int ibin_pt = 1; ibin_pt <= nbins_pt; ibin_pt++) {
         if (ibin_pt!=2) continue;
@@ -59,14 +64,9 @@ void model_unc(TString observable="rg")
         // Make projections 
         TH1D *h_nom_1d = (TH1D *) h_nom->ProjectionX(Form("h_nom_1d_%d", ibin_pt), ibin_pt, ibin_pt);
         TH1D *h_her_1d = (TH1D *) h_her->ProjectionX(Form("h_her_1d_%d", ibin_pt), ibin_pt, ibin_pt);
-        
-        int ibin_x_min = 1;
-        int ibin_x_max = nbins_x;
 
-        // if (observable=="rg") {
-        //     ibin_x_min = 2;
-        //     ibin_x_max = nbins_x - 1;
-        // }
+        if (observable!="zpt") ibin_x_min = 2;
+        if (observable=="rg") ibin_x_max = nbins_x - 1;
 
         h_nom_1d->SetMarkerStyle(kFullCircle); 
         h_nom_1d->SetMarkerColor(kBlack);

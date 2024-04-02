@@ -66,10 +66,8 @@ void cl_frac_unc(TString observable="rg")
         int ibin_x_min = 1;
         int ibin_x_max = nbins_x;
 
-        // if (observable=="rg") {
-        //     ibin_x_min = 2;
-        //     ibin_x_max = nbins_x - 1;
-        // }
+        if (observable!="zpt") ibin_x_min = 2;
+        if (observable=="rg") ibin_x_max = nbins_x - 1;
 
         h_nom_1d->SetMarkerStyle(kFullCircle); 
         h_nom_1d->SetMarkerColor(kBlack);
@@ -124,7 +122,7 @@ void cl_frac_unc(TString observable="rg")
         h_unc_up_rel->Divide(h_nom_1d);
         h_unc_up_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_unc_up_rel->GetYaxis()->SetTitleOffset(2.);
-        h_unc_up_rel->GetYaxis()->SetRangeUser(-0.25,0.25);
+        h_unc_up_rel->GetYaxis()->SetRangeUser(-0.3,0.3);
         h_unc_up_rel->Write();
 
         TH1D *h_unc_down_rel = (TH1D *) h_unc_down->Clone(Form("h_unc_down_rel_%d", ibin_pt));

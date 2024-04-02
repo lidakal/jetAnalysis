@@ -63,10 +63,8 @@ void trk_inef_unc_inclusive(TString observable="rg")
         int ibin_x_min = 1;
         int ibin_x_max = nbins_x;
 
-        // if (observable=="rg") {
-        //     ibin_x_min = 2;
-        //     ibin_x_max = nbins_x - 1;
-        // }
+        if (observable!="zpt") ibin_x_min = 2;
+        if (observable=="rg") ibin_x_max = nbins_x - 1;
 
         h_nom_1d->SetMarkerStyle(kFullCircle); 
         h_nom_1d->SetMarkerColor(kBlack);

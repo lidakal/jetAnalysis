@@ -68,10 +68,8 @@ void jer_unc(TString observable="rg")
         int ibin_x_min = 1;
         int ibin_x_max = nbins_x;
 
-        // if (observable=="rg") {
-        //     ibin_x_min = 2;
-        //     ibin_x_max = nbins_x - 1;
-        // }
+        if (observable!="zpt") ibin_x_min = 2;
+        if (observable=="rg") ibin_x_max = nbins_x - 1;
 
         h_nom_1d->SetMarkerStyle(kFullCircle); 
         h_nom_1d->SetMarkerColor(kBlack);
@@ -103,7 +101,7 @@ void jer_unc(TString observable="rg")
         leg->Draw();
         drawHeader();
 
-        // Extract uncertainties 
+        // Extract uncertainties after setting range and normalization
         TH1D * h_unc_up = (TH1D *) h_up_1d->Clone(Form("h_unc_up_%d", ibin_pt));
         h_unc_up->Add(h_nom_1d, -1);
         h_unc_up->GetYaxis()->SetTitle("uncertainty");
