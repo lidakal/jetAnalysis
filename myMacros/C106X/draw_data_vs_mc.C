@@ -1,12 +1,12 @@
 #include "draw_utils.h"
 
-void draw_data_vs_mc(TString observable="zpt")
+void draw_data_vs_mc(TString observable="rg")
 {
-    TString sample = "dijet";
-    TString label = "aggrTMVA_inclusive";
+    TString sample = "bjet";
+    TString label = "aggrTMVA_XXT";
 
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(0.4/R_{g})";
+    if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
     else if (observable=="zpt") xlabel = "z^{ch}#equivp_{T}^{B,ch}/p_{T}^{jet,ch}";
     TString ylabel = "1/N dN/dz^{ch}";
@@ -23,7 +23,7 @@ void draw_data_vs_mc(TString observable="zpt")
     // Grab unfolded data
     TString fin_data_name = "unfolding/histos/"+sample+"_"+label+"_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root";
     if (label.Contains("inclusive")) fin_data_name = "unfolding/histos/"+sample+"_"+label+"_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root";
-    std::cout << "Reading b jet data from : " << fin_data_name << std::endl;
+    std::cout << "Reading data from : " << fin_data_name << std::endl;
     TFile *fin_data = new TFile(fin_data_name);
     TH2D *h_data = (TH2D *) fin_data->Get("h_data_unfolded")->Clone("h_data");
 
@@ -49,16 +49,24 @@ void draw_data_vs_mc(TString observable="zpt")
     h_data_1d->SetMarkerStyle(kFullCircle);
     h_data_1d->SetMarkerColor(kBlack); 
     h_data_1d->SetLineColor(kBlack);
+    h_data_1d->SetLineStyle(1);
+    h_data_1d->SetLineWidth(2);
 
     TH1D *h_pythia_1d = (TH1D *) h_pythia->ProjectionX("h_pythia_1d", ibin_pt, ibin_pt);
-    h_pythia_1d->SetMarkerStyle(kFullCross);
-    h_pythia_1d->SetMarkerColor(kRed); 
-    h_pythia_1d->SetLineColor(kRed);
+    // h_pythia_1d->SetMarkerStyle(kFullCross);
+    h_pythia_1d->SetMarkerStyle(1);
+    h_pythia_1d->SetMarkerColor(kOrange-3); 
+    h_pythia_1d->SetLineColor(kOrange-3);
+    h_pythia_1d->SetLineStyle(9);
+    h_pythia_1d->SetLineWidth(2);
 
     TH1D *h_herwig_1d = (TH1D *) h_herwig->ProjectionX("h_herwig_1d", ibin_pt, ibin_pt);
-    h_herwig_1d->SetMarkerStyle(kFullCrossX);
-    h_herwig_1d->SetMarkerColor(kBlue); 
-    h_herwig_1d->SetLineColor(kBlue);
+    // h_herwig_1d->SetMarkerStyle(kFullCrossX);
+    h_herwig_1d->SetMarkerStyle(1);
+    h_herwig_1d->SetMarkerColor(kAzure-3); 
+    h_herwig_1d->SetLineColor(kAzure-3);
+    h_herwig_1d->SetLineStyle(8);
+    h_herwig_1d->SetLineWidth(2);
 
     // Normalize histograms 
     int ibin_x_min = 1;
@@ -93,7 +101,7 @@ void draw_data_vs_mc(TString observable="zpt")
     // Grab sys errors 
     TString fin_unc_name = "uncertanties/histos/total_unc_incl_"+observable+".root";
     if (label.Contains("XXT")) fin_unc_name = "uncertanties/histos/total_unc_XXT_"+observable+".root";
-    std::cout << "Reading b jet unc from : " << fin_unc_name << std::endl;
+    std::cout << "Reading unc from : " << fin_unc_name << std::endl;
     TFile *fin_unc = new TFile(fin_unc_name);
     TH1D *h_syst_unc_rel_up = (TH1D *) fin_unc->Get(Form("h_syst_unc_rel_up_%d", ibin_pt))->Clone("h_syst_unc_rel_up");
     TH1D *h_syst_unc_rel_down = (TH1D *) fin_unc->Get(Form("h_syst_unc_rel_down_%d", ibin_pt))->Clone("h_syst_unc_rel_down");
@@ -184,36 +192,37 @@ void draw_data_vs_mc(TString observable="zpt")
     line->SetLineStyle(kSolid);
     line->SetLineColor(kBlack);
 
+    // Clone data histogram for legend 
+    TH1D *h_data_legend = (TH1D *) h_data_1d->Clone("h_data_legend");
+    h_data_legend->SetFillColor(kGray);
+    h_data_legend->SetFillStyle(3001);    
+    h_data_legend->SetLineWidth(0);
+
     // Make a legend
     TLegend *leg;
     if (observable=="zpt") leg = new TLegend(0.2, 0.5, 0.5, 0.9);
-    else leg = new TLegend(0.5, 0.5, 0.8, 0.9);
+    else leg = new TLegend(0.5, 0.6, 0.8, 0.9);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
-    leg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", min_pt, max_pt));
-    if (label.Contains("inclusive")) {
-        leg->AddEntry(h_data_1d, "inclusive jets", "pe1");
-        leg->AddEntry(h_pythia_1d, "PYTHIA8 inclusive jets", "pe1");
-        leg->AddEntry(h_herwig_1d, "HERWIG7 inclusive jets", "pe1");
-    } else {
-        leg->AddEntry(h_data_1d, "single b jets", "pe1");
-        leg->AddEntry(h_pythia_1d, "PYTHIA8 single b jets", "pe1");
-        leg->AddEntry(h_herwig_1d, "HERWIG7 single b jets", "pe1");
-    }
-    leg->AddEntry(gr_unc, "systematic uncertainty", "f");
+    leg->AddEntry(h_data_legend, "Data", "f pe1");
+    leg->AddEntry(h_pythia_1d, "PYTHIA8 CP5", "l");
+    leg->AddEntry(h_herwig_1d, "HERWIG7 CH3", "l");
+    // leg->AddEntry(gr_unc, "Systematic uncertainty", "f");
 
     for (auto h : {
         h_pythia_ratio_1d, 
         h_herwig_ratio_1d
     }) {
-        h->GetYaxis()->SetRangeUser(0.25, 1.75);
-        h->GetYaxis()->SetNdivisions(5);
-        h->GetYaxis()->SetTitle("mc / data");
+        h->GetYaxis()->SetRangeUser(0.5, 1.5);
+        h->GetYaxis()->SetNdivisions(8);
+        h->GetYaxis()->SetTitle("Ratio to data");
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetTitle(xlabel);
         h->GetXaxis()->SetLabelOffset(labelOffset);
         h->GetXaxis()->SetTitleOffset(3.5);
     }
+
+    
 
     // Draw 
     TCanvas *c_result = new TCanvas("c_result", "", 800, 600);
@@ -224,33 +233,42 @@ void draw_data_vs_mc(TString observable="zpt")
     bottom_pad->SetTopMargin(0.04);
     bottom_pad->SetBottomMargin(0.3);
 
-    top_pad->SetGridy();
-    bottom_pad->SetGridy();
+    // top_pad->SetGridy();
+    // bottom_pad->SetGridy();
 
     top_pad->cd();
     
     
     h_data_1d->Draw("pe1 same");
     gr_unc->Draw("5 same");
+    h_pythia_1d->Draw("hist same");
+    h_herwig_1d->Draw("hist same");
     h_data_1d->Draw("pe1 same");
-    h_pythia_1d->Draw("pe1 same");
-    h_herwig_1d->Draw("pe1 same");
     
     leg->Draw();
     drawHeader();
+    // Jets text
+    TLatex *jet_info = new TLatex;
+    jet_info->SetNDC();
+    jet_info->SetTextSize(20);
+    if (label.Contains("inclusive")) jet_info->DrawLatex(0.2, 0.28, "anti-k_{T}, R=0.4 inclusive jets");
+    else jet_info->DrawLatex(0.2, 0.28, "anti-k_{T}, R=0.4 single b jets");
+    jet_info->DrawLatex(0.2, 0.2, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.2, 0.12, "k_{T} > 1 GeV");
+    jet_info->Draw();
 
     bottom_pad->cd();
-    h_pythia_ratio_1d->Draw("pe1 same");
+    h_pythia_ratio_1d->Draw("hist same");
     gr_unc_pythia_ratio->Draw("5 same");
     // gr_unc_herwig_ratio->Draw("5 same");
     line->Draw();
-    h_pythia_ratio_1d->Draw("pe1 same");
-    h_herwig_ratio_1d->Draw("pe1 same");
+    h_pythia_ratio_1d->Draw("hist same");
+    h_herwig_ratio_1d->Draw("hist same");
 
     c_result->cd();
     top_pad->Draw();
     bottom_pad->Draw();
 
     c_result->Draw();
-    c_result->Print("plots_an/"+label+"_data_vs_mc_"+observable+".png");
+    c_result->Print("plots_an/"+label+"_data_vs_mc_"+observable+".pdf");
 }
