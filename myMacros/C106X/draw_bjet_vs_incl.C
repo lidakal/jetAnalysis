@@ -45,23 +45,27 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     TH1D *h_data_XXT_1d = (TH1D *) h_data_XXT->ProjectionX("h_data_XXT_1d", ibin_pt, ibin_pt);
     h_data_XXT_1d->SetMarkerStyle(kFullCircle);
-    h_data_XXT_1d->SetMarkerColor(kBlack); 
-    h_data_XXT_1d->SetLineColor(kBlack);
+    h_data_XXT_1d->SetMarkerColor(kAzure-3); 
+    h_data_XXT_1d->SetLineColor(kAzure-3);
 
     TH1D *h_data_inclusive_1d = (TH1D *) h_data_inclusive->ProjectionX("h_data_inclusive_1d", ibin_pt, ibin_pt);
-    h_data_inclusive_1d->SetMarkerStyle(kOpenCircle);
-    h_data_inclusive_1d->SetMarkerColor(kBlack); 
-    h_data_inclusive_1d->SetLineColor(kBlack);
+    h_data_inclusive_1d->SetMarkerStyle(kOpenSquare);
+    h_data_inclusive_1d->SetMarkerColor(kRed-3); 
+    h_data_inclusive_1d->SetLineColor(kRed-3);
 
     TH1D *h_mc_XXT_1d = (TH1D *) h_mc_XXT->ProjectionX("h_mc_XXT_1d", ibin_pt, ibin_pt);
-    h_mc_XXT_1d->SetMarkerStyle(kFullCross);
-    h_mc_XXT_1d->SetMarkerColor(kRed); 
-    h_mc_XXT_1d->SetLineColor(kRed);
+    h_mc_XXT_1d->SetMarkerStyle(1);
+    h_mc_XXT_1d->SetMarkerColor(kAzure-3); 
+    h_mc_XXT_1d->SetLineColor(kAzure-3);
+    h_mc_XXT_1d->SetLineStyle(10);
+    h_mc_XXT_1d->SetLineWidth(2);
 
     TH1D *h_mc_inclusive_1d = (TH1D *) h_mc_inclusive->ProjectionX("h_mc_inclusive_1d", ibin_pt, ibin_pt);
-    h_mc_inclusive_1d->SetMarkerStyle(kOpenCross);
-    h_mc_inclusive_1d->SetMarkerColor(kRed); 
-    h_mc_inclusive_1d->SetLineColor(kRed);
+    h_mc_inclusive_1d->SetMarkerStyle(1);
+    h_mc_inclusive_1d->SetMarkerColor(kRed-3); 
+    h_mc_inclusive_1d->SetLineColor(kRed-3);
+    h_mc_inclusive_1d->SetLineStyle(9);
+    h_mc_inclusive_1d->SetLineWidth(2);
 
     // Normalize histograms 
     int ibin_x_min = 1;
@@ -77,7 +81,9 @@ void draw_bjet_vs_incl(TString observable="rg")
     }) {
         h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
         h->Scale(1/h->Integral(ibin_x_min, ibin_x_max), "width");
-        h->GetYaxis()->SetRangeUser(0, 6.);
+        if (observable=="zg") h->GetYaxis()->SetRangeUser(0, 6.);
+        else if (observable=="rg") h->GetYaxis()->SetRangeUser(0, 1.1);
+        else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 4.);
         h->GetYaxis()->SetTitle(ylabel);
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetLabelOffset(10);
@@ -170,19 +176,19 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     TGraphAsymmErrors *gr_unc_XXT = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_XXT, points_y_XXT, unc_left_XXT, unc_right_XXT, unc_down_XXT, unc_up_XXT);
     gr_unc_XXT->SetFillStyle(3001);
-    gr_unc_XXT->SetFillColor(kGray);
+    gr_unc_XXT->SetFillColorAlpha(kAzure-3, 0.8);
     gr_unc_XXT->SetMarkerSize(0);
     gr_unc_XXT->SetLineWidth(0);
 
     TGraphAsymmErrors *gr_unc_inclusive = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_inclusive, points_y_inclusive, unc_left_inclusive, unc_right_inclusive, unc_down_inclusive, unc_up_inclusive);
-    gr_unc_inclusive->SetFillStyle(3002);
-    gr_unc_inclusive->SetFillColor(kGray);
+    gr_unc_inclusive->SetFillStyle(3001);
+    gr_unc_inclusive->SetFillColorAlpha(kRed-3, 0.8);
     gr_unc_inclusive->SetMarkerSize(0);
     gr_unc_inclusive->SetLineWidth(0);
 
     TGraphAsymmErrors *gr_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio, unc_left_ratio, unc_right_ratio, unc_down_ratio, unc_up_ratio);
     gr_unc_ratio->SetFillStyle(3001);
-    gr_unc_ratio->SetFillColor(kGray);
+    gr_unc_ratio->SetFillColorAlpha(kAzure-3, 1);
     gr_unc_ratio->SetMarkerSize(0);
     gr_unc_ratio->SetLineWidth(0);
 
@@ -191,22 +197,22 @@ void draw_bjet_vs_incl(TString observable="rg")
     line->SetLineColor(kBlack);
 
     // Make a legend
-    TLegend *leg = new TLegend(0.5, 0.5, 0.9, 0.9);
+    TLegend *leg = new TLegend(0.4, 0.6, 0.9, 0.9);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
-    leg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", min_pt, max_pt));
+    // leg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", min_pt, max_pt));
     leg->AddEntry(h_data_inclusive_1d, "inclusive jets", "pe1");
     leg->AddEntry(h_data_XXT_1d, "single b jets", "pe1");
-    leg->AddEntry(h_mc_inclusive_1d, "PYTHIA8 inclusive jets", "pe1");
-    leg->AddEntry(h_mc_XXT_1d, "PYTHIA8 single b jets", "pe1");
-    leg->AddEntry(gr_unc_XXT, "systematic uncertainty", "f");
+    leg->AddEntry(h_mc_inclusive_1d, "PYTHIA8 CP5 inclusive jets", "l");
+    leg->AddEntry(h_mc_XXT_1d, "PYTHIA8 CP5 single b jets", "l");
+    // leg->AddEntry(gr_unc_XXT, "systematic uncertainty", "f");
 
     for (auto h : {
         h_data_ratio_1d, 
         h_mc_ratio_1d, 
     }) {
-        h->GetYaxis()->SetRangeUser(0., 2.);
-        h->GetYaxis()->SetNdivisions(5);
+        h->GetYaxis()->SetRangeUser(0.2, 1.6);
+        h->GetYaxis()->SetNdivisions(10);
         h->GetYaxis()->SetTitle("single b / inclusive");
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetTitle(xlabel);
@@ -223,8 +229,8 @@ void draw_bjet_vs_incl(TString observable="rg")
     bottom_pad->SetTopMargin(0.04);
     bottom_pad->SetBottomMargin(0.3);
 
-    top_pad->SetGridy();
-    bottom_pad->SetGridy();
+    // top_pad->SetGridy();
+    // bottom_pad->SetGridy();
 
     top_pad->cd();
     
@@ -233,12 +239,21 @@ void draw_bjet_vs_incl(TString observable="rg")
     gr_unc_XXT->Draw("5 same");
     gr_unc_inclusive->Draw("5 same");
     h_data_XXT_1d->Draw("pe1 same");
-    h_mc_inclusive_1d->Draw("pe1 same");
-    h_mc_XXT_1d->Draw("pe1 same");
+    h_mc_inclusive_1d->Draw("hist same");
+    h_mc_XXT_1d->Draw("hist same");
     h_data_inclusive_1d->Draw("pe1 same");
     
     leg->Draw();
     drawHeader();
+
+    // Jets text
+    TLatex *jet_info = new TLatex;
+    jet_info->SetNDC();
+    jet_info->SetTextSize(20);
+     jet_info->DrawLatex(0.2, 0.28, "anti-k_{T}, R=0.4 jets");
+    jet_info->DrawLatex(0.2, 0.2, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.2, 0.12, "k_{T} > 1 GeV");
+    jet_info->Draw();
 
     bottom_pad->cd();
     h_mc_ratio_1d->Draw("pe1 same");
@@ -253,5 +268,5 @@ void draw_bjet_vs_incl(TString observable="rg")
     bottom_pad->Draw();
 
     c_result->Draw();
-    c_result->Print("plots_an/bjet_vs_incl_"+observable+".png");
+    c_result->Print("plots_an/bjet_vs_incl_"+observable+".pdf");
 }
