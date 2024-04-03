@@ -2,8 +2,8 @@
 
 void draw_data_vs_mc(TString observable="rg")
 {
-    TString sample = "bjet";
-    TString label = "aggrTMVA_XXT";
+    TString sample = "dijet";
+    TString label = "aggrTMVA_inclusive";
 
     TString xlabel;
     if (observable=="rg") xlabel = "ln(R/R_{g})";
@@ -13,6 +13,7 @@ void draw_data_vs_mc(TString observable="rg")
     if (observable!="zpt") ylabel = "1/N_{2-prong jets} dN/d" + xlabel;
 
     // ---- Setup 
+    gStyle->SetCanvasPreferGL(kTRUE);
     gStyle->SetErrorX(0.5);
     Float_t text_size = 20.;
     gStyle->SetTextSize(text_size);
@@ -50,7 +51,7 @@ void draw_data_vs_mc(TString observable="rg")
     h_data_1d->SetMarkerColor(kBlack); 
     h_data_1d->SetLineColor(kBlack);
     h_data_1d->SetLineStyle(1);
-    h_data_1d->SetLineWidth(2);
+    h_data_1d->SetLineWidth(1);
 
     TH1D *h_pythia_1d = (TH1D *) h_pythia->ProjectionX("h_pythia_1d", ibin_pt, ibin_pt);
     // h_pythia_1d->SetMarkerStyle(kFullCross);
@@ -83,9 +84,12 @@ void draw_data_vs_mc(TString observable="rg")
     }) {
         h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
         h->Scale(1/h->Integral(ibin_x_min, ibin_x_max), "width");
-        if (observable=="zg") h->GetYaxis()->SetRangeUser(0, 6.);
-        else if (observable=="rg") h->GetYaxis()->SetRangeUser(0, 1.1);
-        else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 4.);
+        if (observable=="zg") h->GetYaxis()->SetRangeUser(0, 5.5);
+        else if (observable=="rg") {
+            h->GetYaxis()->SetRangeUser(0, 1.1);
+            if (label.Contains("inclusive")) h->GetYaxis()->SetRangeUser(0, 0.85);
+        }
+        else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 3.5);
         h->GetYaxis()->SetTitle(ylabel);
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetLabelOffset(10);
@@ -115,19 +119,15 @@ void draw_data_vs_mc(TString observable="rg")
     Double_t unc_left[20];
     Double_t unc_right[20];
 
-    Double_t points_x_pythia_ratio[20];
-    Double_t points_y_pythia_ratio[20];
-    Double_t unc_up_pythia_ratio[20];
-    Double_t unc_down_pythia_ratio[20];
-    Double_t unc_left_pythia_ratio[20];
-    Double_t unc_right_pythia_ratio[20];
+    Double_t points_x_ratio[20];
+    Double_t points_y_ratio[20];
+    Double_t unc_up_ratio[20];
+    Double_t unc_down_ratio[20];
+    Double_t unc_left_ratio[20];
+    Double_t unc_right_ratio[20];
 
-    Double_t points_x_herwig_ratio[20];
-    Double_t points_y_herwig_ratio[20];
-    Double_t unc_up_herwig_ratio[20];
-    Double_t unc_down_herwig_ratio[20];
-    Double_t unc_left_herwig_ratio[20];
-    Double_t unc_right_herwig_ratio[20];
+    Double_t total_unc_up_ratio[20];
+    Double_t total_unc_down_ratio[20];
 
     int index = 0;
     for (int ibin_x=ibin_x_min; ibin_x<=ibin_x_max; ibin_x++) {
@@ -139,6 +139,11 @@ void draw_data_vs_mc(TString observable="rg")
         double dy_up = std::abs(h_syst_unc_rel_up->GetBinContent(ibin_x)) * y;
         double dy_down = std::abs(h_syst_unc_rel_down->GetBinContent(ibin_x)) * y;
 
+        double dy_stat = h_data_1d->GetBinError(ibin_x);
+        double dy_total_up = std::sqrt((dy_up*dy_up)+ (dy_stat*dy_stat));
+        double dy_total_down = std::sqrt((dy_down*dy_down)+ (dy_stat*dy_stat));
+
+        // uncertainties for upper plot
         points_x[index] = x_middle;
         points_y[index] = y;
         unc_up[index] = dy_up;
@@ -146,47 +151,41 @@ void draw_data_vs_mc(TString observable="rg")
         unc_left[index] = x_middle - x_left;
         unc_right[index] = x_right - x_middle;
 
-        double y_pythia_ratio = 1.;//h_pythia_ratio_1d->GetBinContent(ibin_x);
-        double dy_pythia_ratio_up = dy_up / y;//y_pythia_ratio * dy_up / y;
-        double dy_pythia_ratio_down = dy_down / y;//y_pythia_ratio * dy_down / y;
+        // uncertainties for ratio
+        double y_ratio = 1.;
+        double dy_ratio_up = dy_up / y;
+        double dy_ratio_down = dy_down / y;
 
-        points_x_pythia_ratio[index] = x_middle;
-        points_y_pythia_ratio[index] = y_pythia_ratio;
-        unc_up_pythia_ratio[index] = dy_pythia_ratio_up;
-        unc_down_pythia_ratio[index] = dy_pythia_ratio_down;
-        unc_left_pythia_ratio[index] = x_middle - x_left;
-        unc_right_pythia_ratio[index] = x_right - x_middle;
+        points_x_ratio[index] = x_middle;
+        points_y_ratio[index] = y_ratio;
+        unc_up_ratio[index] = dy_ratio_up;
+        unc_down_ratio[index] = dy_ratio_down;
+        unc_left_ratio[index] = x_middle - x_left;
+        unc_right_ratio[index] = x_right - x_middle;
 
-        double y_herwig_ratio = 1.;//h_herwig_ratio_1d->GetBinContent(ibin_x);
-        double dy_herwig_ratio_up = y_herwig_ratio * dy_up / y;
-        double dy_herwig_ratio_down = y_herwig_ratio * dy_down / y;
-
-        points_x_herwig_ratio[index] = x_middle;
-        points_y_herwig_ratio[index] = y_herwig_ratio;
-        unc_up_herwig_ratio[index] = dy_herwig_ratio_up;
-        unc_down_herwig_ratio[index] = dy_herwig_ratio_down;
-        unc_left_herwig_ratio[index] = x_middle - x_left;
-        unc_right_herwig_ratio[index] = x_right - x_middle;
+        total_unc_up_ratio[index] = dy_total_up / y;
+        total_unc_down_ratio[index] = dy_total_down / y;
 
         index++;
     }
 
     TGraphAsymmErrors *gr_unc = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x, points_y, unc_left, unc_right, unc_down, unc_up);
-    gr_unc->SetFillStyle(3001);
-    gr_unc->SetFillColor(kGray);
+    gr_unc->SetFillStyle(1001);
+    gr_unc->SetFillColorAlpha(kBlack, 0.1);
     gr_unc->SetMarkerSize(0);
     gr_unc->SetLineWidth(0);
 
-    TGraphAsymmErrors *gr_unc_pythia_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_pythia_ratio, points_y_pythia_ratio, unc_left_pythia_ratio, unc_right_pythia_ratio, unc_down_pythia_ratio, unc_up_pythia_ratio);
-    gr_unc_pythia_ratio->SetFillStyle(3001);
-    gr_unc_pythia_ratio->SetFillColor(kGray);
-    gr_unc_pythia_ratio->SetMarkerSize(0);
-    gr_unc_pythia_ratio->SetLineWidth(0);
+    TGraphAsymmErrors *gr_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio, unc_left_ratio, unc_right_ratio, unc_down_ratio, unc_up_ratio);
+    gr_unc_ratio->SetFillStyle(1001);
+    gr_unc_ratio->SetFillColorAlpha(kBlack, 0.1);
+    gr_unc_ratio->SetMarkerSize(0);
+    gr_unc_ratio->SetLineWidth(0);
+    gr_unc_ratio->SetLineColorAlpha(kBlack, 0.);
 
-    // TGraphAsymmErrors *gr_unc_herwig_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_herwig_ratio, points_y_herwig_ratio, unc_left_herwig_ratio, unc_right_herwig_ratio, unc_down_herwig_ratio, unc_up_herwig_ratio);
-    // gr_unc_herwig_ratio->SetFillStyle(3004);
-    // gr_unc_herwig_ratio->SetFillColor(kBlue);
-    // gr_unc_herwig_ratio->SetMarkerSize(0);
+    TGraphAsymmErrors *gr_total_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio, unc_left_ratio, unc_right_ratio, total_unc_down_ratio, total_unc_up_ratio);
+    gr_total_unc_ratio->SetFillStyle(0);
+    gr_total_unc_ratio->SetMarkerSize(0);
+    gr_total_unc_ratio->SetLineWidth(1);
 
     TLine *line = new TLine(h_data_1d->GetXaxis()->GetBinLowEdge(ibin_x_min), 1, h_data_1d->GetXaxis()->GetBinUpEdge(ibin_x_max), 1);
     line->SetLineStyle(kSolid);
@@ -200,29 +199,46 @@ void draw_data_vs_mc(TString observable="rg")
 
     // Make a legend
     TLegend *leg;
-    if (observable=="zpt") leg = new TLegend(0.2, 0.5, 0.5, 0.9);
-    else leg = new TLegend(0.5, 0.6, 0.8, 0.9);
+    if (observable=="zpt") leg = new TLegend(0.2, 0.65, 0.5, 0.85);
+    else leg = new TLegend(0.6, 0.6, 0.8, 0.85);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
-    leg->AddEntry(h_data_legend, "Data", "f pe1");
+    leg->SetMargin(0.15);
+    leg->AddEntry(h_data_legend, "Data", "flpe1");
     leg->AddEntry(h_pythia_1d, "PYTHIA8 CP5", "l");
     leg->AddEntry(h_herwig_1d, "HERWIG7 CH3", "l");
     // leg->AddEntry(gr_unc, "Systematic uncertainty", "f");
+
+    // legend for uncertainties in ratio plot
+    TLegend *leg_ratio;
+    if (observable!="zpt") leg_ratio = new TLegend(0.19, 0.65, 0.4, 0.9);
+    else leg_ratio = new TLegend(0.6, 0.33, 0.85, 0.53);
+    if (observable=="zg"&&label.Contains("inclusive")) {
+        std::cout << "here" << std::endl;
+        leg_ratio = new TLegend(0.5, 0.65, 0.85, 0.9);
+    }
+    leg_ratio->SetBorderSize(0);
+    leg_ratio->SetFillStyle(0);
+    leg_ratio->SetMargin(0.2);
+    leg_ratio->AddEntry(gr_unc_ratio, "Systematic unc.", "fl");
+    leg_ratio->AddEntry(gr_total_unc_ratio, "Total unc.", "f");
 
     for (auto h : {
         h_pythia_ratio_1d, 
         h_herwig_ratio_1d
     }) {
-        h->GetYaxis()->SetRangeUser(0.5, 1.5);
+        h->GetYaxis()->SetRangeUser(0.6, 1.9);
+        if (label.Contains("inclusive")) h->GetYaxis()->SetRangeUser(0.8, 1.3);
+        if (observable=="zg") h->GetYaxis()->SetRangeUser(0.6, 1.6);
+        if (label.Contains("inclusive")) h->GetYaxis()->SetRangeUser(0.9, 1.15);
+        if (observable=="zpt") h->GetYaxis()->SetRangeUser(0.4, 1.5);
         h->GetYaxis()->SetNdivisions(8);
         h->GetYaxis()->SetTitle("Ratio to data");
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetTitle(xlabel);
         h->GetXaxis()->SetLabelOffset(labelOffset);
         h->GetXaxis()->SetTitleOffset(3.5);
-    }
-
-    
+    }    
 
     // Draw 
     TCanvas *c_result = new TCanvas("c_result", "", 800, 600);
@@ -240,7 +256,7 @@ void draw_data_vs_mc(TString observable="rg")
     
     
     h_data_1d->Draw("pe1 same");
-    gr_unc->Draw("5 same");
+    gr_unc->Draw("e2 same");
     h_pythia_1d->Draw("hist same");
     h_herwig_1d->Draw("hist same");
     h_data_1d->Draw("pe1 same");
@@ -251,19 +267,28 @@ void draw_data_vs_mc(TString observable="rg")
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
     jet_info->SetTextSize(20);
-    if (label.Contains("inclusive")) jet_info->DrawLatex(0.2, 0.28, "anti-k_{T}, R=0.4 inclusive jets");
-    else jet_info->DrawLatex(0.2, 0.28, "anti-k_{T}, R=0.4 single b jets");
-    jet_info->DrawLatex(0.2, 0.2, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    jet_info->DrawLatex(0.2, 0.12, "k_{T} > 1 GeV");
-    jet_info->Draw();
+    if (observable=="zpt") {
+        jet_info->DrawLatex(0.2, 0.34, "anti-k_{T}, R=0.4 single b jets");
+        jet_info->DrawLatex(0.2, 0.26, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.2, 0.18, "k_{T} > 1 GeV");
+        jet_info->Draw();
+    } else {
+        if (label.Contains("inclusive")) jet_info->DrawLatex(0.2, 0.24, "anti-k_{T}, R=0.4 inclusive jets");
+        else jet_info->DrawLatex(0.2, 0.24, "anti-k_{T}, R=0.4 single b jets");
+        jet_info->DrawLatex(0.2, 0.16, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.2, 0.08, "k_{T} > 1 GeV");
+        jet_info->Draw();
+    }
+    
 
     bottom_pad->cd();
     h_pythia_ratio_1d->Draw("hist same");
-    gr_unc_pythia_ratio->Draw("5 same");
-    // gr_unc_herwig_ratio->Draw("5 same");
+    gr_unc_ratio->Draw("e2 same");
+    gr_total_unc_ratio->Draw("e5 same");
     line->Draw();
     h_pythia_ratio_1d->Draw("hist same");
     h_herwig_ratio_1d->Draw("hist same");
+    leg_ratio->Draw();
 
     c_result->cd();
     top_pad->Draw();

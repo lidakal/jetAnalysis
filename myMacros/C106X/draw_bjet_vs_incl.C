@@ -3,12 +3,13 @@
 void draw_bjet_vs_incl(TString observable="rg")
 {
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(0.4/R_{g})";
+    if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
     else if (observable=="zpt") xlabel = "z";
     TString ylabel = "1/N_{2-prong jets} dN/d" + xlabel;
 
     // ---- Setup 
+    gStyle->SetCanvasPreferGL(kTRUE);
     gStyle->SetErrorX(0.5);
     Float_t text_size = 20.;
     gStyle->SetTextSize(text_size);
@@ -45,26 +46,29 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     TH1D *h_data_XXT_1d = (TH1D *) h_data_XXT->ProjectionX("h_data_XXT_1d", ibin_pt, ibin_pt);
     h_data_XXT_1d->SetMarkerStyle(kFullCircle);
-    h_data_XXT_1d->SetMarkerColor(kAzure-3); 
-    h_data_XXT_1d->SetLineColor(kAzure-3);
+    h_data_XXT_1d->SetMarkerSize(1);
+    h_data_XXT_1d->SetMarkerColor(kBlue-3); 
+    h_data_XXT_1d->SetLineColor(kBlue-3);
+    h_data_XXT_1d->SetLineWidth(1);
 
     TH1D *h_data_inclusive_1d = (TH1D *) h_data_inclusive->ProjectionX("h_data_inclusive_1d", ibin_pt, ibin_pt);
     h_data_inclusive_1d->SetMarkerStyle(kOpenSquare);
     h_data_inclusive_1d->SetMarkerColor(kRed-3); 
     h_data_inclusive_1d->SetLineColor(kRed-3);
+    h_data_inclusive_1d->SetLineWidth(1);
 
     TH1D *h_mc_XXT_1d = (TH1D *) h_mc_XXT->ProjectionX("h_mc_XXT_1d", ibin_pt, ibin_pt);
     h_mc_XXT_1d->SetMarkerStyle(1);
-    h_mc_XXT_1d->SetMarkerColor(kAzure-3); 
-    h_mc_XXT_1d->SetLineColor(kAzure-3);
-    h_mc_XXT_1d->SetLineStyle(10);
+    h_mc_XXT_1d->SetMarkerColor(kBlue-3); 
+    h_mc_XXT_1d->SetLineColor(kBlue-3);
+    h_mc_XXT_1d->SetLineStyle(2);
     h_mc_XXT_1d->SetLineWidth(2);
 
     TH1D *h_mc_inclusive_1d = (TH1D *) h_mc_inclusive->ProjectionX("h_mc_inclusive_1d", ibin_pt, ibin_pt);
     h_mc_inclusive_1d->SetMarkerStyle(1);
     h_mc_inclusive_1d->SetMarkerColor(kRed-3); 
     h_mc_inclusive_1d->SetLineColor(kRed-3);
-    h_mc_inclusive_1d->SetLineStyle(9);
+    h_mc_inclusive_1d->SetLineStyle(6);
     h_mc_inclusive_1d->SetLineWidth(2);
 
     // Normalize histograms 
@@ -175,20 +179,20 @@ void draw_bjet_vs_incl(TString observable="rg")
     }
 
     TGraphAsymmErrors *gr_unc_XXT = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_XXT, points_y_XXT, unc_left_XXT, unc_right_XXT, unc_down_XXT, unc_up_XXT);
-    gr_unc_XXT->SetFillStyle(3001);
-    gr_unc_XXT->SetFillColorAlpha(kAzure-3, 0.8);
+    gr_unc_XXT->SetFillStyle(1001);
+    gr_unc_XXT->SetFillColorAlpha(kAzure-3, 0.1);
     gr_unc_XXT->SetMarkerSize(0);
     gr_unc_XXT->SetLineWidth(0);
 
     TGraphAsymmErrors *gr_unc_inclusive = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_inclusive, points_y_inclusive, unc_left_inclusive, unc_right_inclusive, unc_down_inclusive, unc_up_inclusive);
-    gr_unc_inclusive->SetFillStyle(3001);
-    gr_unc_inclusive->SetFillColorAlpha(kRed-3, 0.8);
+    gr_unc_inclusive->SetFillStyle(1001);
+    gr_unc_inclusive->SetFillColorAlpha(kRed-3, 0.1);
     gr_unc_inclusive->SetMarkerSize(0);
     gr_unc_inclusive->SetLineWidth(0);
 
     TGraphAsymmErrors *gr_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio, unc_left_ratio, unc_right_ratio, unc_down_ratio, unc_up_ratio);
-    gr_unc_ratio->SetFillStyle(3001);
-    gr_unc_ratio->SetFillColorAlpha(kAzure-3, 1);
+    gr_unc_ratio->SetFillStyle(1001);
+    gr_unc_ratio->SetFillColorAlpha(kAzure-3, 0.1);
     gr_unc_ratio->SetMarkerSize(0);
     gr_unc_ratio->SetLineWidth(0);
 
@@ -196,16 +200,26 @@ void draw_bjet_vs_incl(TString observable="rg")
     line->SetLineStyle(kSolid);
     line->SetLineColor(kBlack);
 
+    // Make a clone of the data histograms for the legend entry
+    TH1D *h_data_inclusive_legend = (TH1D *) h_data_inclusive_1d->Clone("h_data_inclusive_legend");
+    h_data_inclusive_legend->SetFillStyle(1001);
+    h_data_inclusive_legend->SetFillColorAlpha(kRed-3, 0.1);
+    // h_data_inclusive_legend->SetLineWidth(1);
+
+    TH1D *h_data_XXT_legend = (TH1D *) h_data_XXT_1d->Clone("h_data_XXT_legend");
+    h_data_XXT_legend->SetFillStyle(1001);
+    h_data_XXT_legend->SetFillColorAlpha(kAzure-3, 0.1);
+
     // Make a legend
-    TLegend *leg = new TLegend(0.4, 0.6, 0.9, 0.9);
+    TLegend *leg = new TLegend(0.47, 0.55, 0.9, 0.87);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
-    // leg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", min_pt, max_pt));
-    leg->AddEntry(h_data_inclusive_1d, "inclusive jets", "pe1");
-    leg->AddEntry(h_data_XXT_1d, "single b jets", "pe1");
+    leg->SetMargin(0.15);
+
+    leg->AddEntry(h_data_inclusive_legend, "inclusive jets", "pe1fl");
+    leg->AddEntry(h_data_XXT_legend, "single b jets", "pe1fl");
     leg->AddEntry(h_mc_inclusive_1d, "PYTHIA8 CP5 inclusive jets", "l");
     leg->AddEntry(h_mc_XXT_1d, "PYTHIA8 CP5 single b jets", "l");
-    // leg->AddEntry(gr_unc_XXT, "systematic uncertainty", "f");
 
     for (auto h : {
         h_data_ratio_1d, 
@@ -213,6 +227,10 @@ void draw_bjet_vs_incl(TString observable="rg")
     }) {
         h->GetYaxis()->SetRangeUser(0.2, 1.6);
         h->GetYaxis()->SetNdivisions(10);
+        if (observable=="zg") {
+            h->GetYaxis()->SetRangeUser(0.5, 1.5);
+            h->GetYaxis()->SetNdivisions(8);
+        }
         h->GetYaxis()->SetTitle("single b / inclusive");
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetTitle(xlabel);
@@ -222,6 +240,7 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     // Draw 
     TCanvas *c_result = new TCanvas("c_result", "", 800, 600);
+    std::cout << c_result->UseGL() << std::endl;
     TPad *top_pad = new TPad("top_pad", "", 0., 0.33, 1., 1.);
     TPad *bottom_pad = new TPad("top_pad", "", 0., 0., 1., 0.33);
 
@@ -236,8 +255,8 @@ void draw_bjet_vs_incl(TString observable="rg")
     
     
     h_data_XXT_1d->Draw("pe1 same");
-    gr_unc_XXT->Draw("5 same");
-    gr_unc_inclusive->Draw("5 same");
+    gr_unc_XXT->Draw("e2 same");
+    gr_unc_inclusive->Draw("e2 same");
     h_data_XXT_1d->Draw("pe1 same");
     h_mc_inclusive_1d->Draw("hist same");
     h_mc_XXT_1d->Draw("hist same");
@@ -257,7 +276,7 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     bottom_pad->cd();
     h_mc_ratio_1d->Draw("pe1 same");
-    gr_unc_ratio->Draw("5 same");
+    gr_unc_ratio->Draw("e2 same");
     line->Draw();
     h_mc_ratio_1d->Draw("pe1 same");
     h_data_ratio_1d->Draw("pe1 same");
