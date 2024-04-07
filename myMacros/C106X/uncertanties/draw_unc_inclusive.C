@@ -177,7 +177,7 @@ void draw_unc_inclusive(TString observable="rg")
 
         leg->AddEntry(h_total_unc_up, "total unc.", "f");
 
-        double ymin=-0.05;
+        double ymin=-0.055;
         double ymax=0.17;
         
         pads[ipad]->cd();
@@ -255,4 +255,5 @@ void draw_unc_inclusive(TString observable="rg")
 
     c_unc->Draw();
     c_unc->Print("plots_an/total_unc_incl_"+observable+".pdf");
+    c_unc->Print("plots_an/total_unc_incl_"+observable+".png");
 }

@@ -315,4 +315,5 @@ void draw_unc(TString observable="rg")
 
     c_unc->Draw();
     c_unc->Print("plots_an/total_unc_XXT_"+observable+".pdf");
+    c_unc->Print("plots_an/total_unc_XXT_"+observable+".png");
 }
