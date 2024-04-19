@@ -37,10 +37,10 @@ void plot_inputs(TString model="qcd_bjet_TMVA")
     TH1F *h_trkIp3dSig_sig = new TH1F("h_trkIp3dSig_sig", "", 40, -60., 100.);
     TH1F *h_trkIp2dSig_sig = new TH1F("h_trkIp2dSig_sig", "", 40, -60., 100.);
     TH1F *h_trkDistToAxis_sig = new TH1F("h_trkDistToAxis_sig", "", 40, -0.12, 0.);
-    TH1F *h_svtxdls_sig = new TH1F("h_svtxdls_sig", "", 20, 0., 100.);
-    TH1F *h_svtxdls2d_sig = new TH1F("h_svtxdls2d_sig", "", 20, 0., 100.);
-    TH1F *h_svtxm_sig = new TH1F("h_svtxm_sig", "", 20, 0., 5.);
-    TH1F *h_svtxmcorr_sig = new TH1F("h_svtxmcorr_sig", "", 40, 0., 40.);
+    TH1F *h_svtxdls_sig = new TH1F("h_svtxdls_sig", "", 10, 0., 100.);
+    TH1F *h_svtxdls2d_sig = new TH1F("h_svtxdls2d_sig", "", 10, 0., 100.);
+    TH1F *h_svtxm_sig = new TH1F("h_svtxm_sig", "", 10, 0., 5.);
+    TH1F *h_svtxmcorr_sig = new TH1F("h_svtxmcorr_sig", "", 10, 0., 5.);
     TH1F *h_svtxnormchi2_sig = new TH1F("h_svtxnormchi2_sig", "", 10, 0., 5.);
     TH1F *h_svtxNtrk_sig = new TH1F("h_svtxNtrk_sig", "", 12, 0., 12.);
     TH1F *h_svtxTrkPtOverSv_sig = new TH1F("h_svtxTrkPtOverSv_sig", "", 10, 0., 1.);
@@ -49,10 +49,10 @@ void plot_inputs(TString model="qcd_bjet_TMVA")
     TH1F *h_trkIp3dSig_bkg = new TH1F("h_trkIp3dSig_bkg", "", 40, -60., 100.);
     TH1F *h_trkIp2dSig_bkg = new TH1F("h_trkIp2dSig_bkg", "", 40, -60., 100.);
     TH1F *h_trkDistToAxis_bkg = new TH1F("h_trkDistToAxis_bkg", "", 40, -0.12, 0.);
-    TH1F *h_svtxdls_bkg = new TH1F("h_svtxdls_bkg", "", 20, 0., 100.);
-    TH1F *h_svtxdls2d_bkg = new TH1F("h_svtxdls2d_bkg", "", 20, 0., 100.);
-    TH1F *h_svtxm_bkg = new TH1F("h_svtxm_bkg", "", 20, 0., 5.);
-    TH1F *h_svtxmcorr_bkg = new TH1F("h_svtxmcorr_bkg", "", 40, 0., 40.);
+    TH1F *h_svtxdls_bkg = new TH1F("h_svtxdls_bkg", "", 10, 0., 100.);
+    TH1F *h_svtxdls2d_bkg = new TH1F("h_svtxdls2d_bkg", "", 10, 0., 100.);
+    TH1F *h_svtxm_bkg = new TH1F("h_svtxm_bkg", "", 10, 0., 5.);
+    TH1F *h_svtxmcorr_bkg = new TH1F("h_svtxmcorr_bkg", "", 10, 0., 5.);
     TH1F *h_svtxnormchi2_bkg = new TH1F("h_svtxnormchi2_bkg", "", 10, 0., 5.);
     TH1F *h_svtxNtrk_bkg = new TH1F("h_svtxNtrk_bkg", "", 12, 0., 12.);
     TH1F *h_svtxTrkPtOverSv_bkg = new TH1F("h_svtxTrkPtOverSv_bkg", "", 10, 0., 1.);
@@ -70,7 +70,7 @@ void plot_inputs(TString model="qcd_bjet_TMVA")
             h_svtxdls_bkg->Fill(svtxdls);
             h_svtxdls2d_bkg->Fill(svtxdls2d);
             h_svtxm_bkg->Fill(svtxm);
-            h_svtxmcorr_bkg->Fill(trkIp3dSig);
+            h_svtxmcorr_bkg->Fill(svtxmcorr);
             h_svtxnormchi2_bkg->Fill(svtxnormchi2);
             h_svtxNtrk_bkg->Fill(svtxNtrk);
             h_svtxTrkPtOverSv_bkg->Fill(svtxTrkPtOverSv);
@@ -82,7 +82,7 @@ void plot_inputs(TString model="qcd_bjet_TMVA")
             h_svtxdls_sig->Fill(svtxdls);
             h_svtxdls2d_sig->Fill(svtxdls2d);
             h_svtxm_sig->Fill(svtxm);
-            h_svtxmcorr_sig->Fill(trkIp3dSig);
+            h_svtxmcorr_sig->Fill(svtxmcorr);
             h_svtxnormchi2_sig->Fill(svtxnormchi2);
             h_svtxNtrk_sig->Fill(svtxNtrk);
             h_svtxTrkPtOverSv_sig->Fill(svtxTrkPtOverSv);
