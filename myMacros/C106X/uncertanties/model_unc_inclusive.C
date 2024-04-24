@@ -16,9 +16,9 @@ void model_unc_inclusive(TString observable="rg")
     else if (observable=="zpt") xlabel = "z";
     TString ylabel = "1/N dN/d" + xlabel;
 
-    TFile *fin_nom = new TFile("../unfolding/histos/dijet_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
+    TFile *fin_nom = new TFile("../unfolding/histos/dijet_PF40_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_her = new TFile("../unfolding/histos/herwig_dijet_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
+    TFile *fin_her = new TFile("../unfolding/histos/herwig_dijet_PF40_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
     TH2D *h_her = (TH2D *) fin_her->Get("h_data_unfolded")->Clone("h_her");
     
     int nbins_x = h_nom->GetNbinsX();
@@ -106,8 +106,8 @@ void model_unc_inclusive(TString observable="rg")
         h_model_unc_rel->Divide(h_nom_1d);
         h_model_unc_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_model_unc_rel->GetYaxis()->SetTitleOffset(2.);
-        h_model_unc_rel->SetMinimum(-0.15);
-        h_model_unc_rel->SetMaximum(0.15);
+        h_model_unc_rel->SetMinimum(-0.1);
+        h_model_unc_rel->SetMaximum(0.1);
         h_model_unc_rel->Write();
 
         bottom_pads[ipad]->cd();

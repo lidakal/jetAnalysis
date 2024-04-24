@@ -46,7 +46,7 @@ void draw_unc_inclusive(TString observable="rg")
         h_stat_unc_rel->SetLineColor(kBlack);
         h_stat_unc_rel->SetFillStyle(3244);
         h_stat_unc_rel->SetMarkerStyle(1);
-        h_stat_unc_rel->GetYaxis()->SetTitle("relative uncertainty");
+        h_stat_unc_rel->GetYaxis()->SetTitle("Relative uncertainty");
         h_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
         leg->AddEntry(h_stat_unc_rel, "statistical (sym)", "f");
 
@@ -178,7 +178,7 @@ void draw_unc_inclusive(TString observable="rg")
         leg->AddEntry(h_total_unc_up, "total unc.", "f");
 
         double ymin=-0.055;
-        double ymax=0.17;
+        double ymax=0.15;
         
         pads[ipad]->cd();
 
@@ -212,7 +212,7 @@ void draw_unc_inclusive(TString observable="rg")
             h->SetLineWidth(1);
             h->SetLineStyle(kDashed);
             h->SetMarkerSize(2);
-            h->GetYaxis()->SetTitle("relative uncertainty");
+            h->GetYaxis()->SetTitle("Relative uncertainty");
             h->GetYaxis()->SetTitleOffset(1.5);
             h->Draw("p l hist same");
         }

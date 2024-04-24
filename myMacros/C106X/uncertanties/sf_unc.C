@@ -17,13 +17,13 @@ void sf_unc(TString observable="rg")
     TString ylabel = "1/N dN/d" + xlabel;
 
     // Load histograms
-    TFile *fin_sf = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_sf = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_sf = (TH2D *) fin_sf->Get("h_data_unfolded")->Clone("h_sf");
 
-    TFile *fin_sfUp = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSFUp.root");
+    TFile *fin_sfUp = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSFUp.root");
     TH2D *h_sfUp = (TH2D *) fin_sfUp->Get("h_data_unfolded")->Clone("h_sfUp");
 
-    TFile *fin_sfDown = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSFDown.root");
+    TFile *fin_sfDown = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSFDown.root");
     TH2D *h_sfDown = (TH2D *) fin_sfDown->Get("h_data_unfolded")->Clone("h_sfDown");
 
     int nbins_x = h_sf->GetNbinsX();
@@ -119,7 +119,9 @@ void sf_unc(TString observable="rg")
         h_unc_up_rel->Divide(h_sf_1d);
         h_unc_up_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_unc_up_rel->GetYaxis()->SetTitleOffset(2.);
-        h_unc_up_rel->GetYaxis()->SetRangeUser(-0.25, 0.25);
+        if (observable=="rg") h_unc_up_rel->GetYaxis()->SetRangeUser(-0.05, 0.05);
+        else if (observable=="zg") h_unc_up_rel->GetYaxis()->SetRangeUser(-0.1, 0.15);
+        else h_unc_up_rel->GetYaxis()->SetRangeUser(-0.2, 0.25);
         h_unc_up_rel->Write();
 
         TH1D *h_unc_down_rel = (TH1D *) h_unc_down->Clone(Form("h_unc_down_rel_%d", ibin_pt));
@@ -135,7 +137,7 @@ void sf_unc(TString observable="rg")
         h_unc_up_rel->Draw("pe1");
         h_unc_down_rel->Draw("pe1 same");
 
-        TLine *line = new TLine(h_unc_up->GetXaxis()->GetBinLowEdge(1), 0, h_unc_up->GetXaxis()->GetBinUpEdge(h_unc_up->GetNbinsX()), 0);
+        TLine *line = new TLine(h_unc_up->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_unc_up->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         line->SetLineStyle(kDashed);
         line->Draw();
 

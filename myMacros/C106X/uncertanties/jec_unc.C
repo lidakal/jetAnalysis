@@ -18,11 +18,11 @@ void jec_unc(TString observable="rg")
     else if (observable=="zpt") xlabel = "z";
     TString ylabel = "1/N dN/d" + xlabel;
 
-    TFile *fin_nom = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_nom = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_up = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_up_withSF.root");
+    TFile *fin_up = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_up_withSF.root");
     TH2D *h_up = (TH2D *) fin_up->Get("h_data_unfolded")->Clone("h_up");
-    TFile *fin_down = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_down_withSF.root");
+    TFile *fin_down = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_down_withSF.root");
     TH2D *h_down = (TH2D *) fin_down->Get("h_data_unfolded")->Clone("h_down");
 
     int nbins_x = h_nom->GetNbinsX();
@@ -146,8 +146,8 @@ void jec_unc(TString observable="rg")
         if (ymax<0) ymax*=0.9;
         else ymax*=1.1;
 
-        ymin = -0.3;
-        ymax = 0.3;
+        ymin = -0.2;
+        ymax = 0.1;
 
         h_unc_up_rel->GetYaxis()->SetRangeUser(ymin, ymax);
         h_unc_down_rel->GetYaxis()->SetRangeUser(ymin, ymax);

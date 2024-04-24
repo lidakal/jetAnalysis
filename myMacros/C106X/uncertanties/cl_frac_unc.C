@@ -16,11 +16,11 @@ void cl_frac_unc(TString observable="rg")
     else if (observable=="zpt") xlabel = "z";
     TString ylabel = "1/N dN/d" + xlabel;
 
-    TFile *fin_nom = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_nom = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_up = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_CLfracUp_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_up = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_CLfracUp_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_up = (TH2D *) fin_up->Get("h_data_unfolded")->Clone("h_up");
-    TFile *fin_down = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_CLfracDown_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_down = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_CLfracDown_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_down = (TH2D *) fin_down->Get("h_data_unfolded")->Clone("h_down");
 
     int nbins_x = h_nom->GetNbinsX();
@@ -122,7 +122,8 @@ void cl_frac_unc(TString observable="rg")
         h_unc_up_rel->Divide(h_nom_1d);
         h_unc_up_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_unc_up_rel->GetYaxis()->SetTitleOffset(2.);
-        h_unc_up_rel->GetYaxis()->SetRangeUser(-0.3,0.3);
+        h_unc_up_rel->GetYaxis()->SetRangeUser(-0.05,0.05);
+        if (observable=="zpt") h_unc_up_rel->GetYaxis()->SetRangeUser(-0.3,0.3);
         h_unc_up_rel->Write();
 
         TH1D *h_unc_down_rel = (TH1D *) h_unc_down->Clone(Form("h_unc_down_rel_%d", ibin_pt));

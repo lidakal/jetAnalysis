@@ -16,9 +16,9 @@ void model_fit_unc(TString observable="rg")
     else if (observable=="zpt") xlabel = "z";
     TString ylabel = "1/N dN/d" + xlabel;
 
-    TFile *fin_nom = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_nom = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_her = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_herwigFit_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_her = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_herwigFit_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_her = (TH2D *) fin_her->Get("h_data_unfolded")->Clone("h_her");
     
     int nbins_x = h_nom->GetNbinsX();
@@ -85,6 +85,9 @@ void model_fit_unc(TString observable="rg")
             h->Scale(1/h->Integral(), "width");
             h->GetYaxis()->SetTitle(ylabel);
             h->GetYaxis()->SetTitleOffset(2.);
+            if (observable=="rg") h->GetYaxis()->SetRangeUser(0.,1.2);
+            else if (observable=="zg") h->GetYaxis()->SetRangeUser(0.,6.);
+            else h->GetYaxis()->SetRangeUser(0.,4.);
             h->Draw("pe1 same");
         }
         leg->Draw();

@@ -16,9 +16,9 @@ void trk_inef_unc(TString observable="rg")
     else if (observable=="zpt") xlabel = "z";
     TString ylabel = "1/N dN/d" + xlabel;
 
-    TFile *fin_nom = new TFile("../unfolding/histos/bjet_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_nom = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_inef = new TFile("../unfolding/histos/bjet_aggrTMVA_0_03_trk_inef_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_inef = new TFile("../unfolding/histos/pythia_0_03_trk_inef_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_inef = (TH2D *) fin_inef->Get("h_data_unfolded")->Clone("h_inef");
 
     int nbins_x = h_nom->GetNbinsX();
@@ -115,7 +115,9 @@ void trk_inef_unc(TString observable="rg")
         h_inef_unc_rel->Divide(h_nom_1d);
         h_inef_unc_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_inef_unc_rel->GetYaxis()->SetTitleOffset(2);
-        h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.2, 0.2);
+        if (observable=="rg") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.2, 0.1);
+        else if (observable=="zg") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.1, 0.1);
+        else if (observable=="zpt") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.25, 0.1);
         h_inef_unc_rel->Write();
 
         bottom_pads[ipad]->cd();

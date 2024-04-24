@@ -54,7 +54,7 @@ void draw_unc(TString observable="rg")
         h_stat_unc_rel->SetLineColor(kBlack);
         h_stat_unc_rel->SetFillStyle(3244);
         h_stat_unc_rel->SetMarkerStyle(1);
-        h_stat_unc_rel->GetYaxis()->SetTitle("relative uncertainty");
+        h_stat_unc_rel->GetYaxis()->SetTitle("Relative uncertainty");
         h_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
         leg->AddEntry(h_stat_unc_rel, "statistical (sym)", "f");
         leg->AddEntry(h_stat_unc_rel, " ", "");
@@ -67,7 +67,7 @@ void draw_unc(TString observable="rg")
         h_raw_stat_unc_rel->SetLineColor(kBlack);
         h_raw_stat_unc_rel->SetFillStyle(3002);
         h_raw_stat_unc_rel->SetMarkerStyle(1);
-        h_raw_stat_unc_rel->GetYaxis()->SetTitle("relative uncertainty");
+        h_raw_stat_unc_rel->GetYaxis()->SetTitle("Relative uncertainty");
         h_raw_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
         // leg->AddEntry(h_raw_stat_unc_rel, "raw statistical (sym)", "f");
 

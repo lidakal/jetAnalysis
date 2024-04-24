@@ -16,11 +16,11 @@ void jer_unc_inclusive(TString observable="rg")
     else if (observable=="zpt") xlabel = "z";
     TString ylabel = "1/N dN/d" + xlabel;
 
-    TFile *fin_nom = new TFile("../unfolding/histos/dijet_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
+    TFile *fin_nom = new TFile("../unfolding/histos/dijet_PF40_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_up = new TFile("../unfolding/histos/dijet_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_up_jec_nom.root");
+    TFile *fin_up = new TFile("../unfolding/histos/dijet_PF40_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_up_jec_nom.root");
     TH2D *h_up = (TH2D *) fin_up->Get("h_data_unfolded")->Clone("h_up");
-    TFile *fin_down = new TFile("../unfolding/histos/dijet_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_down_jec_nom.root");
+    TFile *fin_down = new TFile("../unfolding/histos/dijet_PF40_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_down_jec_nom.root");
     TH2D *h_down = (TH2D *) fin_down->Get("h_data_unfolded")->Clone("h_down");
 
     int nbins_x = h_nom->GetNbinsX();
@@ -66,7 +66,6 @@ void jer_unc_inclusive(TString observable="rg")
         int ibin_x_min = 1;
         int ibin_x_max = nbins_x;
 
-    
         if (observable!="zpt") ibin_x_min = 2;
         if (observable=="rg") ibin_x_max = nbins_x - 1;
         
@@ -145,8 +144,8 @@ void jer_unc_inclusive(TString observable="rg")
         if (ymax<0) ymax*=0.9;
         else ymax*=1.1;
 
-        ymin = -0.1;
-        ymax = 0.1;
+        ymin = -0.02;
+        ymax = 0.02;
 
         h_unc_up_rel->GetYaxis()->SetRangeUser(ymin, ymax);
         h_unc_down_rel->GetYaxis()->SetRangeUser(ymin, ymax);
