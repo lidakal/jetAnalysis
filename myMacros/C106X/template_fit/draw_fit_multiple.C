@@ -224,7 +224,7 @@ void draw_fit_multiple(TString observable = "rg", TString jer_opt="nom", TString
                 TLatex *lumi = new TLatex;
                 lumi->SetNDC();
                 lumi->SetTextSize(20);
-                lumi->DrawLatex(0.45, 0.92, "#bf{302 fb^{-1} (pp 5.02 TeV)}");
+                lumi->DrawLatex(0.45, 0.92, "#bf{299 fb^{-1} (pp 5.02 TeV)}");
                 lumi->Draw();
             }
 

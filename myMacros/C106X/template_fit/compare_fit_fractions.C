@@ -88,4 +88,23 @@ void compare_fit_fractions(TString observable="rg")
 
     c_b_frac->Draw();
     c_b_frac->Print("plots_an/pythia_vs_herwig_fractions_"+observable+".png");
+
+    // TEST cl/(cl+b) in pythia vs herwig
+    // cl/(cl+b) = A < 1 => cl/b = A/(1-A) = B => A = B/(1+B)
+    // For A << 1 => B ~ A
+    TH1D *h_cl_b_pythia = (TH1D *) h_cl_frac_pythia_1d->Clone("h_cl_b_pythia");
+    h_cl_b_pythia->Divide(h_b_frac_pythia_1d); // = B
+
+    TH1D *h_cl_b_herwig = (TH1D *) h_cl_frac_herwig_1d->Clone("h_cl_b_herwig");
+    h_cl_b_herwig->Divide(h_b_frac_herwig_1d); // = B
+
+    TH1D *h_cl_b_pythia_herwig = (TH1D *) h_cl_b_pythia->Clone("h_cl_b_pythia_herwig");
+    h_cl_b_pythia_herwig->Divide(h_cl_b_herwig);
+    h_cl_b_pythia_herwig->GetYaxis()->SetRangeUser(0.9,2.5);
+    h_cl_b_pythia_herwig->GetYaxis()->SetTitle("pythia/herwig (c+l)/b");
+    h_cl_b_pythia_herwig->GetXaxis()->SetTitle(xlabel);
+
+    TCanvas *c_cl_b = new TCanvas("c_cl_b", "", 800, 600);
+    // h_cl_b_pythia->Draw();
+    h_cl_b_pythia_herwig->Draw();
 }

@@ -12,7 +12,7 @@ void draw_fractions_in1bin(TString observable="rg", TString jer_opt="nom", TStri
     // Load histograms
     TString suffix = "_jer_" + jer_opt + "_jec_" + jec_opt;
     TString option = "_glued";
-    TString sample = "herwig_bjet";
+    TString sample = "bjet";
     TString label = "aggrTMVA_XXT";
     TString label_in = "data";
     if (sample.Contains("herwig")) label_in += "_herwig_" + label;
@@ -160,7 +160,7 @@ void draw_fractions_in1bin(TString observable="rg", TString jer_opt="nom", TStri
 
 
     c_fraction->Update();
-    c_fraction->Print("plots_an/"+sample+"_"+label+"_fit_fraction_"+observable+".png");
+    // c_fraction->Print("plots_an/"+sample+"_"+label+"_fit_fraction_"+observable+".png");
     // Make decorations
     TPaveText *info_top_left = new TPaveText(-0.4, 0.865, 0.85, 0.94, "nb ndc");
     info_top_left->SetTextSize(text_size);

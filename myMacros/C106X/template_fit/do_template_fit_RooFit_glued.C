@@ -1,22 +1,20 @@
 #include "Purity.h"
 
-void do_template_fit_RooFit_glued(TString observable="rg")
+void do_template_fit_RooFit_glued(TString observable="rg", TString jer_opt="nom", TString jec_opt="nom")
 {
     // glue light+c to sig 
 
     // Setup 
+    TString suffix = "_jer_" + jer_opt + "_jec_" + jec_opt;
     TString sample = "aggrTMVA_XXT";
-    TString label_out = "data";
-    label_out += "_" + sample;
-    TString fout_name = "histos/fitted_parameters_RooFit_" + label_out + "_" + observable + "_glued.root";
 
     // Load data
-    TString fin_name_data = "./histos/" + label_out + "_histograms.root";
+    TString fin_name_data = "./histos/data_PF40to100_" + sample + "_histograms.root";
     TFile *fin_data = new TFile(fin_name_data);
     TH3D *h_data = (TH3D *) fin_data->Get("h_data_" + observable)->Clone("h_data");
 
     // Load dijet MC
-    TString fin_mc_dijet_name = "./histos/dijet_" + sample + "_histograms.root";
+    TString fin_mc_dijet_name = "./histos/dijet_PF40_" + sample + "_histograms" + suffix + ".root";
     TFile *fin_mc_dijet = new TFile(fin_mc_dijet_name);
 
     TH3D *h_sig_training_dijet = (TH3D *) fin_mc_dijet->Get("h_sig_" + observable + "_training")->Clone("h_sig_training_dijet");
@@ -28,7 +26,7 @@ void do_template_fit_RooFit_glued(TString observable="rg")
     TH3D *h_bkg_rest_testing_dijet = (TH3D *) fin_mc_dijet->Get("h_bkg_rest_" + observable + "_testing")->Clone("h_bkg_rest_testing_dijet");
 
     // Load bjet MC 
-    TString fin_mc_bjet_name = "./histos/bjet_" + sample + "_histograms.root";
+    TString fin_mc_bjet_name = "./histos/bjet_PF40_" + sample + "_histograms" + suffix + ".root";
     TFile *fin_mc_bjet = new TFile(fin_mc_bjet_name);
 
     TH3D *h_sig_training_bjet = (TH3D *) fin_mc_bjet->Get("h_sig_" + observable + "_training")->Clone("h_sig_training_bjet");
@@ -133,12 +131,19 @@ void do_template_fit_RooFit_glued(TString observable="rg")
             TH1D *h_bkg_rest_testing_bjet_mb = (TH1D *) h_bkg_rest_testing_bjet->ProjectionY(Form("h_bkg_rest_testing_bjet_mb_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
 
             // Calculate true fractions to be used as initial values for the fit
-            double int0 = h_sig_training_dijet_mb->Integral(1, nbins_mb);
-            double int1 = h_bkg_bb_training_dijet_mb->Integral(1, nbins_mb);
-            double int2 = h_bkg_rest_training_dijet_mb->Integral(1, nbins_mb);
+            double int0 = h_sig_training_dijet_mb->Integral(1, nbins_mb)+h_sig_testing_dijet_mb->Integral(1, nbins_mb);
+            double int1 = h_bkg_bb_training_dijet_mb->Integral(1, nbins_mb)+h_bkg_bb_testing_dijet_mb->Integral(1, nbins_mb);
+            double int2 = h_bkg_rest_training_dijet_mb->Integral(1, nbins_mb)+h_bkg_rest_testing_dijet_mb->Integral(1, nbins_mb);
+
+            std::cout << "int0=" << int0 << std::endl;
+            std::cout << "int1=" << int1 << std::endl;
+            std::cout << "int2=" << int2 << std::endl;
+
 
             double sig_fraction_true = int0 / (int0 + int1 + int2); 
             double bkg_bb_fraction_true = int1 / (int0 + int1 + int2);
+            std::cout << "sig_fraction_true=" << sig_fraction_true << std::endl;
+            std::cout << "bkg_bb_fraction_true=" << bkg_bb_fraction_true << std::endl;
 
             // Compile dijet + bjet training and testing - no need to add them all together
             TH1D *h_sig_mb = (TH1D *) h_sig_training_dijet_mb->Clone(Form("h_sig_mb_%d_%d", ibin_pt, ibin_x));
@@ -158,11 +163,16 @@ void do_template_fit_RooFit_glued(TString observable="rg")
             h_bkg_rest_mb->Add(h_bkg_rest_training_bjet_mb);
             h_bkg_rest_mb->Add(h_bkg_rest_testing_bjet_mb);
             h_bkg_rest_mb->Scale(1/h_bkg_rest_mb->Integral(1, nbins_mb));
+            std::cout << "h_bkg_rest_mb->GetEntries()=" << h_bkg_rest_mb->GetEntries() << std::endl; 
 
             // add together light+c to sig with nominal MC ratio
             // a sig + b bb + c light = n, a+b+c=1, a+c=1-b
-            // a'=a/(a+c)=a/(1-b)
-            double sig_frac = sig_fraction_true/(1 - bkg_bb_fraction_true);
+            // c'=c/(a+c)=(1-a-b)/(1-b)
+            // a'=a/(a+c)=a/(1-b)=1-c'
+            double cl_frac = (1 - sig_fraction_true - bkg_bb_fraction_true) / (1 - bkg_bb_fraction_true); // nominal
+            // cl_frac = 2*cl_frac; // systematic
+            // cl_frac = 0.; // systematic
+            double sig_frac = 1 - cl_frac;
             h_sig_mb->Add(h_sig_mb, h_bkg_rest_mb, sig_frac, 1-sig_frac);
 
             // ***** Case 0 - 'Binned fitting' *****
@@ -224,6 +234,11 @@ void do_template_fit_RooFit_glued(TString observable="rg")
             errP1 = da;
             errP2 = da*(1-sig_frac);
             // std::cout << "errP0 = " << errP0 << std::endl;
+            std::cout << "a'/a = " << p0/sig_fraction_true << std::endl;
+            std::cout << "c'/c = " << p2/(1-sig_fraction_true-bkg_bb_fraction_true) << std::endl;
+            std::cout << "c=" << (1-sig_fraction_true-bkg_bb_fraction_true) << ", c'=" << p2 << std::endl;
+            std::cout << "a=" << sig_fraction_true << ", a'=" << p0 << std::endl;
+            std::cout << "b=" << bkg_bb_fraction_true << ", b'=" << p1 << std::endl;
 
             h_sig_fraction->SetBinContent(ibin_x, ibin_pt, p0);
             h_sig_fraction->SetBinError(ibin_x, ibin_pt, errP0);
@@ -247,6 +262,7 @@ void do_template_fit_RooFit_glued(TString observable="rg")
         std::cout << "(" << (p.first).first << ", " << (p.first).second << ") = " << p.second << std::endl;
     }
 
+    TString fout_name = "histos/fitted_parameters_RooFit_data_" + sample + "_" + observable + "_glued" + suffix + ".root";
     std::cout << "Creating file " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "recreate");
     for (auto h : {
