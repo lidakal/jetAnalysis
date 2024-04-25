@@ -3,21 +3,30 @@
 void calculate_correction(TString observable="rg", TString jer_opt="nom", TString jec_opt="nom")
 {  
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(0.4/R_{g})";
+    if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
     else if (observable=="zpt") xlabel = "z";
 
     TString suffix = "_jer_" + jer_opt + "_jec_" + jec_opt;
 
+    TString sample = "pythia_PF40";
+    TString label = "aggrTMVA";
+
+    bool sfDown = false;
+    bool sfUp = false;
+
     // Load histograms
-    TFile *fin_inclusive = new TFile("histos/bjet_aggrTMVA_inclusive_histograms"+suffix+".root");
+    TFile *fin_inclusive = new TFile("histos/"+sample+"_"+label+"_inclusive_histograms"+suffix+".root");
     TH2D *h_inclusive = (TH2D *) fin_inclusive->Get("h_"+observable+"pt_gen")->Clone("h_inclusive");
 
     // XXT is a subset of inclusive
-    TFile *fin_btag = new TFile("histos/bjet_aggrTMVA_XXT_histograms"+suffix+".root"); 
+    TFile *fin_btag = new TFile("histos/"+sample+"_"+label+"_XXT_histograms"+suffix+".root"); 
     TH2D *h_btag = (TH2D *) fin_btag->Get("h_"+observable+"pt_gen")->Clone("h_btag");
 
-    TFile *fin_btag_withSF = new TFile("histos/bjet_aggrTMVA_XXT_histograms"+suffix+"_withSF.root"); 
+    TString suffix_withSF = suffix + "_withSF";
+    if (sfUp) suffix_withSF += "Up";
+    if (sfDown) suffix_withSF += "Down";
+    TFile *fin_btag_withSF = new TFile("histos/"+sample+"_"+label+"_XXT_histograms"+suffix_withSF+".root"); 
     TH2D *h_btag_withSF = (TH2D *) fin_btag_withSF->Get("h_"+observable+"pt_gen")->Clone("h_btag_withSF");
 
     // Create efficiency histograms 
@@ -29,8 +38,8 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
 
     // Draw the efficiencies
     int ibin_pt = 2;
-    double pt_min = h_eff->GetYaxis()->GetBinLowEdge(ibin_pt);
-    double pt_max = h_eff->GetYaxis()->GetBinUpEdge(ibin_pt);
+    double pt_min = h_eff_withSF->GetYaxis()->GetBinLowEdge(ibin_pt);
+    double pt_max = h_eff_withSF->GetYaxis()->GetBinUpEdge(ibin_pt);
     TString header = Form("%.0f < p_{T}^{jet} < %.0f", pt_min, pt_max);
 
     TH1D *h_eff_1d = (TH1D *) h_eff->ProjectionX("h_eff_1d", ibin_pt, ibin_pt);
@@ -39,7 +48,7 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
     h_eff_1d->SetMinimum(0.);
     h_eff_1d->SetMaximum(0.7);
     h_eff_1d->GetXaxis()->SetTitle(xlabel);
-    h_eff_1d->GetYaxis()->SetTitle("efficiency");
+    h_eff_1d->GetYaxis()->SetTitle("b jet efficiency");
     h_eff_1d->SetTitle("mc gen efficiency");
 
     TH1D *h_eff_withSF_1d = (TH1D *) h_eff_withSF->ProjectionX("h_eff_withSF_1d", ibin_pt, ibin_pt);
@@ -79,7 +88,7 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
     h_sf_gen_1d->Draw("pe1 same");
     auto leg_sf = c_sf_gen->BuildLegend();
     leg_sf->SetHeader(header);
-    drawHeaderSimulation();
+    drawHeader();
     c_sf_gen->Draw();
     c_sf_gen->Print("plots_an/sf_reco_vs_gen_"+observable+".png");
 
@@ -114,11 +123,11 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
     h_btag_withSF_1d->SetTitle("tagged with SF");
     h_btag_withSF_1d->Scale(1/h_btag_withSF_1d->Integral(), "width");
 
-    // TCanvas *c_bias = new TCanvas("c_bias","",800,600);
-    // h_inclusive_1d->Draw("pe1");
-    // h_btag_1d->Draw("pe1 same");
-    // h_btag_withSF_1d->Draw("pe1 same");
-    // c_bias->BuildLegend();
+    TCanvas *c_bias = new TCanvas("c_bias","",800,600);
+    h_inclusive_1d->Draw("pe1");
+    h_btag_1d->Draw("pe1 same");
+    h_btag_withSF_1d->Draw("pe1 same");
+    c_bias->BuildLegend();
 
     // TH1D *h_correction_1d = (TH1D *) h_correction->ProjectionX("h_correction_1d", ibin_pt, ibin_pt);
     // h_correction_1d->GetXaxis()->SetTitle(observable);
@@ -146,7 +155,7 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
     // c_corr->BuildLegend();
     
 
-    TString fout_name = "./histos/aggrTMVA_XXT_" + observable + "_efficiency"+suffix+".root";
+    TString fout_name = "./histos/"+sample+"_"+label+"_XXT_" + observable + "_efficiency"+suffix_withSF+".root";
     std::cout << "fout : " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "recreate");
 
@@ -159,4 +168,6 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
 
     fout->Close();
     delete fout;
+
+    // gApplication -> Terminate(0);
 }

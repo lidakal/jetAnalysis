@@ -6,20 +6,22 @@ void calc_sf(TString observable="rg")
     gStyle->SetErrorX(0.5);
     
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(0.4/R_{g})";
+    if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z";
+    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/p_{T}^{jet,ch}";
 
     TString sample = "dijet";
     TString label = "aggrTMVA_inclusive";
 
     TString fin_incl_name = "histos/" + observable + "_fit_result_JP_" + label + ".root";
+    std::cout << "fin: " << fin_incl_name << std::endl;
     TFile *fin_incl = new TFile(fin_incl_name);
     TH3D *h_data_incl = (TH3D *) fin_incl->Get("h_data")->Clone("h_data_incl");
     TH3D *h_bbb_incl = (TH3D *) fin_incl->Get("h_bbb")->Clone("h_bbb_incl");
     TH2D *h_bbb_f_incl = (TH2D *) fin_incl->Get("h_bbb_f")->Clone("h_bbb_f_incl");
 
     TString fin_tag_name = "histos/" + observable + "_fit_result_JP_" + label + "_tagged.root";
+    std::cout << "fin: " << fin_tag_name << std::endl;
     TFile *fin_tag = new TFile(fin_tag_name);
     TH3D *h_data_tag = (TH3D *) fin_tag->Get("h_data")->Clone("h_data_tag");
     TH3D *h_bbb_tag = (TH3D *) fin_tag->Get("h_bbb")->Clone("h_bbb_tag");
@@ -92,6 +94,7 @@ void calc_sf(TString observable="rg")
     // relative uncertainties 
     std::vector<double> unc;
     for (int ibin_pt = 1; ibin_pt <= nbins_pt; ibin_pt++) {
+        // if (ibin_pt!=2) continue;
         double pt_min = h_data_incl->GetZaxis()->GetBinLowEdge(ibin_pt);
         double pt_max = h_data_incl->GetZaxis()->GetBinUpEdge(ibin_pt);
         for (int ibin_x = 1; ibin_x <= nbins_x; ibin_x++) {
@@ -150,8 +153,10 @@ void calc_sf(TString observable="rg")
         h_eff_sf_1d->SetLineColor(ibin_pt);
         h_eff_sf_1d->SetLineWidth(1);
         h_eff_sf_1d->SetMinimum(0.9);
-        h_eff_sf_1d->SetMaximum(2.);
-        h_eff_sf_1d->GetYaxis()->SetTitle("SF = #epsilon^{data} / #epsilon^{MC}");
+        if (observable=="rg") h_eff_sf_1d->SetMaximum(1.5);
+        else if (observable=="zg") h_eff_sf_1d->SetMaximum(1.5);
+        else h_eff_sf_1d->SetMaximum(2.);
+        h_eff_sf_1d->GetYaxis()->SetTitle("SF_{b} #equiv #epsilon_{b}^{data} / #epsilon_{b}^{MC}");
         leg_sf_per_pt->AddEntry(h_eff_sf_1d, Form("%.0f < p_{T}^{jet} < %.0f", pt_min, pt_max), "pe1");
         h_eff_sf_1d->Draw("pe1 same");
     }
@@ -159,6 +164,14 @@ void calc_sf(TString observable="rg")
     c_sf_per_pt->cd();
     drawHeader();
     leg_sf_per_pt->Draw();
+
+    // TLatex *jet_info = new TLatex;
+    // jet_info->SetNDC();
+    // jet_info->SetTextSize(20);
+    // jet_info->DrawLatex(0.2, 0.34, "anti-k_{T}, R=0.4 jets");
+    // jet_info->DrawLatex(0.2, 0.26, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    // // jet_info->DrawLatex(0.2, 0.18, "k_{T} > 1 GeV");
+    // jet_info->Draw();
 
     c_sf_per_pt->Draw();
     c_sf_per_pt->Print("plots_an/"+sample+"_"+label+"_sfs_"+observable+".png");

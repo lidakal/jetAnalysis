@@ -255,7 +255,7 @@ void draw_fit_JP_in1bin(TString observable="rg", bool tagged=false)
             TLatex *lumi = new TLatex;
             lumi->SetNDC();
             lumi->SetTextSize(20);
-            lumi->DrawLatex(0.45, 0.92, "#bf{302 fb^{-1} (pp 5.02 TeV)}");
+            lumi->DrawLatex(0.45, 0.92, "#bf{301 fb^{-1} (pp 5.02 TeV)}");
             lumi->Draw();
         }
 

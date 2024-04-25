@@ -4,6 +4,7 @@ void fit_JP(TString observable="rg", bool tagged=false)
     label += (tagged ? "_tagged" : "");
 
     TString fin_name = "histos/data_" + label + "_histograms_for_fit_JP.root";
+    std::cout << "fin: " << fin_name << std::endl;
     TString fout_name = "histos/" + observable + "_fit_result_JP_" + label + ".root";
 
     // Load data histogram
@@ -108,13 +109,25 @@ void fit_JP(TString observable="rg", bool tagged=false)
             TH1D *h_c_1d = (TH1D *) h_c->ProjectionY(Form("h_c_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
             TH1D *h_l_1d = (TH1D *) h_l->ProjectionY(Form("h_l_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
 
+            // Get MC fractions as initial values 
+            TH1D *h_dijet_b_training_1d = (TH1D *) h_dijet_b_training->ProjectionY(Form("h_dijet_b_training_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
+            TH1D *h_dijet_bb_training_1d = (TH1D *) h_dijet_bb_training->ProjectionY(Form("h_dijet_bb_training_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
+            TH1D *h_dijet_c_training_1d = (TH1D *) h_dijet_c_training->ProjectionY(Form("h_dijet_c_training_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
+            TH1D *h_dijet_l_training_1d = (TH1D *) h_dijet_l_training->ProjectionY(Form("h_dijet_l_training_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
+
+            double int0 = h_dijet_b_training_1d->Integral();
+            double int1 = h_dijet_bb_training_1d->Integral();
+            double int2 = h_dijet_c_training_1d->Integral();
+            double int3 = h_dijet_l_training_1d->Integral();
+            double total = int0+int1+int2+int3;
+
             // TCanvas *c_tmp = new TCanvas("c_tmp", "", 800, 600);
             // h_data_1d->Draw();
 
-            std::cout << " h_data_1d->Integral(1,nbins_jp) = " << h_data_1d->Integral(1,nbins_jp) << std::endl;
-            std::cout << " h_bbb_1d->Integral(1,nbins_jp) = " << h_bbb_1d->Integral(1,nbins_jp) << std::endl;
-            std::cout << " h_c_1d->Integral(1,nbins_jp) = " << h_c_1d->Integral(1,nbins_jp) << std::endl;
-            std::cout << " h_l_1d->Integral(1,nbins_jp) = " << h_l_1d->Integral(1,nbins_jp) << std::endl;
+            // std::cout << " h_data_1d->Integral(1,nbins_jp) = " << h_data_1d->Integral(1,nbins_jp) << std::endl;
+            // std::cout << " h_bbb_1d->Integral(1,nbins_jp) = " << h_bbb_1d->Integral(1,nbins_jp) << std::endl;
+            // std::cout << " h_c_1d->Integral(1,nbins_jp) = " << h_c_1d->Integral(1,nbins_jp) << std::endl;
+            // std::cout << " h_l_1d->Integral(1,nbins_jp) = " << h_l_1d->Integral(1,nbins_jp) << std::endl;
             
 
             // Create the observable
@@ -137,8 +150,8 @@ void fit_JP(TString observable="rg", bool tagged=false)
             RooArgList template_list(bbb_template, c_template, l_template, Form("template_list_%d_%d", ibin_pt, ibin_x));
 
             // Create the RooRealVar for the fit parameter (e.g., fraction of template A)
-            RooRealVar bbb_fraction_val(Form("bbb_fraction_val_%d_%d", ibin_pt, ibin_x),"bbb_fraction_val",0.1,0.,1.);
-            RooRealVar c_fraction_val(Form("c_fraction_val_%d_%d", ibin_pt, ibin_x),"c_fraction_val",0.3,0.,1.); // c=(1-bbb)*c'
+            RooRealVar bbb_fraction_val(Form("bbb_fraction_val_%d_%d", ibin_pt, ibin_x),"bbb_fraction_val",0.9,0.,1.);
+            RooRealVar c_fraction_val(Form("c_fraction_val_%d_%d", ibin_pt, ibin_x),"c_fraction_val",0.1,0.,1.); // c=(1-bbb)*c'
             RooArgList coeff_list(bbb_fraction_val, c_fraction_val, Form("coeff_list_%d_%d", ibin_pt, ibin_x));
             // l=1-bbb-c
 
