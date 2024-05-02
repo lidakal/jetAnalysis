@@ -7,7 +7,7 @@ void draw_yields(TString observable="rg")
 
     Float_t text_size = 26.;
     gStyle->SetPalette(57);
-    gStyle->SetPaintTextFormat("2.1e");
+    // gStyle->SetPaintTextFormat("2.1e");
     TString label = "aggrTMVA_inclusive";
     
     // Load data histogram
@@ -81,7 +81,7 @@ void draw_yields(TString observable="rg")
     // data_incl_info->SetTextSize(text_size);
     // data_incl_info->DrawLatex(0.45, 0.92, "N^{incl} weighted counts");
     // data_incl_info->Draw();
-    // c_data_incl->Print("plots/nincl_yield.png");
+    // c_data_incl->Print("plots/"+observable+"_nincl_yield.png");
 
     // TCanvas *c_data_tag = new TCanvas("c_data_tag", "Ntag", 1400, 600);
     // h_data_tagged_2d->Draw("colz text");
@@ -90,7 +90,7 @@ void draw_yields(TString observable="rg")
     // data_tag_info->SetTextSize(text_size);
     // data_tag_info->DrawLatex(0.45, 0.92, "N^{tag} weighted counts");
     // data_tag_info->Draw();
-    // c_data_tag->Print("plots/ntag_yield.png");
+    // c_data_tag->Print("plots/"+observable+"_ntag_yield.png");
 
     // TCanvas *c_bbb_incl = new TCanvas("c_bbb_incl", "Nincl", 1400, 600);
     // h_bbb_2d->Draw("colz text");
@@ -99,16 +99,16 @@ void draw_yields(TString observable="rg")
     // bbb_incl_info->SetTextSize(text_size);
     // bbb_incl_info->DrawLatex(0.42, 0.92, "inclusive b jet template counts");
     // bbb_incl_info->Draw();
-    // c_bbb_incl->Print("plots/bbb_incl_template_yield.png");
+    // c_bbb_incl->Print("plots/"+observable+"_bbb_incl_template_yield.png");
 
-    // TCanvas *c_bbb_tag = new TCanvas("c_bbb_tag", "Ntag", 1400, 600);
-    // h_bbb_tagged_2d->Draw("colz text");
-    // TLatex *bbb_tag_info = new TLatex;
-    // bbb_tag_info->SetNDC();
-    // bbb_tag_info->SetTextSize(text_size);
-    // bbb_tag_info->DrawLatex(0.42, 0.92, "tagged b jet template counts");
-    // bbb_tag_info->Draw();
-    // c_bbb_tag->Print("plots/bbb_tag_template_yield.png");
+    TCanvas *c_bbb_tag = new TCanvas("c_bbb_tag", "Ntag", 1400, 600);
+    h_bbb_tagged_2d->Draw("colz text");
+    TLatex *bbb_tag_info = new TLatex;
+    bbb_tag_info->SetNDC();
+    bbb_tag_info->SetTextSize(text_size);
+    bbb_tag_info->DrawLatex(0.42, 0.92, "tagged b jet template counts");
+    bbb_tag_info->Draw();
+    c_bbb_tag->Print("plots/"+observable+"_bbb_tag_template_yield.png");
 
     // TCanvas *c_c_incl = new TCanvas("c_c_incl", "Nincl", 1400, 600);
     // h_c_2d->Draw("colz text");
@@ -117,34 +117,34 @@ void draw_yields(TString observable="rg")
     // c_incl_info->SetTextSize(text_size);
     // c_incl_info->DrawLatex(0.42, 0.92, "inclusive c jet template counts");
     // c_incl_info->Draw();
-    // c_c_incl->Print("plots/c_incl_template_yield.png");
+    // c_c_incl->Print("plots/"+observable+"_c_incl_template_yield.png");
 
-    // TCanvas *c_c_tag = new TCanvas("c_c_tag", "Ntag", 1400, 600);
-    // h_c_tagged_2d->Draw("colz text");
-    // TLatex *c_tag_info = new TLatex;
-    // c_tag_info->SetNDC();
-    // c_tag_info->SetTextSize(text_size);
-    // c_tag_info->DrawLatex(0.42, 0.92, "tagged c jet template counts");
-    // c_tag_info->Draw();
-    // c_c_tag->Print("plots/c_tag_template_yield.png");
+    TCanvas *c_c_tag = new TCanvas("c_c_tag", "Ntag", 1400, 600);
+    h_c_tagged_2d->Draw("colz text");
+    TLatex *c_tag_info = new TLatex;
+    c_tag_info->SetNDC();
+    c_tag_info->SetTextSize(text_size);
+    c_tag_info->DrawLatex(0.42, 0.92, "tagged c jet template counts");
+    c_tag_info->Draw();
+    c_c_tag->Print("plots/"+observable+"_c_tag_template_yield.png");
 
-    TCanvas *c_l_incl = new TCanvas("c_l_incl", "Nincl", 1400, 600);
-    h_l_2d->Draw("colz text");
-    TLatex *l_incl_info = new TLatex;
-    l_incl_info->SetNDC();
-    l_incl_info->SetTextSize(text_size);
-    l_incl_info->DrawLatex(0.42, 0.92, "inclusive guds jet template counts");
-    l_incl_info->Draw();
-    c_l_incl->Print("plots/l_incl_template_yield.png");
+    // TCanvas *c_l_incl = new TCanvas("c_l_incl", "Nincl", 1400, 600);
+    // h_l_2d->Draw("colz text");
+    // TLatex *l_incl_info = new TLatex;
+    // l_incl_info->SetNDC();
+    // l_incl_info->SetTextSize(text_size);
+    // l_incl_info->DrawLatex(0.42, 0.92, "inclusive guds jet template counts");
+    // l_incl_info->Draw();
+    // c_l_incl->Print("plots/"+observable+"_l_incl_template_yield.png");
 
-    // TCanvas *c_l_tag = new TCanvas("c_l_tag", "Ntag", 1400, 600);
-    // h_l_tagged_2d->Draw("colz text");
-    // TLatex *l_tag_info = new TLatex;
-    // l_tag_info->SetNDC();
-    // l_tag_info->SetTextSize(text_size);
-    // l_tag_info->DrawLatex(0.42, 0.92, "tagged guds jet template counts");
-    // l_tag_info->Draw();
-    // c_l_tag->Print("plots/l_tag_template_yield.png");
+    TCanvas *c_l_tag = new TCanvas("c_l_tag", "Ntag", 1400, 600);
+    h_l_tagged_2d->Draw("colz text");
+    TLatex *l_tag_info = new TLatex;
+    l_tag_info->SetNDC();
+    l_tag_info->SetTextSize(text_size);
+    l_tag_info->DrawLatex(0.42, 0.92, "tagged guds jet template counts");
+    l_tag_info->Draw();
+    c_l_tag->Print("plots/"+observable+"_l_tag_template_yield.png");
 
 
 }
