@@ -9,6 +9,7 @@ void trk_inef_unc_inclusive(TString observable="rg")
     gStyle->SetLabelSize(text_size, "XYZ");
     gStyle->SetTitleSize(text_size, "XYZ");
     gStyle->SetErrorX(0.5);
+    gStyle->SetCanvasPreferGL(kTRUE);
 
     TString xlabel;
     if (observable=="rg") xlabel = "ln(0.4/R_{g})";
@@ -116,8 +117,9 @@ void trk_inef_unc_inclusive(TString observable="rg")
         h_inef_unc_rel->Divide(h_nom_1d);
         h_inef_unc_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_inef_unc_rel->GetYaxis()->SetTitleOffset(2);
-        h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.1, 0.1);
-        if (observable=="zg") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.05, 0.05);
+        h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.05, 0.05);
+        h_inef_unc_rel->GetYaxis()->SetNdivisions(6);
+        if (observable=="zg") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.02, 0.02);
         h_inef_unc_rel->Write();
 
         bottom_pads[ipad]->cd();
@@ -129,12 +131,26 @@ void trk_inef_unc_inclusive(TString observable="rg")
         // h_inef_unc->Draw("hist same");
         h_inef_unc_rel->Draw("pe1");
 
+        TH1D *h_band = (TH1D *) h_inef_unc_rel->Clone("h_band");
+        h_band->Reset();
+        for (int ibin_x=1; ibin_x<=h_inef_unc_rel->GetNbinsX(); ibin_x++) {
+            double maxUnc = h_inef_unc_rel->GetBinContent(ibin_x);
+            h_band->SetBinContent(ibin_x, 0.);
+            h_band->SetBinError(ibin_x, maxUnc);
+        }
+
+        h_band->SetMarkerSize(0);
+        h_band->SetFillStyle(1001);
+        h_band->SetFillColorAlpha(kBlack, 0.05);
+        h_band->Draw("e2 same");
+
         TLine *line = new TLine(h_inef_unc->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_inef_unc->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         line->Draw();
 
         c_inef->cd();
         top_pads[ipad]->Draw();
         bottom_pads[ipad]->Draw();
+
     }
 
     c_inef->Draw();
