@@ -9,6 +9,7 @@ void jer_unc_inclusive(TString observable="rg")
     gStyle->SetLabelSize(text_size, "XYZ");
     gStyle->SetTitleSize(text_size, "XYZ");
     gStyle->SetErrorX(0.5);
+    gStyle->SetCanvasPreferGL(kTRUE);
 
     TString xlabel;
     if (observable=="rg") xlabel = "ln(0.4/R_{g})";
@@ -26,6 +27,8 @@ void jer_unc_inclusive(TString observable="rg")
     int nbins_x = h_nom->GetNbinsX();
     int nbins_pt = h_nom->GetNbinsY();
 
+    // std::cout << nbins_x << std::endl;
+
     TCanvas *c_jer = new TCanvas("c_jer", "", 800, 600);
     // TPad *pad11 = new TPad("pad11", "", 0., 0., 0.33, 0.35);
     TPad *pad12 = new TPad("pad12", "", 0., 0., 1., 0.33);
@@ -39,7 +42,9 @@ void jer_unc_inclusive(TString observable="rg")
     std::vector<TPad *> bottom_pads = {pad11, pad12, pad13};
     std::vector<TPad *> top_pads = {pad21, pad22, pad23};
     
-    TFile *fout = new TFile("./histos/"+observable+"_jer_unc_inclusive.root", "recreate");
+    TString fout_name = "./histos/"+observable+"_jer_unc_inclusive.root";
+    std::cout << "fout: " << fout_name << std::endl;
+    TFile *fout = new TFile(fout_name, "recreate");
     
     for (int ibin_pt = 1; ibin_pt <= nbins_pt; ibin_pt++) {
         if (ibin_pt!=2) continue;
@@ -47,7 +52,7 @@ void jer_unc_inclusive(TString observable="rg")
 
         double pt_min = h_nom->GetYaxis()->GetBinLowEdge(ibin_pt);
         double pt_max = h_nom->GetYaxis()->GetBinUpEdge(ibin_pt);
-        std::cout << ibin_pt << ": " << pt_min << ", " << pt_max << std::endl;
+        // std::cout << ibin_pt << ": " << pt_min << ", " << pt_max << std::endl;
 
         TLegend *leg;
         if (observable=="rg") leg = new TLegend(0.25, 0.1, 0.65, 0.35);
@@ -144,8 +149,8 @@ void jer_unc_inclusive(TString observable="rg")
         if (ymax<0) ymax*=0.9;
         else ymax*=1.1;
 
-        ymin = -0.02;
-        ymax = 0.02;
+        ymin = -0.01;
+        ymax = 0.01;
 
         h_unc_up_rel->GetYaxis()->SetRangeUser(ymin, ymax);
         h_unc_down_rel->GetYaxis()->SetRangeUser(ymin, ymax);
@@ -159,9 +164,27 @@ void jer_unc_inclusive(TString observable="rg")
         line->SetLineStyle(kDashed);
         line->Draw();
 
+        TH1D *h_unc_rel = (TH1D *) h_unc_up_rel->Clone(Form("h_unc_rel_%d",ibin_pt));
+        TH1D *h_band = (TH1D *) h_unc_rel->Clone("h_band");
+        h_band->Reset();
+        for (int ibin_x=1; ibin_x<=h_unc_rel->GetNbinsX(); ibin_x++) {
+            double maxUnc = std::max(std::abs(h_unc_up_rel->GetBinContent(ibin_x)), std::abs(h_unc_down_rel->GetBinContent(ibin_x)));
+            h_unc_rel->SetBinContent(ibin_x, maxUnc);
+            h_band->SetBinContent(ibin_x, 0.);
+            h_band->SetBinError(ibin_x, maxUnc);
+        }
+        h_unc_rel->Write();
+
+        h_band->SetMarkerSize(0);
+        h_band->SetFillStyle(1001);
+        h_band->SetFillColorAlpha(kBlack, 0.05);
+        h_band->Draw("e2 same");
+
         c_jer->cd();
         top_pads[ipad]->Draw();
         bottom_pads[ipad]->Draw();
+
+        
 
     }
     c_jer->Draw();
