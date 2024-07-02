@@ -9,6 +9,7 @@ void model_unc_inclusive(TString observable="rg")
     gStyle->SetLabelSize(text_size, "XYZ");
     gStyle->SetTitleSize(text_size, "XYZ");
     gStyle->SetErrorX(0.5);
+    gStyle->SetCanvasPreferGL(kTRUE);
 
     TString xlabel;
     if (observable=="rg") xlabel = "ln(0.4/R_{g})";
@@ -18,7 +19,7 @@ void model_unc_inclusive(TString observable="rg")
 
     TFile *fin_nom = new TFile("../unfolding/histos/dijet_PF40_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_her = new TFile("../unfolding/histos/herwig_dijet_PF40_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
+    TFile *fin_her = new TFile("../unfolding/histos/herwig_dijet_official_PF40_aggrTMVA_inclusive_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root");
     TH2D *h_her = (TH2D *) fin_her->Get("h_data_unfolded")->Clone("h_her");
     
     int nbins_x = h_nom->GetNbinsX();
@@ -106,9 +107,14 @@ void model_unc_inclusive(TString observable="rg")
         h_model_unc_rel->Divide(h_nom_1d);
         h_model_unc_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_model_unc_rel->GetYaxis()->SetTitleOffset(2.);
-        h_model_unc_rel->SetMinimum(-0.1);
-        h_model_unc_rel->SetMaximum(0.1);
+        h_model_unc_rel->GetYaxis()->SetRangeUser(-0.2,0.2);
+        if (observable=="zg") h_model_unc_rel->GetYaxis()->SetRangeUser(-0.05,0.05);
+        h_model_unc_rel->GetYaxis()->SetNdivisions(8);
         h_model_unc_rel->Write();
+
+        TH1D *h_model_unc_rel_down = (TH1D *) h_model_unc_rel->Clone(Form("h_model_unc_rel_down_%d", ibin_pt));
+        h_model_unc_rel_down->Scale(-1.);
+        h_model_unc_rel_down->Write();
 
         bottom_pads[ipad]->cd();
         bottom_pads[ipad]->SetTopMargin(0.01);
@@ -121,6 +127,19 @@ void model_unc_inclusive(TString observable="rg")
         // h_model_unc->Draw("hist same");
         h_model_unc_rel->Draw("pe1");
 
+        TH1D *h_band = (TH1D *) h_model_unc_rel->Clone("h_band");
+        h_band->Reset();
+        for (int ibin_x=1; ibin_x<=h_model_unc_rel->GetNbinsX(); ibin_x++) {
+            double maxUnc = h_model_unc_rel->GetBinContent(ibin_x);
+            h_band->SetBinContent(ibin_x, 0.);
+            h_band->SetBinError(ibin_x, maxUnc);
+        }
+
+        h_band->SetMarkerSize(0);
+        h_band->SetFillStyle(1001);
+        h_band->SetFillColorAlpha(kBlack, 0.05);
+        h_band->Draw("e2 same");
+
         TLine *line = new TLine(h_model_unc->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_model_unc->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         line->SetLineStyle(kDashed);
         line->Draw();
@@ -130,6 +149,7 @@ void model_unc_inclusive(TString observable="rg")
         bottom_pads[ipad]->Draw();
     }
     c_model->cd();
+    c_model->Draw();
     c_model->Print("plots_an/model_response_unc_incl_"+observable+".png");
     // fout->Close();
     // delete fout;
