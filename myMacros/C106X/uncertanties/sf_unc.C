@@ -137,6 +137,22 @@ void sf_unc(TString observable="rg")
         h_unc_up_rel->Draw("pe1");
         h_unc_down_rel->Draw("pe1 same");
 
+        TH1D *h_unc_rel = (TH1D *) h_unc_up_rel->Clone(Form("h_unc_rel_%d",ibin_pt));
+        TH1D *h_band = (TH1D *) h_unc_rel->Clone("h_band");
+        h_band->Reset();
+        for (int ibin_x=1; ibin_x<=h_unc_rel->GetNbinsX(); ibin_x++) {
+            double maxUnc = std::max(std::abs(h_unc_up_rel->GetBinContent(ibin_x)), std::abs(h_unc_down_rel->GetBinContent(ibin_x)));
+            h_unc_rel->SetBinContent(ibin_x, maxUnc);
+            h_band->SetBinContent(ibin_x, 0.);
+            h_band->SetBinError(ibin_x, maxUnc);
+        }
+        h_unc_rel->Write();
+
+        h_band->SetMarkerSize(0);
+        h_band->SetFillStyle(1001);
+        h_band->SetFillColorAlpha(kBlack, 0.05);
+        h_band->Draw("e2 same");
+
         TLine *line = new TLine(h_unc_up->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_unc_up->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         line->SetLineStyle(kDashed);
         line->Draw();
