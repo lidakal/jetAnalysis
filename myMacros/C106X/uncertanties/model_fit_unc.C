@@ -9,6 +9,7 @@ void model_fit_unc(TString observable="rg")
     gStyle->SetLabelSize(text_size, "XYZ");
     gStyle->SetTitleSize(text_size, "XYZ");
     gStyle->SetErrorX(0.5);
+    gStyle->SetCanvasPreferGL(kTRUE);
 
     TString xlabel;
     if (observable=="rg") xlabel = "ln(0.4/R_{g})";
@@ -18,7 +19,7 @@ void model_fit_unc(TString observable="rg")
 
     TFile *fin_nom = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_her = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_herwigFit_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_her = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_herwigFit_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_her = (TH2D *) fin_her->Get("h_data_unfolded")->Clone("h_her");
     
     int nbins_x = h_nom->GetNbinsX();
@@ -110,10 +111,24 @@ void model_fit_unc(TString observable="rg")
         // save relative uncertainty 
         TH1D *h_model_fit_unc_rel = (TH1D *) h_model_fit_unc->Clone(Form("h_model_fit_unc_rel_%d", ibin_pt));
         h_model_fit_unc_rel->Divide(h_nom_1d);
-        h_model_fit_unc_rel->GetYaxis()->SetRangeUser(-0.5, 0.5);
+        h_model_fit_unc_rel->GetYaxis()->SetRangeUser(-0.3, 0.3);
         h_model_fit_unc_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_model_fit_unc_rel->GetYaxis()->SetTitleOffset(2.);
+        h_model_fit_unc_rel->GetYaxis()->SetNdivisions(8);
         h_model_fit_unc_rel->Draw("pe1 same");
+
+        TH1D *h_band = (TH1D *) h_model_fit_unc_rel->Clone("h_band");
+        h_band->Reset();
+        for (int ibin_x=1; ibin_x<=h_model_fit_unc_rel->GetNbinsX(); ibin_x++) {
+            double maxUnc = h_model_fit_unc_rel->GetBinContent(ibin_x);
+            h_band->SetBinContent(ibin_x, 0.);
+            h_band->SetBinError(ibin_x, maxUnc);
+        }
+
+        h_band->SetMarkerSize(0);
+        h_band->SetFillStyle(1001);
+        h_band->SetFillColorAlpha(kBlack, 0.05);
+        h_band->Draw("e2 same");
 
         TLine *line = new TLine(h_model_fit_unc->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_model_fit_unc->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         line->SetLineStyle(kDashed);
