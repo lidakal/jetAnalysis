@@ -18,9 +18,9 @@ void cl_frac_unc(TString observable="rg")
 
     TFile *fin_nom = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_up = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_CLfracUp_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_up = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_CLfracUp_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_up = (TH2D *) fin_up->Get("h_data_unfolded")->Clone("h_up");
-    TFile *fin_down = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_CLfracDown_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_down = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_CLfracDown_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_down = (TH2D *) fin_down->Get("h_data_unfolded")->Clone("h_down");
 
     int nbins_x = h_nom->GetNbinsX();
@@ -123,7 +123,8 @@ void cl_frac_unc(TString observable="rg")
         h_unc_up_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_unc_up_rel->GetYaxis()->SetTitleOffset(2.);
         h_unc_up_rel->GetYaxis()->SetRangeUser(-0.05,0.05);
-        if (observable=="zpt") h_unc_up_rel->GetYaxis()->SetRangeUser(-0.3,0.3);
+        if (observable=="zg") h_unc_up_rel->GetYaxis()->SetRangeUser(-0.1,0.1);
+        if (observable=="zpt") h_unc_up_rel->GetYaxis()->SetRangeUser(-0.15,0.15);
         h_unc_up_rel->Write();
 
         TH1D *h_unc_down_rel = (TH1D *) h_unc_down->Clone(Form("h_unc_down_rel_%d", ibin_pt));
@@ -138,6 +139,22 @@ void cl_frac_unc(TString observable="rg")
 
         h_unc_up_rel->Draw("pe1");
         h_unc_down_rel->Draw("pe1 same");
+
+        TH1D *h_unc_rel = (TH1D *) h_unc_up_rel->Clone(Form("h_unc_rel_%d",ibin_pt));
+        TH1D *h_band = (TH1D *) h_unc_rel->Clone("h_band");
+        h_band->Reset();
+        for (int ibin_x=1; ibin_x<=h_unc_rel->GetNbinsX(); ibin_x++) {
+            double maxUnc = std::max(std::abs(h_unc_up_rel->GetBinContent(ibin_x)), std::abs(h_unc_down_rel->GetBinContent(ibin_x)));
+            h_unc_rel->SetBinContent(ibin_x, maxUnc);
+            h_band->SetBinContent(ibin_x, 0.);
+            h_band->SetBinError(ibin_x, maxUnc);
+        }
+        h_unc_rel->Write();
+
+        h_band->SetMarkerSize(0);
+        h_band->SetFillStyle(1001);
+        h_band->SetFillColorAlpha(kBlack, 0.05);
+        h_band->Draw("e2 same");
         
         TLine *line = new TLine(h_unc_up->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_unc_up->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         line->SetLineStyle(kDashed);
@@ -146,8 +163,6 @@ void cl_frac_unc(TString observable="rg")
         c_cl_frac->cd();
         top_pads[ipad]->Draw();
         bottom_pads[ipad]->Draw();
-
-        
     }
 
     c_cl_frac->Draw();
