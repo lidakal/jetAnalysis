@@ -37,7 +37,9 @@ void trk_inef_unc(TString observable="rg")
     std::vector<TPad *> bottom_pads = {pad11, pad12, pad13};
     std::vector<TPad *> top_pads = {pad21, pad22, pad23};
     
-    TFile *fout = new TFile("./histos/"+observable+"_trk_inef_XXT.root", "recreate");
+    TString fout_name = "./histos/"+observable+"_trk_inef_XXT.root";
+    std::cout << "fout: " << fout_name << std::endl;
+    TFile *fout = new TFile(fout_name, "recreate");
     
     for (int ibin_pt = 1; ibin_pt <= nbins_pt; ibin_pt++) {
         if (ibin_pt!=2) continue;
@@ -115,9 +117,9 @@ void trk_inef_unc(TString observable="rg")
         h_inef_unc_rel->Divide(h_nom_1d);
         h_inef_unc_rel->GetYaxis()->SetTitle("(var-nom)/nom");
         h_inef_unc_rel->GetYaxis()->SetTitleOffset(2);
-        if (observable=="rg") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.2, 0.1);
-        else if (observable=="zg") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.1, 0.1);
-        else if (observable=="zpt") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.25, 0.1);
+        if (observable=="rg") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.1, 0.1);
+        else if (observable=="zg") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.02, 0.02);
+        else if (observable=="zpt") h_inef_unc_rel->GetYaxis()->SetRangeUser(-0.1, 0.1);
         h_inef_unc_rel->Write();
 
         bottom_pads[ipad]->cd();
@@ -128,6 +130,19 @@ void trk_inef_unc(TString observable="rg")
         
         // h_inef_unc->Draw("hist same");
         h_inef_unc_rel->Draw("pe1");
+
+        TH1D *h_band = (TH1D *) h_inef_unc_rel->Clone("h_band");
+        h_band->Reset();
+        for (int ibin_x=1; ibin_x<=h_inef_unc_rel->GetNbinsX(); ibin_x++) {
+            double maxUnc = h_inef_unc_rel->GetBinContent(ibin_x);
+            h_band->SetBinContent(ibin_x, 0.);
+            h_band->SetBinError(ibin_x, maxUnc);
+        }
+
+        h_band->SetMarkerSize(0);
+        h_band->SetFillStyle(1001);
+        h_band->SetFillColorAlpha(kBlack, 0.05);
+        h_band->Draw("e2 same");
 
         TLine *line = new TLine(h_inef_unc->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_inef_unc->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         line->Draw();
