@@ -18,7 +18,7 @@ void model_unc(TString observable="rg")
 
     TFile *fin_nom = new TFile("../unfolding/histos/pythia_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_nom = (TH2D *) fin_nom->Get("h_data_unfolded")->Clone("h_nom");
-    TFile *fin_her = new TFile("../unfolding/histos/herwig_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
+    TFile *fin_her = new TFile("../unfolding/histos/herwig_official_PF40_aggrTMVA_XXT_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root");
     TH2D *h_her = (TH2D *) fin_her->Get("h_data_unfolded")->Clone("h_her");
     
     int nbins_x = h_nom->GetNbinsX();
@@ -122,6 +122,19 @@ void model_unc(TString observable="rg")
         
         // h_model_unc->Draw("hist same");
         h_model_unc_rel->Draw("pe1 same");
+
+        TH1D *h_band = (TH1D *) h_model_unc_rel->Clone("h_band");
+        h_band->Reset();
+        for (int ibin_x=1; ibin_x<=h_model_unc_rel->GetNbinsX(); ibin_x++) {
+            double maxUnc = h_model_unc_rel->GetBinContent(ibin_x);
+            h_band->SetBinContent(ibin_x, 0.);
+            h_band->SetBinError(ibin_x, maxUnc);
+        }
+
+        h_band->SetMarkerSize(0);
+        h_band->SetFillStyle(1001);
+        h_band->SetFillColorAlpha(kBlack, 0.05);
+        h_band->Draw("e2 same");
 
         TLine *line = new TLine(h_model_unc->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_model_unc->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
         line->SetLineStyle(kDashed);
