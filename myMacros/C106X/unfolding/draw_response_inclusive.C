@@ -77,7 +77,8 @@ void draw_response_inclusive(TString observable="rg")
         hline->SetLineWidth(2);
         hline->Draw();
     }
-    drawHeaderSimulation();
+    if (sample.Contains("herwig")) drawHeaderHerwig();
+    else drawHeaderSimulation();
     c_response->Print("plots_an/"+sample+"_"+label+"_response_"+observable+".png");
 
     // Print condition number
