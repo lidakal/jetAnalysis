@@ -13,19 +13,19 @@ void draw_response_inclusive(TString observable="rg")
     else if (observable=="zg") xlabel = "z_{g}";
     else if (observable=="zpt") xlabel = "z";
 
-    TString sample = "dijet";
+    TString sample = "herwig_dijet_official_PF40";
     TString label = "aggrTMVA_inclusive";
     TString split_option = "full";
     TString suffix = "_jer_nom_jec_nom";
-    TString fin_name = "./histos/" + sample + "_" + label + "_response_" + split_option + suffix + ".root";   
-
+    TString fin_name = "./histos/" + sample + "_" + label + "_response" + suffix + ".root";   
+    std::cout << "File in: " << fin_name << std::endl;
     TFile *fin = new TFile(fin_name);
-    TH2D *h_training_purity = (TH2D *) fin->Get("h_training_purity_"+observable+"pt");
-    TH2D *h_training_efficiency = (TH2D *) fin->Get("h_training_efficiency_"+observable+"pt");
-    RooUnfoldResponse *response = (RooUnfoldResponse *) fin->Get("response_"+observable+"pt");
+    TH2D *h_full_purity = (TH2D *) fin->Get("h_full_purity_"+observable+"pt");
+    TH2D *h_full_efficiency = (TH2D *) fin->Get("h_full_efficiency_"+observable+"pt");
+    RooUnfoldResponse *response = (RooUnfoldResponse *) fin->Get("response_full_"+observable+"pt");
 
     // Draw purity + efficiency 
-    for (auto h : {h_training_purity, h_training_efficiency}) {
+    for (auto h : {h_full_purity, h_full_efficiency}) {
         h->GetXaxis()->SetTitleSize(font_size);    
         h->GetXaxis()->SetLabelSize(font_size);
         h->GetXaxis()->SetTitle(xlabel);
@@ -38,23 +38,25 @@ void draw_response_inclusive(TString observable="rg")
     }
 
     TCanvas *c_purity = new TCanvas("c_purity", "purity", 200, 10, 800, 600);
-    h_training_purity->GetZaxis()->SetTitle("Reconstruction purity");
-    h_training_purity->Draw("colz texte");
-    drawHeaderSimulation();
+    h_full_purity->GetZaxis()->SetTitle("Reconstruction purity");
+    h_full_purity->Draw("colz texte");
+    if (sample.Contains("herwig")) drawHeaderHerwig();
+    else drawHeaderSimulation();
     c_purity->Draw();
     c_purity->Print("plots_an/"+sample+"_"+label+"_purity_"+observable+".png");
 
     TCanvas *c_efficiency = new TCanvas("c_efficiency", "efficiency", 800, 600);
-    h_training_efficiency->GetZaxis()->SetTitle("Reconstruction efficiency");
-    h_training_efficiency->Draw("colz texte");
-    drawHeaderSimulation();
+    h_full_efficiency->GetZaxis()->SetTitle("Reconstruction efficiency");
+    h_full_efficiency->Draw("colz texte");
+    if (sample.Contains("herwig")) drawHeaderHerwig();
+    else drawHeaderSimulation();
     c_efficiency->Draw();
     c_efficiency->Print("plots_an/"+sample+"_"+label+"_efficiency_"+observable+".png");
     
 
     // Draw the response matrix
-    Int_t nbins_rg = h_training_purity->GetNbinsX(); 
-    Int_t nbins_pt = h_training_purity->GetNbinsY(); 
+    Int_t nbins_rg = h_full_purity->GetNbinsX(); 
+    Int_t nbins_pt = h_full_purity->GetNbinsY(); 
 
     TMatrixD response_matrix = response->Mresponse();
     TH2D *response_histogram = new TH2D(response_matrix);
