@@ -1,4 +1,5 @@
 #include "draw_utils.h"
+#include "colorblind_palette.h"
 
 void draw_aggr_vs_not(TString observable="rg")
 {
@@ -30,24 +31,26 @@ void draw_aggr_vs_not(TString observable="rg")
 
     TH1F *hSingleBtag_gen_aggr_1d = (TH1F *) hSingleBtag_gen_aggr->ProjectionX("hSingleBtag_gen_aggr_1d", min_kt_bin, max_kt_bin);
     hSingleBtag_gen_aggr_1d->Scale(1/hSingleBtag_gen_aggr_1d->Integral());
-    hSingleBtag_gen_aggr_1d->SetLineColor(kBlue-2);
-    hSingleBtag_gen_aggr_1d->SetLineWidth(2);
+    hSingleBtag_gen_aggr_1d->SetLineColor(myLightBlue);
+    hSingleBtag_gen_aggr_1d->SetLineWidth(3);
     hSingleBtag_gen_aggr_1d->GetXaxis()->SetTitle(xlabel);
-    hSingleBtag_gen_aggr_1d->GetYaxis()->SetTitle("normalized per jet");
-    hSingleBtag_gen_aggr_1d->GetYaxis()->SetRangeUser(0., 0.25);
+    hSingleBtag_gen_aggr_1d->GetYaxis()->SetTitle("Normalized per 2-prong jet");
+    hSingleBtag_gen_aggr_1d->GetXaxis()->SetRangeUser(0., 3.1);
+    hSingleBtag_gen_aggr_1d->GetYaxis()->SetRangeUser(0., 0.3);
+    if (observable=="zg") hSingleBtag_gen_aggr_1d->GetYaxis()->SetRangeUser(0., 0.25);
     hSingleBtag_gen_aggr_1d->SetLineStyle(1);
 
     TH1F *hSingleBtag_reco_aggr_1d = (TH1F *) hSingleBtag_reco_aggr->ProjectionX("hSingleBtag_reco_aggr_1d", min_kt_bin, max_kt_bin);
     hSingleBtag_reco_aggr_1d->Scale(1/hSingleBtag_reco_aggr_1d->Integral());
-    hSingleBtag_reco_aggr_1d->SetLineColor(kGreen+2);
-    hSingleBtag_reco_aggr_1d->SetLineWidth(2);    
+    hSingleBtag_reco_aggr_1d->SetLineColor(myLightRed);
+    hSingleBtag_reco_aggr_1d->SetLineWidth(3);    
     hSingleBtag_reco_aggr_1d->SetLineStyle(9);
 
     TH1F *hSingleBtag_reco_noAggr_1d = (TH1F *) hSingleBtag_reco_noAggr->ProjectionX("hSingleBtag_reco_noAggr_1d", min_kt_bin, max_kt_bin);
     hSingleBtag_reco_noAggr_1d->Scale(1/hSingleBtag_reco_noAggr_1d->Integral());
-    hSingleBtag_reco_noAggr_1d->SetLineColor(kRed+1);
-    hSingleBtag_reco_noAggr_1d->SetLineWidth(2); 
-    hSingleBtag_reco_noAggr_1d->SetLineStyle(2);
+    hSingleBtag_reco_noAggr_1d->SetLineColor(myYellow);
+    hSingleBtag_reco_noAggr_1d->SetLineWidth(3); 
+    hSingleBtag_reco_noAggr_1d->SetLineStyle(5);
 
     TCanvas *c_aggr_vs_noAggr = new TCanvas("c_aggr_vs_noAggr", "", 800, 600);
     c_aggr_vs_noAggr->SetRightMargin(0.16);
@@ -59,17 +62,23 @@ void draw_aggr_vs_not(TString observable="rg")
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
     jet_info->SetTextSize(text_size);
-    jet_info->DrawLatex(0.42, 0.83, "anti-k_{T}, R=0.4 b-tagged single b jets");
-    jet_info->DrawLatex(0.48, 0.78, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    jet_info->DrawLatex(0.56, 0.73, "Charged particles only");
-    jet_info->DrawLatex(0.68, 0.68, "k_{T} > 1 GeV");
+    // for png
+    // jet_info->DrawLatex(0.52, 0.65, "anti-k_{T}, R=0.4 b-tagged b jets");
+    // jet_info->DrawLatex(0.505, 0.6, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    // jet_info->DrawLatex(0.64, 0.55, "Charged soft drop");
+    // jet_info->DrawLatex(0.575, 0.5, "z_{cut}=0.1, #beta=0, k_{T}>1 GeV");
+    // for pdf
+    jet_info->DrawLatex(0.51, 0.65, "anti-k_{T}, R=0.4 b-tagged b jets");
+    jet_info->DrawLatex(0.505, 0.6, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.63, 0.55, "Charged soft drop");
+    jet_info->DrawLatex(0.57, 0.5, "z_{cut}=0.1, #beta=0, k_{T}>1 GeV");
 
-    TLegend *leg = new TLegend(0.48, 0.44, 0.85, 0.62);
+    TLegend *leg = new TLegend(0.2, 0.75, 0.8, 0.87);
     leg->SetFillStyle(0);
     leg->SetMargin(0.1);
-    leg->AddEntry(hSingleBtag_gen_aggr_1d, "Particle level, aggregated", "l");
-    leg->AddEntry(hSingleBtag_reco_noAggr_1d, "Detector level, not aggregated", "l");
-    leg->AddEntry(hSingleBtag_reco_aggr_1d, "Detector level, aggregated", "l");
+    leg->AddEntry(hSingleBtag_gen_aggr_1d, "Particle level, clustered b hadron decay daughters", "l");
+    leg->AddEntry(hSingleBtag_reco_noAggr_1d, "Detector level, unclustered b hadron decay daughters", "l");
+    leg->AddEntry(hSingleBtag_reco_aggr_1d, "Detector level, clustered b hadron decay daughters", "l");
     leg->Draw();
 
     c_aggr_vs_noAggr->Print("plots_an/"+observable+"_aggr_vs_not.png");
