@@ -1,15 +1,21 @@
 #include "../draw_utils.h"
-#include "../colorblind_palette.h"
+#include "../cms_palette.h"
 
 void draw_unc_sym_inclusive(TString observable="rg")
 {
     TString xlabel;
     if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z^{ch}=p_{T}^{B,ch}/p_{T}^{jet,ch}";
+    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/p_{T}^{jet,ch}";
 
+    // Setup
     gStyle->SetCanvasPreferGL(kTRUE);
     gStyle->SetErrorX(0.5);
+    Float_t text_size = 20.;
+    gStyle->SetTextSize(text_size);
+    gStyle->SetLegendTextSize(text_size);
+    gStyle->SetLabelSize(text_size, "XYZ");
+    gStyle->SetTitleSize(text_size, "XYZ");
 
     TFile *fin_jer = new TFile("histos/"+observable+"_jer_unc_inclusive.root");
     TFile *fin_jec = new TFile("histos/"+observable+"_jec_unc_src_inclusive.root");
@@ -17,10 +23,14 @@ void draw_unc_sym_inclusive(TString observable="rg")
     TFile *fin_model_unc = new TFile("histos/"+observable+"_model_unc_inclusive.root");
     TFile *fin_stat_unc = new TFile("histos/"+observable+"_stat_unc_inclusive.root");
     TFile *fin_mc_stat_unc = new TFile("histos/"+observable+"_mc_stat_unc_inclusive.root");
+    TFile *fin_pythia_var = new TFile("histos/"+observable+"_pythia_var_inclusive.root");
 
     int nbins_pt = 3;
     
-    TCanvas *c_unc = new TCanvas("c_unc", "", 800,600);
+    TCanvas *c_unc = new TCanvas("c_unc", "", 1400,600);
+    c_unc->SetRightMargin(0.08);
+    c_unc->SetLeftMargin(0.08);
+    c_unc->SetBottomMargin(0.25);
 
     TString fout_name = "histos/total_unc_incl_"+observable+".root";
     std::cout << "Creating file: " << fout_name << std::endl;
@@ -34,46 +44,53 @@ void draw_unc_sym_inclusive(TString observable="rg")
     h_stat_unc_rel->SetFillColorAlpha(kBlack, 0.5);
     h_stat_unc_rel->SetMarkerStyle(1);
     h_stat_unc_rel->GetYaxis()->SetTitle("Relative uncertainty");
-    h_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
+    h_stat_unc_rel->GetYaxis()->SetTitleOffset(2.);
     h_stat_unc_rel->SetLineWidth(3);
     h_stat_unc_rel->SetLineStyle(1);
 
     TH1D *h_jer_up_rel = (TH1D *) fin_jer->Get(Form("h_unc_rel_%d", ibin_pt))->Clone(Form("h_jer_up_rel_%d", ibin_pt));
     h_jer_up_rel->SetMarkerStyle(kFullTriangleUp);
-    h_jer_up_rel->SetLineColor(cb_palette[0]);
+    h_jer_up_rel->SetLineColor(cmsBlue);
     h_jer_up_rel->SetLineWidth(3);
     h_jer_up_rel->SetLineStyle(2);
 
-    TH1D *h_jec_up_rel = (TH1D *) fin_jec->Get(Form("h_unc_rel_%d", ibin_pt))->Clone(Form("h_jec_up_rel_%d", ibin_pt));
-    h_jec_up_rel->SetLineColor(cb_palette[1]);
+    TH1D *h_jec_up_rel = (TH1D *) fin_jec->Get(Form("h_total_unc_rel_sym_%d", ibin_pt))->Clone(Form("h_jec_up_rel_%d", ibin_pt));
+    h_jec_up_rel->SetLineColor(cmsViolet);
     h_jec_up_rel->SetMarkerStyle(kFullTriangleDown);
     h_jec_up_rel->SetLineWidth(3);
     h_jec_up_rel->SetLineStyle(3);
 
     TH1D *h_mc_stat_unc_up_rel = (TH1D *) fin_mc_stat_unc->Get(Form("h_mc_stat_unc_up_rel_%d", ibin_pt))->Clone(Form("h_mc_stat_unc_up_rel_%d", ibin_pt));
-    h_mc_stat_unc_up_rel->SetLineColor(cb_palette[2]);
-    h_mc_stat_unc_up_rel->SetMarkerStyle(kFullCross);
-    h_mc_stat_unc_up_rel->SetLineWidth(3);
-    h_mc_stat_unc_up_rel->SetLineStyle(3);
+    h_mc_stat_unc_up_rel->SetFillStyle(3004);
+    h_mc_stat_unc_up_rel->SetFillColorAlpha(kBlack,1.);
+    h_mc_stat_unc_up_rel->SetLineColorAlpha(kBlack,0.);
+    h_mc_stat_unc_up_rel->SetMarkerColorAlpha(kBlack,0.);
 
     TH1D *h_trk_inef_up_rel = (TH1D *) fin_trk_inef->Get(Form("h_inef_unc_rel_%d", ibin_pt))->Clone(Form("h_trk_inef_up_rel_%d", ibin_pt));
-    h_trk_inef_up_rel->SetLineColor(cb_palette[3]);
+    h_trk_inef_up_rel->SetLineColor(cmsLightBlue);
     h_trk_inef_up_rel->SetMarkerStyle(kFullCrossX);
     h_trk_inef_up_rel->SetLineWidth(3);
     h_trk_inef_up_rel->SetLineStyle(4);    
 
     TH1D *h_model_unc_rel = (TH1D *) fin_model_unc->Get(Form("h_model_unc_rel_%d", ibin_pt))->Clone(Form("h_model_unc_rel_%d", ibin_pt));
-    h_model_unc_rel->SetLineColor(cb_palette[4]);
+    h_model_unc_rel->SetLineColor(cmsYellow);
     h_model_unc_rel->SetMarkerStyle(kFullStar);
     h_model_unc_rel->SetLineWidth(3);
     h_model_unc_rel->SetLineStyle(5);
 
+    TH1D *h_pythia_var_up_rel = (TH1D *) fin_pythia_var->Get(Form("h_total_unc_rel_sym_%d", ibin_pt))->Clone(Form("h_pythia_var_up_rel_%d", ibin_pt));
+    h_pythia_var_up_rel->SetLineColor(cmsRed);
+    h_pythia_var_up_rel->SetMarkerStyle(kFullCross);
+    h_pythia_var_up_rel->SetLineWidth(3);
+    h_pythia_var_up_rel->SetLineStyle(3);
+
     std::vector<TH1D *> histos_syst = {
+        h_mc_stat_unc_up_rel,
         h_jer_up_rel,
         h_jec_up_rel,
-        h_mc_stat_unc_up_rel,
         h_trk_inef_up_rel,
         h_model_unc_rel, 
+        h_pythia_var_up_rel
     };
     
     std::vector<TH1D *> all_histos = {h_stat_unc_rel};
@@ -141,37 +158,21 @@ void draw_unc_sym_inclusive(TString observable="rg")
     // For lines/symbols : top left, 2 cols
     
     // TLegend *leg = new TLegend(0.2, 0.62, 0.5, 0.87); // log scale
-    TLegend *leg = new TLegend(0.2, 0.45, 0.5, 0.65); // abs scale
+    TLegend *leg = new TLegend(0.12, 0.65, 0.42, 0.85); // abs scale
     if (observable=="zpt") leg = new TLegend(0.45, 0.5, 0.75, 0.75); // abs scale
     leg->SetNColumns(2);
     leg->SetColumnSeparation(0.25); 
-    leg->SetMargin(0.25);
-
-    leg->AddEntry(h_jer_up_rel, "JER", "pl");
-    leg->AddEntry(h_model_unc_rel, "model response", "pl");
-    leg->AddEntry(h_jec_up_rel, "JEC", "pl");
-    leg->AddEntry(h_mc_stat_unc_up_rel, "response stats", "pl");
-    leg->AddEntry(h_trk_inef_up_rel, "3% trk inef", "pl");
-    
-    
-
-    // For ? : bottom, 4 cols
-    // TLegend *leg = new TLegend(0.2, 0.2, 0.8, 0.35);
-    // leg->AddEntry(h_jer_up_rel, "JER", "l");
-    // leg->AddEntry(h_model_unc_rel, "model response", "l");
-    // leg->AddEntry(h_trk_inef_up_rel, "3% trk inef", "l");
-    // leg->AddEntry(h_cl_frac_up_rel, "c+l fraction", "l");
-
-    // leg->AddEntry(h_jec_up_rel, "JEC", "l");
-    // leg->AddEntry(h_model_fit_unc_rel, "model templates", "l");
-    // leg->AddEntry(h_mc_stat_unc_up_rel, "response stats", "l");
-    // leg->AddEntry(h_sf_up_rel, "btag eff", "l");
-
-    leg->AddEntry(h_stat_unc_rel, "statistical", "f");
-    // leg->AddEntry(h_total_unc_up, "total unc.", "f");
-
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
+    leg->SetMargin(0.25);
+
+    leg->AddEntry(h_stat_unc_rel, "Statistical", "f");
+    leg->AddEntry(h_mc_stat_unc_up_rel, "Matrix response stats.", "f");
+    leg->AddEntry(h_model_unc_rel, "Shower and hadronization", "pl");
+    leg->AddEntry(h_jer_up_rel, "Jet energy resolution", "pl");
+    leg->AddEntry(h_pythia_var_up_rel, "FSR and ISR scale", "pl");
+    leg->AddEntry(h_jec_up_rel, "Jet energy scale", "pl");
+    leg->AddEntry(h_trk_inef_up_rel, "Tracking efficiency", "pl");
 
     // for log
     // double ymin=0.001;
@@ -179,7 +180,8 @@ void draw_unc_sym_inclusive(TString observable="rg")
 
     // for abs
     double ymin=0.;
-    double ymax=0.04;
+    double ymax=0.16; // rg
+    if (observable=="zg") ymax = 0.08;
 
     for (auto h : {h_total_unc_up}) {
         h->GetYaxis()->SetRangeUser(ymin, ymax);
@@ -208,8 +210,8 @@ void draw_unc_sym_inclusive(TString observable="rg")
     TLine *line = new TLine(h_jer_up_rel->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
     // line->SetLineStyle(kDashed);
     // line->Draw();
-
-    for (int i=0; i<histos_syst.size(); i++) {
+    h_mc_stat_unc_up_rel->Draw("hist same");
+    for (int i=1; i<histos_syst.size(); i++) {
         TH1D *h = histos_syst[i];
         h->GetYaxis()->SetRangeUser(ymin, ymax);
         h->SetMarkerColor(h->GetLineColor());
@@ -222,7 +224,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     }
     // h_stat_unc_rel->Draw("pe2 same");
     leg->Draw();
-    drawHeader();
+    drawHeaderUnc();
 
     for (int ibin_x=1; ibin_x<ibin_x_max; ibin_x++) {
         double x = h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x);
@@ -267,20 +269,21 @@ void draw_unc_sym_inclusive(TString observable="rg")
     // top, 1 col 
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
-    jet_info->SetTextSize(20);
-    if (observable!="zpt") {
-        TLatex *jet_info = new TLatex;
-        jet_info->SetNDC();
-        jet_info->SetTextSize(20);
-        jet_info->DrawLatex(0.2, 0.83, "anti-k_{T}, R=0.4 inclusive jets");
-        jet_info->DrawLatex(0.2, 0.78, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-        jet_info->DrawLatex(0.2, 0.73, "Charged soft drop");
-        jet_info->DrawLatex(0.2, 0.68, "z_{cut}=0.1, #beta=0, k_{T} > 1 GeV");
-        jet_info->Draw();
+    jet_info->SetTextSize(text_size);
+    if (observable=="rg") {
+        jet_info->SetTextAlign(30);
+        jet_info->DrawLatex(0.89, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
+        jet_info->DrawLatex(0.89, 0.75, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.89, 0.7, "Charged soft drop");
+        jet_info->DrawLatex(0.89, 0.65, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     } else {
-        jet_info->DrawLatex(0.45, 0.84, "anti-k_{T}, R=0.4 inclusive jets");
-        jet_info->DrawLatex(0.45, 0.79, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->SetTextAlign(10);
+        jet_info->DrawLatex(0.53, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
+        jet_info->DrawLatex(0.53, 0.75, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.53, 0.7, "Charged soft drop");
+        jet_info->DrawLatex(0.53, 0.65, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     }
+
 
     // bottom, 2 cols 
     // TLatex *jet_info = new TLatex;
@@ -299,6 +302,22 @@ void draw_unc_sym_inclusive(TString observable="rg")
     //     jet_info->DrawLatex(0.2, 0.81, "anti-k_{T}, R=0.4 inclusive jets");
     //     jet_info->DrawLatex(0.2, 0.76, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
     // }
+
+    if (observable=="rg") {
+        auto axis5 = new TGaxis(2.1, -0.027, 0. ,-0.027, 0.048982571, 0.4, 510,"NIGS-");
+        axis5->SetTitle("R_{g}");
+        axis5->CenterTitle();
+        axis5->SetTitleFont(43);
+        axis5->SetTitleSize(text_size);
+        axis5->SetTitleOffset(1.4);
+        axis5->SetLabelFont(43);
+        axis5->SetLabelSize(text_size);
+        axis5->SetLabelOffset(0.055);
+        axis5->SetTickSize(0.02);
+        axis5->SetMoreLogLabels(); // add the secondary tick labels
+        axis5->SetNoExponent();
+        axis5->Draw("same");
+    }
 
 
     c_unc->Draw();
