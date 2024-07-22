@@ -1,18 +1,29 @@
 #include "draw_utils.h"
-#include "colorblind_palette.h"
+#include "cms_palette.h"
 
 void draw_data_vs_mc(TString observable="rg")
 {
-    TString pythia_sample = "dijet_PF40";
-    TString herwig_sample = "herwig_dijet_official_PF40";
-    TString label = "aggrTMVA_inclusive";
+    // RUN WITH ROOT 6.30 from /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-centos7-gcc11-opt/setup.sh
+
+    bool inclusive = true;
+    TString pythia_sample = inclusive ? "dijet_PF40" : "pythia_PF40";
+    TString herwig_sample = inclusive ? "herwig_dijet_official_PF40" : "herwig_official_PF40";
+    TString label = inclusive ? "aggrTMVA_inclusive" : "aggrTMVA_XXT";
+    TString pythia_var_sample = inclusive ? "inclusive" : "bjet";
+    TString pythia_var_h = inclusive ? "all_noUO" : "b_noUO";
 
     TString xlabel;
+    // if (observable=="rg") xlabel = "ln#frac{R_{ }}{ R_{g}}";
     if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z^{ch}#equivp_{T}^{B,ch}/p_{T}^{jet,ch}";
+    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/p_{T}^{jet,ch}";
+    // TString ylabel = "#frac{1}{N} #frac{dN}{dz^{ch}}";
     TString ylabel = "1/N dN/dz^{ch}";
-    if (observable!="zpt") ylabel = "1/N_{2-prong jets} dN/d" + xlabel;
+    if (observable!="zpt") {
+        // ylabel = "#frac{1}{N} #frac{dN}{" + xlabel + "}";
+        ylabel = "1/N dN/d" + xlabel;
+        // xlabel = "Charged " + xlabel;
+    }
 
     // ---- Setup 
     gStyle->SetCanvasPreferGL(kTRUE);
@@ -24,8 +35,7 @@ void draw_data_vs_mc(TString observable="rg")
     gStyle->SetTitleSize(text_size, "XYZ");
 
     // Grab nominal unfolded data
-    TString fin_data_name = "unfolding/histos/"+pythia_sample+"_"+label+"_unfolded_histograms_"+observable+"_jer_nom_jec_nom_withSF.root";
-    if (label.Contains("inclusive")) fin_data_name = "unfolding/histos/"+pythia_sample+"_"+label+"_unfolded_histograms_"+observable+"_jer_nom_jec_nom.root";
+    TString fin_data_name = "unfolding/histos/"+pythia_sample+"_"+label+"_unfolded_histograms_"+observable+"_jer_nom_jec_nom" + TString(inclusive ? "" : "_withSF") +".root";
     std::cout << "Reading data from : " << fin_data_name << std::endl;
     TFile *fin_data = new TFile(fin_data_name);
     TH2D *h_data = (TH2D *) fin_data->Get("h_data_unfolded")->Clone("h_data");
@@ -35,13 +45,32 @@ void draw_data_vs_mc(TString observable="rg")
     std::cout << "Reading pythia from : " << fin_pythia_name << std::endl;
     TFile *fin_pythia = new TFile(fin_pythia_name);
     TH2D *h_pythia = (TH2D *) fin_pythia->Get("h_full_efficiency_denominator_"+observable+"pt");
-    // if (label.Contains("inclusive")) h_pythia = (TH2D *) fin_pythia->Get("h_training_true_"+observable+"pt");
 
     TString fin_herwig_name = "unfolding/histos/"+herwig_sample+"_aggrTMVA_inclusive_response_jer_nom_jec_nom.root";
     std::cout << "Reading herwig from : " << fin_herwig_name << std::endl;
     TFile *fin_herwig = new TFile(fin_herwig_name);
     TH2D *h_herwig = (TH2D *) fin_herwig->Get("h_full_efficiency_denominator_"+observable+"pt");
-    // if (label.Contains("inclusive")) h_herwig = (TH2D *) fin_herwig->Get("h_training_true_"+observable+"pt");
+
+    // Grab pythia variations
+    TString fin_FSRup_name = "histos/"+pythia_var_sample+"_FSRup_gen_histograms.root";
+    std::cout << "Reading FSRup from : " << fin_FSRup_name << std::endl;
+    TFile *fin_FSRup = new TFile(fin_FSRup_name);
+    TH2D *h_FSRup = (TH2D *) fin_FSRup->Get("h_"+observable+"_"+pythia_var_h);
+
+    TString fin_FSRdown_name = "histos/"+pythia_var_sample+"_FSRdown_gen_histograms.root";
+    std::cout << "Reading FSRdown from : " << fin_FSRdown_name << std::endl;
+    TFile *fin_FSRdown = new TFile(fin_FSRdown_name);
+    TH2D *h_FSRdown = (TH2D *) fin_FSRdown->Get("h_"+observable+"_"+pythia_var_h);
+
+    TString fin_ISRup_name = "histos/"+pythia_var_sample+"_ISRup_gen_histograms.root";
+    std::cout << "Reading ISRup from : " << fin_ISRup_name << std::endl;
+    TFile *fin_ISRup = new TFile(fin_ISRup_name);
+    TH2D *h_ISRup = (TH2D *) fin_ISRup->Get("h_"+observable+"_"+pythia_var_h);
+
+    TString fin_ISRdown_name = "histos/"+pythia_var_sample+"_ISRdown_gen_histograms.root";
+    std::cout << "Reading ISRdown from : " << fin_ISRdown_name << std::endl;
+    TFile *fin_ISRdown = new TFile(fin_ISRdown_name);
+    TH2D *h_ISRdown = (TH2D *) fin_ISRdown->Get("h_"+observable+"_"+pythia_var_h);
 
     // Make projections 
     int ibin_pt = 2;
@@ -58,18 +87,56 @@ void draw_data_vs_mc(TString observable="rg")
     TH1D *h_pythia_1d = (TH1D *) h_pythia->ProjectionX("h_pythia_1d", ibin_pt, ibin_pt);
     // h_pythia_1d->SetMarkerStyle(kFullCross);
     h_pythia_1d->SetMarkerStyle(1);
-    h_pythia_1d->SetMarkerColor(myLightRed); // kOrange-3
-    h_pythia_1d->SetLineColor(myLightRed);
+    h_pythia_1d->SetMarkerColor(cmsRed); // kOrange-3
+    h_pythia_1d->SetLineColor(cmsRed);
     h_pythia_1d->SetLineStyle(9);
-    h_pythia_1d->SetLineWidth(2);
+    h_pythia_1d->SetLineWidth(3);
 
     TH1D *h_herwig_1d = (TH1D *) h_herwig->ProjectionX("h_herwig_1d", ibin_pt, ibin_pt);
     // h_herwig_1d->SetMarkerStyle(kFullCrossX);
     h_herwig_1d->SetMarkerStyle(1);
-    h_herwig_1d->SetMarkerColor(myLightBlue);  // kAzure-3
-    h_herwig_1d->SetLineColor(myLightBlue);
+    h_herwig_1d->SetMarkerColor(cmsBlue);  // kAzure-3
+    h_herwig_1d->SetLineColor(cmsBlue);
     h_herwig_1d->SetLineStyle(8);
-    h_herwig_1d->SetLineWidth(2);
+    h_herwig_1d->SetLineWidth(3);
+
+    // Find correct pt bins for pythia variations 
+    double ptmin = h_data->GetYaxis()->GetBinLowEdge(ibin_pt);
+    double ptmax = h_data->GetYaxis()->GetBinUpEdge(ibin_pt);
+    int ibin_pt_min_pythia_var = h_FSRup->GetYaxis()->FindBin(ptmin);
+    int ibin_pt_max_pythia_var = h_FSRup->GetYaxis()->FindBin(ptmax)-1;
+
+    TH1D *h_FSRup_1d = (TH1D *) h_FSRup->ProjectionX("h_FSRup_1d", ibin_pt_min_pythia_var, ibin_pt_max_pythia_var);
+    // h_FSRup_1d->SetMarkerStyle(kFullCross);
+    h_FSRup_1d->SetMarkerStyle(1);
+    h_FSRup_1d->SetMarkerColor(cmsOrange); 
+    h_FSRup_1d->SetLineColor(cmsOrange);
+    h_FSRup_1d->SetLineStyle(7);
+    h_FSRup_1d->SetLineWidth(3);
+
+    TH1D *h_FSRdown_1d = (TH1D *) h_FSRdown->ProjectionX("h_FSRdown_1d", ibin_pt_min_pythia_var, ibin_pt_max_pythia_var);
+    // h_FSRdown_1d->SetMarkerStyle(kFullCross);
+    h_FSRdown_1d->SetMarkerStyle(1);
+    h_FSRdown_1d->SetMarkerColor(cmsYellow); 
+    h_FSRdown_1d->SetLineColor(cmsYellow);
+    h_FSRdown_1d->SetLineStyle(6);
+    h_FSRdown_1d->SetLineWidth(3);
+
+    TH1D *h_ISRup_1d = (TH1D *) h_ISRup->ProjectionX("h_ISRup_1d", ibin_pt_min_pythia_var, ibin_pt_max_pythia_var);
+    // h_ISRup_1d->SetMarkerStyle(kFullCross);
+    h_ISRup_1d->SetMarkerStyle(1);
+    h_ISRup_1d->SetMarkerColor(cmsOrange);
+    h_ISRup_1d->SetLineColor(cmsOrange);
+    h_ISRup_1d->SetLineStyle(5);
+    h_ISRup_1d->SetLineWidth(3);
+
+    TH1D *h_ISRdown_1d = (TH1D *) h_ISRdown->ProjectionX("h_ISRdown_1d", ibin_pt_min_pythia_var, ibin_pt_max_pythia_var);
+    // h_ISRdown_1d->SetMarkerStyle(kFullCross);
+    h_ISRdown_1d->SetMarkerStyle(1);
+    h_ISRdown_1d->SetMarkerColor(cmsYellow);
+    h_ISRdown_1d->SetLineColor(cmsYellow);
+    h_ISRdown_1d->SetLineStyle(4);
+    h_ISRdown_1d->SetLineWidth(3);
 
     // Normalize histograms 
     int ibin_x_min = 1;
@@ -82,19 +149,38 @@ void draw_data_vs_mc(TString observable="rg")
     for (auto h : {
         h_data_1d,
         h_pythia_1d,
-        h_herwig_1d
+        h_herwig_1d,
     }) {
         h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
         h->Scale(1/h->Integral(ibin_x_min, ibin_x_max), "width");
-        if (observable=="zg") h->GetYaxis()->SetRangeUser(0, 5.5);
-        else if (observable=="rg") {
-            h->GetYaxis()->SetRangeUser(0, 1.15);
-            if (label.Contains("inclusive")) h->GetYaxis()->SetRangeUser(0, 1.);
+        if (observable=="zg") {
+            h->GetYaxis()->SetRangeUser(0, 5.5);
+            if (inclusive) h->GetYaxis()->SetRangeUser(0, 4.5);
+        } else if (observable=="rg") {
+            h->GetYaxis()->SetRangeUser(0, 1.2);
+            if (inclusive) h->GetYaxis()->SetRangeUser(0, 0.9);
         }
-        else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 3.5);
+        else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 4.);
         h->GetYaxis()->SetTitle(ylabel);
-        h->GetYaxis()->SetTitleOffset(1.5);
+        h->GetYaxis()->SetTitleOffset(1.8);
         h->GetXaxis()->SetLabelOffset(10);
+    }
+
+    // Find correct x bins for pythia variations 
+    double xmin = h_data->GetXaxis()->GetBinLowEdge(ibin_x_min);
+    double xmax = h_data->GetXaxis()->GetBinUpEdge(ibin_x_max);
+    int ibin_x_min_pythia_var = h_FSRup_1d->GetXaxis()->FindBin(xmin);
+    int ibin_x_max_pythia_var = h_FSRup_1d->GetXaxis()->FindBin(xmax)-1;
+
+    for (auto h : {
+        h_FSRup_1d,
+        h_FSRdown_1d,
+        h_ISRup_1d,
+        h_ISRdown_1d,
+    }) {
+        h->GetXaxis()->SetRange(ibin_x_min_pythia_var, ibin_x_max_pythia_var);
+        h->Scale(1/h->Integral(ibin_x_min_pythia_var, ibin_x_max_pythia_var), "width");
+        if (observable=="zg") h->GetYaxis()->SetRangeUser(0, 5.5);
     }
 
     // Make ratios 
@@ -104,9 +190,20 @@ void draw_data_vs_mc(TString observable="rg")
     TH1D *h_herwig_ratio_1d = (TH1D *) h_herwig_1d->Clone("h_herwig_ratio_1d");
     h_herwig_ratio_1d->Divide(h_data_1d);
 
+    TH1D *h_FSRup_ratio_1d = (TH1D *) h_FSRup_1d->Clone("h_FSRup_ratio_1d");
+    h_FSRup_ratio_1d->Divide(h_data_1d);
+
+    TH1D *h_FSRdown_ratio_1d = (TH1D *) h_FSRdown_1d->Clone("h_FSRdown_ratio_1d");
+    h_FSRdown_ratio_1d->Divide(h_data_1d);
+
+    TH1D *h_ISRup_ratio_1d = (TH1D *) h_ISRup_1d->Clone("h_ISRup_ratio_1d");
+    h_ISRup_ratio_1d->Divide(h_data_1d);
+
+    TH1D *h_ISRdown_ratio_1d = (TH1D *) h_ISRdown_1d->Clone("h_ISRdown_ratio_1d");
+    h_ISRdown_ratio_1d->Divide(h_data_1d);
+
     // Grab sys errors 
-    TString fin_unc_name = "uncertanties/histos/total_unc_incl_"+observable+".root";
-    if (label.Contains("XXT")) fin_unc_name = "uncertanties/histos/total_unc_XXT_"+observable+".root";
+    TString fin_unc_name = "uncertanties/histos/total_unc_"+TString(inclusive?"incl":"XXT")+"_"+observable+".root";
     std::cout << "Reading unc from : " << fin_unc_name << std::endl;
     TFile *fin_unc = new TFile(fin_unc_name);
     TH1D *h_syst_unc_rel_up = (TH1D *) fin_unc->Get(Form("h_syst_unc_up_%d", ibin_pt))->Clone("h_syst_unc_rel_up");
@@ -204,56 +301,66 @@ void draw_data_vs_mc(TString observable="rg")
     // Make a legend
     TLegend *leg;
     if (observable=="zpt") leg = new TLegend(0.22, 0.3, 0.4, 0.5);
-    else leg = new TLegend(0.22, 0.1, 0.4, 0.35);
+    else leg = new TLegend(0.55, 0.55, 0.8, 0.8);
+    if (inclusive) leg = new TLegend(0.6, 0.6, 0.85, 0.85);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
     leg->SetMargin(0.15);
     leg->AddEntry(h_data_legend, "Data", "flpe1");
     leg->AddEntry(h_pythia_1d, "PYTHIA8 CP5", "l");
+    leg->AddEntry(h_FSRup_1d, "PYTHIA8 CP5 FSR up", "l");
+    leg->AddEntry(h_FSRdown_1d, "PYTHIA8 CP5 FSR down", "l");
+    // leg->AddEntry(h_ISRup_1d, "PYTHIA8 CP5 ISR up", "l");
+    // leg->AddEntry(h_ISRdown_1d, "PYTHIA8 CP5 ISR down", "l");
     leg->AddEntry(h_herwig_1d, "HERWIG7 CH3", "l");
     // leg->AddEntry(gr_unc, "Systematic uncertainty", "f");
 
     // legend for uncertainties in ratio plot
     TLegend *leg_ratio;
-    if (observable!="zpt") leg_ratio = new TLegend(0.19, 0.75, 0.4, 0.9);
-    else leg_ratio = new TLegend(0.7, 0.35, 0.85, 0.45);
-    if (observable=="zg"&&label.Contains("inclusive")) {
+    if (observable!="zpt") leg_ratio = new TLegend(0.15, 0.83, 0.3, 0.9);
+    else leg_ratio = new TLegend(0.75, 0.83, 0.9, 0.9);
+    if (observable=="zg"&&inclusive) {
         std::cout << "here" << std::endl;
-        leg_ratio = new TLegend(0.6, 0.75, 0.8, 0.9);
+        leg_ratio = new TLegend(0.35, 0.75, 0.55, 0.9);
     }
     leg_ratio->SetBorderSize(0);
     leg_ratio->SetFillStyle(0);
     leg_ratio->SetMargin(0.2);
     // leg_ratio->AddEntry(gr_unc_ratio, "Systematic unc.", "fl");
-    leg_ratio->AddEntry(gr_total_unc_ratio, "Total unc.", "fl");
+    leg_ratio->AddEntry(gr_total_unc_ratio, "Syst.#oplusStat.", "fl");
 
     for (auto h : {
         h_pythia_ratio_1d, 
         h_herwig_ratio_1d
     }) {
-        h->GetYaxis()->SetRangeUser(0.6, 1.8);
-        if (label.Contains("inclusive")) h->GetYaxis()->SetRangeUser(0.8, 1.3);
+        h->GetYaxis()->SetRangeUser(0., 2.);
+        if (inclusive) h->GetYaxis()->SetRangeUser(0.8, 1.4);
         if (observable=="zg") {
-            h->GetYaxis()->SetRangeUser(0.6, 1.4);
-            if (label.Contains("inclusive")) h->GetYaxis()->SetRangeUser(0.9, 1.1);
+            h->GetYaxis()->SetRangeUser(0.4, 1.6);
+            if (inclusive) h->GetYaxis()->SetRangeUser(0.85, 1.15);
         }
-        if (observable=="zpt") h->GetYaxis()->SetRangeUser(0.4, 1.5);
-        h->GetYaxis()->SetNdivisions(8);
+        if (observable=="zpt") h->GetYaxis()->SetRangeUser(-.2, 2.2);
+        h->GetYaxis()->SetNdivisions(505);
         h->GetYaxis()->SetTitle("Ratio to data");
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetTitle(xlabel);
         h->GetXaxis()->SetLabelOffset(labelOffset);
-        h->GetXaxis()->SetTitleOffset(3.5);
+        h->GetXaxis()->SetTitleOffset(1.5);
     }    
 
     // Draw 
-    TCanvas *c_result = new TCanvas("c_result", "", 800, 600);
-    TPad *top_pad = new TPad("top_pad", "", 0., 0.33, 1., 1.);
-    TPad *bottom_pad = new TPad("top_pad", "", 0., 0., 1., 0.33);
+    TCanvas *c_result = new TCanvas("c_result", "", 750, 900);
+    TPad *top_pad = new TPad("top_pad", "", 0., 0.4, 1., 1.);
+    TPad *bottom_pad = new TPad("top_pad", "", 0., 0., 1., 0.4);
 
+    top_pad->SetLeftMargin(0.12);
+    top_pad->SetRightMargin(0.05);
+    bottom_pad->SetLeftMargin(0.12);
+    bottom_pad->SetRightMargin(0.05);
+    
     top_pad->SetBottomMargin(0.03);
     bottom_pad->SetTopMargin(0.04);
-    bottom_pad->SetBottomMargin(0.3);
+    bottom_pad->SetBottomMargin(0.4);
 
     // top_pad->SetGridy();
     // bottom_pad->SetGridy();
@@ -265,6 +372,10 @@ void draw_data_vs_mc(TString observable="rg")
     gr_unc->Draw("e2 same");
     h_pythia_1d->Draw("hist same");
     h_herwig_1d->Draw("hist same");
+    h_FSRup_1d->Draw("hist same");
+    h_FSRdown_1d->Draw("hist same");
+    // h_ISRup_1d->Draw("hist same");
+    // h_ISRdown_1d->Draw("hist same");
     h_data_1d->Draw("pe1 same");
     
     leg->Draw();
@@ -273,34 +384,57 @@ void draw_data_vs_mc(TString observable="rg")
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
     jet_info->SetTextSize(20);
+    jet_info->SetTextAlign(10);
     if (observable=="zpt") {
-        jet_info->DrawLatex(0.22, 0.8, "anti-k_{T}, R=0.4 single b jets");
+        jet_info->DrawLatex(0.22, 0.8, "anti-k_{T}, R=0.4 b jets");
         jet_info->DrawLatex(0.22, 0.72, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
         jet_info->Draw();
     } else {
-        if (label.Contains("inclusive")) {
-            jet_info->DrawLatex(0.5, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
-            jet_info->DrawLatex(0.5, 0.72, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-            jet_info->DrawLatex(0.5, 0.64, "Charged soft drop");
-            jet_info->DrawLatex(0.5, 0.56, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+        if (inclusive) {
+            jet_info->DrawLatex(0.17, 0.22, "anti-k_{T}, R = 0.4 inclusive jets");
+            jet_info->DrawLatex(0.17, 0.17, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+            jet_info->DrawLatex(0.17, 0.12, "Soft drop (charged particles)");
+            jet_info->DrawLatex(0.17, 0.07, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
         } else {
-            jet_info->DrawLatex(0.5, 0.76, "anti-k_{T}, R=0.4 single b jets");
-            jet_info->DrawLatex(0.5, 0.68, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-            jet_info->DrawLatex(0.5, 0.6, "Charged soft drop");
-            jet_info->DrawLatex(0.5, 0.52, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
-            jet_info->Draw();
+            jet_info->DrawLatex(0.17, 0.22, "anti-k_{T}, R = 0.4 b jets");
+            jet_info->DrawLatex(0.17, 0.17, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+            jet_info->DrawLatex(0.17, 0.12, "Soft drop (charged particles)");
+            jet_info->DrawLatex(0.17, 0.07, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+            // jet_info->Draw();
         }
-    }
-    
+    }    
 
     bottom_pad->cd();
+    h_pythia_ratio_1d->GetYaxis()->SetTitleOffset(1.8);
     h_pythia_ratio_1d->Draw("hist same");
     // gr_unc_ratio->Draw("e2 same");
     gr_total_unc_ratio->Draw("e2 same");
     line->Draw();
     h_pythia_ratio_1d->Draw("hist same");
     h_herwig_ratio_1d->Draw("hist same");
+    h_FSRup_ratio_1d->Draw("hist same");
+    h_FSRdown_ratio_1d->Draw("hist same");
+    // h_ISRup_ratio_1d->Draw("hist same");
+    // h_ISRdown_ratio_1d->Draw("hist same");
     leg_ratio->Draw();
+
+    if (observable=="rg") {
+        auto axis5 = new TGaxis(2.1, -0.8, 0. ,-0.8, 0.048982571, 0.4, 2,"NIGS-");
+        if (inclusive) axis5 = new TGaxis(2.1, 0.55, 0. ,0.55, 0.048982571, 0.4, 2,"NIGS-");
+        axis5->SetTitle("R_{g}");
+        axis5->CenterTitle();
+        axis5->SetTitleFont(43);
+        axis5->SetTitleSize(text_size);
+        axis5->SetTitleOffset(1.3);
+        axis5->SetLabelFont(43);
+        axis5->SetLabelSize(text_size);
+        axis5->SetLabelOffset(0.08);
+        axis5->SetTickSize(0.05);
+        axis5->SetMoreLogLabels(); // add the secondary tick labels
+        axis5->SetNoExponent();
+        axis5->ChangeLabel(2, -1, 0.);
+        axis5->Draw("same");
+    }
 
     c_result->cd();
     top_pad->Draw();
