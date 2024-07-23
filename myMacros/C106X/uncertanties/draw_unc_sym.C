@@ -6,12 +6,12 @@ void draw_unc_sym(TString observable="rg")
     TString xlabel;
     if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/p_{T}^{jet,ch}";
+    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/^{}p_{T}^{jet,ch}";
 
     // ---- Setup 
     gStyle->SetCanvasPreferGL(kTRUE);
     gStyle->SetErrorX(0.5);
-    Float_t text_size = 20.;
+    Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
     gStyle->SetLabelSize(text_size, "XYZ");
@@ -34,7 +34,7 @@ void draw_unc_sym(TString observable="rg")
     int nbins_pt = 3;
     
     TCanvas *c_unc = new TCanvas("c_unc", "", 1400,600);
-    c_unc->SetRightMargin(0.08);
+    c_unc->SetRightMargin(0.03);
     c_unc->SetLeftMargin(0.08);
     c_unc->SetBottomMargin(0.25);
 
@@ -46,13 +46,13 @@ void draw_unc_sym(TString observable="rg")
 
     TH1D *h_stat_unc_rel = (TH1D *) fin_stat_unc->Get(Form("h_stat_unc_rel_%d", ibin_pt))->Clone(Form("h_stat_unc_rel_%d", ibin_pt));
     h_stat_unc_rel->SetLineColor(kBlack);
-    h_stat_unc_rel->SetFillStyle(3244);
-    h_stat_unc_rel->SetFillColorAlpha(kBlack, 0.5);
+    h_stat_unc_rel->SetFillStyle(1001);
+    h_stat_unc_rel->SetFillColorAlpha(kBlack, 0.05);
     h_stat_unc_rel->SetMarkerStyle(1);
-    h_stat_unc_rel->GetYaxis()->SetTitle("Relative uncertainty");
-    h_stat_unc_rel->GetYaxis()->SetTitleOffset(2.);
     h_stat_unc_rel->SetLineWidth(3);
-    h_stat_unc_rel->SetLineStyle(1);
+    h_stat_unc_rel->SetLineWidth(0);
+    h_stat_unc_rel->SetLineColorAlpha(kBlack,0);
+    h_stat_unc_rel->SetMarkerColorAlpha(kBlack, 1.);
 
     TH1D *h_jer_up_rel = (TH1D *) fin_jer->Get(Form("h_unc_rel_%d", ibin_pt))->Clone(Form("h_jer_up_rel_%d", ibin_pt));
     h_jer_up_rel->SetMarkerStyle(kFullTriangleUp);
@@ -186,8 +186,8 @@ void draw_unc_sym(TString observable="rg")
     // For lines/symbols : top left, 2 cols
     
     // TLegend *leg = new TLegend(0.2, 0.62, 0.5, 0.87); // log scale
-    TLegend *leg = new TLegend(0.1, 0.6, 0.5, 0.85); // abs scale
-    if (observable=="zpt") leg = new TLegend(0.45, 0.65, 0.8, 0.85); // abs scale
+    TLegend *leg = new TLegend(0.1, 0.6, 0.6, 0.85); // abs scale
+    if (observable=="zpt") leg = new TLegend(0.35, 0.65, 0.85, 0.85); // abs scale
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     leg->SetNColumns(2);
@@ -214,48 +214,30 @@ void draw_unc_sym(TString observable="rg")
     double ymax=0.6;
     // if (observable=="zpt") ymax = 0.45;
 
-    for (auto h : {h_total_unc_up}) {
-        h->GetYaxis()->SetRangeUser(ymin, ymax);
-        h->SetFillColorAlpha(kGray,0.1);
-        h->SetLineColor(kGray);
-        h->SetMarkerColorAlpha(kGray, 1.);
-        h->SetMarkerStyle(1);
-        h->SetFillStyle(1001);
-        h->GetXaxis()->SetTitle(xlabel);
-        // h->Draw("hist same");
-    }
+    // Fix appearence 
+    h_stat_unc_rel->GetYaxis()->SetTitle("Relative uncertainty");
+    h_stat_unc_rel->GetYaxis()->SetLabelOffset(0.003);
+    h_stat_unc_rel->GetYaxis()->SetTitleOffset(1.5);
+    h_stat_unc_rel->GetXaxis()->SetTitleOffset(1.2);
+    h_stat_unc_rel->GetYaxis()->SetRangeUser(ymin, ymax);
 
-    for (auto h : {h_stat_unc_rel,
-                    }) {
-        h->GetYaxis()->SetRangeUser(ymin, ymax);
-        // h->SetFillColor(h->GetLineColor());
-        h->SetFillColorAlpha(h->GetLineColor(), 0.05);
-        h->SetFillStyle(1001);
-        h->SetLineWidth(0);
-        h->SetLineColorAlpha(kBlack,0);
-        h->SetMarkerColorAlpha(h->GetLineColor(), 1.);
-        h->GetXaxis()->SetTitle(xlabel);
-        h->Draw("hist same");
-    }
+    h_stat_unc_rel->GetXaxis()->SetTitle(xlabel);
+
+    // Draw
+    h_stat_unc_rel->Draw("hist same");
+    h_mc_stat_unc_up_rel->Draw("hist same");
 
     TLine *line = new TLine(h_jer_up_rel->GetXaxis()->GetBinLowEdge(ibin_x_min), 0, h_jer_up_rel->GetXaxis()->GetBinUpEdge(ibin_x_max), 0);
     // line->SetLineStyle(kDashed);
     // line->Draw();
 
-    h_mc_stat_unc_up_rel->Draw("hist same");
     for (int i=1; i<histos_syst.size(); i++) {
         TH1D *h = histos_syst[i];
-        h->GetYaxis()->SetRangeUser(ymin, ymax);
         h->SetMarkerColorAlpha(h->GetLineColor(), 1.);
         h->SetLineColorAlpha(h->GetLineColor(), 1.);
-        // h->SetLineWidth(1);
-        // h->SetLineStyle(kDashed);
         h->SetMarkerSize(2);
-        h->GetYaxis()->SetTitle("Relative uncertainty");
-        h->GetYaxis()->SetTitleOffset(2);
         h->Draw("pl hist same");
     }
-    // h_stat_unc_rel->Draw("pe2 same");
     leg->Draw();
     drawHeaderUnc();
 
@@ -291,7 +273,7 @@ void draw_unc_sym(TString observable="rg")
     //     jet_info->SetTextSize(20);
     //     jet_info->DrawLatex(0.2, 0.33, "anti-k_{T}, R=0.4 single b jets");
     //     jet_info->DrawLatex(0.2, 0.28, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    //     jet_info->DrawLatex(0.2, 0.23, "Charged soft drop emissions");
+    //     jet_info->DrawLatex(0.2, 0.23, "Soft drop (charged particles) emissions");
     //     jet_info->DrawLatex(0.2, 0.18, "z_{cut}=0.1, #beta=0, k_{T} > 1 GeV");
     //     jet_info->Draw();
     // } else {
@@ -305,27 +287,26 @@ void draw_unc_sym(TString observable="rg")
     jet_info->SetTextSize(text_size);
     if (observable!="zpt") {
         jet_info->SetTextAlign(10);
-        jet_info->SetTextSize(20);
-        jet_info->DrawLatex(0.11, 0.53, "anti-k_{T}, R = 0.4 b jets");
+        jet_info->DrawLatex(0.11, 0.54, "anti-k_{T}, R = 0.4 b jets");
         jet_info->DrawLatex(0.11, 0.48, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-        jet_info->DrawLatex(0.11, 0.43, "Charged soft drop");
-        jet_info->DrawLatex(0.11, 0.38, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+        jet_info->DrawLatex(0.11, 0.42, "Soft drop (charged particles)");
+        jet_info->DrawLatex(0.11, 0.36, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     } else {
         jet_info->SetTextAlign(30);
-        jet_info->DrawLatex(0.87, 0.55, "anti-k_{T}, R=0.4 b jets");
-        jet_info->DrawLatex(0.87, 0.5, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.93, 0.55, "anti-k_{T}, R=0.4 b jets");
+        jet_info->DrawLatex(0.93, 0.49, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
     }
 
     if (observable=="rg") {
-        auto axis5 = new TGaxis(2.1, -0.12, 0. ,-0.12, 0.048982571, 0.4, 510,"NIGS-");
+        auto axis5 = new TGaxis(2.1, -0.13, 0. ,-0.13, 0.048982571, 0.4, 510,"NIGS-");
         axis5->SetTitle("R_{g}");
         axis5->CenterTitle();
         axis5->SetTitleFont(43);
         axis5->SetTitleSize(text_size);
-        axis5->SetTitleOffset(1.4);
+        axis5->SetTitleOffset(1.);
         axis5->SetLabelFont(43);
         axis5->SetLabelSize(text_size);
-        axis5->SetLabelOffset(0.055);
+        axis5->SetLabelOffset(0.075);
         axis5->SetTickSize(0.02);
         axis5->SetMoreLogLabels(); // add the secondary tick labels
         axis5->SetNoExponent();
