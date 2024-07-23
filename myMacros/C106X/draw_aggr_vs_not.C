@@ -1,9 +1,26 @@
 #include "draw_utils.h"
-#include "colorblind_palette.h"
+#include "cms_palette.h"
+
+void draw_info()
+{
+    TLatex *prelim = new TLatex;
+    prelim->SetNDC();
+    prelim->SetTextSize(28);
+    prelim->SetTextAlign(12);
+    prelim->DrawLatex(0.14, 0.92, "#bf{CMS} #it{Simulation Preliminary}");
+
+    TLatex *lumi = new TLatex;
+    lumi->SetNDC();
+    lumi->SetTextSize(28);
+    lumi->SetTextAlign(32);
+    lumi->DrawLatex(0.97, 0.92, "PYTHIA8 CP5 (pp 5.02 TeV)");
+}
 
 void draw_aggr_vs_not(TString observable="rg")
 {
-    Float_t text_size = 20.;
+    // Run with ROOT 6.30, take PDFs
+
+    Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
     gStyle->SetLabelSize(text_size, "XYZ");
@@ -11,7 +28,7 @@ void draw_aggr_vs_not(TString observable="rg")
     gStyle->SetPalette(57);
 
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(R/R_{g})";
+    if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
     TString fin_aggr_name = "./histos/bjet_aggrTMVA_newJP_substructure.root"; 
@@ -31,54 +48,57 @@ void draw_aggr_vs_not(TString observable="rg")
 
     TH1F *hSingleBtag_gen_aggr_1d = (TH1F *) hSingleBtag_gen_aggr->ProjectionX("hSingleBtag_gen_aggr_1d", min_kt_bin, max_kt_bin);
     hSingleBtag_gen_aggr_1d->Scale(1/hSingleBtag_gen_aggr_1d->Integral());
-    hSingleBtag_gen_aggr_1d->SetLineColor(myLightBlue);
+    hSingleBtag_gen_aggr_1d->SetLineColor(cmsBlue);
     hSingleBtag_gen_aggr_1d->SetLineWidth(3);
     hSingleBtag_gen_aggr_1d->GetXaxis()->SetTitle(xlabel);
-    hSingleBtag_gen_aggr_1d->GetYaxis()->SetTitle("Normalized per 2-prong jet");
+    hSingleBtag_gen_aggr_1d->GetYaxis()->SetTitle("1/^{}N dN/^{}d"+xlabel);
     hSingleBtag_gen_aggr_1d->GetXaxis()->SetRangeUser(0., 3.1);
-    hSingleBtag_gen_aggr_1d->GetYaxis()->SetRangeUser(0., 0.3);
+    hSingleBtag_gen_aggr_1d->GetYaxis()->SetRangeUser(0., 0.35);
+    hSingleBtag_gen_aggr_1d->GetYaxis()->SetTitleOffset(1.9);
     if (observable=="zg") hSingleBtag_gen_aggr_1d->GetYaxis()->SetRangeUser(0., 0.25);
     hSingleBtag_gen_aggr_1d->SetLineStyle(1);
 
     TH1F *hSingleBtag_reco_aggr_1d = (TH1F *) hSingleBtag_reco_aggr->ProjectionX("hSingleBtag_reco_aggr_1d", min_kt_bin, max_kt_bin);
     hSingleBtag_reco_aggr_1d->Scale(1/hSingleBtag_reco_aggr_1d->Integral());
-    hSingleBtag_reco_aggr_1d->SetLineColor(myLightRed);
+    hSingleBtag_reco_aggr_1d->SetLineColor(cmsOrange);
     hSingleBtag_reco_aggr_1d->SetLineWidth(3);    
-    hSingleBtag_reco_aggr_1d->SetLineStyle(9);
+    hSingleBtag_reco_aggr_1d->SetLineStyle(8);
 
     TH1F *hSingleBtag_reco_noAggr_1d = (TH1F *) hSingleBtag_reco_noAggr->ProjectionX("hSingleBtag_reco_noAggr_1d", min_kt_bin, max_kt_bin);
     hSingleBtag_reco_noAggr_1d->Scale(1/hSingleBtag_reco_noAggr_1d->Integral());
-    hSingleBtag_reco_noAggr_1d->SetLineColor(myYellow);
+    hSingleBtag_reco_noAggr_1d->SetLineColor(cmsViolet);
     hSingleBtag_reco_noAggr_1d->SetLineWidth(3); 
-    hSingleBtag_reco_noAggr_1d->SetLineStyle(5);
+    hSingleBtag_reco_noAggr_1d->SetLineStyle(2);
 
-    TCanvas *c_aggr_vs_noAggr = new TCanvas("c_aggr_vs_noAggr", "", 800, 600);
-    c_aggr_vs_noAggr->SetRightMargin(0.16);
+    TCanvas *c_aggr_vs_noAggr = new TCanvas("c_aggr_vs_noAggr", "", 800, 700);
+    c_aggr_vs_noAggr->SetRightMargin(0.03);
+    c_aggr_vs_noAggr->SetLeftMargin(0.14);
     hSingleBtag_gen_aggr_1d->Draw("hist");
     hSingleBtag_reco_noAggr_1d->Draw("hist same");
     hSingleBtag_reco_aggr_1d->Draw("hist same");
-    drawHeaderSimulation();
+    draw_info();
 
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
     jet_info->SetTextSize(text_size);
+    jet_info->SetTextAlign(32);
     // for png
     // jet_info->DrawLatex(0.52, 0.65, "anti-k_{T}, R=0.4 b-tagged b jets");
     // jet_info->DrawLatex(0.505, 0.6, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    // jet_info->DrawLatex(0.64, 0.55, "Charged soft drop");
-    // jet_info->DrawLatex(0.575, 0.5, "z_{cut}=0.1, #beta=0, k_{T}>1 GeV");
+    // jet_info->DrawLatex(0.64, 0.55, "Soft drop (charged particles)");
+    // jet_info->DrawLatex(0.575, 0.5, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     // for pdf
-    jet_info->DrawLatex(0.51, 0.65, "anti-k_{T}, R=0.4 b-tagged b jets");
-    jet_info->DrawLatex(0.505, 0.6, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    jet_info->DrawLatex(0.63, 0.55, "Charged soft drop");
-    jet_info->DrawLatex(0.57, 0.5, "z_{cut}=0.1, #beta=0, k_{T}>1 GeV");
+    jet_info->DrawLatex(0.935, 0.7, "anti-k_{T}, R=0.4 b-tagged b jets");
+    jet_info->DrawLatex(0.935, 0.65, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.935, 0.6, "Soft drop (charged particles)");
+    jet_info->DrawLatex(0.935, 0.55, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
 
-    TLegend *leg = new TLegend(0.2, 0.75, 0.8, 0.87);
+    TLegend *leg = new TLegend(0.17, 0.75, 0.82, 0.87);
     leg->SetFillStyle(0);
-    leg->SetMargin(0.1);
+    leg->SetMargin(0.05);
     leg->AddEntry(hSingleBtag_gen_aggr_1d, "Particle level, clustered b hadron decay daughters", "l");
-    leg->AddEntry(hSingleBtag_reco_noAggr_1d, "Detector level, unclustered b hadron decay daughters", "l");
-    leg->AddEntry(hSingleBtag_reco_aggr_1d, "Detector level, clustered b hadron decay daughters", "l");
+    leg->AddEntry(hSingleBtag_reco_noAggr_1d, "Det. level, unclustered b hadron decay daughters", "l");
+    leg->AddEntry(hSingleBtag_reco_aggr_1d, "Det. level, clustered b hadron decay daughters", "l");
     leg->Draw();
 
     c_aggr_vs_noAggr->Print("plots_an/"+observable+"_aggr_vs_not.png");
