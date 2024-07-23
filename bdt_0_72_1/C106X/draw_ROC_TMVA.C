@@ -1,9 +1,32 @@
-#include "root_utils.h"
+// #include "root_utils.h"
 #include "../../myMacros/C106X/draw_utils.h"
+#include "../../myMacros/C106X/cms_palette.h"
+
+const Float_t text_size = 22.;
+
+void draw_info()
+{
+    TLatex *prelim = new TLatex;
+    prelim->SetNDC();
+    prelim->SetTextSize(text_size);
+    prelim->SetTextAlign(12);
+    prelim->DrawLatex(0.15, 0.96, "#bf{CMS} #it{Simulation Preliminary}");
+
+    TLatex *lumi = new TLatex;
+    lumi->SetNDC();
+    lumi->SetTextSize(text_size);
+    lumi->SetTextAlign(32);
+    lumi->DrawLatex(0.95, 0.96, "PYTHIA8 CP5 (pp 5.02 TeV)");
+}
 
 void draw_ROC_TMVA()
 {
-    Float_t font_size = 20.;
+    // ---- Setup 
+    gStyle->SetCanvasPreferGL(kTRUE);
+    gStyle->SetTextSize(text_size);
+    gStyle->SetLegendTextSize(text_size);
+    gStyle->SetLabelSize(text_size, "XYZ");
+    gStyle->SetTitleSize(text_size, "XYZ");
     
     // TString label = "qcd_bjet";
     TString label = "qcd_bjet";
@@ -21,8 +44,8 @@ void draw_ROC_TMVA()
     Int_t nbins = h_discr_s->GetNbinsX();
 
     TGraph *gr_roc = new TGraph(nbins);
-    gr_roc->SetLineColor(kBlue+2);
-    gr_roc->SetLineWidth(4);
+    gr_roc->SetLineColor(cmsBlue);
+    gr_roc->SetLineWidth(3);
     gr_roc->GetXaxis()->SetTitle("Signal efficiency");
     gr_roc->GetYaxis()->SetTitle("Background rejection");
 
@@ -64,57 +87,60 @@ void draw_ROC_TMVA()
     // SetRealAspectRatio(c_discr);
     // c_discr->SetFixedAspectRatio();
 
-    TPaveText *info_top_left = new TPaveText(0.0, 1.1, 0.58, 1.18, "nb ndc");
-    info_top_left->SetTextSize(font_size);
-    info_top_left->SetFillStyle(0);
-    info_top_left->SetLineWidth(0);
-    info_top_left->AddText("#bf{CMS} #it{Work in Progress Simulation}");
-
-    TPaveText *info_top_right = new TPaveText(0.6, 1.1, 1.1, 1.18, "nb ndc");
-    info_top_right->SetTextSize(font_size);
-    info_top_right->SetFillStyle(0);
-    info_top_right->SetLineWidth(0);
-    info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
-
-    TPaveText *info_bdt = new TPaveText(0.75, 1., 1.1, 1.1, "nb ndc");
-    info_bdt->SetTextSize(font_size);
+    TPaveText *info_bdt = new TPaveText(0.75, 1., 1.1, 1.08, "nb ndc");
+    info_bdt->SetTextSize(text_size);
     info_bdt->SetFillStyle(0);
     info_bdt->SetLineWidth(0);
+    info_bdt->SetBorderSize(0);
     info_bdt->AddText("#it{Gradient BDT}");
 
-    TPaveText *info_tracks = new TPaveText(0.1, 0.2, 0.9, 0.6, "nb ndc");
-    info_tracks->SetTextSize(font_size);
+    TPaveText *info_tracks = new TPaveText(0.05, 0.2, 0.9, 0.6, "nb ndc");
+    info_tracks->SetTextSize(text_size);
     info_tracks->SetFillStyle(0);
+    info_tracks->SetBorderSize(0);
     info_tracks->SetLineWidth(0);
-    info_tracks->AddText("#bf{Charged particle classification}");
+    info_tracks->SetTextAlign(12);
+    // info_tracks->AddText("#bf{Charged particle classification}");
+    // info_tracks->AddText("");
+    info_tracks->AddText("Charged particles, p_{T}^{track} > 1 GeV");
+    info_tracks->AddText("from b-tagged b jets");
+    info_tracks->AddText("p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2");
     info_tracks->AddText("");
-    info_tracks->AddText("Tracks from b-tagged b-jets with");
-    info_tracks->AddText("#it{p}_{T}^{jet} > 30 GeV, -2 < #it{#eta}^{jet} < 2");
-    info_tracks->AddText("");
-    info_tracks->AddText("Signal : tracks from b hadron decays");
-    info_tracks->AddText("Background : tracks from primary interaction");
+    info_tracks->AddText("Signal = b hadron decay daughters");
+    info_tracks->AddText("Background = from primary interaction");
     // info_tracks->AddText("");
     // info_tracks->AddText("Gradient BDT");
 
     // std::cout << gr_roc->GetXaxis()->GetLabelSize() << std::endl;
 
-    gr_roc->GetXaxis()->SetLabelSize(font_size);
-    gr_roc->GetYaxis()->SetLabelSize(font_size);
-    gr_roc->GetXaxis()->SetTitleSize(font_size);
-    gr_roc->GetYaxis()->SetTitleSize(font_size);
+    gr_roc->GetXaxis()->SetLabelSize(text_size);
+    gr_roc->GetYaxis()->SetLabelSize(text_size);
+    gr_roc->GetXaxis()->SetTitleSize(text_size);
+    gr_roc->GetYaxis()->SetTitleSize(text_size);
 
-    TCanvas *c_roc = new TCanvas("c_roc", "", 800, 600);
+    gr_roc->GetYaxis()->SetNdivisions(511);
+    gr_roc->GetXaxis()->SetNdivisions(511);
+    gr_roc->GetXaxis()->SetTitleOffset(1.2);
+
+    TCanvas *c_roc = new TCanvas("c_roc", "", 900, 700);
+    c_roc->SetRightMargin(0.05);
+    c_roc->SetLeftMargin(0.15);
+    c_roc->SetTopMargin(0.07);
+    c_roc->SetBottomMargin(0.12);
     gr_roc->Draw("al");
     // info_top_left->Draw();
     // info_top_right->Draw();
     info_tracks->Draw();
     info_bdt->Draw();
-    SetRealAspectRatio(c_roc);
-    drawHeaderSimulation();
+    c_roc->SetRealAspectRatio();
+    // drawHeaderSimulation();
+    draw_info();
     c_roc->Draw();
-    c_roc->SetGrid();
+    // c_roc->SetGrid();
     TString c_roc_name = "./plots/" + label + "_TMVA_roc.png";
-    c_roc->Print(c_roc_name);    
+    c_roc->Print(c_roc_name);  
+    TString c_roc_name_pdf = "./plots/" + label + "_TMVA_roc.pdf";
+    c_roc->Print(c_roc_name_pdf);    
 
     // Double_t x1 = c_roc->GetX1();
     // Double_t y1 = c_roc->GetY1();
