@@ -11,7 +11,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     // Setup
     gStyle->SetCanvasPreferGL(kTRUE);
     gStyle->SetErrorX(0.5);
-    Float_t text_size = 20.;
+    Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
     gStyle->SetLabelSize(text_size, "XYZ");
@@ -28,7 +28,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     int nbins_pt = 3;
     
     TCanvas *c_unc = new TCanvas("c_unc", "", 1400,600);
-    c_unc->SetRightMargin(0.08);
+    c_unc->SetRightMargin(0.03);
     c_unc->SetLeftMargin(0.08);
     c_unc->SetBottomMargin(0.25);
 
@@ -158,7 +158,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     // For lines/symbols : top left, 2 cols
     
     // TLegend *leg = new TLegend(0.2, 0.62, 0.5, 0.87); // log scale
-    TLegend *leg = new TLegend(0.12, 0.65, 0.42, 0.85); // abs scale
+    TLegend *leg = new TLegend(0.4, 0.65, 0.85, 0.85); // abs scale
     if (observable=="zpt") leg = new TLegend(0.45, 0.5, 0.75, 0.75); // abs scale
     leg->SetNColumns(2);
     leg->SetColumnSeparation(0.25); 
@@ -180,8 +180,8 @@ void draw_unc_sym_inclusive(TString observable="rg")
 
     // for abs
     double ymin=0.;
-    double ymax=0.16; // rg
-    if (observable=="zg") ymax = 0.08;
+    double ymax=0.2; // rg
+    if (observable=="zg") ymax = 0.1;
 
     for (auto h : {h_total_unc_up}) {
         h->GetYaxis()->SetRangeUser(ymin, ymax);
@@ -204,6 +204,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
         h->SetLineColorAlpha(kBlack,0);
         h->SetMarkerColor(h->GetLineColor());
         h->GetXaxis()->SetTitle(xlabel);
+        h->GetXaxis()->SetTitleOffset(1.2);
         h->Draw("hist same");
     }
 
@@ -258,7 +259,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     //     jet_info->SetTextSize(20);
     //     jet_info->DrawLatex(0.2, 0.33, "anti-k_{T}, R=0.4 single b jets");
     //     jet_info->DrawLatex(0.2, 0.28, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    //     jet_info->DrawLatex(0.2, 0.23, "Charged soft drop emissions");
+    //     jet_info->DrawLatex(0.2, 0.23, "Soft drop (charged particles)");
     //     jet_info->DrawLatex(0.2, 0.18, "z_{cut}=0.1, #beta=0, k_{T} > 1 GeV");
     //     jet_info->Draw();
     // } else {
@@ -270,19 +271,19 @@ void draw_unc_sym_inclusive(TString observable="rg")
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
     jet_info->SetTextSize(text_size);
-    if (observable=="rg") {
-        jet_info->SetTextAlign(30);
-        jet_info->DrawLatex(0.89, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
-        jet_info->DrawLatex(0.89, 0.75, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-        jet_info->DrawLatex(0.89, 0.7, "Charged soft drop");
-        jet_info->DrawLatex(0.89, 0.65, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
-    } else {
-        jet_info->SetTextAlign(10);
-        jet_info->DrawLatex(0.53, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
-        jet_info->DrawLatex(0.53, 0.75, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-        jet_info->DrawLatex(0.53, 0.7, "Charged soft drop");
-        jet_info->DrawLatex(0.53, 0.65, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
-    }
+    // if (observable=="rg") {
+        jet_info->SetTextAlign(12);
+        jet_info->DrawLatex(0.12, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
+        jet_info->DrawLatex(0.12, 0.74, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.12, 0.68, "Soft drop (charged particles)");
+        jet_info->DrawLatex(0.12, 0.62, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+    // } else {
+    //     jet_info->SetTextAlign(10);
+    //     jet_info->DrawLatex(0.53, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
+    //     jet_info->DrawLatex(0.53, 0.74, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    //     jet_info->DrawLatex(0.53, 0.68, "Soft drop (charged particles)");
+    //     jet_info->DrawLatex(0.53, 0.62, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+    // }
 
 
     // bottom, 2 cols 
@@ -304,15 +305,15 @@ void draw_unc_sym_inclusive(TString observable="rg")
     // }
 
     if (observable=="rg") {
-        auto axis5 = new TGaxis(2.1, -0.027, 0. ,-0.027, 0.048982571, 0.4, 510,"NIGS-");
+        auto axis5 = new TGaxis(2.1, -0.045, 0. ,-0.045, 0.048982571, 0.4, 510,"NIGS-");
         axis5->SetTitle("R_{g}");
         axis5->CenterTitle();
         axis5->SetTitleFont(43);
         axis5->SetTitleSize(text_size);
-        axis5->SetTitleOffset(1.4);
+        axis5->SetTitleOffset(0.9);
         axis5->SetLabelFont(43);
         axis5->SetLabelSize(text_size);
-        axis5->SetLabelOffset(0.055);
+        axis5->SetLabelOffset(0.08);
         axis5->SetTickSize(0.02);
         axis5->SetMoreLogLabels(); // add the secondary tick labels
         axis5->SetNoExponent();
