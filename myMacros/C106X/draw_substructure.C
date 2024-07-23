@@ -30,7 +30,7 @@ void draw_substructure(TString observable="rg")
     if (observable=="rg") xlabel = "ln(R/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
-    TString label = "aggrGenNoReco_withPNET";
+    TString label = "noAggr_withPNET";
     TString sample = "bjet";
     TString fin_name = "./histos/" + sample + "_" + label + "_substructure.root"; 
     std::cout << "fin: " << fin_name << std::endl;
@@ -66,7 +66,7 @@ void draw_substructure(TString observable="rg")
     jet_info->DrawLatex(0.795, 0.82, "Particle level anti-k_{T}, R=0.4 b jets");
     jet_info->DrawLatex(0.795, 0.77, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
     jet_info->DrawLatex(0.795, 0.72, "Soft drop (charged particles)");
-    jet_info->DrawLatex(0.795, 0.67, "z_{cut}=0.1, #beta=0");
+    jet_info->DrawLatex(0.795, 0.67, "z_{cut} = 0.1, #beta = 0");
     if (label.Contains("aggr")) {
         auto txt1 = jet_info->DrawLatex(0.795, 0.87, "Clustered b hadron decay daughters");
         // txt1->SetTextColor(kWhite);
