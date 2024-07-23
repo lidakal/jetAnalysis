@@ -27,10 +27,10 @@ void draw_substructure(TString observable="rg")
     gStyle->SetPalette(57);
 
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(R/R_{g})";
+    if (observable=="rg") xlabel = "ln(R/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
-    TString label = "noAggr_withPNET";
+    TString label = "aggrGenNoReco_withPNET";
     TString sample = "bjet";
     TString fin_name = "./histos/" + sample + "_" + label + "_substructure.root"; 
     std::cout << "fin: " << fin_name << std::endl;
@@ -43,7 +43,7 @@ void draw_substructure(TString observable="rg")
     hSingleB_gen->GetXaxis()->SetTitleOffset(1.2);
     hSingleB_gen->GetYaxis()->SetTitle("ln(k_{T}/GeV)");
     hSingleB_gen->GetYaxis()->SetTitleOffset(1.8);
-    hSingleB_gen->GetZaxis()->SetTitle("Normalized per jet");
+    hSingleB_gen->GetZaxis()->SetTitle("Normalized per 2-prong jet");
     hSingleB_gen->GetZaxis()->SetTitleOffset(1.95);
     hSingleB_gen->GetZaxis()->SetRangeUser(0., 0.03);
     hSingleB_gen->GetYaxis()->SetRangeUser(-2., 3.);
