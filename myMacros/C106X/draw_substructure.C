@@ -12,12 +12,12 @@ void draw_info()
     lumi->SetNDC();
     lumi->SetTextSize(28);
     lumi->SetTextAlign(32);
-    lumi->DrawLatex(0.82, 0.96, "PYTHIA8 (pp 5.02 TeV)");
+    lumi->DrawLatex(0.82, 0.96, "PYTHIA8 CP5 (pp 5.02 TeV)");
 }
 
 void draw_substructure(TString observable="rg")
 {
-    // Run with ROOT 6.30
+    // Run with ROOT 6.30, take PDFs
 
     Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
@@ -30,7 +30,7 @@ void draw_substructure(TString observable="rg")
     if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
-    TString label = "aggrGenNoReco_withPNET";
+    TString label = "noAggr_withPNET";
     TString sample = "bjet";
     TString fin_name = "./histos/" + sample + "_" + label + "_substructure.root"; 
     std::cout << "fin: " << fin_name << std::endl;
