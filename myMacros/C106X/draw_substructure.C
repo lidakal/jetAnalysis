@@ -4,20 +4,22 @@ void draw_info()
 {
     TLatex *prelim = new TLatex;
     prelim->SetNDC();
-    prelim->SetTextSize(20);
-    prelim->DrawLatex(0.175, 0.92, "#bf{CMS} #it{Simulation}");
-    prelim->Draw();
+    prelim->SetTextSize(28);
+    prelim->SetTextAlign(12);
+    prelim->DrawLatex(0.12, 0.96, "#bf{CMS} #it{Simulation Preliminary}");
 
     TLatex *lumi = new TLatex;
     lumi->SetNDC();
-    lumi->SetTextSize(20);
-    lumi->DrawLatex(0.54, 0.92, "#bf{PYTHIA8 (pp 5.02 TeV)}");
-    lumi->Draw();
+    lumi->SetTextSize(28);
+    lumi->SetTextAlign(32);
+    lumi->DrawLatex(0.82, 0.96, "PYTHIA8 (pp 5.02 TeV)");
 }
 
 void draw_substructure(TString observable="rg")
 {
-    Float_t text_size = 20.;
+    // Run with ROOT 6.30
+
+    Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
     gStyle->SetLabelSize(text_size, "XYZ");
@@ -38,36 +40,57 @@ void draw_substructure(TString observable="rg")
     TH2F *hSingleB_gen = (TH2F *) fin->Get("hSingleB_"+observable+"_gen");
     hSingleB_gen->Scale(1/hSingleB_gen->Integral());
     hSingleB_gen->GetXaxis()->SetTitle(xlabel);
+    hSingleB_gen->GetXaxis()->SetTitleOffset(1.2);
     hSingleB_gen->GetYaxis()->SetTitle("ln(k_{T}/GeV)");
-    hSingleB_gen->GetYaxis()->SetTitleOffset(1.2);
-    hSingleB_gen->GetZaxis()->SetTitle("normalized per jet");
-    hSingleB_gen->GetZaxis()->SetTitleOffset(1.8);
+    hSingleB_gen->GetYaxis()->SetTitleOffset(1.8);
+    hSingleB_gen->GetZaxis()->SetTitle("Normalized per jet");
+    hSingleB_gen->GetZaxis()->SetTitleOffset(1.95);
     hSingleB_gen->GetZaxis()->SetRangeUser(0., 0.03);
     hSingleB_gen->GetYaxis()->SetRangeUser(-2., 3.);
 
-    TCanvas *c_SingleB_gen = new TCanvas("c_SingleB_gen", "Truth level lund plane no tag", 800, 600);
-    c_SingleB_gen->SetRightMargin(0.2);
+    TCanvas *c_SingleB_gen = new TCanvas("c_SingleB_gen", "Truth level lund plane no tag", 1000, 700);
+    c_SingleB_gen->SetRightMargin(0.18);
+    c_SingleB_gen->SetLeftMargin(0.12);
+    c_SingleB_gen->SetTopMargin(0.07);
+    c_SingleB_gen->SetBottomMargin(0.12);
     hSingleB_gen->Draw("colz");
     // c_SingleB_gen->SetLogz();
 
     draw_info();
 
+    // for pdf
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
     jet_info->SetTextSize(text_size);
-    jet_info->DrawLatex(0.37, 0.78, "Particle level anti-k_{T}, R=0.4 single b jets");
-    jet_info->DrawLatex(0.47, 0.73, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    jet_info->DrawLatex(0.6, 0.68, "Charged soft drop");
-    jet_info->DrawLatex(0.65, 0.63, "z_{cut}=0.1, #beta=0");
+    jet_info->SetTextAlign(32);
+    jet_info->DrawLatex(0.795, 0.82, "Particle level anti-k_{T}, R=0.4 b jets");
+    jet_info->DrawLatex(0.795, 0.77, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.795, 0.72, "Soft drop (charged particles)");
+    jet_info->DrawLatex(0.795, 0.67, "z_{cut}=0.1, #beta=0");
     if (label.Contains("aggr")) {
-        auto txt1 = jet_info->DrawLatex(0.42, 0.83, "Clustered b hadron decay daughters");
+        auto txt1 = jet_info->DrawLatex(0.795, 0.87, "Clustered b hadron decay daughters");
         // txt1->SetTextColor(kWhite);
     } else {
-        auto txt1 = jet_info->DrawLatex(0.39, 0.83, "Unclustered b hadron decay daughters");
+        auto txt1 = jet_info->DrawLatex(0.795, 0.87, "Unclustered b hadron decay daughters");
         // txt1->SetTextColor(kWhite);
     }
 
-    jet_info->Draw();
+    // for png
+    // TLatex *jet_info = new TLatex;
+    // jet_info->SetNDC();
+    // jet_info->SetTextSize(text_size);
+    // jet_info->DrawLatex(0.37, 0.79, "Particle level anti-k_{T}, R=0.4 single b jets");
+    // jet_info->DrawLatex(0.47, 0.74, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    // jet_info->DrawLatex(0.6, 0.69, "Soft drop (charged particles)");
+    // jet_info->DrawLatex(0.65, 0.64, "z_{cut}=0.1, #beta=0");
+    // if (label.Contains("aggr")) {
+    //     auto txt1 = jet_info->DrawLatex(0.42, 0.84, "Clustered b hadron decay daughters");
+    //     // txt1->SetTextColor(kWhite);
+    // } else {
+    //     auto txt1 = jet_info->DrawLatex(0.39, 0.84, "Unclustered b hadron decay daughters");
+    //     // txt1->SetTextColor(kWhite);
+    // }
+
 
     c_SingleB_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_vs_kt.pdf");
     c_SingleB_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_vs_kt.png");
