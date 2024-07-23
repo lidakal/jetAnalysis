@@ -1,18 +1,20 @@
 #include "draw_utils.h"
-#include "colorblind_palette.h"
+#include "cms_palette.h"
 
 void draw_bjet_vs_incl(TString observable="rg")
 {
+    int myOpenSquare = 54;
+    int myLineWidth = 1;
+
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(R/R_{g})";
+    if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z";
-    TString ylabel = "1/N_{2-prong jets} dN/d" + xlabel;
+    TString ylabel = "1/N^{} dN^{}/^{}d^{}" + xlabel;
 
     // ---- Setup 
     gStyle->SetCanvasPreferGL(kTRUE);
     gStyle->SetErrorX(0.5);
-    Float_t text_size = 20.;
+    Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
     gStyle->SetLabelSize(text_size, "XYZ");
@@ -31,24 +33,45 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     // Grab truth MC 
     TString fin_pythia_XXT_name = "unfolding/histos/pythia_PF40_aggrTMVA_inclusive_response_jer_nom_jec_nom.root";
-    std::cout << "Reading mc from : " << fin_pythia_XXT_name << std::endl;
+    std::cout << "Reading pythia bjet from : " << fin_pythia_XXT_name << std::endl;
     TFile *fin_pythia_XXT = new TFile(fin_pythia_XXT_name);
-    TH2D *h_pythia_XXT = (TH2D *) fin_pythia_XXT->Get("h_full_efficiency_denominator_"+observable+"pt");
+    TH2D *h_pythia_XXT = (TH2D *) fin_pythia_XXT->Get("h_full_efficiency_denominator_"+observable+"pt")->Clone("h_pythia_XXT");
 
     TString fin_pythia_inclusive_name = "unfolding/histos/dijet_PF40_aggrTMVA_inclusive_response_jer_nom_jec_nom.root";
-    std::cout << "Reading mc from : " << fin_pythia_inclusive_name << std::endl;
+    std::cout << "Reading pythia inclusive from : " << fin_pythia_inclusive_name << std::endl;
     TFile *fin_pythia_inclusive = new TFile(fin_pythia_inclusive_name);
-    TH2D *h_pythia_inclusive = (TH2D *) fin_pythia_inclusive->Get("h_full_efficiency_denominator_"+observable+"pt");
+    TH2D *h_pythia_inclusive = (TH2D *) fin_pythia_inclusive->Get("h_full_efficiency_denominator_"+observable+"pt")->Clone("h_pythia_inclusive");
 
     TString fin_herwig_XXT_name = "unfolding/histos/herwig_official_PF40_aggrTMVA_inclusive_response_jer_nom_jec_nom.root";
-    std::cout << "Reading mc from : " << fin_herwig_XXT_name << std::endl;
+    std::cout << "Reading herwig bjet from : " << fin_herwig_XXT_name << std::endl;
     TFile *fin_herwig_XXT = new TFile(fin_herwig_XXT_name);
-    TH2D *h_herwig_XXT = (TH2D *) fin_herwig_XXT->Get("h_full_efficiency_denominator_"+observable+"pt");
+    TH2D *h_herwig_XXT = (TH2D *) fin_herwig_XXT->Get("h_full_efficiency_denominator_"+observable+"pt")->Clone("h_herwig_XXT");
 
     TString fin_herwig_inclusive_name = "unfolding/histos/herwig_dijet_official_PF40_aggrTMVA_inclusive_response_jer_nom_jec_nom.root";
-    std::cout << "Reading mc from : " << fin_herwig_inclusive_name << std::endl;
+    std::cout << "Reading herwig inclusive from : " << fin_herwig_inclusive_name << std::endl;
     TFile *fin_herwig_inclusive = new TFile(fin_herwig_inclusive_name);
-    TH2D *h_herwig_inclusive = (TH2D *) fin_herwig_inclusive->Get("h_full_efficiency_denominator_"+observable+"pt");
+    TH2D *h_herwig_inclusive = (TH2D *) fin_herwig_inclusive->Get("h_full_efficiency_denominator_"+observable+"pt")->Clone("h_herwig_inclusive");
+
+    // Grab pythia variations
+    TString fin_FSRup_XXT_name = "histos/bjet_FSRup_gen_histograms.root";
+    std::cout << "Reading FSRup bjet from : " << fin_FSRup_XXT_name << std::endl;
+    TFile *fin_FSRup_XXT = new TFile(fin_FSRup_XXT_name);
+    TH2D *h_FSRup_XXT = (TH2D *) fin_FSRup_XXT->Get("h_"+observable+"_b_noUO")->Clone("h_FSRup_XXT");
+
+    TString fin_FSRup_inclusive_name = "histos/inclusive_FSRup_gen_histograms.root";
+    std::cout << "Reading FSRup bjet from : " << fin_FSRup_inclusive_name << std::endl;
+    TFile *fin_FSRup_inclusive = new TFile(fin_FSRup_inclusive_name);
+    TH2D *h_FSRup_inclusive = (TH2D *) fin_FSRup_inclusive->Get("h_"+observable+"_all_noUO")->Clone("h_FSRup_inclusive");
+
+    TString fin_FSRdown_XXT_name = "histos/bjet_FSRdown_gen_histograms.root";
+    std::cout << "Reading FSRdown bjet from : " << fin_FSRdown_XXT_name << std::endl;
+    TFile *fin_FSRdown_XXT = new TFile(fin_FSRdown_XXT_name);
+    TH2D *h_FSRdown_XXT = (TH2D *) fin_FSRdown_XXT->Get("h_"+observable+"_b_noUO")->Clone("h_FSRdown_XXT");
+
+    TString fin_FSRdown_inclusive_name = "histos/inclusive_FSRdown_gen_histograms.root";
+    std::cout << "Reading FSRdown bjet from : " << fin_FSRdown_inclusive_name << std::endl;
+    TFile *fin_FSRdown_inclusive = new TFile(fin_FSRdown_inclusive_name);
+    TH2D *h_FSRdown_inclusive = (TH2D *) fin_FSRdown_inclusive->Get("h_"+observable+"_all_noUO")->Clone("h_FSRdown_inclusive");
 
     // Make projections 
     int ibin_pt = 2;
@@ -58,43 +81,27 @@ void draw_bjet_vs_incl(TString observable="rg")
     TH1D *h_data_XXT_1d = (TH1D *) h_data_XXT->ProjectionX("h_data_XXT_1d", ibin_pt, ibin_pt);
     h_data_XXT_1d->SetMarkerStyle(kFullCircle);
     h_data_XXT_1d->SetMarkerSize(1);
-    h_data_XXT_1d->SetMarkerColor(kBlue-3); 
-    h_data_XXT_1d->SetLineColor(kBlue-3);
-    h_data_XXT_1d->SetLineWidth(1);
+    h_data_XXT_1d->SetMarkerColor(cmsBlue); 
+    h_data_XXT_1d->SetLineColor(cmsBlue);
+    h_data_XXT_1d->SetLineWidth(myLineWidth);
 
     TH1D *h_data_inclusive_1d = (TH1D *) h_data_inclusive->ProjectionX("h_data_inclusive_1d", ibin_pt, ibin_pt);
-    h_data_inclusive_1d->SetMarkerStyle(kOpenSquare);
-    h_data_inclusive_1d->SetMarkerColor(kRed-3); 
-    h_data_inclusive_1d->SetLineColor(kRed-3);
-    h_data_inclusive_1d->SetLineWidth(1);
+    h_data_inclusive_1d->SetMarkerStyle(myOpenSquare);
+    h_data_inclusive_1d->SetMarkerColor(cmsRed); 
+    h_data_inclusive_1d->SetLineColor(cmsRed);
+    h_data_inclusive_1d->SetLineWidth(myLineWidth);
 
     TH1D *h_pythia_XXT_1d = (TH1D *) h_pythia_XXT->ProjectionX("h_pythia_XXT_1d", ibin_pt, ibin_pt);
-    h_pythia_XXT_1d->SetMarkerStyle(1);
-    h_pythia_XXT_1d->SetMarkerColor(kBlue-3); 
-    h_pythia_XXT_1d->SetLineColor(kBlue-3);
-    h_pythia_XXT_1d->SetLineStyle(2);
-    h_pythia_XXT_1d->SetLineWidth(2);
-
     TH1D *h_pythia_inclusive_1d = (TH1D *) h_pythia_inclusive->ProjectionX("h_pythia_inclusive_1d", ibin_pt, ibin_pt);
-    h_pythia_inclusive_1d->SetMarkerStyle(1);
-    h_pythia_inclusive_1d->SetMarkerColor(kRed-3); 
-    h_pythia_inclusive_1d->SetLineColor(kRed-3);
-    h_pythia_inclusive_1d->SetLineStyle(6);
-    h_pythia_inclusive_1d->SetLineWidth(2);
 
     TH1D *h_herwig_XXT_1d = (TH1D *) h_herwig_XXT->ProjectionX("h_herwig_XXT_1d", ibin_pt, ibin_pt);
-    h_herwig_XXT_1d->SetMarkerStyle(1);
-    h_herwig_XXT_1d->SetMarkerColor(kBlue-3); 
-    h_herwig_XXT_1d->SetLineColor(kBlue-3);
-    h_herwig_XXT_1d->SetLineStyle(2);
-    h_herwig_XXT_1d->SetLineWidth(2);
-
     TH1D *h_herwig_inclusive_1d = (TH1D *) h_herwig_inclusive->ProjectionX("h_herwig_inclusive_1d", ibin_pt, ibin_pt);
-    h_herwig_inclusive_1d->SetMarkerStyle(1);
-    h_herwig_inclusive_1d->SetMarkerColor(kRed-3); 
-    h_herwig_inclusive_1d->SetLineColor(kRed-3);
-    h_herwig_inclusive_1d->SetLineStyle(6);
-    h_herwig_inclusive_1d->SetLineWidth(2);
+
+    TH1D *h_FSRup_XXT_1d = (TH1D *) h_FSRup_XXT->ProjectionX("h_FSRup_XXT_1d", ibin_pt, ibin_pt);
+    TH1D *h_FSRup_inclusive_1d = (TH1D *) h_FSRup_inclusive->ProjectionX("h_FSRup_inclusive_1d", ibin_pt, ibin_pt);
+
+    TH1D *h_FSRdown_XXT_1d = (TH1D *) h_FSRdown_XXT->ProjectionX("h_FSRdown_XXT_1d", ibin_pt, ibin_pt);
+    TH1D *h_FSRdown_inclusive_1d = (TH1D *) h_FSRdown_inclusive->ProjectionX("h_FSRdown_inclusive_1d", ibin_pt, ibin_pt);
 
     // Normalize histograms 
     int ibin_x_min = 1;
@@ -103,31 +110,35 @@ void draw_bjet_vs_incl(TString observable="rg")
     if (observable == "rg") ibin_x_max = h_data_XXT_1d->GetNbinsX() - 1;
 
     double labelOffset = h_data_XXT_1d->GetXaxis()->GetLabelOffset();
-    std::cout << labelOffset << std::endl;
+    // std::cout << labelOffset << std::endl;
     for (auto h : {
         h_data_XXT_1d, h_data_inclusive_1d,
         h_pythia_XXT_1d, h_pythia_inclusive_1d,
-        h_herwig_XXT_1d, h_herwig_inclusive_1d
+        h_herwig_XXT_1d, h_herwig_inclusive_1d,
+        h_FSRup_XXT_1d, h_FSRup_inclusive_1d,
+        h_FSRdown_XXT_1d, h_FSRdown_inclusive_1d,
     }) {
         h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
         h->Scale(1/h->Integral(ibin_x_min, ibin_x_max), "width");
-        if (observable=="zg") h->GetYaxis()->SetRangeUser(0, 6.);
-        else if (observable=="rg") h->GetYaxis()->SetRangeUser(0, 1.15);
-        else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 4.);
-        h->GetYaxis()->SetTitle(ylabel);
-        h->GetYaxis()->SetTitleOffset(1.5);
-        h->GetXaxis()->SetLabelOffset(10);
     }
 
     // Make ratios 
     TH1D *h_data_ratio_1d = (TH1D *) h_data_XXT_1d->Clone("h_data_ratio_1d");
     h_data_ratio_1d->Divide(h_data_inclusive_1d);
+    h_data_ratio_1d->SetMarkerColor(kBlack);
+    h_data_ratio_1d->SetLineColor(kBlack);
 
     TH1D *h_pythia_ratio_1d = (TH1D *) h_pythia_XXT_1d->Clone("h_pythia_ratio_1d");
     h_pythia_ratio_1d->Divide(h_pythia_inclusive_1d);
 
     TH1D *h_herwig_ratio_1d = (TH1D *) h_herwig_XXT_1d->Clone("h_herwig_ratio_1d");
     h_herwig_ratio_1d->Divide(h_herwig_inclusive_1d);
+
+    TH1D *h_FSRup_ratio_1d = (TH1D *) h_FSRup_XXT_1d->Clone("h_FSRup_ratio_1d");
+    h_FSRup_ratio_1d->Divide(h_FSRup_inclusive_1d);
+
+    TH1D *h_FSRdown_ratio_1d = (TH1D *) h_FSRdown_XXT_1d->Clone("h_FSRdown_ratio_1d");
+    h_FSRdown_ratio_1d->Divide(h_FSRdown_inclusive_1d);
 
     // Grab sys errors 
     TString fin_unc_XXT_name = "uncertanties/histos/total_unc_XXT_"+observable+".root";
@@ -202,9 +213,9 @@ void draw_bjet_vs_incl(TString observable="rg")
         // double dy_ratio_up = std::sqrt(y_ratio*y_ratio*((dy_XXT_up/y_XXT)*(dy_XXT_up/y_XXT)+(dy_inclusive_up/y_inclusive)*(dy_inclusive_up/y_inclusive)));
         // double dy_ratio_down = std::sqrt(y_ratio*y_ratio*((dy_XXT_down/y_XXT)*(dy_XXT_down/y_XXT)+(dy_inclusive_down/y_inclusive)*(dy_inclusive_down/y_inclusive)));
 
-        double dy_ratio_up = y_ratio*h_ratio_unc_up->GetBinContent(ibin_x);
+        double dy_ratio_up = y_ratio*h_ratio_unc_up->GetBinContent(ibin_x); // abs val
         double dy_ratio_down = dy_ratio_up;
-        std::cout << dy_ratio_up << std::endl;
+        // std::cout << dy_ratio_up << std::endl;
 
         points_x_ratio[index] = x_middle;
         points_y_ratio[index] = y_ratio;
@@ -218,19 +229,19 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     TGraphAsymmErrors *gr_unc_XXT = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_XXT, points_y_XXT, unc_left_XXT, unc_right_XXT, unc_down_XXT, unc_up_XXT);
     gr_unc_XXT->SetFillStyle(1001);
-    gr_unc_XXT->SetFillColorAlpha(kAzure-3, 0.1);
+    gr_unc_XXT->SetFillColorAlpha(cmsBlue, 0.1);
     gr_unc_XXT->SetMarkerSize(0);
     gr_unc_XXT->SetLineWidth(0);
 
     TGraphAsymmErrors *gr_unc_inclusive = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_inclusive, points_y_inclusive, unc_left_inclusive, unc_right_inclusive, unc_down_inclusive, unc_up_inclusive);
     gr_unc_inclusive->SetFillStyle(1001);
-    gr_unc_inclusive->SetFillColorAlpha(kRed-3, 0.1);
+    gr_unc_inclusive->SetFillColorAlpha(cmsRed, 0.1);
     gr_unc_inclusive->SetMarkerSize(0);
     gr_unc_inclusive->SetLineWidth(0);
 
     TGraphAsymmErrors *gr_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio, unc_left_ratio, unc_right_ratio, unc_down_ratio, unc_up_ratio);
     gr_unc_ratio->SetFillStyle(1001);
-    gr_unc_ratio->SetFillColorAlpha(kAzure-3, 0.1);
+    gr_unc_ratio->SetFillColorAlpha(kBlack, 0.1);
     gr_unc_ratio->SetMarkerSize(0);
     gr_unc_ratio->SetLineWidth(0);
 
@@ -241,62 +252,53 @@ void draw_bjet_vs_incl(TString observable="rg")
     // Make a clone of the data histograms for the legend entry
     TH1D *h_data_inclusive_legend = (TH1D *) h_data_inclusive_1d->Clone("h_data_inclusive_legend");
     h_data_inclusive_legend->SetFillStyle(1001);
-    h_data_inclusive_legend->SetFillColorAlpha(kRed-3, 0.1);
+    h_data_inclusive_legend->SetFillColorAlpha(cmsRed, 0.1);
     // h_data_inclusive_legend->SetLineWidth(1);
 
     TH1D *h_data_XXT_legend = (TH1D *) h_data_XXT_1d->Clone("h_data_XXT_legend");
     h_data_XXT_legend->SetFillStyle(1001);
-    h_data_XXT_legend->SetFillColorAlpha(kAzure-3, 0.1);
+    h_data_XXT_legend->SetFillColorAlpha(cmsBlue, 0.1);
 
     // Make a legend
-    TLegend *leg = new TLegend(0.6, 0.6, 0.8, 0.8);
+    TLegend *leg = new TLegend(0.2, 0.1, 0.5, 0.3);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
-    leg->SetMargin(0.15);
+    leg->SetMargin(0.2);
 
     leg->AddEntry(h_data_inclusive_legend, "Inclusive jets", "pe1fl");
-    leg->AddEntry(h_data_XXT_legend, "Single b jets", "pe1fl");
-    // leg->AddEntry(h_pythia_inclusive_1d, "PYTHIA8 CP5 inclusive jets", "l");
-    // leg->AddEntry(h_pythia_XXT_1d, "PYTHIA8 CP5 single b jets", "l");
+    leg->AddEntry(h_data_XXT_legend, "b jets", "pe1fl");
 
-    for (auto h : {
-        h_data_ratio_1d, 
-        h_pythia_ratio_1d, 
-    }) {
-        h->GetYaxis()->SetRangeUser(0., 1.8);
-        h->GetYaxis()->SetNdivisions(10);
-        if (observable=="zg") {
-            h->GetYaxis()->SetRangeUser(0.4, 1.5);
-            h->GetYaxis()->SetNdivisions(8);
-        }
-        h->GetYaxis()->SetTitle("Single b / inclusive");
-        h->GetYaxis()->SetTitleOffset(1.5);
-        h->GetXaxis()->SetTitle(xlabel);
-        h->GetXaxis()->SetLabelOffset(labelOffset);
-        h->GetXaxis()->SetTitleOffset(3.5);
-    }
+    // Create canvas 
+    TCanvas *c_result = new TCanvas("c_result", "", 750, 900);
+    TPad *top_pad = new TPad("top_pad", "", 0., 0.4, 1., 1.);
+    TPad *bottom_pad = new TPad("bottom_pad", "", 0., 0., 1., 0.4);
 
-    // Draw 
-    TCanvas *c_result = new TCanvas("c_result", "", 800, 600);
-    std::cout << c_result->UseGL() << std::endl;
-    TPad *top_pad = new TPad("top_pad", "", 0., 0.33, 1., 1.);
-    TPad *bottom_pad = new TPad("top_pad", "", 0., 0., 1., 0.33);
-
+    top_pad->SetLeftMargin(0.15);
+    top_pad->SetRightMargin(0.05);
+    bottom_pad->SetLeftMargin(0.15);
+    bottom_pad->SetRightMargin(0.05);
+    
     top_pad->SetBottomMargin(0.03);
     bottom_pad->SetTopMargin(0.04);
-    bottom_pad->SetBottomMargin(0.3);
+    bottom_pad->SetBottomMargin(0.45);
 
     // top_pad->SetGridy();
     // bottom_pad->SetGridy();
 
-    top_pad->cd();
+    // Fix appearence 
+    if (observable=="zg") h_data_XXT_1d->GetYaxis()->SetRangeUser(0, 6.);
+    else if (observable=="rg") h_data_XXT_1d->GetYaxis()->SetRangeUser(0, 1.15);
+    else if (observable=="zpt") h_data_XXT_1d->GetYaxis()->SetRangeUser(0, 4.);
+    h_data_XXT_1d->GetYaxis()->SetTitle(ylabel);
+    h_data_XXT_1d->GetYaxis()->SetTitleOffset(1.5);
+    h_data_XXT_1d->GetXaxis()->SetLabelOffset(20);
     
+    // Draw
+    top_pad->cd();
     h_data_XXT_1d->Draw("pe1 same");
     gr_unc_XXT->Draw("e2 same");
     gr_unc_inclusive->Draw("e2 same");
     h_data_XXT_1d->Draw("pe1 same");
-    // h_pythia_inclusive_1d->Draw("hist same");
-    // h_pythia_XXT_1d->Draw("hist same");
     h_data_inclusive_1d->Draw("pe1 same");
     
     leg->Draw();
@@ -305,19 +307,45 @@ void draw_bjet_vs_incl(TString observable="rg")
     // Jets text
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
-    jet_info->SetTextSize(20);
-     jet_info->DrawLatex(0.2, 0.28, "anti-k_{T}, R=0.4 jets");
-    jet_info->DrawLatex(0.2, 0.2, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    jet_info->DrawLatex(0.2, 0.12, "k_{T} > 1 GeV");
-    jet_info->Draw();
+    jet_info->SetTextSize(text_size);
+    jet_info->SetTextAlign(32);
+    jet_info->DrawLatex(0.92, 0.83, "anti-k_{T}, R = 0.4 jets");
+    jet_info->DrawLatex(0.92, 0.76, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.92, 0.69, "Soft drop (charged particles)");
+    jet_info->DrawLatex(0.92, 0.62, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
 
+    // Fix appearence of bottom panel
+    h_data_ratio_1d->GetYaxis()->SetTitle("b / inclusive jets");
+    h_data_ratio_1d->GetYaxis()->SetRangeUser(0., 2);
+    if (observable=="zg") h_data_ratio_1d->GetYaxis()->SetRangeUser(0.3, 1.6);
+    h_data_ratio_1d->GetYaxis()->SetNdivisions(505);    
+    h_data_ratio_1d->GetXaxis()->SetTitle(xlabel);
+    h_data_ratio_1d->GetXaxis()->SetTitleOffset(1.);
+    h_data_ratio_1d->GetXaxis()->SetLabelOffset(labelOffset);
+
+    // Draw
     bottom_pad->cd();
     h_data_ratio_1d->Draw("pe1 same");
     gr_unc_ratio->Draw("e2 same");
     line->Draw();
-    // h_pythia_ratio_1d->Draw("pe1 same");
     h_data_ratio_1d->Draw("pe1 same");
 
+    if (observable=="rg") {
+        auto axis5 = new TGaxis(2.1, -0.8, 0. ,-0.8, 0.048982571, 0.4, 510,"NIGS-");
+        axis5->SetTitle("R_{g}");
+        axis5->CenterTitle();
+        axis5->SetTitleFont(43);
+        axis5->SetTitleSize(text_size);
+        axis5->SetTitleOffset(1.2);
+        axis5->SetLabelFont(43);
+        axis5->SetLabelSize(text_size);
+        axis5->SetLabelOffset(0.12);
+        axis5->SetTickSize(0.05);
+        axis5->SetMoreLogLabels(); // add the secondary tick labels
+        axis5->ChangeLabel(510,-1,-1,-1,-1,-1,"this");
+        axis5->SetNoExponent();
+        axis5->Draw("same");
+    }
 
     c_result->cd();
     top_pad->Draw();
@@ -327,15 +355,16 @@ void draw_bjet_vs_incl(TString observable="rg")
     c_result->Print("plots_an/bjet_vs_incl_"+observable+".pdf");
     c_result->Print("plots_an/bjet_vs_incl_"+observable+".png");
 
-    // New canvas only with ratio 
+    // -----------------------------------------------
+    // -------- New canvas only with ratio -----------
+    // -----------------------------------------------
+
     TH1D * h_data_ratio_1d_clone = (TH1D *) h_data_ratio_1d->Clone("h_data_ratio_1d_clone");
     h_data_ratio_1d_clone->SetMarkerStyle(kFullCircle);
     h_data_ratio_1d_clone->SetMarkerSize(1);
     h_data_ratio_1d_clone->SetMarkerColor(kBlack); 
     h_data_ratio_1d_clone->SetLineColor(kBlack);
     h_data_ratio_1d_clone->SetLineWidth(1);
-    h_data_ratio_1d_clone->GetXaxis()->SetTitle(xlabel);
-    h_data_ratio_1d_clone->GetXaxis()->SetTitleOffset(1.5);
 
     TH1D *h_data_ratio_legend = (TH1D *) h_data_ratio_1d_clone->Clone("h_data_ratio_legend");
     h_data_ratio_legend->SetFillStyle(1001);
@@ -349,46 +378,161 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     TH1D *h_pythia_ratio_1d_clone = (TH1D *) h_pythia_ratio_1d->Clone("h_pythia_ratio_1d_clone");
     h_pythia_ratio_1d_clone->SetMarkerStyle(1);
-    h_pythia_ratio_1d_clone->SetMarkerColor(kOrange-3); 
-    h_pythia_ratio_1d_clone->SetLineColor(kOrange-3);
+    h_pythia_ratio_1d_clone->SetMarkerColor(cmsRed); 
+    h_pythia_ratio_1d_clone->SetLineColor(cmsRed);
     h_pythia_ratio_1d_clone->SetLineStyle(9);
-    h_pythia_ratio_1d_clone->SetLineWidth(2);
+    h_pythia_ratio_1d_clone->SetLineWidth(3);
 
     TH1D *h_herwig_ratio_1d_clone = (TH1D *) h_herwig_ratio_1d->Clone("h_herwig_ratio_1d_clone");
     h_herwig_ratio_1d_clone->SetMarkerStyle(1);
-    h_herwig_ratio_1d_clone->SetMarkerColor(kAzure-3); 
-    h_herwig_ratio_1d_clone->SetLineColor(kAzure-3);
-    h_herwig_ratio_1d_clone->SetLineStyle(7);
-    h_herwig_ratio_1d_clone->SetLineWidth(2);
+    h_herwig_ratio_1d_clone->SetMarkerColor(cmsBlue); 
+    h_herwig_ratio_1d_clone->SetLineColor(cmsBlue);
+    h_herwig_ratio_1d_clone->SetLineStyle(8);
+    h_herwig_ratio_1d_clone->SetLineWidth(3);
 
-    TLegend *leg_ratio = new TLegend(0.6, 0.7, 0.8, 0.85);
+    TH1D *h_FSRup_ratio_1d_clone = (TH1D *) h_FSRup_ratio_1d->Clone("h_FSRup_ratio_1d_clone");
+    h_FSRup_ratio_1d_clone->SetMarkerStyle(1);
+    h_FSRup_ratio_1d_clone->SetMarkerColor(cmsOrange); 
+    h_FSRup_ratio_1d_clone->SetLineColor(cmsOrange);
+    h_FSRup_ratio_1d_clone->SetLineStyle(7);
+    h_FSRup_ratio_1d_clone->SetLineWidth(3);
+
+    TH1D *h_FSRdown_ratio_1d_clone = (TH1D *) h_FSRdown_ratio_1d->Clone("h_FSRdown_ratio_1d_clone");
+    h_FSRdown_ratio_1d_clone->SetMarkerStyle(1);
+    h_FSRdown_ratio_1d_clone->SetMarkerColor(cmsYellow); 
+    h_FSRdown_ratio_1d_clone->SetLineColor(cmsYellow);
+    h_FSRdown_ratio_1d_clone->SetLineStyle(6);
+    h_FSRdown_ratio_1d_clone->SetLineWidth(3);
+
+    // Calculate ratio MC/data of bjet/inclusive
+    Double_t points_y_ratio2[20];
+    Double_t total_unc_up_ratio[20];
+    Double_t total_unc_down_ratio[20];
+    index = 0;
+    for (int ibin_x=ibin_x_min; ibin_x<=ibin_x_max; ibin_x++) {
+        double y = h_data_ratio_1d_clone->GetBinContent(ibin_x);
+        double stat_unc = h_data_ratio_1d_clone->GetBinError(ibin_x);
+        double syst_unc = unc_up_ratio[index];
+        double total_unc = std::sqrt((stat_unc*stat_unc)+(syst_unc*syst_unc));
+
+        total_unc_up_ratio[index] = total_unc / y; // rel val
+        total_unc_down_ratio[index] = total_unc / y;
+
+        points_y_ratio2[index] = 1.;
+
+        index++;
+    }
+
+    TH1D *h_pythia_ratio_to_data = (TH1D *) h_pythia_ratio_1d_clone->Clone("h_pythia_ratio_to_data");
+    h_pythia_ratio_to_data->Divide(h_data_ratio_1d_clone);
+
+    TH1D *h_herwig_ratio_to_data = (TH1D *) h_herwig_ratio_1d_clone->Clone("h_herwig_ratio_to_data");
+    h_herwig_ratio_to_data->Divide(h_data_ratio_1d_clone);
+
+    TH1D *h_FSRup_ratio_to_data = (TH1D *) h_FSRup_ratio_1d_clone->Clone("h_FSRup_ratio_to_data");
+    h_FSRup_ratio_to_data->Divide(h_data_ratio_1d_clone);
+
+    TH1D *h_FSRdown_ratio_to_data = (TH1D *) h_FSRdown_ratio_1d_clone->Clone("h_FSRdown_ratio_to_data");
+    h_FSRdown_ratio_to_data->Divide(h_data_ratio_1d_clone);
+
+    TGraphAsymmErrors *gr_total_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio2, unc_left_ratio, unc_right_ratio, total_unc_down_ratio, total_unc_up_ratio);
+    gr_total_unc_ratio->SetFillStyle(1001);
+    gr_total_unc_ratio->SetFillColorAlpha(kBlack, 0.1);
+    gr_total_unc_ratio->SetMarkerSize(0);
+    gr_total_unc_ratio->SetLineWidth(0);
+    gr_total_unc_ratio->SetLineColorAlpha(kBlack, 0.);
+
+    TLegend *leg_ratio = new TLegend(0.18, 0.05, 0.5, 0.3);
     leg_ratio->SetBorderSize(0);
     leg_ratio->SetFillStyle(0);
     leg_ratio->SetMargin(0.15);
 
     leg_ratio->AddEntry(h_data_ratio_legend, "Data", "pe1fl");
     leg_ratio->AddEntry(h_pythia_ratio_1d_clone, "PYTHIA8 CP5", "l");
+    leg_ratio->AddEntry(h_FSRup_ratio_1d_clone, "PYTHIA8 CP5 FSR up", "l");
+    leg_ratio->AddEntry(h_FSRdown_ratio_1d_clone, "PYTHIA8 CP5 FSR down", "l");
     leg_ratio->AddEntry(h_herwig_ratio_1d_clone, "HERWIG7 CH3", "l");
-
     
-    TCanvas *c_ratio = new TCanvas("c_ratio", "", 800, 600);
+    TCanvas *c_ratio = new TCanvas("c_ratio", "", 750, 900);
+    TPad *top_pad_ratio = new TPad("top_pad_ratio", "", 0., 0.4, 1., 1.);
+    TPad *bottom_pad_ratio = new TPad("bottom_pad_ratio", "", 0., 0., 1., 0.4);
+
+    top_pad_ratio->SetLeftMargin(0.15);
+    top_pad_ratio->SetRightMargin(0.05);
+    bottom_pad_ratio->SetLeftMargin(0.15);
+    bottom_pad_ratio->SetRightMargin(0.05);
+    
+    top_pad_ratio->SetBottomMargin(0.03);
+    bottom_pad_ratio->SetTopMargin(0.04);
+    bottom_pad_ratio->SetBottomMargin(0.45);
+
+    // Fix appearence 
+    h_data_ratio_1d_clone->GetXaxis()->SetTitle(xlabel);
+    h_data_ratio_1d_clone->GetXaxis()->SetTitleOffset(1.5);
+    h_data_ratio_1d_clone->GetXaxis()->SetLabelOffset(20);
+    h_data_ratio_1d_clone->GetYaxis()->SetTitle("b jets / inclusive jets");
+    h_data_ratio_1d_clone->GetYaxis()->SetNdivisions(510);
+
+    // Draw
+    top_pad_ratio->cd();
     h_data_ratio_1d_clone->Draw("pe1 same");
     gr_unc_ratio_clone->Draw("e2 same");
     line->Draw();
     h_data_ratio_1d_clone->Draw("pe1 same");
     h_pythia_ratio_1d_clone->Draw("hist same");
     h_herwig_ratio_1d_clone->Draw("hist same");
+    h_FSRup_ratio_1d_clone->Draw("hist same");
+    h_FSRdown_ratio_1d_clone->Draw("hist same");
     leg_ratio->Draw();
     drawHeader();
 
     TLatex *jet_info2 = new TLatex;
     jet_info2->SetNDC();
-    jet_info2->SetTextSize(20);
-    jet_info2->DrawLatex(0.22, 0.3, "anti-k_{T}, R=0.4 jets");
-    jet_info2->DrawLatex(0.22, 0.25, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    jet_info2->DrawLatex(0.22, 0.2, "k_{T} > 1 GeV");
-    jet_info2->Draw();
+    jet_info2->SetTextSize(text_size);
+    jet_info2->SetTextAlign(30);
+    jet_info2->DrawLatex(0.92, 0.81, "anti-k_{T}, R = 0.4 jets");
+    jet_info2->DrawLatex(0.92, 0.74, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info2->DrawLatex(0.92, 0.67, "Soft drop (charged particles)");
+    jet_info2->DrawLatex(0.92, 0.6, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
 
+    // Fix appearence 
+    h_pythia_ratio_to_data->GetXaxis()->SetLabelOffset(labelOffset);
+    h_pythia_ratio_to_data->GetXaxis()->SetTitle(xlabel);
+    h_pythia_ratio_to_data->GetXaxis()->SetTitleOffset(1.);
+    h_pythia_ratio_to_data->GetYaxis()->SetRangeUser(0., 2.);
+    if (observable=="zg") h_pythia_ratio_to_data->GetYaxis()->SetRangeUser(0.4, 1.6);
+    h_pythia_ratio_to_data->GetYaxis()->SetNdivisions(505);
+    h_pythia_ratio_to_data->GetYaxis()->SetTitle("Ratio to data");
+
+    // Draw
+    bottom_pad_ratio->cd();
+    h_pythia_ratio_to_data->Draw("hist");
+    line->Draw();
+    gr_total_unc_ratio->Draw("e2 same");
+    h_pythia_ratio_to_data->Draw("hist same");
+    h_herwig_ratio_to_data->Draw("hist same");
+    h_FSRup_ratio_to_data->Draw("hist same");
+    h_FSRdown_ratio_to_data->Draw("hist same");
+
+    if (observable=="rg") {
+        auto axis6 = new TGaxis(2.1, -0.85, 0. ,-0.85, 0.048982571, 0.4, 510,"NIGS-");
+        axis6->SetTitle("R_{g}");
+        axis6->CenterTitle();
+        axis6->SetTitleFont(43);
+        axis6->SetTitleSize(text_size);
+        axis6->SetTitleOffset(1.);
+        axis6->SetLabelFont(43);
+        axis6->SetLabelSize(text_size);
+        axis6->SetLabelOffset(0.12);
+        axis6->SetTickSize(0.05);
+        axis6->SetMoreLogLabels(); // add the secondary tick labels
+        axis6->SetNoExponent();
+        axis6->Draw("same");
+    }
+
+    c_ratio->cd();
+    top_pad_ratio->Draw();
+    bottom_pad_ratio->Draw();
     c_ratio->Draw();
     c_ratio->Print("plots_an/bjet_vs_incl_"+observable+"_ratio.pdf");
     c_ratio->Print("plots_an/bjet_vs_incl_"+observable+"_ratio.png");
