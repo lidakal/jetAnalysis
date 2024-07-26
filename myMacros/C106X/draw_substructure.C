@@ -1,4 +1,5 @@
 #include "draw_utils.h"
+#include "cms_palette.h"
 
 void draw_info()
 {
@@ -12,7 +13,7 @@ void draw_info()
     lumi->SetNDC();
     lumi->SetTextSize(28);
     lumi->SetTextAlign(32);
-    lumi->DrawLatex(0.82, 0.96, "PYTHIA8 CP5 (pp 5.02 TeV)");
+    lumi->DrawLatex(0.84, 0.96, "PYTHIA8 CP5 (pp 5.02 TeV)");
 }
 
 void draw_substructure(TString observable="rg")
@@ -27,10 +28,10 @@ void draw_substructure(TString observable="rg")
     gStyle->SetPalette(57);
 
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(R/^{}R_{g})";
+    if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
-    TString label = "noAggr_withPNET";
+    TString label = "aggrGenNoReco_withPNET";
     TString sample = "bjet";
     TString fin_name = "./histos/" + sample + "_" + label + "_substructure.root"; 
     std::cout << "fin: " << fin_name << std::endl;
@@ -49,7 +50,7 @@ void draw_substructure(TString observable="rg")
     hSingleB_gen->GetYaxis()->SetRangeUser(-2., 3.);
 
     TCanvas *c_SingleB_gen = new TCanvas("c_SingleB_gen", "Truth level lund plane no tag", 1000, 700);
-    c_SingleB_gen->SetRightMargin(0.18);
+    c_SingleB_gen->SetRightMargin(0.16);
     c_SingleB_gen->SetLeftMargin(0.12);
     c_SingleB_gen->SetTopMargin(0.07);
     c_SingleB_gen->SetBottomMargin(0.12);
@@ -63,15 +64,15 @@ void draw_substructure(TString observable="rg")
     jet_info->SetNDC();
     jet_info->SetTextSize(text_size);
     jet_info->SetTextAlign(32);
-    jet_info->DrawLatex(0.795, 0.82, "Particle level anti-k_{T}, R=0.4 b jets");
-    jet_info->DrawLatex(0.795, 0.77, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    jet_info->DrawLatex(0.795, 0.72, "Soft drop (charged particles)");
-    jet_info->DrawLatex(0.795, 0.67, "z_{cut} = 0.1, #beta = 0");
+    jet_info->DrawLatex(0.81, 0.82, "Particle level anti-k_{T}, R = 0.4 b jets");
+    jet_info->DrawLatex(0.81, 0.77, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.81, 0.72, "Soft drop (charged particles)");
+    jet_info->DrawLatex(0.81, 0.67, "z_{cut} = 0.1, #beta = 0");
     if (label.Contains("aggr")) {
-        auto txt1 = jet_info->DrawLatex(0.795, 0.87, "Clustered b hadron decay daughters");
+        auto txt1 = jet_info->DrawLatex(0.81, 0.87, "Clustered b hadron decay daughters");
         // txt1->SetTextColor(kWhite);
     } else {
-        auto txt1 = jet_info->DrawLatex(0.795, 0.87, "Unclustered b hadron decay daughters");
+        auto txt1 = jet_info->DrawLatex(0.81, 0.87, "Unclustered b hadron decay daughters");
         // txt1->SetTextColor(kWhite);
     }
 
@@ -96,45 +97,67 @@ void draw_substructure(TString observable="rg")
     c_SingleB_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_vs_kt.png");
 
     // Draw gen vs reco 
-    // TH2F *hSingleBtag_reco_vs_gen = (TH2F *) fin->Get("hSingleBtag_"+observable+"_reco_vs_gen");
-    // int nbins_x = hSingleBtag_reco_vs_gen->GetNbinsX();
-    // int nbins_y = hSingleBtag_reco_vs_gen->GetNbinsY();
-    // for (int iy=1; iy<=nbins_y; iy++) {
-    //     double integral = hSingleBtag_reco_vs_gen->Integral(1, nbins_x, iy, iy);
-    //     for (int ix=1; ix<=nbins_x; ix++) {
-    //         double content = hSingleBtag_reco_vs_gen->GetBinContent(ix, iy);
-    //         hSingleBtag_reco_vs_gen->SetBinContent(ix, iy, content/integral);
-    //     }
-    // }
-    // hSingleBtag_reco_vs_gen->GetXaxis()->SetTitle("Detector level "+xlabel);
-    // hSingleBtag_reco_vs_gen->GetYaxis()->SetTitle("Particle level "+xlabel);
-    // hSingleBtag_reco_vs_gen->GetYaxis()->SetTitleOffset(1.2);
-    // hSingleBtag_reco_vs_gen->GetZaxis()->SetTitle("normalized per particle level bin");
-    // hSingleBtag_reco_vs_gen->GetZaxis()->SetTitleOffset(1.5);
-    // hSingleBtag_reco_vs_gen->GetZaxis()->SetRangeUser(0.,1.);
+    TH2F *hSingleBtag_reco_vs_gen = (TH2F *) fin->Get("hSingleBtag_"+observable+"_reco_vs_gen");
+    int nbins_x = hSingleBtag_reco_vs_gen->GetNbinsX();
+    int nbins_y = hSingleBtag_reco_vs_gen->GetNbinsY();
+    for (int iy=1; iy<=nbins_y; iy++) {
+        double integral = hSingleBtag_reco_vs_gen->Integral(1, nbins_x, iy, iy);
+        for (int ix=1; ix<=nbins_x; ix++) {
+            double content = hSingleBtag_reco_vs_gen->GetBinContent(ix, iy);
+            hSingleBtag_reco_vs_gen->SetBinContent(ix, iy, content/integral);
+        }
+    }
+    hSingleBtag_reco_vs_gen->GetXaxis()->SetTitle("Detector level^{} "+xlabel);
+    hSingleBtag_reco_vs_gen->GetYaxis()->SetTitle("Particle level^{} "+xlabel);
+    hSingleBtag_reco_vs_gen->GetYaxis()->SetTitleOffset(1.5);
+    hSingleBtag_reco_vs_gen->GetZaxis()->SetTitle("Migration probability");
+    hSingleBtag_reco_vs_gen->GetZaxis()->SetTitleOffset(1.3);
+    hSingleBtag_reco_vs_gen->GetZaxis()->SetRangeUser(0.,1.);
+    hSingleBtag_reco_vs_gen->GetXaxis()->SetRangeUser(0.,3.);
+    hSingleBtag_reco_vs_gen->GetYaxis()->SetRangeUser(0.,3.);
 
-    // TCanvas *c_SingleBtag_reco_vs_gen = new TCanvas("c_SingleBtag_reco_vs_gen", "x=reco,y=gen", 800, 600);
-    // c_SingleBtag_reco_vs_gen->SetRightMargin(0.2);
-    // hSingleBtag_reco_vs_gen->Draw("colz");
+    TCanvas *c_SingleBtag_reco_vs_gen = new TCanvas("c_SingleBtag_reco_vs_gen", "x=reco,y=gen", 1000, 700);
+    c_SingleBtag_reco_vs_gen->SetRightMargin(0.18);
+    c_SingleBtag_reco_vs_gen->SetLeftMargin(0.12);
+    c_SingleBtag_reco_vs_gen->SetTopMargin(0.07);
+    c_SingleBtag_reco_vs_gen->SetBottomMargin(0.12);
+    hSingleBtag_reco_vs_gen->Draw("colz");
 
     // TLatex *jet_info2 = new TLatex;
     // jet_info2->SetNDC();
     // jet_info2->SetTextSize(text_size);
-    // jet_info2->DrawLatex(0.63, 0.35, "Particle level");
-    // jet_info2->DrawLatex(0.39, 0.3, "anti-k_{T}, R=0.4 b-tagged single b jets");
-    // jet_info2->DrawLatex(0.45, 0.25, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    // jet_info2->DrawLatex(0.53, 0.2, "Charged particles only");
-    // auto txt11 = jet_info2->DrawLatex(0.2, 0.8, "b hadron decay products");
-    // txt11->SetTextColor(kRed);
-    // TString bdecay2;
-    // if (label.Contains("aggrTMVA")) bdecay2 = "aggregated for both axes";
-    // else if (label.Contains("aggrGenNoReco")) bdecay2 = "aggregated for particle level";
-    // else bdecay2 = "present for both axes";
-    // auto txt22 = jet_info2->DrawLatex(0.2, 0.75, bdecay2);
-    // txt22->SetTextColor(kRed);
-    // jet_info2->Draw();
+    // jet_info2->SetTextColor(kBlack);
+    // jet_info2->SetTextAlign(12);
+    // // jet_info2->SetTextFont(63);
+    // jet_info2->DrawLatex(0.15, 0.85, "anti-k_{T}, R = 0.4 b-tagged b jets");
+    // jet_info2->DrawLatex(0.15, 0.79, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    // jet_info2->DrawLatex(0.15, 0.73, "Soft drop (charged particles)");
+    // jet_info2->DrawLatex(0.15, 0.67, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
 
-    // draw_info();
+    TLatex *jet_info4 = new TLatex;
+    jet_info4->SetNDC();
+    jet_info4->SetTextSize(text_size);
+    jet_info4->SetTextColor(kWhite);
+    jet_info4->SetTextAlign(12);
+    jet_info4->SetTextFont(43);
+    jet_info4->DrawLatex(0.15, 0.85, "anti-k_{T}, R = 0.4 b-tagged b jets");
+    jet_info4->DrawLatex(0.15, 0.79, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info4->DrawLatex(0.15, 0.73, "Soft drop (charged particles)");
+    jet_info4->DrawLatex(0.15, 0.67, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+
+    TLatex *jet_info3 = new TLatex;
+    jet_info3->SetNDC();
+    jet_info3->SetTextSize(text_size);
+    jet_info3->SetTextColor(kWhite);
+    jet_info3->SetTextAlign(32);
+    jet_info3->DrawLatex(0.8, 0.25, "b hadron decay daughters");
+    TString bdecay2;
+    if (label.Contains("aggrTMVA")) bdecay2 = "clustered on both levels";
+    else if (label.Contains("aggrGenNoReco")) bdecay2 = "clustered only on particle level";
+    else bdecay2 = "not clustered on both levels";
+    jet_info3->DrawLatex(0.8, 0.2, bdecay2);
+
+    draw_info();
 
     // c_SingleBtag_reco_vs_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.pdf");
     // c_SingleBtag_reco_vs_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.png");
