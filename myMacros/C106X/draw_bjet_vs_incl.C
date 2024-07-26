@@ -81,14 +81,14 @@ void draw_bjet_vs_incl(TString observable="rg")
     TH1D *h_data_XXT_1d = (TH1D *) h_data_XXT->ProjectionX("h_data_XXT_1d", ibin_pt, ibin_pt);
     h_data_XXT_1d->SetMarkerStyle(kFullCircle);
     h_data_XXT_1d->SetMarkerSize(1);
-    h_data_XXT_1d->SetMarkerColor(cmsBlue); 
-    h_data_XXT_1d->SetLineColor(cmsBlue);
+    h_data_XXT_1d->SetMarkerColor(cmsRed); 
+    h_data_XXT_1d->SetLineColor(cmsRed);
     h_data_XXT_1d->SetLineWidth(myLineWidth);
 
     TH1D *h_data_inclusive_1d = (TH1D *) h_data_inclusive->ProjectionX("h_data_inclusive_1d", ibin_pt, ibin_pt);
     h_data_inclusive_1d->SetMarkerStyle(myOpenSquare);
-    h_data_inclusive_1d->SetMarkerColor(cmsRed); 
-    h_data_inclusive_1d->SetLineColor(cmsRed);
+    h_data_inclusive_1d->SetMarkerColor(cmsBlue); 
+    h_data_inclusive_1d->SetLineColor(cmsBlue);
     h_data_inclusive_1d->SetLineWidth(myLineWidth);
 
     TH1D *h_pythia_XXT_1d = (TH1D *) h_pythia_XXT->ProjectionX("h_pythia_XXT_1d", ibin_pt, ibin_pt);
@@ -229,13 +229,13 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     TGraphAsymmErrors *gr_unc_XXT = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_XXT, points_y_XXT, unc_left_XXT, unc_right_XXT, unc_down_XXT, unc_up_XXT);
     gr_unc_XXT->SetFillStyle(1001);
-    gr_unc_XXT->SetFillColorAlpha(cmsBlue, 0.1);
+    gr_unc_XXT->SetFillColorAlpha(cmsRed, 0.1);
     gr_unc_XXT->SetMarkerSize(0);
     gr_unc_XXT->SetLineWidth(0);
 
     TGraphAsymmErrors *gr_unc_inclusive = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_inclusive, points_y_inclusive, unc_left_inclusive, unc_right_inclusive, unc_down_inclusive, unc_up_inclusive);
     gr_unc_inclusive->SetFillStyle(1001);
-    gr_unc_inclusive->SetFillColorAlpha(cmsRed, 0.1);
+    gr_unc_inclusive->SetFillColorAlpha(cmsBlue, 0.1);
     gr_unc_inclusive->SetMarkerSize(0);
     gr_unc_inclusive->SetLineWidth(0);
 
@@ -252,12 +252,12 @@ void draw_bjet_vs_incl(TString observable="rg")
     // Make a clone of the data histograms for the legend entry
     TH1D *h_data_inclusive_legend = (TH1D *) h_data_inclusive_1d->Clone("h_data_inclusive_legend");
     h_data_inclusive_legend->SetFillStyle(1001);
-    h_data_inclusive_legend->SetFillColorAlpha(cmsRed, 0.1);
+    h_data_inclusive_legend->SetFillColorAlpha(cmsBlue, 0.1);
     // h_data_inclusive_legend->SetLineWidth(1);
 
     TH1D *h_data_XXT_legend = (TH1D *) h_data_XXT_1d->Clone("h_data_XXT_legend");
     h_data_XXT_legend->SetFillStyle(1001);
-    h_data_XXT_legend->SetFillColorAlpha(cmsBlue, 0.1);
+    h_data_XXT_legend->SetFillColorAlpha(cmsRed, 0.1);
 
     // Make a legend
     TLegend *leg = new TLegend(0.2, 0.1, 0.5, 0.3);
@@ -265,8 +265,8 @@ void draw_bjet_vs_incl(TString observable="rg")
     leg->SetFillStyle(0);
     leg->SetMargin(0.2);
 
-    leg->AddEntry(h_data_inclusive_legend, "Inclusive jets", "pe1fl");
-    leg->AddEntry(h_data_XXT_legend, "b jets", "pe1fl");
+    leg->AddEntry(h_data_inclusive_legend, "Inclusive jets", "lfpe");
+    leg->AddEntry(h_data_XXT_legend, "b jets", "lfpe");
 
     // Create canvas 
     TCanvas *c_result = new TCanvas("c_result", "", 750, 900);
@@ -300,6 +300,8 @@ void draw_bjet_vs_incl(TString observable="rg")
     gr_unc_inclusive->Draw("e2 same");
     h_data_XXT_1d->Draw("pe1 same");
     h_data_inclusive_1d->Draw("pe1 same");
+    h_data_inclusive_legend->Draw("SAME_E1_][P0");
+    h_data_XXT_legend->Draw("SAME_E1_][P0");
     
     leg->Draw();
     drawHeader();
@@ -437,7 +439,7 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     TGraphAsymmErrors *gr_total_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio2, unc_left_ratio, unc_right_ratio, total_unc_down_ratio, total_unc_up_ratio);
     gr_total_unc_ratio->SetFillStyle(1001);
-    gr_total_unc_ratio->SetFillColorAlpha(kBlack, 0.1);
+    gr_total_unc_ratio->SetFillColorAlpha(49, 0.1);
     gr_total_unc_ratio->SetMarkerSize(0);
     gr_total_unc_ratio->SetLineWidth(0);
     gr_total_unc_ratio->SetLineColorAlpha(kBlack, 0.);
@@ -447,11 +449,19 @@ void draw_bjet_vs_incl(TString observable="rg")
     leg_ratio->SetFillStyle(0);
     leg_ratio->SetMargin(0.15);
 
-    leg_ratio->AddEntry(h_data_ratio_legend, "Data", "pe1fl");
-    leg_ratio->AddEntry(h_pythia_ratio_1d_clone, "PYTHIA8 CP5", "l");
-    leg_ratio->AddEntry(h_FSRup_ratio_1d_clone, "PYTHIA8 CP5 FSR up", "l");
-    leg_ratio->AddEntry(h_FSRdown_ratio_1d_clone, "PYTHIA8 CP5 FSR down", "l");
-    leg_ratio->AddEntry(h_herwig_ratio_1d_clone, "HERWIG7 CH3", "l");
+    leg_ratio->AddEntry(h_data_ratio_legend, "Data", "lepf");
+    leg_ratio->AddEntry(h_pythia_ratio_1d_clone, "Pythia8 CP5", "l");
+    leg_ratio->AddEntry(h_FSRup_ratio_1d_clone, "Pythia8 CP5 FSR up", "l");
+    leg_ratio->AddEntry(h_FSRdown_ratio_1d_clone, "Pythia8 CP5 FSR down", "l");
+    leg_ratio->AddEntry(h_herwig_ratio_1d_clone, "Herwig7 CH3", "l");
+
+    // legend for uncertainties in ratio plot
+    TLegend *leg_ratio_to_data; // keep height=0.09, width=0.19
+    leg_ratio_to_data = new TLegend(0.18, 0.81, 0.37, 0.9);
+    leg_ratio_to_data->SetBorderSize(0);
+    leg_ratio_to_data->SetFillStyle(0);
+    leg_ratio_to_data->SetMargin(0.2);
+    leg_ratio_to_data->AddEntry(gr_total_unc_ratio, "Syst.#oplusStat.", "fl");
     
     TCanvas *c_ratio = new TCanvas("c_ratio", "", 750, 900);
     TPad *top_pad_ratio = new TPad("top_pad_ratio", "", 0., 0.4, 1., 1.);
@@ -483,6 +493,7 @@ void draw_bjet_vs_incl(TString observable="rg")
     h_herwig_ratio_1d_clone->Draw("hist same");
     h_FSRup_ratio_1d_clone->Draw("hist same");
     h_FSRdown_ratio_1d_clone->Draw("hist same");
+    h_data_ratio_legend->Draw("SAME_E1_][P0");
     leg_ratio->Draw();
     drawHeader();
 
@@ -513,6 +524,7 @@ void draw_bjet_vs_incl(TString observable="rg")
     h_herwig_ratio_to_data->Draw("hist same");
     h_FSRup_ratio_to_data->Draw("hist same");
     h_FSRdown_ratio_to_data->Draw("hist same");
+    leg_ratio_to_data->Draw();
 
     if (observable=="rg") {
         auto axis6 = new TGaxis(2.1, -0.85, 0. ,-0.85, 0.048982571, 0.4, 510,"NIGS-");
