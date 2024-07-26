@@ -47,7 +47,7 @@ void draw_unc_sym(TString observable="rg")
     TH1D *h_stat_unc_rel = (TH1D *) fin_stat_unc->Get(Form("h_stat_unc_rel_%d", ibin_pt))->Clone(Form("h_stat_unc_rel_%d", ibin_pt));
     h_stat_unc_rel->SetLineColor(kBlack);
     h_stat_unc_rel->SetFillStyle(1001);
-    h_stat_unc_rel->SetFillColorAlpha(kBlack, 0.05);
+    h_stat_unc_rel->SetFillColorAlpha(kBlack, 0.1);
     h_stat_unc_rel->SetMarkerStyle(1);
     h_stat_unc_rel->SetLineWidth(3);
     h_stat_unc_rel->SetLineWidth(0);
@@ -67,7 +67,7 @@ void draw_unc_sym(TString observable="rg")
     h_jec_up_rel->SetLineStyle(3);
 
     TH1D *h_mc_stat_unc_up_rel = (TH1D *) fin_mc_stat_unc->Get(Form("h_mc_stat_unc_up_rel_%d", ibin_pt))->Clone(Form("h_mc_stat_unc_up_rel_%d", ibin_pt));
-    h_mc_stat_unc_up_rel->SetFillStyle(3004);
+    h_mc_stat_unc_up_rel->SetFillStyle(3154);
     h_mc_stat_unc_up_rel->SetFillColorAlpha(kBlack,1.);
     h_mc_stat_unc_up_rel->SetLineColorAlpha(kBlack,0.);
     h_mc_stat_unc_up_rel->SetMarkerColorAlpha(kBlack,0.);
@@ -293,7 +293,7 @@ void draw_unc_sym(TString observable="rg")
         jet_info->DrawLatex(0.11, 0.36, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     } else {
         jet_info->SetTextAlign(30);
-        jet_info->DrawLatex(0.93, 0.55, "anti-k_{T}, R=0.4 b jets");
+        jet_info->DrawLatex(0.93, 0.55, "anti-k_{T}, R = 0.4 b jets");
         jet_info->DrawLatex(0.93, 0.49, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
     }
 

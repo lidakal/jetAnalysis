@@ -61,7 +61,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     h_jec_up_rel->SetLineStyle(3);
 
     TH1D *h_mc_stat_unc_up_rel = (TH1D *) fin_mc_stat_unc->Get(Form("h_mc_stat_unc_up_rel_%d", ibin_pt))->Clone(Form("h_mc_stat_unc_up_rel_%d", ibin_pt));
-    h_mc_stat_unc_up_rel->SetFillStyle(3004);
+    h_mc_stat_unc_up_rel->SetFillStyle(3154);
     h_mc_stat_unc_up_rel->SetFillColorAlpha(kBlack,1.);
     h_mc_stat_unc_up_rel->SetLineColorAlpha(kBlack,0.);
     h_mc_stat_unc_up_rel->SetMarkerColorAlpha(kBlack,0.);
@@ -167,7 +167,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     leg->SetMargin(0.25);
 
     leg->AddEntry(h_stat_unc_rel, "Statistical", "f");
-    leg->AddEntry(h_mc_stat_unc_up_rel, "Matrix response stats.", "f");
+    leg->AddEntry(h_mc_stat_unc_up_rel, "Response matrix stats.", "f");
     leg->AddEntry(h_model_unc_rel, "Shower and hadronization", "pl");
     leg->AddEntry(h_jer_up_rel, "Jet energy resolution", "pl");
     leg->AddEntry(h_pythia_var_up_rel, "FSR and ISR scale", "pl");
@@ -198,7 +198,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
                     }) {
         h->GetYaxis()->SetRangeUser(ymin, ymax);
         // h->SetFillColor(h->GetLineColor());
-        h->SetFillColorAlpha(h->GetLineColor(), 0.05);
+        h->SetFillColorAlpha(h->GetLineColor(), 0.1);
         h->SetFillStyle(1001);
         h->SetLineWidth(0);
         h->SetLineColorAlpha(kBlack,0);
@@ -273,7 +273,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     jet_info->SetTextSize(text_size);
     // if (observable=="rg") {
         jet_info->SetTextAlign(12);
-        jet_info->DrawLatex(0.12, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
+        jet_info->DrawLatex(0.12, 0.8, "anti-k_{T}, R = 0.4 inclusive jets");
         jet_info->DrawLatex(0.12, 0.74, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
         jet_info->DrawLatex(0.12, 0.68, "Soft drop (charged particles)");
         jet_info->DrawLatex(0.12, 0.62, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
