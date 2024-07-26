@@ -88,17 +88,17 @@ void draw_aggr_vs_not(TString observable="rg")
     // jet_info->DrawLatex(0.64, 0.55, "Soft drop (charged particles)");
     // jet_info->DrawLatex(0.575, 0.5, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     // for pdf
-    jet_info->DrawLatex(0.935, 0.7, "anti-k_{T}, R=0.4 b-tagged b jets");
-    jet_info->DrawLatex(0.935, 0.65, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-    jet_info->DrawLatex(0.935, 0.6, "Soft drop (charged particles)");
-    jet_info->DrawLatex(0.935, 0.55, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+    jet_info->DrawLatex(0.94, 0.7, "anti-k_{T}, R=0.4 b-tagged b jets");
+    jet_info->DrawLatex(0.94, 0.65, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.94, 0.6, "Soft drop (charged particles)");
+    jet_info->DrawLatex(0.94, 0.55, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
 
-    TLegend *leg = new TLegend(0.17, 0.75, 0.82, 0.87);
+    TLegend *leg = new TLegend(0.2, 0.75, 0.85, 0.87);
     leg->SetFillStyle(0);
-    leg->SetMargin(0.05);
-    leg->AddEntry(hSingleBtag_gen_aggr_1d, "Particle level, clustered b hadron decay daughters", "l");
-    leg->AddEntry(hSingleBtag_reco_noAggr_1d, "Det. level, unclustered b hadron decay daughters", "l");
-    leg->AddEntry(hSingleBtag_reco_aggr_1d, "Det. level, clustered b hadron decay daughters", "l");
+    leg->SetMargin(0.1);
+    leg->AddEntry(hSingleBtag_gen_aggr_1d, "Particle level, clustered decay daughters", "l");
+    leg->AddEntry(hSingleBtag_reco_noAggr_1d, "Detector level, unclustered decay daughters", "l");
+    leg->AddEntry(hSingleBtag_reco_aggr_1d, "Detector level, clustered decay daughters", "l");
     leg->Draw();
 
     c_aggr_vs_noAggr->Print("plots_an/"+observable+"_aggr_vs_not.png");
