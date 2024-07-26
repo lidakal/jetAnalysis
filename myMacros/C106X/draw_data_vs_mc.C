@@ -5,7 +5,7 @@ void draw_data_vs_mc(TString observable="rg")
 {
     // RUN WITH ROOT 6.30 from /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-centos7-gcc11-opt/setup.sh
 
-    bool inclusive = true;
+    bool inclusive = false;
     TString pythia_sample = inclusive ? "dijet_PF40" : "pythia_PF40";
     TString herwig_sample = inclusive ? "herwig_dijet_official_PF40" : "herwig_official_PF40";
     TString label = inclusive ? "aggrTMVA_inclusive" : "aggrTMVA_XXT";
@@ -14,21 +14,22 @@ void draw_data_vs_mc(TString observable="rg")
 
     TString xlabel;
     // if (observable=="rg") xlabel = "ln#frac{R_{ }}{ R_{g}}";
-    if (observable=="rg") xlabel = "ln(R/R_{g})";
+    if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/p_{T}^{jet,ch}";
+    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/^{}p_{T}^{jet,ch}";
     // TString ylabel = "#frac{1}{N} #frac{dN}{dz^{ch}}";
-    TString ylabel = "1/N dN/dz^{ch}";
+    TString ylabel = "1/N^{} dN^{}/^{}dz^{ch}";
     if (observable!="zpt") {
         // ylabel = "#frac{1}{N} #frac{dN}{" + xlabel + "}";
-        ylabel = "1/N dN/d" + xlabel;
+        ylabel = "1/N^{} dN^{}/^{}d^{}" + xlabel;
+        // ylabel=xlabel;
         // xlabel = "Charged " + xlabel;
     }
 
     // ---- Setup 
     gStyle->SetCanvasPreferGL(kTRUE);
     gStyle->SetErrorX(0.5);
-    Float_t text_size = 20.;
+    Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
     gStyle->SetLabelSize(text_size, "XYZ");
@@ -145,7 +146,7 @@ void draw_data_vs_mc(TString observable="rg")
     if (observable == "rg") ibin_x_max = h_data_1d->GetNbinsX() - 1;
 
     double labelOffset = h_data_1d->GetXaxis()->GetLabelOffset();
-    std::cout << labelOffset << std::endl;
+    // std::cout << labelOffset << std::endl;
     for (auto h : {
         h_data_1d,
         h_pythia_1d,
@@ -157,12 +158,12 @@ void draw_data_vs_mc(TString observable="rg")
             h->GetYaxis()->SetRangeUser(0, 5.5);
             if (inclusive) h->GetYaxis()->SetRangeUser(0, 4.5);
         } else if (observable=="rg") {
-            h->GetYaxis()->SetRangeUser(0, 1.2);
-            if (inclusive) h->GetYaxis()->SetRangeUser(0, 0.9);
+            h->GetYaxis()->SetRangeUser(0, 1.25);
+            if (inclusive) h->GetYaxis()->SetRangeUser(0, 1.);
         }
         else if (observable=="zpt") h->GetYaxis()->SetRangeUser(0, 4.);
         h->GetYaxis()->SetTitle(ylabel);
-        h->GetYaxis()->SetTitleOffset(1.8);
+        h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetLabelOffset(10);
     }
 
@@ -283,10 +284,10 @@ void draw_data_vs_mc(TString observable="rg")
 
     TGraphAsymmErrors *gr_total_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio, unc_left_ratio, unc_right_ratio, total_unc_down_ratio, total_unc_up_ratio);
     gr_total_unc_ratio->SetFillStyle(1001);
-    gr_total_unc_ratio->SetFillColorAlpha(kBlack, 0.1);
+    gr_total_unc_ratio->SetFillColorAlpha(49, 0.1);
     gr_total_unc_ratio->SetMarkerSize(0);
     gr_total_unc_ratio->SetLineWidth(0);
-    gr_total_unc_ratio->SetLineColorAlpha(kBlack, 0.);
+    gr_total_unc_ratio->SetLineColorAlpha(cmsViolet, 0.);
 
     TLine *line = new TLine(h_data_1d->GetXaxis()->GetBinLowEdge(ibin_x_min), 1, h_data_1d->GetXaxis()->GetBinUpEdge(ibin_x_max), 1);
     line->SetLineStyle(kSolid);
@@ -296,32 +297,32 @@ void draw_data_vs_mc(TString observable="rg")
     TH1D *h_data_legend = (TH1D *) h_data_1d->Clone("h_data_legend");
     h_data_legend->SetFillColor(kGray);
     h_data_legend->SetFillStyle(3001);    
-    h_data_legend->SetLineWidth(0);
+    // h_data_legend->SetLineWidth(0);
 
     // Make a legend
     TLegend *leg;
-    if (observable=="zpt") leg = new TLegend(0.22, 0.3, 0.4, 0.5);
-    else leg = new TLegend(0.55, 0.55, 0.8, 0.8);
-    if (inclusive) leg = new TLegend(0.6, 0.6, 0.85, 0.85);
+    if (observable=="zpt") leg = new TLegend(0.22, 0.3, 0.54, 0.55);
+    else leg = new TLegend(0.18, 0.05, 0.5, 0.3);
+    if (inclusive) leg = new TLegend(0.4, 0.63, 0.8, 0.87);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
-    leg->SetMargin(0.15);
-    leg->AddEntry(h_data_legend, "Data", "flpe1");
-    leg->AddEntry(h_pythia_1d, "PYTHIA8 CP5", "l");
-    leg->AddEntry(h_FSRup_1d, "PYTHIA8 CP5 FSR up", "l");
-    leg->AddEntry(h_FSRdown_1d, "PYTHIA8 CP5 FSR down", "l");
-    // leg->AddEntry(h_ISRup_1d, "PYTHIA8 CP5 ISR up", "l");
-    // leg->AddEntry(h_ISRdown_1d, "PYTHIA8 CP5 ISR down", "l");
-    leg->AddEntry(h_herwig_1d, "HERWIG7 CH3", "l");
+    leg->SetMargin(0.2);
+    leg->AddEntry(h_data_legend, "Data", "lepf");
+    leg->AddEntry(h_pythia_1d, "Pythia8 CP5", "l");
+    leg->AddEntry(h_FSRup_1d, "Pythia8 CP5 FSR up", "l");
+    leg->AddEntry(h_FSRdown_1d, "Pythia8 CP5 FSR down", "l");
+    // leg->AddEntry(h_ISRup_1d, "Pythia8 CP5 ISR up", "l");
+    // leg->AddEntry(h_ISRdown_1d, "Pythia8 CP5 ISR down", "l");
+    leg->AddEntry(h_herwig_1d, "Herwig7 CH3", "l");
     // leg->AddEntry(gr_unc, "Systematic uncertainty", "f");
 
     // legend for uncertainties in ratio plot
-    TLegend *leg_ratio;
-    if (observable!="zpt") leg_ratio = new TLegend(0.15, 0.83, 0.3, 0.9);
-    else leg_ratio = new TLegend(0.75, 0.83, 0.9, 0.9);
+    TLegend *leg_ratio; // keep height=0.09, width=0.19
+    if (observable!="zpt") leg_ratio = new TLegend(0.18, 0.81, 0.37, 0.9);
+    else leg_ratio = new TLegend(0.7, 0.81, 0.89, 0.9);
     if (observable=="zg"&&inclusive) {
-        std::cout << "here" << std::endl;
-        leg_ratio = new TLegend(0.35, 0.75, 0.55, 0.9);
+        // std::cout << "here" << std::endl;
+        leg_ratio = new TLegend(0.4, 0.81, 0.59, 0.9);
     }
     leg_ratio->SetBorderSize(0);
     leg_ratio->SetFillStyle(0);
@@ -339,13 +340,13 @@ void draw_data_vs_mc(TString observable="rg")
             h->GetYaxis()->SetRangeUser(0.4, 1.6);
             if (inclusive) h->GetYaxis()->SetRangeUser(0.85, 1.15);
         }
-        if (observable=="zpt") h->GetYaxis()->SetRangeUser(-.2, 2.2);
+        if (observable=="zpt") h->GetYaxis()->SetRangeUser(0., 2.2);
         h->GetYaxis()->SetNdivisions(505);
         h->GetYaxis()->SetTitle("Ratio to data");
         h->GetYaxis()->SetTitleOffset(1.5);
         h->GetXaxis()->SetTitle(xlabel);
         h->GetXaxis()->SetLabelOffset(labelOffset);
-        h->GetXaxis()->SetTitleOffset(1.5);
+        h->GetXaxis()->SetTitleOffset(1.1);
     }    
 
     // Draw 
@@ -353,14 +354,14 @@ void draw_data_vs_mc(TString observable="rg")
     TPad *top_pad = new TPad("top_pad", "", 0., 0.4, 1., 1.);
     TPad *bottom_pad = new TPad("top_pad", "", 0., 0., 1., 0.4);
 
-    top_pad->SetLeftMargin(0.12);
+    top_pad->SetLeftMargin(0.15);
     top_pad->SetRightMargin(0.05);
-    bottom_pad->SetLeftMargin(0.12);
+    bottom_pad->SetLeftMargin(0.15);
     bottom_pad->SetRightMargin(0.05);
     
     top_pad->SetBottomMargin(0.03);
     bottom_pad->SetTopMargin(0.04);
-    bottom_pad->SetBottomMargin(0.4);
+    bottom_pad->SetBottomMargin(0.45);
 
     // top_pad->SetGridy();
     // bottom_pad->SetGridy();
@@ -377,35 +378,36 @@ void draw_data_vs_mc(TString observable="rg")
     // h_ISRup_1d->Draw("hist same");
     // h_ISRdown_1d->Draw("hist same");
     h_data_1d->Draw("pe1 same");
-    
+    h_data_legend->Draw("SAME_E1_][P0");
+
     leg->Draw();
     drawHeader();
     // Jets text
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
-    jet_info->SetTextSize(20);
-    jet_info->SetTextAlign(10);
+    jet_info->SetTextSize(text_size);
     if (observable=="zpt") {
-        jet_info->DrawLatex(0.22, 0.8, "anti-k_{T}, R=0.4 b jets");
-        jet_info->DrawLatex(0.22, 0.72, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->SetTextAlign(10); 
+        jet_info->DrawLatex(0.22, 0.8, "anti-k_{T}, R = 0.4 b jets");
+        jet_info->DrawLatex(0.22, 0.73, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
         jet_info->Draw();
-    } else {
-        if (inclusive) {
-            jet_info->DrawLatex(0.17, 0.22, "anti-k_{T}, R = 0.4 inclusive jets");
-            jet_info->DrawLatex(0.17, 0.17, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-            jet_info->DrawLatex(0.17, 0.12, "Soft drop (charged particles)");
-            jet_info->DrawLatex(0.17, 0.07, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
-        } else {
-            jet_info->DrawLatex(0.17, 0.22, "anti-k_{T}, R = 0.4 b jets");
-            jet_info->DrawLatex(0.17, 0.17, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-            jet_info->DrawLatex(0.17, 0.12, "Soft drop (charged particles)");
-            jet_info->DrawLatex(0.17, 0.07, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
-            // jet_info->Draw();
-        }
-    }    
+    } else if (!inclusive){
+        jet_info->SetTextAlign(30); // works with PDF
+        jet_info->DrawLatex(0.9, 0.80, "anti-k_{T}, R = 0.4 b jets");
+        jet_info->DrawLatex(0.9, 0.73, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.9, 0.64, "Soft drop (charged particles)");
+        jet_info->DrawLatex(0.9, 0.57, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+    }
+    if (inclusive) {
+        jet_info->SetTextAlign(10);
+        jet_info->DrawLatex(0.185, 0.26, "anti-k_{T}, R = 0.4 inclusive jets");
+        jet_info->DrawLatex(0.185, 0.19, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.185, 0.12, "Soft drop (charged particles)");
+        jet_info->DrawLatex(0.185, 0.05, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+    }  
 
     bottom_pad->cd();
-    h_pythia_ratio_1d->GetYaxis()->SetTitleOffset(1.8);
+    h_pythia_ratio_1d->GetYaxis()->SetTitleOffset(1.5);
     h_pythia_ratio_1d->Draw("hist same");
     // gr_unc_ratio->Draw("e2 same");
     gr_total_unc_ratio->Draw("e2 same");
@@ -425,14 +427,14 @@ void draw_data_vs_mc(TString observable="rg")
         axis5->CenterTitle();
         axis5->SetTitleFont(43);
         axis5->SetTitleSize(text_size);
-        axis5->SetTitleOffset(1.3);
+        axis5->SetTitleOffset(1.2);
         axis5->SetLabelFont(43);
         axis5->SetLabelSize(text_size);
-        axis5->SetLabelOffset(0.08);
+        axis5->SetLabelOffset(0.12);
         axis5->SetTickSize(0.05);
         axis5->SetMoreLogLabels(); // add the secondary tick labels
         axis5->SetNoExponent();
-        axis5->ChangeLabel(2, -1, 0.);
+        // axis5->ChangeLabel(2, -1, 0.);
         axis5->Draw("same");
     }
 
