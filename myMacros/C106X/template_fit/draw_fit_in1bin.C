@@ -102,12 +102,12 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
         xlabel = "R_{g}";
         x_min = 0.4*std::exp(-x_min);
         x_max = 0.4*std::exp(-x_max);
-        range_text = Form("%.3f #le %s < %.3f", x_max, xlabel.Data(), x_min);
+        range_text = Form("%.3f < %s #leq %.3f", x_max, xlabel.Data(), x_min);
     } else if (observable=="zg") {
         xlabel = "z_{g}";
-        range_text = Form("%.1f #le %s < %.1f", x_min, xlabel.Data(), x_max);
+        range_text = Form("%.1f #leq %s < %.1f", x_min, xlabel.Data(), x_max);
     } else if (observable=="zpt") {
-        xlabel = "z^{ch}";
+        xlabel = "z_{b,ch}";
         range_text = Form("%.1f #leq %s #leq %.1f", x_min, xlabel.Data(), x_max);
     }
 
@@ -179,7 +179,7 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     gr_err->SetLineWidth(5);
 
     THStack *h_stack_mb = new THStack(Form("h_stack_mb_%d_%d", ibin_pt, ibin_x), "");
-    // h_stack_mb->SetTitle("; m_{B}^{ch}; entries");
+    // h_stack_mb->SetTitle("; m_{b,ch}; entries");
     h_stack_mb->Add(h_bkg_rest_mb);
     h_stack_mb->Add(h_sig_mb);
     h_stack_mb->Add(h_bkg_bb_mb);
@@ -249,7 +249,7 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     line->SetLineStyle(kDashed);
 
     h_ratio->GetXaxis()->SetLabelOffset(labelOffset);
-    h_ratio->GetXaxis()->SetTitle("m_{B,ch} (GeV)");
+    h_ratio->GetXaxis()->SetTitle("m_{b,ch} (GeV)");
     h_ratio->GetYaxis()->SetTitle("Data / fit");
     h_ratio->GetXaxis()->SetTitleOffset(1.);
     h_ratio->GetYaxis()->SetTitleOffset(h_data_mb->GetYaxis()->GetTitleOffset());
