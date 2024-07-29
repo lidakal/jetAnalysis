@@ -5,7 +5,7 @@ void draw_data_vs_mc(TString observable="rg")
 {
     // RUN WITH ROOT 6.30 from /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-centos7-gcc11-opt/setup.sh
 
-    bool inclusive = false;
+    bool inclusive = true;
     TString pythia_sample = inclusive ? "dijet_PF40" : "pythia_PF40";
     TString herwig_sample = inclusive ? "herwig_dijet_official_PF40" : "herwig_official_PF40";
     TString label = inclusive ? "aggrTMVA_inclusive" : "aggrTMVA_XXT";
@@ -16,9 +16,9 @@ void draw_data_vs_mc(TString observable="rg")
     // if (observable=="rg") xlabel = "ln#frac{R_{ }}{ R_{g}}";
     if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/^{}p_{T}^{jet,ch}";
-    // TString ylabel = "#frac{1}{N} #frac{dN}{dz^{ch}}";
-    TString ylabel = "1/N^{} dN^{}/^{}dz^{ch}";
+    else if (observable=="zpt") xlabel = "z_{b,ch} #equiv p_{T}^{b,ch}/^{}p_{T}^{jet,ch}";
+    // TString ylabel = "#frac{1}{N} #frac{dN}{dz_{b,ch}}";
+    TString ylabel = "1/N^{} dN^{}/^{}dz_{b,ch}";
     if (observable!="zpt") {
         // ylabel = "#frac{1}{N} #frac{dN}{" + xlabel + "}";
         ylabel = "1/N^{} dN^{}/^{}d^{}" + xlabel;
@@ -284,10 +284,10 @@ void draw_data_vs_mc(TString observable="rg")
 
     TGraphAsymmErrors *gr_total_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio, unc_left_ratio, unc_right_ratio, total_unc_down_ratio, total_unc_up_ratio);
     gr_total_unc_ratio->SetFillStyle(1001);
-    gr_total_unc_ratio->SetFillColorAlpha(49, 0.1);
+    gr_total_unc_ratio->SetFillColorAlpha(kBlack, 0.1);
     gr_total_unc_ratio->SetMarkerSize(0);
     gr_total_unc_ratio->SetLineWidth(0);
-    gr_total_unc_ratio->SetLineColorAlpha(cmsViolet, 0.);
+    gr_total_unc_ratio->SetLineColorAlpha(kBlack, 0.);
 
     TLine *line = new TLine(h_data_1d->GetXaxis()->GetBinLowEdge(ibin_x_min), 1, h_data_1d->GetXaxis()->GetBinUpEdge(ibin_x_max), 1);
     line->SetLineStyle(kSolid);
