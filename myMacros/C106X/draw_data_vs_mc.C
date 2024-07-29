@@ -303,7 +303,8 @@ void draw_data_vs_mc(TString observable="rg")
     TLegend *leg;
     if (observable=="zpt") leg = new TLegend(0.22, 0.3, 0.54, 0.55);
     else leg = new TLegend(0.18, 0.05, 0.5, 0.3);
-    if (inclusive) leg = new TLegend(0.4, 0.63, 0.8, 0.87);
+    // if (inclusive) leg = new TLegend(0.4, 0.63, 0.8, 0.87);
+    if (inclusive) leg = new TLegend(0.2, 0.1, 0.6, 0.35);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
     leg->SetMargin(0.2);
@@ -399,11 +400,16 @@ void draw_data_vs_mc(TString observable="rg")
         jet_info->DrawLatex(0.9, 0.57, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     }
     if (inclusive) {
-        jet_info->SetTextAlign(10);
-        jet_info->DrawLatex(0.185, 0.26, "anti-k_{T}, R = 0.4 inclusive jets");
-        jet_info->DrawLatex(0.185, 0.19, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
-        jet_info->DrawLatex(0.185, 0.12, "Soft drop (charged particles)");
-        jet_info->DrawLatex(0.185, 0.05, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+        // jet_info->SetTextAlign(10);
+        // jet_info->DrawLatex(0.185, 0.26, "anti-k_{T}, R = 0.4 inclusive jets");
+        // jet_info->DrawLatex(0.185, 0.19, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        // jet_info->DrawLatex(0.185, 0.12, "Soft drop (charged particles)");
+        // jet_info->DrawLatex(0.185, 0.05, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+        jet_info->SetTextAlign(30); // works with PDF
+        jet_info->DrawLatex(0.91, 0.81, "anti-k_{T}, R = 0.4 inclusive jets");
+        jet_info->DrawLatex(0.91, 0.74, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.91, 0.67, "Soft drop (charged particles)");
+        jet_info->DrawLatex(0.91, 0.6, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     }  
 
     bottom_pad->cd();
