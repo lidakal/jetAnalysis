@@ -439,12 +439,12 @@ void draw_bjet_vs_incl(TString observable="rg")
 
     TGraphAsymmErrors *gr_total_unc_ratio = new TGraphAsymmErrors(ibin_x_max-ibin_x_min+1, points_x_ratio, points_y_ratio2, unc_left_ratio, unc_right_ratio, total_unc_down_ratio, total_unc_up_ratio);
     gr_total_unc_ratio->SetFillStyle(1001);
-    gr_total_unc_ratio->SetFillColorAlpha(49, 0.1);
+    gr_total_unc_ratio->SetFillColorAlpha(kBlack, 0.1);
     gr_total_unc_ratio->SetMarkerSize(0);
     gr_total_unc_ratio->SetLineWidth(0);
     gr_total_unc_ratio->SetLineColorAlpha(kBlack, 0.);
 
-    TLegend *leg_ratio = new TLegend(0.18, 0.05, 0.5, 0.3);
+    TLegend *leg_ratio = new TLegend(0.18, 0.05, 0.7, 0.3);
     leg_ratio->SetBorderSize(0);
     leg_ratio->SetFillStyle(0);
     leg_ratio->SetMargin(0.15);
