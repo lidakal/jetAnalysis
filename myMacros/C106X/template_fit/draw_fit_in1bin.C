@@ -231,16 +231,16 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
     jet_info->SetTextSize(text_size);
-    jet_info->SetTextAlign(12);
+    jet_info->SetTextAlign(11);
     jet_info->DrawLatex(0.18, 0.83, "anti-k_{T}, R = 0.4 b-tagged jets");
     jet_info->DrawLatex(0.18, 0.77, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
 
     TLatex *jet_info2 = new TLatex;
     jet_info2->SetNDC();
     jet_info2->SetTextSize(text_size);
-    jet_info2->SetTextAlign(32);
-    jet_info2->DrawLatex(0.93, 0.83, range_text);
-    if (observable!="zpt") jet_info2->DrawLatex(0.93, 0.77, "k_{T} > 1 GeV");
+    jet_info2->SetTextAlign(31);
+    jet_info2->DrawLatex(0.925, 0.83, range_text);
+    if (observable!="zpt") jet_info2->DrawLatex(0.925, 0.77, "k_{T} > 1 GeV");
 
     // Plot ratio
     bottom_pad->cd();
@@ -254,6 +254,7 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     h_ratio->GetXaxis()->SetTitleOffset(1.);
     h_ratio->GetYaxis()->SetTitleOffset(h_data_mb->GetYaxis()->GetTitleOffset());
     h_ratio->GetYaxis()->SetNdivisions(505);
+    h_ratio->GetYaxis()->SetRangeUser(0.65,1.35);
 
     h_ratio->Draw("pe1");
     line->Draw();
