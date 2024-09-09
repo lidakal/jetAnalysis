@@ -7,7 +7,7 @@ void draw_info()
     prelim->SetNDC();
     prelim->SetTextSize(28);
     prelim->SetTextAlign(12);
-    prelim->DrawLatex(0.12, 0.96, "#bf{CMS} #it{Simulation Preliminary}");
+    prelim->DrawLatex(0.12, 0.96, "#bf{CMS} #it{Simulation}");
 
     TLatex *lumi = new TLatex;
     lumi->SetNDC();
@@ -31,7 +31,7 @@ void draw_substructure(TString observable="rg")
     if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
-    TString label = "aggrGenNoReco_withPNET";
+    TString label = "noAggr_withPNET";
     TString sample = "bjet";
     TString fin_name = "./histos/" + sample + "_" + label + "_substructure.root"; 
     std::cout << "fin: " << fin_name << std::endl;
@@ -150,12 +150,12 @@ void draw_substructure(TString observable="rg")
     jet_info3->SetTextSize(text_size);
     jet_info3->SetTextColor(kWhite);
     jet_info3->SetTextAlign(32);
-    jet_info3->DrawLatex(0.8, 0.25, "b hadron decay daughters");
+    jet_info3->DrawLatex(0.78, 0.25, "b hadron decay daughters");
     TString bdecay2;
     if (label.Contains("aggrTMVA")) bdecay2 = "clustered on both levels";
     else if (label.Contains("aggrGenNoReco")) bdecay2 = "clustered only on particle level";
     else bdecay2 = "not clustered on both levels";
-    jet_info3->DrawLatex(0.8, 0.2, bdecay2);
+    jet_info3->DrawLatex(0.78, 0.2, bdecay2);
 
     draw_info();
 

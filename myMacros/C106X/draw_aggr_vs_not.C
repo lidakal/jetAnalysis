@@ -7,13 +7,13 @@ void draw_info()
     prelim->SetNDC();
     prelim->SetTextSize(28);
     prelim->SetTextAlign(12);
-    prelim->DrawLatex(0.14, 0.92, "#bf{CMS} #it{Simulation Preliminary}");
+    prelim->DrawLatex(0.14, 0.93, "#bf{CMS} #it{Simulation}");
 
     TLatex *lumi = new TLatex;
     lumi->SetNDC();
     lumi->SetTextSize(28);
     lumi->SetTextAlign(32);
-    lumi->DrawLatex(0.97, 0.92, "PYTHIA8 CP5 (pp 5.02 TeV)");
+    lumi->DrawLatex(0.97, 0.93, "PYTHIA8 CP5 (pp 5.02 TeV)");
 }
 
 void draw_aggr_vs_not(TString observable="rg")
@@ -73,6 +73,11 @@ void draw_aggr_vs_not(TString observable="rg")
     TCanvas *c_aggr_vs_noAggr = new TCanvas("c_aggr_vs_noAggr", "", 800, 700);
     c_aggr_vs_noAggr->SetRightMargin(0.03);
     c_aggr_vs_noAggr->SetLeftMargin(0.14);
+    if (observable=="zg") {
+        hSingleBtag_gen_aggr_1d->GetXaxis()->SetRangeUser(0.99,0.5);
+        // hSingleBtag_reco_noAggr_1d->GetXaxis()->SetRangeUser(0.1,0.5);
+        // hSingleBtag_reco_aggr_1d->GetXaxis()->SetRangeUser(0.1,0.5);
+    }
     hSingleBtag_gen_aggr_1d->Draw("hist");
     hSingleBtag_reco_noAggr_1d->Draw("hist same");
     hSingleBtag_reco_aggr_1d->Draw("hist same");
