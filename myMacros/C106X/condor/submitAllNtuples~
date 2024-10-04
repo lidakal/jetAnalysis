@@ -1,0 +1,32 @@
+## Use: condor_submit -name llrt3condor submitAllNtuples
+
+getenv = True
+Proxy_path=/home/llr/cms/kalipoliti/proxy/x509up_u1176
+universe = vanilla
+Executable = StepProcess.sh
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+Transfer_Input_Files = StepProcess.sh
+Output = log/out_$(Cluster)_$(Process).stdout
+Error = log/err_$(Cluster)_$(Process).stderr
+Log = log/log_$(Cluster)_$(Process).log
++xcount = 16
++maxMemory = 10000
++MaxWallTimeMins = 240
++JobFlavour = "nextweek"
+
+work_dir=/home/llr/cms/kalipoliti/gitRepos/jetAnalysis/myMacros/C106X/condor/
+#in_dir=root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_0_03_trk_inef/231217_161733/0000/
+#in_dir=root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_Dijet_TuneCP5_5p02TeV-pythia8/dijet_aggrTMVA_0_03_trk_inef/231217_161552/0000/
+#in_dir=root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/Herwig_CH3_bjet_5TeV/herwig_bjet_aggrTMVA_5TeV_withWeights_v2/231217_161315/0000/
+in_dir=root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/Herwig_CH3_qcd_5TeV/herwig_dijet_aggrTMVA_5TeV_withWeights_v2/231217_161140/0000/
+out_dir=/data_CMS/cms/kalipoliti/condor_output/
+
+arguments = $(Proxy_path) $(work_dir) $(in_dir)HiForestMiniAOD_$(run).root $(out_dir) $(run)
+
+#### QUEUE ####
+T3Queue=long
+WNTag=el7
+# +SingularityCmd = ""
+include : /opt/exp_soft/cms/t3/t3queue |
+queue run from number.txt

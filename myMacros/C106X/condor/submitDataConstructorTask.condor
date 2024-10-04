@@ -1,0 +1,36 @@
+## Use: condor_submit -name llrt3condor submitDataConstructorTask.condor
+
+universe = vanilla
+Executable = process.sh
+getenv=true
+
+input=/dev/null
+output=log/out_$(Cluster)_$(Process).stdout
+error=log/err_$(Cluster)_$(Process).stderr
+log=log/log_$(Cluster)_$(Process).log
+
+
+#### From lxplus ####
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+Transfer_Input_Files = process.sh
++xcount = 16
++maxMemory = 10000
++MaxWallTimeMins = 240
++JobFlavour = "nextweek"
+
+#### Arguments for process.sh ####
+dataset_version=lead18_10
+training_filelist=/home/llr/cms/strazdas/b-hive/PbPb2018_files/training_files_10.txt
+test_filelist=/home/llr/cms/strazdas/b-hive/PbPb2018_files/test_files_10.txt
+ncoffea=10
+config=hlt_run3_pb
+
+arguments = $(dataset_version) $(training_filelist) $(test_filelist) $(ncoffea) $(config)
+
+#### QUEUE ####
+T3Queue=long
+WNTag=el7
+# +SingularityCmd = ""
+include : /opt/exp_soft/cms/t3/t3queue |
+queue 

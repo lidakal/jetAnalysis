@@ -1,0 +1,36 @@
+## Use: condor_submit -name llrt3condor submit.condor
+
+universe = vanilla
+Executable = StepProcess.sh
+getenv=true
+
+infile=file_lists/dijet_aggrTMVA_genParton.txt
+#infile=file_lists/SingleMuon_files_aggrTMVA.txt
+
+input=/dev/null
+output=log/out_$(Cluster)_$(Process).stdout
+error=log/err_$(Cluster)_$(Process).stderr
+log=log/log_$(Cluster)_$(Process).log
+
+#### From lxplus ####
+Proxy_path=/home/llr/cms/kalipoliti/proxy/x509up_u1176
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+Transfer_Input_Files = StepProcess.sh
++xcount = 16
++maxMemory = 10000
++MaxWallTimeMins = 240
++JobFlavour = "nextweek"
+
+#### Arguments for StepProcess.sh ####
+work_dir=/home/llr/cms/kalipoliti/gitRepos/jetAnalysis/myMacros/C106X/condor
+out_dir=/data_CMS/cms/kalipoliti/condor_output/
+
+arguments = $(Proxy_path) $(work_dir) $(file) $(out_dir) $(Process)
+
+#### QUEUE ####
+T3Queue=short
+WNTag=el7
+# +SingularityCmd = ""
+include : /opt/exp_soft/cms/t3/t3queue |
+queue file from $(infile)

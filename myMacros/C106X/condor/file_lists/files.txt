@@ -1,0 +1,11 @@
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_1.root 
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_10.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_11.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_12.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_13.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_14.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_15.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_16.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_17.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_18.root
+root://eos.grif.fr//eos/grif/cms/llr/store/user/lkalipol/bJet2023/QCD_pThat-15_bJet_TuneCP5_5p02TeV-pythia8/bjet_aggrTMVA_particleNet/231014_104900/0000/HiForestMiniAOD_19.root
