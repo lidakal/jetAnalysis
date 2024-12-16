@@ -41,9 +41,9 @@ void draw_substructure_v2(TString observable="rg")
     double zmax = 0.03;
     double ymin = -2.;
     double ymax = 3.;
-    double xoffset = 1.2;
+    double xoffset = 1.3;
     double yoffset = 1.5;
-    double zoffset = 1.6;
+    double zoffset = 1.7;
 
     TString fin_noAggr_name = "./histos/bjet_noAggr_withPNET_substructure.root"; 
     std::cout << "fin_noAggr: " << fin_noAggr_name << std::endl;
@@ -56,6 +56,7 @@ void draw_substructure_v2(TString observable="rg")
     h_noAggr->GetXaxis()->SetTitleOffset(xoffset);
     h_noAggr->GetYaxis()->SetTitle("ln(k_{T}/GeV)");
     h_noAggr->GetYaxis()->SetTitleOffset(yoffset);
+    h_noAggr->GetXaxis()->ChangeLabel(9,-1,-1,-1,-1,-1," ");
 
 
     TString fin_aggr_name = "./histos/bjet_aggrTMVA_newJP_substructure.root"; 
