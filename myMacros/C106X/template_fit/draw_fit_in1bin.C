@@ -8,7 +8,7 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
 
     TString suffix = "_jer_" + jer_opt + "_jec_" + jec_opt;
 
-    Float_t text_size = 28.;
+    Float_t text_size = 32.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
     gStyle->SetLabelSize(text_size, "XYZ");
@@ -102,13 +102,13 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
         xlabel = "R_{g}";
         x_min = 0.4*std::exp(-x_min);
         x_max = 0.4*std::exp(-x_max);
-        range_text = Form("%.3f < %s #leq %.3f", x_max, xlabel.Data(), x_min);
+        range_text = Form("%.3f_{} < %s < %.3f", x_max, xlabel.Data(), x_min);
     } else if (observable=="zg") {
         xlabel = "z_{g}";
-        range_text = Form("%.1f #leq %s < %.1f", x_min, xlabel.Data(), x_max);
+        range_text = Form("%.1f_{} < %s < %.1f", x_min, xlabel.Data(), x_max);
     } else if (observable=="zpt") {
         xlabel = "z_{b,ch}";
-        range_text = Form("%.1f #leq %s #leq %.1f", x_min, xlabel.Data(), x_max);
+        range_text = Form("%.1f_{} < %s < %.1f", x_min, xlabel.Data(), x_max);
     }
 
     // if (observable!="zpt" && ibin_x==1) range_text = "fail SD or k_{T} < 1 GeV";
@@ -125,7 +125,7 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     h_data_mb->SetMarkerSize(1);
     double labelOffset = h_data_mb->GetXaxis()->GetLabelOffset();
     h_data_mb->GetXaxis()->SetLabelOffset(10.);
-    h_data_mb->GetYaxis()->SetTitleOffset(1.5);
+    h_data_mb->GetYaxis()->SetTitleOffset(1.7);
     h_data_mb->GetYaxis()->SetTitle("Entries / 1000");
     h_data_mb->Scale(1/1000.);
 
@@ -184,66 +184,90 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     h_stack_mb->Add(h_sig_mb);
     h_stack_mb->Add(h_bkg_bb_mb);
 
-    TLegend *leg_mb = new TLegend(0.6, 0.47, 0.9, 0.72);
-    if (observable=="zpt") leg_mb = new TLegend(0.65, 0.47, 0.95, 0.72);
+    TLegend *leg_mb = new TLegend(0.65, 0.37, 0.95, 0.62);
+    if (observable=="zpt") leg_mb = new TLegend(0.67, 0.38, 0.97, 0.63);
     leg_mb->SetFillStyle(0);
     leg_mb->SetBorderSize(0);
-    leg_mb->SetMargin(0.15);
+    leg_mb->SetMargin(0.2);
     leg_mb->SetTextSize(text_size);
+    leg_mb->SetEntrySeparation(0.05);
     // leg_mb->SetHeader(Form("b tagged jets, k_{T} > 1 GeV"));
 
     leg_mb->AddEntry(h_data_mb, "Data", "pe1");
+    leg_mb->AddEntry(h_sig_mb, "Single b", "f");
+    leg_mb->AddEntry(h_bkg_bb_mb, "Double b", "f");
     leg_mb->AddEntry(h_bkg_rest_mb, "Light+c", "f");
-    leg_mb->AddEntry(h_sig_mb, "Single-b", "f");
-    leg_mb->AddEntry(h_bkg_bb_mb, "Double-b", "f");
 
     TH1D *h_ratio = (TH1D *) h_data_mb->Clone(Form("h_ratio_%d_%d", ibin_pt, ibin_x));
     h_ratio->Divide(h_fit_mb);
     h_ratio->GetYaxis()->SetNdivisions(8);
-    h_ratio->GetXaxis()->SetTickLength(0.09);
+    h_ratio->GetYaxis()->CenterTitle(1);
+    // h_ratio->GetXaxis()->SetTickLength(0.09);
+
+    //universal size values
+	double canvasW = 650;
+    double canvasH = 900;
+	double marginL = 80;
+	double marginR = 10;
+	double marginB = 70;
+	double marginT = 40;
+	double marginM = 3;
+	double sizeTick = 12;
+	
+    TCanvas *c_mb = new TCanvas("c_mb","",canvasW,canvasH);
+
+    TPad *pad1 = new TPad("pad1","",0.,0.27,1.,1.);
+    double pad1W = pad1->GetWw()*pad1->GetAbsWNDC();
+	double pad1H = pad1->GetWh()*pad1->GetAbsHNDC();
+    pad1->SetMargin(marginL/pad1W,marginR/pad1W,marginM/pad1H,marginT/pad1H);
+    pad1->SetTicks(1,1);
+    double tickScaleXT = (pad1W - marginL - marginR)/pad1W*pad1H;
+	double tickScaleYT = (pad1H - marginM - marginT)/pad1H*pad1W;
+    
+    TPad *pad2 = new TPad("pad2","",0.,0.,1.,0.27);
+    double pad2W = pad2->GetWw()*pad2->GetAbsWNDC();
+	double pad2H = pad2->GetWh()*pad2->GetAbsHNDC();
+	pad2->SetMargin(marginL/pad2W,marginR/pad2W,marginB/pad2H,marginM/pad2H);
+	pad2->SetTicks(1,1);
+    double tickScaleXB = (pad2W - marginL - marginR)/pad2W*pad2H;
+	double tickScaleYB = (pad2H - marginB - marginM)/pad2H*pad2W;
+
+    h_data_mb->GetXaxis()->SetTickLength(sizeTick/tickScaleXT);
+	h_data_mb->GetYaxis()->SetTickLength(sizeTick/tickScaleYT);
 
     double ymax = std::max({h_data_mb->GetMaximum(), h_fit_mb->GetMaximum()});
-    ymax = ymax * 1.25;
-    h_data_mb->GetYaxis()->SetRangeUser(0.,ymax);
+    // ymax = ymax * 1.25;
+    ymax = ymax * 1.6;
+    ymax = 7.;
+    h_data_mb->GetYaxis()->SetRangeUser(0.0001,ymax);
 
-    TCanvas *c_mb = new TCanvas("c_mb","",750,800);
-    TPad *top_pad = new TPad("top_pad","",0.,0.27,1.,1.);
-    TPad *bottom_pad = new TPad("bottom_pad","",0.,0.,1.,0.27);
-
-    top_pad->SetLeftMargin(0.15);
-    top_pad->SetRightMargin(0.05);
-    bottom_pad->SetLeftMargin(0.15);
-    bottom_pad->SetRightMargin(0.05);
-    
-    top_pad->SetBottomMargin(0.03);
-    bottom_pad->SetTopMargin(0.04);
-    bottom_pad->SetBottomMargin(0.3);
-
-    top_pad->cd();
+    pad1->cd();
     h_data_mb->Draw("pe1"); // draw once to have the correct scale
     h_stack_mb->Draw("hist same");
     h_data_mb->Draw("pe1 same");
     gr_err->Draw("e2 same");
     drawHeader();
     leg_mb->Draw();
-    top_pad->RedrawAxis();
+    pad1->RedrawAxis();
 
     TLatex *jet_info = new TLatex;
     jet_info->SetNDC();
     jet_info->SetTextSize(text_size);
     jet_info->SetTextAlign(11);
-    jet_info->DrawLatex(0.18, 0.83, "anti-k_{T}, R = 0.4 b-tagged jets");
-    jet_info->DrawLatex(0.18, 0.77, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.17, 0.87, "anti_{}-_{}k_{T} R = 0.4");
+    jet_info->DrawLatex(0.17, 0.8, "b-tagged jets");
+    jet_info->DrawLatex(0.17, 0.73, "100 <^{}_{} p_{T,reco}^{jet} < 120 GeV");
+    jet_info->DrawLatex(0.17, 0.66, "|#eta^{jet}| < 2");
 
     TLatex *jet_info2 = new TLatex;
     jet_info2->SetNDC();
     jet_info2->SetTextSize(text_size);
     jet_info2->SetTextAlign(31);
-    jet_info2->DrawLatex(0.925, 0.83, range_text);
-    if (observable!="zpt") jet_info2->DrawLatex(0.925, 0.77, "k_{T} > 1 GeV");
+    jet_info2->DrawLatex(0.95, 0.87, range_text);
+    if (observable!="zpt") jet_info2->DrawLatex(0.95, 0.8, "k_{T} > 1 GeV");
 
     // Plot ratio
-    bottom_pad->cd();
+    pad2->cd();
     TLine *line = new TLine(0., 1., 7., 1.);
     line->SetLineColor(kGray);
     line->SetLineStyle(kDashed);
@@ -251,19 +275,23 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     h_ratio->GetXaxis()->SetLabelOffset(labelOffset);
     h_ratio->GetXaxis()->SetTitle("m_{b,ch} (GeV)");
     h_ratio->GetYaxis()->SetTitle("Data / fit");
-    h_ratio->GetXaxis()->SetTitleOffset(1.);
+    h_ratio->GetXaxis()->SetTitleOffset(3.5);
     h_ratio->GetYaxis()->SetTitleOffset(h_data_mb->GetYaxis()->GetTitleOffset());
     h_ratio->GetYaxis()->SetNdivisions(505);
     h_ratio->GetYaxis()->SetRangeUser(0.65,1.35);
 
+    h_ratio->GetXaxis()->SetTickLength(sizeTick/tickScaleXB);
+	h_ratio->GetYaxis()->SetTickLength(sizeTick/tickScaleYB);
+
     h_ratio->Draw("pe1");
     line->Draw();
     h_ratio->Draw("pe1 same");
+    pad2->RedrawAxis();
 
     c_mb->cd();
-    top_pad->Draw();
-    bottom_pad->Draw();
-    
+    pad1->Draw();
+    pad2->Draw();
+
     c_mb->Print("plots_an/template_fit_"+observable+"_in1bin.pdf");
-    c_mb->Print("plots_an/template_fit_"+observable+"_in1bin.png");
+    // c_mb->Print("plots_an/template_fit_"+observable+"_in1bin.png");
 }
