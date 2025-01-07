@@ -50,9 +50,12 @@ public :
    Float_t         trkPhi[500];   //[ntrk]
    Float_t         trkIp3d[500];   //[ntrk]
    Float_t         trkIp3dSig[500];   //[ntrk]
+   Float_t         trkIp2dSig[500];   //[ntrk]
    Float_t         trkDistToAxisSig[500];   //[ntrk]
    Float_t         trkDistToAxis[500];   //[ntrk]
+   Float_t         trkDz[500];   //[ntrk]
    Int_t           trkMatchSta[500];   //[ntrk]
+   Int_t           trkPdgId[500];   //[ntrk]
    Int_t           jtNsvtx[500];   //[nref]
    Int_t           nsvtx;
    Int_t           svtxJetId[50];   //[nsvtx]
@@ -62,6 +65,8 @@ public :
    Float_t         svtxdl2d[50];   //[nsvtx]
    Float_t         svtxdls2d[50];   //[nsvtx]
    Float_t         svtxm[50];   //[nsvtx]
+   Float_t         svtxmcorr[50];   //[nsvtx]
+   Float_t         svtxnormchi2[50];   //[nsvtx]
    Float_t         svtxpt[50];   //[nsvtx]
 
    Int_t           ntrkInSvtxNotInJet;
@@ -82,6 +87,20 @@ public :
    Float_t         discr_deepFlavour_b[500];   //[nref]
    Float_t         discr_deepFlavour_bb[500];   //[nref]
    Float_t         discr_deepFlavour_lepb[500];   //[nref]
+
+   Float_t         discr_particleNet_bb[500];   //[nref]
+   Float_t         discr_particleNet_pu[500];   //[nref]
+   Float_t         discr_particleNet_cc[500];   //[nref]
+   Float_t         discr_particleNet_undef[500];   //[nref]
+   Float_t         discr_particleNet_c[500];   //[nref]
+   Float_t         discr_particleNet_b[500];   //[nref]
+   Float_t         discr_particleNet_uds[500];   //[nref]
+   Float_t         discr_particleNet_g[500];   //[nref]
+   Float_t         discr_particleNet_BvsAll[500];   //[nref]
+   Float_t         discr_particleNet_CvsB[500];   //[nref]
+   Float_t         discr_particleNet_CvsL[500];   //[nref]
+   Float_t         discr_particleNet_QvsG[500];   //[nref]
+
    Float_t         pthat;
    Float_t         refpt[500];   //[nref]
    Float_t         refeta[500];   //[nref]
@@ -149,8 +168,24 @@ public :
    Float_t         refptCh[500]; //[nref]
    Int_t           refNtrk[500]; //[nref]
 
+   // per event
    Float_t         weight;
 
+   Int_t           HLT_HIAK4CaloJet30_v1;
+   Int_t           HLT_HIAK4CaloJet40_v1;
+   Int_t           HLT_HIAK4CaloJet60_v1;
+   Int_t           HLT_HIAK4CaloJet80_v1;
+   Int_t           HLT_HIAK4CaloJet100_v1;
+
+   Int_t           HLT_HIAK4PFJet30_v1;
+   Int_t           HLT_HIAK4PFJet40_v1;
+   Int_t           HLT_HIAK4PFJet60_v1;
+   Int_t           HLT_HIAK4PFJet80_v1;
+   Int_t           HLT_HIAK4PFJet100_v1;
+
+   Int_t           HLT_HIL3Mu5_AK4PFJet30_v1;
+   Int_t           HLT_HIL3Mu7_v1;
+   Int_t           HLT_HIL3Mu3_v1;
 
    // List of branches
    TBranch        *b_run;   //!
@@ -188,9 +223,12 @@ public :
    TBranch        *b_trkPhi;   //!
    TBranch        *b_trkIp3d;   //!
    TBranch        *b_trkIp3dSig;   //!
+   TBranch        *b_trkIp2dSig;   //!
    TBranch        *b_trkDistToAxisSig;   //!
    TBranch        *b_trkDistToAxis;   //!
+   TBranch        *b_trkDz;   //!
    TBranch        *b_trkMatchSta;   //!
+   TBranch        *b_trkPdgId;   //!
    TBranch        *b_jtNsvtx;   //!
    TBranch        *b_nsvtx;   //!
    TBranch        *b_svtxJetId;   //!
@@ -200,6 +238,8 @@ public :
    TBranch        *b_svtxdl2d;   //!
    TBranch        *b_svtxdls2d;   //!
    TBranch        *b_svtxm;   //!
+   TBranch        *b_svtxmcorr;   //!
+   TBranch        *b_svtxnormchi2;   //!
    TBranch        *b_svtxpt;   //!
 
    TBranch        *b_ntrkInSvtxNotInJet;   //!
@@ -220,6 +260,20 @@ public :
    TBranch        *b_discr_deepFlavour_b;   //!
    TBranch        *b_discr_deepFlavour_bb;   //!
    TBranch        *b_discr_deepFlavour_lepb;   //!
+
+   TBranch        *b_discr_particleNet_bb;   //!
+   TBranch        *b_discr_particleNet_pu;   //!
+   TBranch        *b_discr_particleNet_cc;   //!
+   TBranch        *b_discr_particleNet_undef;   //!
+   TBranch        *b_discr_particleNet_c;   //!
+   TBranch        *b_discr_particleNet_b;   //!
+   TBranch        *b_discr_particleNet_uds;   //!
+   TBranch        *b_discr_particleNet_g;   //!
+   TBranch        *b_discr_particleNet_BvsAll;   //!
+   TBranch        *b_discr_particleNet_CvsB;   //!
+   TBranch        *b_discr_particleNet_CvsL;   //!
+   TBranch        *b_discr_particleNet_QvsG;   //!
+
    TBranch        *b_pthat;   //!
    TBranch        *b_refpt;   //!
    TBranch        *b_refeta;   //!
@@ -284,6 +338,22 @@ public :
 
    TBranch        *b_weight;   //!
 
+   TBranch        *b_HLT_HIAK4CaloJet30_v1;   //!
+   TBranch        *b_HLT_HIAK4CaloJet40_v1;   //!
+   TBranch        *b_HLT_HIAK4CaloJet60_v1;   //!
+   TBranch        *b_HLT_HIAK4CaloJet80_v1;   //!
+   TBranch        *b_HLT_HIAK4CaloJet100_v1;   //!
+
+   TBranch        *b_HLT_HIAK4PFJet30_v1;   //!
+   TBranch        *b_HLT_HIAK4PFJet40_v1;   //!
+   TBranch        *b_HLT_HIAK4PFJet60_v1;   //!
+   TBranch        *b_HLT_HIAK4PFJet80_v1;   //!
+   TBranch        *b_HLT_HIAK4PFJet100_v1;   //!
+
+   TBranch        *b_HLT_HIL3Mu5_AK4PFJet30_v1;
+   TBranch        *b_HLT_HIL3Mu7_v1;
+   TBranch        *b_HLT_HIL3Mu3_v1;
+
    tTree(TString rootf);
    ~tTree();
    Int_t GetEntry(Long64_t entry);
@@ -291,17 +361,23 @@ public :
    void Init(TTree *tree);
    void SetBranchStatus(TString branchName, Int_t status);
    void SetBranchStatus(std::vector<TString> branchNames, Int_t status);
-   void plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9);
-   Float_t calc_dr(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2);
-   Float_t calc_rg(Float_t y1, Float_t phi1, Float_t y2, Float_t phi2);
+//    void plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9);
+//    Float_t calc_dr(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2);
+//    Float_t calc_rg(Float_t y1, Float_t phi1, Float_t y2, Float_t phi2);
 };
 
 tTree::tTree(TString rootf)
 {
-   TFile *fin = new TFile(rootf);
-   tree = (TTree*) fin->Get("ak4PFJetAnalyzer/t");
-   tree->AddFriend("hiEvtAnalyzer/HiTree");
-
+   // TFile *fin = new TFile(rootf);
+   TFile *fin = TFile::Open(rootf);
+   if (rootf.Contains("LowEGJet") || rootf.Contains("HighEGJet")) {
+    tree = (TTree*) fin->Get("akCs4PFJetAnalyzer/t"); // data tree
+   } else {
+    tree = (TTree*) fin->Get("ak4PFJetAnalyzer/t"); // MC tree
+    tree->AddFriend("hiEvtAnalyzer/HiTree"); // to read the weight
+   }
+   tree->AddFriend("hltanalysis/HltTree"); // to read the HLT bits
+   
    Init(tree);
 }
 
@@ -363,9 +439,12 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("trkPhi", trkPhi, &b_trkPhi);
    tree->SetBranchAddress("trkIp3d", trkIp3d, &b_trkIp3d);
    tree->SetBranchAddress("trkIp3dSig", trkIp3dSig, &b_trkIp3dSig);
+   tree->SetBranchAddress("trkIp2dSig", trkIp2dSig, &b_trkIp2dSig);
    tree->SetBranchAddress("trkDistToAxisSig", trkDistToAxisSig, &b_trkDistToAxisSig);
    tree->SetBranchAddress("trkDistToAxis", trkDistToAxis, &b_trkDistToAxis);
+   tree->SetBranchAddress("trkDz", trkDz, &b_trkDz);
    tree->SetBranchAddress("trkMatchSta", trkMatchSta, &b_trkMatchSta);
+   tree->SetBranchAddress("trkPdgId", trkPdgId, &b_trkPdgId);
    tree->SetBranchAddress("jtNsvtx", jtNsvtx, &b_jtNsvtx);
    tree->SetBranchAddress("nsvtx", &nsvtx, &b_nsvtx);
    tree->SetBranchAddress("svtxJetId", svtxJetId, &b_svtxJetId);
@@ -375,6 +454,8 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("svtxdl2d", svtxdl2d, &b_svtxdl2d);
    tree->SetBranchAddress("svtxdls2d", svtxdls2d, &b_svtxdls2d);
    tree->SetBranchAddress("svtxm", svtxm, &b_svtxm);
+   tree->SetBranchAddress("svtxmcorr", svtxmcorr, &b_svtxmcorr);
+   tree->SetBranchAddress("svtxnormchi2", svtxnormchi2, &b_svtxnormchi2);
    tree->SetBranchAddress("svtxpt", svtxpt, &b_svtxpt);
 
    tree->SetBranchAddress("ntrkInSvtxNotInJet", &ntrkInSvtxNotInJet, &b_ntrkInSvtxNotInJet);  
@@ -395,6 +476,20 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("discr_deepFlavour_b", discr_deepFlavour_b, &b_discr_deepFlavour_b);
    tree->SetBranchAddress("discr_deepFlavour_bb", discr_deepFlavour_bb, &b_discr_deepFlavour_bb);
    tree->SetBranchAddress("discr_deepFlavour_lepb", discr_deepFlavour_lepb, &b_discr_deepFlavour_lepb);
+
+   tree->SetBranchAddress("discr_particleNet_bb", discr_particleNet_bb, &b_discr_particleNet_bb);
+   tree->SetBranchAddress("discr_particleNet_pu", discr_particleNet_pu, &b_discr_particleNet_pu);
+   tree->SetBranchAddress("discr_particleNet_cc", discr_particleNet_cc, &b_discr_particleNet_cc);
+   tree->SetBranchAddress("discr_particleNet_undef", discr_particleNet_undef, &b_discr_particleNet_undef);
+   tree->SetBranchAddress("discr_particleNet_c", discr_particleNet_c, &b_discr_particleNet_c);
+   tree->SetBranchAddress("discr_particleNet_b", discr_particleNet_b, &b_discr_particleNet_b);
+   tree->SetBranchAddress("discr_particleNet_uds", discr_particleNet_uds, &b_discr_particleNet_uds);
+   tree->SetBranchAddress("discr_particleNet_g", discr_particleNet_g, &b_discr_particleNet_g);
+   tree->SetBranchAddress("discr_particleNet_BvsAll", discr_particleNet_BvsAll, &b_discr_particleNet_BvsAll);
+   tree->SetBranchAddress("discr_particleNet_CvsB", discr_particleNet_CvsB, &b_discr_particleNet_CvsB);
+   tree->SetBranchAddress("discr_particleNet_CvsL", discr_particleNet_CvsL, &b_discr_particleNet_CvsL);
+   tree->SetBranchAddress("discr_particleNet_QvsG", discr_particleNet_QvsG, &b_discr_particleNet_QvsG);
+
    tree->SetBranchAddress("pthat", &pthat, &b_pthat);
    tree->SetBranchAddress("refpt", refpt, &b_refpt);
    tree->SetBranchAddress("refeta", refeta, &b_refeta);
@@ -457,6 +552,24 @@ void tTree::Init(TTree *tree)
    tree->SetBranchAddress("refNtrk", refNtrk, &b_refNtrk);
 
    tree->SetBranchAddress("weight", &weight, &b_weight);
+
+   tree->SetBranchAddress("HLT_HIAK4CaloJet30_v1", &HLT_HIAK4CaloJet30_v1, &b_HLT_HIAK4CaloJet30_v1);
+   tree->SetBranchAddress("HLT_HIAK4CaloJet40_v1", &HLT_HIAK4CaloJet40_v1, &b_HLT_HIAK4CaloJet40_v1);
+   tree->SetBranchAddress("HLT_HIAK4CaloJet60_v1", &HLT_HIAK4CaloJet60_v1, &b_HLT_HIAK4CaloJet60_v1);
+   tree->SetBranchAddress("HLT_HIAK4CaloJet80_v1", &HLT_HIAK4CaloJet80_v1, &b_HLT_HIAK4CaloJet80_v1);
+   tree->SetBranchAddress("HLT_HIAK4CaloJet100_v1", &HLT_HIAK4CaloJet100_v1, &b_HLT_HIAK4CaloJet100_v1);
+
+   tree->SetBranchAddress("HLT_HIAK4PFJet30_v1", &HLT_HIAK4PFJet30_v1, &b_HLT_HIAK4PFJet30_v1);
+   tree->SetBranchAddress("HLT_HIAK4PFJet40_v1", &HLT_HIAK4PFJet40_v1, &b_HLT_HIAK4PFJet40_v1);
+   tree->SetBranchAddress("HLT_HIAK4PFJet60_v1", &HLT_HIAK4PFJet60_v1, &b_HLT_HIAK4PFJet60_v1);
+   tree->SetBranchAddress("HLT_HIAK4PFJet80_v1", &HLT_HIAK4PFJet80_v1, &b_HLT_HIAK4PFJet80_v1);
+   tree->SetBranchAddress("HLT_HIAK4PFJet100_v1", &HLT_HIAK4PFJet100_v1, &b_HLT_HIAK4PFJet100_v1);
+
+   tree->SetBranchAddress("HLT_HIL3Mu5_AK4PFJet30_v1", &HLT_HIL3Mu5_AK4PFJet30_v1, &b_HLT_HIL3Mu5_AK4PFJet30_v1);
+   tree->SetBranchAddress("HLT_HIL3Mu7_v1", &HLT_HIL3Mu7_v1, &b_HLT_HIL3Mu7_v1);
+   tree->SetBranchAddress("HLT_HIL3Mu3_v1", &HLT_HIL3Mu3_v1, &b_HLT_HIL3Mu3_v1);
+
+
 }
 
 void tTree::SetBranchStatus(TString branchName, Int_t status)
@@ -471,262 +584,262 @@ void tTree::SetBranchStatus(vector<TString> branchNames, Int_t status)
     }
 }
 
-void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
-{
-    // Activate relevant branches
-    tree->SetBranchStatus("*", 0);
-    for (auto activeBranchName : {"nref", "refeta", "refpt", "jtHadFlav",
-                                  "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", "rsjt1Y",
-                                  "rsjt2Pt", "rsjt2Eta", "rsjt2Phi", "rsjt2Y",
-                                  "jtpt", "jteta",
-                                  "sjt1Pt", "sjt1Eta", "sjt1Phi", "sjt1Y",
-                                  "sjt2Pt", "sjt2Eta", "sjt2Phi", "sjt2Y",
-                                  "discr_deepFlavour_b", "discr_deepFlavour_bb", "discr_deepFlavour_lepb",
-                                  "weight"
-                                  }) {
-        tree->SetBranchStatus(activeBranchName, 1);
-    }
+// void tTree::plot_rgzgkt(TString foutname, Float_t bTagWP = 0.9)
+// {
+//     // Activate relevant branches
+//     tree->SetBranchStatus("*", 0);
+//     for (auto activeBranchName : {"nref", "refeta", "refpt", "jtHadFlav",
+//                                   "rsjt1Pt", "rsjt1Eta", "rsjt1Phi", "rsjt1Y",
+//                                   "rsjt2Pt", "rsjt2Eta", "rsjt2Phi", "rsjt2Y",
+//                                   "jtpt", "jteta",
+//                                   "sjt1Pt", "sjt1Eta", "sjt1Phi", "sjt1Y",
+//                                   "sjt2Pt", "sjt2Eta", "sjt2Phi", "sjt2Y",
+//                                   "discr_deepFlavour_b", "discr_deepFlavour_bb", "discr_deepFlavour_lepb",
+//                                   "weight"
+//                                   }) {
+//         tree->SetBranchStatus(activeBranchName, 1);
+//     }
 
-    // Create histograms
+//     // Create histograms
 
-    // ln(0.4/rg)
-    Int_t x1bins = 10;
-    Float_t x1min = 0.;
-    Float_t x1max = 2.5;
+//     // ln(0.4/rg)
+//     Int_t x1bins = 10;
+//     Float_t x1min = 0.;
+//     Float_t x1max = 2.5;
 
-    // rg
-    // Int_t x1bins = 10;
-    // Float_t x1min = 0.;
-    // Float_t x1max = 0.4;
+//     // rg
+//     // Int_t x1bins = 10;
+//     // Float_t x1min = 0.;
+//     // Float_t x1max = 0.4;
 
-    // ln(kt)
-    Int_t y1bins = 40;
-    Float_t y1min = -5.;
-    Float_t y1max = 5.;
+//     // ln(kt)
+//     Int_t y1bins = 40;
+//     Float_t y1min = -5.;
+//     Float_t y1max = 5.;
 
-    // zg
-    Int_t y2bins = 10;
-    Float_t y2min = 0.1;
-    Float_t y2max = 0.5;
+//     // zg
+//     Int_t y2bins = 10;
+//     Float_t y2min = 0.1;
+//     Float_t y2max = 0.5;
 
-    // refpt
-    Int_t z1bins = 27*2;
-    Float_t z1min = 30.;
-    Float_t z1max = 300.;
+//     // refpt
+//     Int_t z1bins = 27*2;
+//     Float_t z1min = 30.;
+//     Float_t z1max = 300.;
 
-    // reco level
-    TH3D *hB_drkt = new TH3D("hB_drkt", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hB_rgkt = new TH3D("hB_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hB_rgzg = new TH3D("hB_rgzg", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-    TH3D *hB_zgkt = new TH3D("hB_zgkt", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     // reco level
+//     TH3D *hB_drkt = new TH3D("hB_drkt", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hB_rgkt = new TH3D("hB_rgkt", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hB_rgzg = new TH3D("hB_rgzg", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+//     TH3D *hB_zgkt = new TH3D("hB_zgkt", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hBtag_drkt = new TH3D("hBtag_drkt", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hBtag_rgkt = new TH3D("hBtag_rgkt", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hBtag_rgzg = new TH3D("hBtag_rgzg", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-    TH3D *hBtag_zgkt = new TH3D("hBtag_zgkt", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hBtag_drkt = new TH3D("hBtag_drkt", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hBtag_rgkt = new TH3D("hBtag_rgkt", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hBtag_rgzg = new TH3D("hBtag_rgzg", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+//     TH3D *hBtag_zgkt = new TH3D("hBtag_zgkt", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hBtagNoBB_drkt = new TH3D("hBtagNoBB_drkt", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hBtagNoBB_rgkt = new TH3D("hBtagNoBB_rgkt", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hBtagNoBB_drkt = new TH3D("hBtagNoBB_drkt", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hBtagNoBB_rgkt = new TH3D("hBtagNoBB_rgkt", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    // gen level
-    TH3D *hB_drkt_gen = new TH3D("hB_drkt_gen", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hB_rgkt_gen = new TH3D("hB_rgkt_gen", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hB_rgzg_gen = new TH3D("hB_rgzg_gen", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-    TH3D *hB_zgkt_gen = new TH3D("hB_zgkt_gen", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     // gen level
+//     TH3D *hB_drkt_gen = new TH3D("hB_drkt_gen", "dr, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hB_rgkt_gen = new TH3D("hB_rgkt_gen", "rg, kt, pt, bjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hB_rgzg_gen = new TH3D("hB_rgzg_gen", "rg, zg, pt, bjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+//     TH3D *hB_zgkt_gen = new TH3D("hB_zgkt_gen", "zg, kt, pt, bjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hBtag_drkt_gen = new TH3D("hBtag_drkt_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hBtag_rgkt_gen = new TH3D("hBtag_rgkt_gen", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hBtag_rgzg_gen = new TH3D("hBtag_rgzg_gen", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-    TH3D *hBtag_zgkt_gen = new TH3D("hBtag_zgkt_gen", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hBtag_drkt_gen = new TH3D("hBtag_drkt_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hBtag_rgkt_gen = new TH3D("hBtag_rgkt_gen", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hBtag_rgzg_gen = new TH3D("hBtag_rgzg_gen", "rg, zg, pt, b tagged jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+//     TH3D *hBtag_zgkt_gen = new TH3D("hBtag_zgkt_gen", "zg, kt, pt, b tagged jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hL_drkt_gen = new TH3D("hL_drkt_gen", "dr, kt, pt, guds jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hL_rgkt_gen = new TH3D("hL_rgkt_gen", "rg, kt, pt, guds jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hL_rgzg_gen = new TH3D("hL_rgzg_gen", "rg, zg, pt, guds jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-    TH3D *hL_zgkt_gen = new TH3D("hL_zgkt_gen", "zg, kt, pt, guds jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hL_drkt_gen = new TH3D("hL_drkt_gen", "dr, kt, pt, guds jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hL_rgkt_gen = new TH3D("hL_rgkt_gen", "rg, kt, pt, guds jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hL_rgzg_gen = new TH3D("hL_rgzg_gen", "rg, zg, pt, guds jets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+//     TH3D *hL_zgkt_gen = new TH3D("hL_zgkt_gen", "zg, kt, pt, guds jets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hC_drkt_gen = new TH3D("hC_drkt_gen", "dr, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hC_rgkt_gen = new TH3D("hC_rgkt_gen", "rg, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hC_rgzg_gen = new TH3D("hC_rgzg_gen", "rg, zg, pt, cjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
-    TH3D *hC_zgkt_gen = new TH3D("hC_zgkt_gen", "zg, kt, pt, cjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hC_drkt_gen = new TH3D("hC_drkt_gen", "dr, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hC_rgkt_gen = new TH3D("hC_rgkt_gen", "rg, kt, pt, cjets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hC_rgzg_gen = new TH3D("hC_rgzg_gen", "rg, zg, pt, cjets", x1bins, x1min, x1max, y2bins, y2min, y2max, z1bins, z1min, z1max);
+//     TH3D *hC_zgkt_gen = new TH3D("hC_zgkt_gen", "zg, kt, pt, cjets", y2bins, y2min, y2max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    TH3D *hSingleBtag_rgkt_gen = new TH3D("hSingleBtag_rgkt_gen", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
-    TH3D *hSingleBtag_drkt_gen = new TH3D("hSingleBtag_drkt_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hSingleBtag_rgkt_gen = new TH3D("hSingleBtag_rgkt_gen", "rg, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
+//     TH3D *hSingleBtag_drkt_gen = new TH3D("hSingleBtag_drkt_gen", "dr, kt, pt, b tagged jets", x1bins, x1min, x1max, y1bins, y1min, y1max, z1bins, z1min, z1max);
 
-    const Float_t jetR = 0.4;
+//     const Float_t jetR = 0.4;
 
-    std::cout << "Creating histograms ..." << std::endl;
-    Long64_t nentries = tree->GetEntries();
-    for (Long64_t ient = 0; ient < nentries; ient++) {
-        // Print progress
-        if (ient % 1000000 == 0) {
-            std::cout << "ient = " << ient << std::endl;
-        }
+//     std::cout << "Creating histograms ..." << std::endl;
+//     Long64_t nentries = tree->GetEntries();
+//     for (Long64_t ient = 0; ient < nentries; ient++) {
+//         // Print progress
+//         if (ient % 1000000 == 0) {
+//             std::cout << "ient = " << ient << std::endl;
+//         }
 
-        // Choose nb of events
-        const Long64_t total_events = 1000000;
-        if (ient > total_events) break;
-		// if (ient > 100) break;
+//         // Choose nb of events
+//         const Long64_t total_events = 1000000;
+//         if (ient > total_events) break;
+// 		// if (ient > 100) break;
  
-        tree->GetEntry(ient);
+//         tree->GetEntry(ient);
 
-        for (Int_t ijet = 0; ijet < nref; ijet++) {
-            // universal eta cut
-            if (std::abs(refeta[ijet]) > 2) continue;
+//         for (Int_t ijet = 0; ijet < nref; ijet++) {
+//             // universal eta cut
+//             if (std::abs(refeta[ijet]) > 2) continue;
 
-            Float_t dr = -1.;
-            Float_t rg = -1.;
-            Float_t kt = -1.;
-            Float_t zg = -1.;
+//             Float_t dr = -1.;
+//             Float_t rg = -1.;
+//             Float_t kt = -1.;
+//             Float_t zg = -1.;
 
-            Float_t logdr = -1.;
-            Float_t logrg = -1.;
-            Float_t logkt = -10.;
+//             Float_t logdr = -1.;
+//             Float_t logrg = -1.;
+//             Float_t logkt = -10.;
 
-            Float_t dr_gen = -1.;
-            Float_t rg_gen = -1.;
-            Float_t kt_gen = -1.;
-            Float_t zg_gen = -1.;
+//             Float_t dr_gen = -1.;
+//             Float_t rg_gen = -1.;
+//             Float_t kt_gen = -1.;
+//             Float_t zg_gen = -1.;
 
-            Float_t logdr_gen = -1.;
-            Float_t logrg_gen = -1.;
-            Float_t logkt_gen = -10.;
+//             Float_t logdr_gen = -1.;
+//             Float_t logrg_gen = -1.;
+//             Float_t logkt_gen = -10.;
 
-            // Calculate rg, kt only for 2 prong jets
-            if (sjt2Pt[ijet] > 0.) {
-                dr = calc_dr(sjt1Eta[ijet], sjt1Phi[ijet], sjt2Eta[ijet], sjt2Phi[ijet]);
-                rg = calc_rg(sjt1Y[ijet], sjt1Phi[ijet], sjt2Y[ijet], sjt2Phi[ijet]);
-                kt = sjt2Pt[ijet] * rg;
-                zg = sjt2Pt[ijet] / (sjt1Pt[ijet] + sjt2Pt[ijet]);
+//             // Calculate rg, kt only for 2 prong jets
+//             if (sjt2Pt[ijet] > 0.) {
+//                 dr = calc_dr(sjt1Eta[ijet], sjt1Phi[ijet], sjt2Eta[ijet], sjt2Phi[ijet]);
+//                 rg = calc_rg(sjt1Y[ijet], sjt1Phi[ijet], sjt2Y[ijet], sjt2Phi[ijet]);
+//                 kt = sjt2Pt[ijet] * rg;
+//                 zg = sjt2Pt[ijet] / (sjt1Pt[ijet] + sjt2Pt[ijet]);
                 
-                // calculate logs
-                logdr = std::log(jetR/dr);
-                logrg = std::log(jetR/rg);
-                logkt = std::log(kt);
+//                 // calculate logs
+//                 logdr = std::log(jetR/dr);
+//                 logrg = std::log(jetR/rg);
+//                 logkt = std::log(kt);
 
-                // for poster
-                // logrg = rg;
-            }
+//                 // for poster
+//                 // logrg = rg;
+//             }
 
-            if (rsjt2Pt[ijet] > 0.) {
-                dr_gen = calc_dr(rsjt1Eta[ijet], rsjt1Phi[ijet], rsjt2Eta[ijet], rsjt2Phi[ijet]);
-                rg_gen = calc_rg(rsjt1Y[ijet], rsjt1Phi[ijet], rsjt2Y[ijet], rsjt2Phi[ijet]);
-                kt_gen = rsjt2Pt[ijet] * rg_gen;
-                zg_gen = rsjt2Pt[ijet] / (rsjt1Pt[ijet] + rsjt2Pt[ijet]);
+//             if (rsjt2Pt[ijet] > 0.) {
+//                 dr_gen = calc_dr(rsjt1Eta[ijet], rsjt1Phi[ijet], rsjt2Eta[ijet], rsjt2Phi[ijet]);
+//                 rg_gen = calc_rg(rsjt1Y[ijet], rsjt1Phi[ijet], rsjt2Y[ijet], rsjt2Phi[ijet]);
+//                 kt_gen = rsjt2Pt[ijet] * rg_gen;
+//                 zg_gen = rsjt2Pt[ijet] / (rsjt1Pt[ijet] + rsjt2Pt[ijet]);
                 
-                // calculate logs
-                logdr_gen = std::log(jetR/dr_gen);
-                logrg_gen = std::log(jetR/rg_gen);
-                logkt_gen = std::log(kt_gen);
+//                 // calculate logs
+//                 logdr_gen = std::log(jetR/dr_gen);
+//                 logrg_gen = std::log(jetR/rg_gen);
+//                 logkt_gen = std::log(kt_gen);
 
-                // for poster
-                // logrg_gen = rg_gen;
-            }
+//                 // for poster
+//                 // logrg_gen = rg_gen;
+//             }
 
-            // Fill true-flavour histograms
-            bool isBjet = (jtHadFlav[ijet] == 5);
-            if (isBjet) {
-               hB_drkt->Fill(logdr, logkt, refpt[ijet], weight);
-               hB_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
-               hB_rgzg->Fill(logrg, zg, refpt[ijet], weight);
-               hB_zgkt->Fill(zg, logkt, refpt[ijet], weight);
+//             // Fill true-flavour histograms
+//             bool isBjet = (jtHadFlav[ijet] == 5);
+//             if (isBjet) {
+//                hB_drkt->Fill(logdr, logkt, refpt[ijet], weight);
+//                hB_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
+//                hB_rgzg->Fill(logrg, zg, refpt[ijet], weight);
+//                hB_zgkt->Fill(zg, logkt, refpt[ijet], weight);
             
-               hB_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
-               hB_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
-               hB_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
-               hB_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
+//                hB_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+//                hB_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+//                hB_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
+//                hB_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
             
 
-               // Fill the b-tag histogram
-               bool passWP = ((discr_deepFlavour_b[ijet] + discr_deepFlavour_bb[ijet] + discr_deepFlavour_lepb[ijet]) > bTagWP);
-            //    bool passWP = ((discr_deepFlavour_b[ijet] + discr_deepFlavour_lepb[ijet]) > 0.7);
-               if (passWP) {
-                    hBtag_drkt->Fill(logdr, logkt, refpt[ijet], weight);
-                    hBtag_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
-                    hBtag_rgzg->Fill(logrg, zg, refpt[ijet], weight);
-                    hBtag_zgkt->Fill(zg, logkt, refpt[ijet], weight);
+//                // Fill the b-tag histogram
+//                bool passWP = ((discr_deepFlavour_b[ijet] + discr_deepFlavour_bb[ijet] + discr_deepFlavour_lepb[ijet]) > bTagWP);
+//             //    bool passWP = ((discr_deepFlavour_b[ijet] + discr_deepFlavour_lepb[ijet]) > 0.7);
+//                if (passWP) {
+//                     hBtag_drkt->Fill(logdr, logkt, refpt[ijet], weight);
+//                     hBtag_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
+//                     hBtag_rgzg->Fill(logrg, zg, refpt[ijet], weight);
+//                     hBtag_zgkt->Fill(zg, logkt, refpt[ijet], weight);
 
-                    hBtag_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
-                    hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
-                    hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
-                    hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);  
-               }
+//                     hBtag_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+//                     hBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+//                     hBtag_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
+//                     hBtag_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);  
+//                }
 
-               if (passWP && (discr_deepFlavour_bb[ijet] < 0.2)) {
-                    hBtagNoBB_drkt->Fill(logdr, logkt, refpt[ijet], weight);
-                    hSingleBtag_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+//                if (passWP && (discr_deepFlavour_bb[ijet] < 0.2)) {
+//                     hBtagNoBB_drkt->Fill(logdr, logkt, refpt[ijet], weight);
+//                     hSingleBtag_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
 
-                    hBtagNoBB_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
-                    hSingleBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
-               }
-            } // end if is b jet
+//                     hBtagNoBB_rgkt->Fill(logrg, logkt, refpt[ijet], weight);
+//                     hSingleBtag_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+//                }
+//             } // end if is b jet
 
-            bool isLightJet = (jtHadFlav[ijet] == 0);
-            if (isLightJet) {
-                hL_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
-                hL_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
-                hL_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
-                hL_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
-            }
+//             bool isLightJet = (jtHadFlav[ijet] == 0);
+//             if (isLightJet) {
+//                 hL_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+//                 hL_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+//                 hL_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
+//                 hL_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
+//             }
 
-            bool isCJet = (jtHadFlav[ijet] == 4);
-            if (isCJet) {
-                hC_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
-                hC_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
-                hC_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
-                hC_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
-            }
-        } // jet loop
-    } // entry loop
+//             bool isCJet = (jtHadFlav[ijet] == 4);
+//             if (isCJet) {
+//                 hC_drkt_gen->Fill(logdr_gen, logkt_gen, refpt[ijet], weight);
+//                 hC_rgkt_gen->Fill(logrg_gen, logkt_gen, refpt[ijet], weight);
+//                 hC_rgzg_gen->Fill(logrg_gen, zg_gen, refpt[ijet], weight);
+//                 hC_zgkt_gen->Fill(zg_gen, logkt_gen, refpt[ijet], weight);
+//             }
+//         } // jet loop
+//     } // entry loop
 
-    // Save histograms
-    std::cout << "\n(Re)creating file " << foutname << std::endl;
-    TFile *fout = new TFile(foutname, "recreate");
+//     // Save histograms
+//     std::cout << "\n(Re)creating file " << foutname << std::endl;
+//     TFile *fout = new TFile(foutname, "recreate");
 
-    for (auto h : {hB_drkt, hB_rgkt, hB_rgzg, hB_zgkt, 
-                   hBtag_drkt, hBtag_rgkt, hBtag_rgzg, hBtag_zgkt,
-                   hB_drkt_gen, hB_rgkt_gen, hB_rgzg_gen, hB_zgkt_gen, 
-                   hBtag_drkt_gen, hBtag_rgkt_gen, hBtag_rgzg_gen, hBtag_zgkt_gen,
-                   hL_drkt_gen, hL_rgkt_gen, hL_rgzg_gen, hL_zgkt_gen, 
-                   hC_drkt_gen, hC_rgkt_gen, hC_rgzg_gen, hC_zgkt_gen, 
-                   hBtagNoBB_drkt,
-                   hSingleBtag_drkt_gen,
-                   hBtagNoBB_rgkt,
-                   hSingleBtag_rgkt_gen}) {
-        h->Write();
-    }
+//     for (auto h : {hB_drkt, hB_rgkt, hB_rgzg, hB_zgkt, 
+//                    hBtag_drkt, hBtag_rgkt, hBtag_rgzg, hBtag_zgkt,
+//                    hB_drkt_gen, hB_rgkt_gen, hB_rgzg_gen, hB_zgkt_gen, 
+//                    hBtag_drkt_gen, hBtag_rgkt_gen, hBtag_rgzg_gen, hBtag_zgkt_gen,
+//                    hL_drkt_gen, hL_rgkt_gen, hL_rgzg_gen, hL_zgkt_gen, 
+//                    hC_drkt_gen, hC_rgkt_gen, hC_rgzg_gen, hC_zgkt_gen, 
+//                    hBtagNoBB_drkt,
+//                    hSingleBtag_drkt_gen,
+//                    hBtagNoBB_rgkt,
+//                    hSingleBtag_rgkt_gen}) {
+//         h->Write();
+//     }
 
-    fout->Close();
-}
+//     fout->Close();
+// }
 
-Float_t tTree::calc_dr(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2) {
-    ROOT::Math::PtEtaPhiMVector v1;
-    v1.SetPt(1.);
-    v1.SetEta(eta1);
-    v1.SetPhi(phi1);
+// Float_t tTree::calc_dr(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2) {
+//     ROOT::Math::PtEtaPhiMVector v1;
+//     v1.SetPt(1.);
+//     v1.SetEta(eta1);
+//     v1.SetPhi(phi1);
 
-    ROOT::Math::PtEtaPhiMVector v2;
-    v2.SetPt(1.);
-    v2.SetEta(eta2);
-    v2.SetPhi(phi2);
+//     ROOT::Math::PtEtaPhiMVector v2;
+//     v2.SetPt(1.);
+//     v2.SetEta(eta2);
+//     v2.SetPhi(phi2);
 
-    Float_t dr = ROOT::Math::VectorUtil::DeltaR(v1, v2);
-    return dr;
-}
+//     Float_t dr = ROOT::Math::VectorUtil::DeltaR(v1, v2);
+//     return dr;
+// }
 
-Float_t tTree::calc_rg(Float_t y1, Float_t phi1, Float_t y2, Float_t phi2) {
-    ROOT::Math::PtEtaPhiMVector v1;
-    v1.SetPhi(phi1);
+// Float_t tTree::calc_rg(Float_t y1, Float_t phi1, Float_t y2, Float_t phi2) {
+//     ROOT::Math::PtEtaPhiMVector v1;
+//     v1.SetPhi(phi1);
 
-    ROOT::Math::PtEtaPhiMVector v2;
-    v2.SetPhi(phi2);
+//     ROOT::Math::PtEtaPhiMVector v2;
+//     v2.SetPhi(phi2);
 
-    Float_t dphi = ROOT::Math::VectorUtil::DeltaPhi(v1, v2);
-    Float_t dy = y1 - y2;
+//     Float_t dphi = ROOT::Math::VectorUtil::DeltaPhi(v1, v2);
+//     Float_t dy = y1 - y2;
 
-    // Float_t dphi_test = std::acos(std::cos(phi1-phi2));
+//     // Float_t dphi_test = std::acos(std::cos(phi1-phi2));
 
-    // std::cout << "dphi = " << dphi << std::endl;
-    // std::cout << "dphi_test = " << dphi_test << std::endl;
-    Float_t rg = std::sqrt((dy*dy) + (dphi*dphi));
-    return rg;
-}
+//     // std::cout << "dphi = " << dphi << std::endl;
+//     // std::cout << "dphi_test = " << dphi_test << std::endl;
+//     Float_t rg = std::sqrt((dy*dy) + (dphi*dphi));
+//     return rg;
+// }
