@@ -73,10 +73,17 @@ void draw_unc_sym_inclusive(TString observable="rg")
     h_trk_inef_up_rel->SetLineStyle(4);    
 
     TH1D *h_model_unc_rel = (TH1D *) fin_model_unc->Get(Form("h_model_unc_rel_%d", ibin_pt))->Clone(Form("h_model_unc_rel_%d", ibin_pt));
+    // alternative model unc (independent variations)
+    // TH1D *h_model_unc_rel = (TH1D *) fin_model_unc->Get("h_model_unc_herwigSum_rel")->Clone(Form("h_model_unc_rel_%d", ibin_pt));
     h_model_unc_rel->SetLineColor(cmsYellow);
     h_model_unc_rel->SetMarkerStyle(kFullStar);
     h_model_unc_rel->SetLineWidth(3);
     h_model_unc_rel->SetLineStyle(5);
+    // average neighboring bins at pinching point (rg bin=5)
+    std::cout << "before: " << h_model_unc_rel->GetBinContent(5) << std::endl;
+    double avg = (std::abs(h_model_unc_rel->GetBinContent(4))+std::abs(h_model_unc_rel->GetBinContent(6))) / 2.;
+    h_model_unc_rel->SetBinContent(5, avg);
+    std::cout << "after: " << h_model_unc_rel->GetBinContent(5) << std::endl;
 
     TH1D *h_pythia_var_up_rel = (TH1D *) fin_pythia_var->Get(Form("h_total_unc_rel_sym_%d", ibin_pt))->Clone(Form("h_pythia_var_up_rel_%d", ibin_pt));
     h_pythia_var_up_rel->SetLineColor(cmsRed);

@@ -127,13 +127,16 @@ void model_unc_inclusive(TString observable="rg")
         // h_model_unc->Draw("hist same");
         h_model_unc_rel->Draw("pe1");
 
+        TH1D *h_unc_rel = (TH1D *) h_model_unc_rel->Clone(Form("h_unc_rel_%d",ibin_pt));
         TH1D *h_band = (TH1D *) h_model_unc_rel->Clone("h_band");
         h_band->Reset();
         for (int ibin_x=1; ibin_x<=h_model_unc_rel->GetNbinsX(); ibin_x++) {
-            double maxUnc = h_model_unc_rel->GetBinContent(ibin_x);
+            double maxUnc = std::abs(h_model_unc_rel->GetBinContent(ibin_x));
             h_band->SetBinContent(ibin_x, 0.);
             h_band->SetBinError(ibin_x, maxUnc);
+            h_unc_rel->SetBinContent(ibin_x, maxUnc);
         }
+        h_unc_rel->Write();
 
         h_band->SetMarkerSize(0);
         h_band->SetFillStyle(1001);

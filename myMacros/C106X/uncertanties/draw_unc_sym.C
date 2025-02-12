@@ -6,7 +6,7 @@ void draw_unc_sym(TString observable="rg")
     TString xlabel;
     if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/^{}p_{T}^{jet,ch}";
+    else if (observable=="zpt") xlabel = "z_{b,ch} #equiv p_{T}^{b,ch}/^{}p_{T}^{jet,ch}";
 
     // ---- Setup 
     gStyle->SetCanvasPreferGL(kTRUE);
@@ -79,10 +79,17 @@ void draw_unc_sym(TString observable="rg")
     h_trk_inef_up_rel->SetLineStyle(4);    
 
     TH1D *h_model_unc_rel = (TH1D *) fin_model_unc->Get(Form("h_model_unc_rel_%d", ibin_pt))->Clone(Form("h_model_unc_rel_%d", ibin_pt));
+    // alternative model unc (independent variations)
+    // TH1D *h_model_unc_rel = (TH1D *) fin_model_unc->Get("h_model_unc_herwigSum_rel")->Clone(Form("h_model_unc_rel_%d", ibin_pt));
     h_model_unc_rel->SetLineColor(cmsYellow);
     h_model_unc_rel->SetMarkerStyle(kFullStar);
     h_model_unc_rel->SetLineWidth(3);
     h_model_unc_rel->SetLineStyle(5);
+    // average neighboring bins at pinching point (zch bin=2)
+    std::cout << "before: " << h_model_unc_rel->GetBinContent(2) << std::endl;
+    double avg = (std::abs(h_model_unc_rel->GetBinContent(1))+std::abs(h_model_unc_rel->GetBinContent(3))) / 2.;
+    h_model_unc_rel->SetBinContent(2, avg);
+    std::cout << "after: " << h_model_unc_rel->GetBinContent(2) << std::endl;
 
     TH1D *h_model_fit_unc_rel = (TH1D *) fin_model_fit_unc->Get(Form("h_model_fit_unc_rel_%d", ibin_pt))->Clone(Form("h_model_fit_unc_rel_%d", ibin_pt));
     h_model_fit_unc_rel->SetLineColor(cmsOrange);
@@ -288,13 +295,13 @@ void draw_unc_sym(TString observable="rg")
     if (observable!="zpt") {
         jet_info->SetTextAlign(10);
         jet_info->DrawLatex(0.11, 0.54, "anti-k_{T}, R = 0.4 b jets");
-        jet_info->DrawLatex(0.11, 0.48, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.11, 0.47, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
         jet_info->DrawLatex(0.11, 0.42, "Soft drop (charged particles)");
-        jet_info->DrawLatex(0.11, 0.36, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+        jet_info->DrawLatex(0.11, 0.35, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
     } else {
         jet_info->SetTextAlign(30);
         jet_info->DrawLatex(0.93, 0.55, "anti-k_{T}, R = 0.4 b jets");
-        jet_info->DrawLatex(0.93, 0.49, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.93, 0.48, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
     }
 
     if (observable=="rg") {
