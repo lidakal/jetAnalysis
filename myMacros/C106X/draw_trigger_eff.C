@@ -12,7 +12,7 @@ void drawHeader(void) {
     lumi->SetNDC();
     lumi->SetTextSize(28);
     lumi->SetTextAlign(32);
-    lumi->DrawLatex(0.965, 0.965, "pp 301^{} pb^{-1} (5.02 TeV)");
+    lumi->DrawLatex(0.95, 0.965, "pp 301^{} pb^{-1} (5.02 TeV)");
 }
 
 void draw_trigger_eff()
@@ -30,7 +30,7 @@ void draw_trigger_eff()
 
     Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
-    gStyle->SetLegendTextSize(text_size);
+    gStyle->SetLegendTextSize(text_size-4);
     gStyle->SetLabelSize(text_size-4, "XYZ");
     gStyle->SetTitleSize(text_size, "XYZ");
     gStyle->SetPaintTextFormat(".2f");
@@ -159,15 +159,18 @@ void draw_trigger_eff()
     c_40and60and80and100->SetLogy();
     c_40and60and80and100->RedrawAxis();
     drawHeader();
-    // TLatex *jet_info = new TLatex;
-    // jet_info->SetNDC();
-    // jet_info->DrawLatex(0.5, 0.58, "anti-k_{T}, R=0.4 inclusive jets");
-    // jet_info->DrawLatex(0.5, 0.52, "|#eta^{jet}| < 2");
-    // jet_info->Draw();
+    TLatex *jet_info = new TLatex;
+    jet_info->SetNDC();
+    jet_info->SetTextSize(text_size-4);
+    jet_info->SetTextAlign(32);
+    jet_info->DrawLatex(0.9, 0.56, "anti-k_{T}, R=0.4 inclusive jets");
+    jet_info->DrawLatex(0.9, 0.5, "|#eta^{jet}| < 2");
+    jet_info->Draw();
     c_40and60and80and100->Draw();
     h40and60and80and100_stack->GetXaxis()->SetRangeUser(30,300);
     // c_40and60and80and100->Print("plots_an/jtpt_spectrum_pf40to100.png");
     c_40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf40to100.png");
+    c_40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf40to100.pdf");
 
     TCanvas *c_30and40and60and80and100 = new TCanvas("c_30and40and60and80and100", "Combination 30, 40, 60, 80 and 100", 700, 600);
     c_30and40and60and80and100->SetLeftMargin(0.15);
@@ -185,13 +188,16 @@ void draw_trigger_eff()
     drawHeader();
     // TLatex *jet_info = new TLatex;
     // jet_info->SetNDC();
-    // jet_info->DrawLatex(0.5, 0.58, "anti-k_{T}, R=0.4 inclusive jets");
-    // jet_info->DrawLatex(0.5, 0.52, "|#eta^{jet}| < 2");
-    // jet_info->Draw();
+    // jet_info->SetTextSize(text_size-4);
+    // jet_info->SetTextAlign(32);
+    jet_info->DrawLatex(0.9, 0.56, "anti-k_{T}, R=0.4 inclusive jets");
+    jet_info->DrawLatex(0.9, 0.5, "|#eta^{jet}| < 2");
+    jet_info->Draw();
     c_30and40and60and80and100->Draw();
     h30and40and60and80and100_stack->GetXaxis()->SetRangeUser(30,300);
     // c_30and40and60and80and100->Print("plots_an/jtpt_spectrum_pf30to100.png");
     c_30and40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf30to100.png");
+    c_30and40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf30to100.pdf");
 
     TCanvas *c_eff = new TCanvas("c_eff", "Trigger efficiency of PFJet60", 700, 600);
     c_eff->SetLeftMargin(0.15);
@@ -214,5 +220,5 @@ void draw_trigger_eff()
     c_eff->Draw();
     // c_eff->Print("plots_an/pfjet40_efficiency.png");
     c_eff->Print("plots_thesis/pfjet40_efficiency.png");
-    // c_eff->Print("plots_thesis/pfjet40_efficiency.pdf");
+    c_eff->Print("plots_thesis/pfjet40_efficiency.pdf");
 }
