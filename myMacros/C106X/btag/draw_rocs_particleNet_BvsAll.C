@@ -1,5 +1,20 @@
 #include "../myPalette.h"
-#include "../draw_utils.h"
+// #include "../draw_utils.h"
+#include "../cms_palette.h"
+
+void drawHeaderSimulation(void) {
+    TLatex *prelim = new TLatex;
+    prelim->SetNDC();
+    prelim->SetTextSize(28);
+    prelim->SetTextAlign(12);
+    prelim->DrawLatex(0.15, 0.965, "#bf{CMS} #it{Private work}");
+
+    TLatex *lumi = new TLatex;
+    lumi->SetNDC();
+    lumi->SetTextSize(28);
+    lumi->SetTextAlign(32);
+    lumi->DrawLatex(0.95, 0.965, "pp 301^{} pb^{-1} (5.02 TeV)");
+}
 
 void draw_rocs_particleNet_BvsAll()
 {
@@ -7,10 +22,10 @@ void draw_rocs_particleNet_BvsAll()
     float ptMin = 80.;
     float ptMax = 140.;
 
-    Float_t text_size = 20.;
+    Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
-    gStyle->SetLegendTextSize(text_size);
-    gStyle->SetLabelSize(text_size, "XYZ");
+    gStyle->SetLegendTextSize(text_size-4);
+    gStyle->SetLabelSize(text_size-4, "XYZ");
     gStyle->SetTitleSize(text_size, "XYZ");
 
     // ---- Grab histos
@@ -34,46 +49,49 @@ void draw_rocs_particleNet_BvsAll()
 
     int nbins = hB_particleNet_b->GetNbinsX();
 
-    TLegend *leg_roc = new TLegend(0.5, 0.2, 0.9, 0.4);
-    leg_roc->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", ptMin, ptMax));
+    TLegend *leg_roc = new TLegend(0.6, 0.2, 0.9, 0.4);
+    // leg_roc->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", ptMin, ptMax));
     leg_roc->SetFillStyle(0);
     leg_roc->SetBorderSize(0);
     leg_roc->SetMargin(0.15);
 
     TMultiGraph *rocs = new TMultiGraph();
-    rocs->GetXaxis()->SetTitle("b jet efficiency");
-    rocs->GetYaxis()->SetTitle("mistag rate");
+    rocs->GetXaxis()->SetTitle("Signal efficiency");
+    rocs->GetYaxis()->SetTitle("Misidentification rate");
 
     TGraph *bbb_vs_c_particleNet = new TGraph(nbins);
     bbb_vs_c_particleNet->SetMarkerStyle(kFullSquare);
-    bbb_vs_c_particleNet->SetMarkerColor(mykRed);
+    bbb_vs_c_particleNet->SetMarkerColor(cmsRed);
     bbb_vs_c_particleNet->SetMarkerSize(1);
     bbb_vs_c_particleNet->SetLineColor(bbb_vs_c_particleNet->GetMarkerColor());
     bbb_vs_c_particleNet->SetLineStyle(kSolid);
+    bbb_vs_c_particleNet->SetLineWidth(2);
     rocs->Add(bbb_vs_c_particleNet);
-    leg_roc->AddEntry(bbb_vs_c_particleNet, "b vs c, particleNet", "pl");
+    leg_roc->AddEntry(bbb_vs_c_particleNet, "B vs C", "pl");
 
     TGraph *bbb_vs_l_particleNet = new TGraph(nbins);
     bbb_vs_l_particleNet->SetMarkerStyle(kFullTriangleUp);
-    bbb_vs_l_particleNet->SetMarkerColor(mykGreen);
+    bbb_vs_l_particleNet->SetMarkerColor(cmsViolet);
     bbb_vs_l_particleNet->SetMarkerSize(1);
     bbb_vs_l_particleNet->SetLineColor(bbb_vs_l_particleNet->GetMarkerColor());
     bbb_vs_l_particleNet->SetLineStyle(kSolid);
+    bbb_vs_l_particleNet->SetLineWidth(2);
     rocs->Add(bbb_vs_l_particleNet);
-    leg_roc->AddEntry(bbb_vs_l_particleNet, "b vs guds, particleNet", "pl");
+    leg_roc->AddEntry(bbb_vs_l_particleNet, "B vs Light (guds)", "pl");
 
     TGraph *bbb_vs_all_particleNet = new TGraph(nbins);
     bbb_vs_all_particleNet->SetMarkerStyle(kFullCircle);
-    bbb_vs_all_particleNet->SetMarkerColor(mykBlue);
+    bbb_vs_all_particleNet->SetMarkerColor(cmsBlue);
     bbb_vs_all_particleNet->SetMarkerSize(1);
     bbb_vs_all_particleNet->SetLineColor(bbb_vs_all_particleNet->GetMarkerColor());
     bbb_vs_all_particleNet->SetLineStyle(kSolid);
+    bbb_vs_all_particleNet->SetLineWidth(2);
     rocs->Add(bbb_vs_all_particleNet);
-    leg_roc->AddEntry(bbb_vs_all_particleNet, "b vs all, particleNet", "pl");
+    leg_roc->AddEntry(bbb_vs_all_particleNet, "B vs All", "pl");
 
     TGraph *bbb_vs_c_deepFlavour = new TGraph(nbins);
     bbb_vs_c_deepFlavour->SetMarkerStyle(kOpenSquare);
-    bbb_vs_c_deepFlavour->SetMarkerColor(mykRed);
+    bbb_vs_c_deepFlavour->SetMarkerColor(cmsRed);
     bbb_vs_c_deepFlavour->SetMarkerSize(2);
     bbb_vs_c_deepFlavour->SetLineColor(bbb_vs_c_deepFlavour->GetMarkerColor());
     bbb_vs_c_deepFlavour->SetLineStyle(kDashed);
@@ -82,7 +100,7 @@ void draw_rocs_particleNet_BvsAll()
 
     TGraph *bbb_vs_l_deepFlavour = new TGraph(nbins);
     bbb_vs_l_deepFlavour->SetMarkerStyle(kOpenTriangleUp);
-    bbb_vs_l_deepFlavour->SetMarkerColor(mykGreen);
+    bbb_vs_l_deepFlavour->SetMarkerColor(cmsViolet);
     bbb_vs_l_deepFlavour->SetMarkerSize(2);
     bbb_vs_l_deepFlavour->SetLineColor(bbb_vs_l_deepFlavour->GetMarkerColor());
     bbb_vs_l_deepFlavour->SetLineStyle(kDashed);
@@ -136,7 +154,7 @@ void draw_rocs_particleNet_BvsAll()
         double cperc_particleNet = c_pass_particleNet / all_pass_particleNet;
         double lperc_particleNet = l_pass_particleNet / all_pass_particleNet;
 
-        if (ibin==7) {
+        if (ibin==25) {
             std::cout << "ParticleNet x bin = " << ibin 
                       << ", BvsAll > " << hB_particleNet_b->GetXaxis()->GetBinLowEdge(ibin)
                       << "\n\tBvsAll eff = " << eff_particleNet 
@@ -190,14 +208,28 @@ void draw_rocs_particleNet_BvsAll()
 
     }
 
-    TCanvas *c_roc = new TCanvas("c_roc", "", 800, 600);
+    rocs->GetXaxis()->SetRangeUser(0.45, 1.1);
+    rocs->GetYaxis()->SetRangeUser(1e-6, 1e1);
+
+    TCanvas *c_roc = new TCanvas("c_roc", "", 700, 600);
+    c_roc->SetLeftMargin(0.15);
+    c_roc->SetRightMargin(0.05);
+    c_roc->SetTopMargin(0.07);
+    c_roc->SetBottomMargin(0.15);
     c_roc->SetLogy();
     rocs->Draw("pla");
     leg_roc->Draw();
     drawHeaderSimulation();
+
+    TLatex *jet_info = new TLatex;
+    jet_info->SetNDC();
+    jet_info->SetTextSize(text_size-4);
+    jet_info->SetTextAlign(12);
+    jet_info->DrawLatex(0.2, 0.86, "anti-k_{T}, R=0.4 jets");
+    jet_info->DrawLatex(0.2, 0.8, "|#eta^{jet}| < 2, 80 < p_{T}^{jet} < 140 GeV");
+    jet_info->Draw();
+
     c_roc->Draw();
-    c_roc->Print("plots_an/particleNet_BvsAll_roc.png");
-    
-
-
+    // c_roc->Print("plots_an/particleNet_BvsAll_roc.png");
+    c_roc->Print("../plots_thesis/particleNet_BvsAll_roc.pdf");
 }
