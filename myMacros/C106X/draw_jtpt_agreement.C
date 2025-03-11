@@ -37,9 +37,9 @@ void draw_jtpt_agreement()
     
     TH1D *h_jtpt_incl_1d = (TH1D *) h_jtpt_incl->ProjectionY();
     h_jtpt_incl_1d->Scale(1/h_jtpt_incl_1d->Integral());
-    h_jtpt_incl_1d->GetXaxis()->SetTitle("p_{T}^{jet,rceo}/p_{T}^{jet,true}");
+    h_jtpt_incl_1d->GetXaxis()->SetTitle("p_{T}^{jet,reco}/p_{T}^{jet,true}");
     h_jtpt_incl_1d->GetXaxis()->SetTitleOffset(1.3);
-    h_jtpt_incl_1d->GetYaxis()->SetTitle("1/N dN/dp_{T}^{jet,rceo}/p_{T}^{jet,true}");
+    h_jtpt_incl_1d->GetYaxis()->SetTitle("1/N dN/dp_{T}^{jet,reco}/p_{T}^{jet,true}");
     h_jtpt_incl_1d->GetYaxis()->SetRangeUser(0., 0.15);
 
     TH1D *h_jtpt_bjet_1d = (TH1D *) h_jtpt_bjet->ProjectionY();
@@ -67,17 +67,17 @@ void draw_jtpt_agreement()
     jet_info->SetNDC();
     jet_info->SetTextSize(text_size-4);
     jet_info->SetTextAlign(12);
-    jet_info->DrawLatex(0.2, 0.86, "anti-k_{T}, R=0.4 jets");
-    jet_info->DrawLatex(0.2, 0.8, "80 < p_{T}^{jet,reco} < 140 GeV");
-    jet_info->DrawLatex(0.2, 0.74, "|#eta^{jet}| < 2");
+    jet_info->DrawLatex(0.18, 0.86, "anti-k_{T}, R=0.4 jets");
+    jet_info->DrawLatex(0.18, 0.8, "80 < p_{T}^{jet,true} < 140 (GeV/c)");
+    jet_info->DrawLatex(0.18, 0.74, "|#eta^{jet}| < 2");
     jet_info->Draw();
 
     // c_jtpt_ratio->Print("plots_an/jtpt_agreement_ratio.png");
     c_jtpt_ratio->Print("plots_thesis/jtpt_agreement_ratio.pdf");
 
     TProfile *h_jtpt_incl_prof = (TProfile *) h_jtpt_incl->ProfileX();
-    h_jtpt_incl_prof->GetXaxis()->SetTitle("p_{T}^{jet,true}");
-    h_jtpt_incl_prof->GetYaxis()->SetTitle("<p_{T}^{jet,rceo}/p_{T}^{jet,true}>");
+    h_jtpt_incl_prof->GetXaxis()->SetTitle("p_{T}^{jet,true} (GeV/c)");
+    h_jtpt_incl_prof->GetYaxis()->SetTitle("<p_{T}^{jet,reco}/p_{T}^{jet,true}>");
     h_jtpt_incl_prof->GetYaxis()->SetRangeUser(0.95, 1.05);
     h_jtpt_incl_prof->GetXaxis()->SetTitleOffset(1.3);
 
@@ -102,8 +102,8 @@ void draw_jtpt_agreement()
     drawHeaderSimulation();
 
     jet_info->DrawLatex(0.2, 0.86, "anti-k_{T}, R=0.4 jets");
-    jet_info->DrawLatex(0.2, 0.8, "80 < p_{T}^{jet,reco} < 140 GeV");
-    jet_info->DrawLatex(0.2, 0.74, "|#eta^{jet}| < 2");
+    // jet_info->DrawLatex(0.2, 0.8, "80 < p_{T}^{jet,reco} < 140 (GeV/c)");
+    jet_info->DrawLatex(0.2, 0.8, "|#eta^{jet}| < 2");
 
     // c_jtpt_prof->Print("plots_an/jtpt_agreement_prof.png");
     c_jtpt_prof->Print("plots_thesis/jtpt_agreement_prof.pdf");
