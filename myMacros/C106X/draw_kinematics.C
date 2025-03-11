@@ -326,7 +326,7 @@ void draw_kinematics()
 
     bottom_pad_jtpt->cd();
 
-    h_jtpt_dijet_ratio->GetXaxis()->SetTitle("p_{T}^{jet}");
+    h_jtpt_dijet_ratio->GetXaxis()->SetTitle("p_{T}^{jet} (GeV/c)");
     h_jtpt_dijet_ratio->GetXaxis()->SetTitleOffset(1.);
     h_jtpt_dijet_ratio->GetYaxis()->SetRangeUser(0.9, 1.1);
     h_jtpt_dijet_ratio->GetYaxis()->SetTitle("Ratio to data");
@@ -377,7 +377,7 @@ void draw_kinematics()
     jteta_info->SetTextSize(text_size-4);
     jteta_info->SetTextAlign(12);
     jteta_info->DrawLatex(0.2, 0.8, "anti-k_{T}, R=0.4 jets");
-    jteta_info->DrawLatex(0.2, 0.72, "80 < p_{T}^{jet} < 140 GeV");
+    jteta_info->DrawLatex(0.2, 0.72, "80 < p_{T}^{jet} < 140 GeV (GeV/c)");
     jteta_info->Draw();
 
     leg_jteta->Draw();
@@ -436,7 +436,7 @@ void draw_kinematics()
     jtphi_info->SetTextSize(text_size-4);
     jtphi_info->SetTextAlign(12);
     jtphi_info->DrawLatex(0.2, 0.8, "anti-k_{T}, R=0.4 jets");
-    jtphi_info->DrawLatex(0.2, 0.72, "|#eta^{jet}| < 2, 80 < p_{T}^{jet} < 140 GeV");
+    jtphi_info->DrawLatex(0.2, 0.72, "|#eta^{jet}| < 2, 80 < p_{T}^{jet} < 140 (GeV/c)");
     jtphi_info->Draw();
 
     leg_jtphi->Draw();
