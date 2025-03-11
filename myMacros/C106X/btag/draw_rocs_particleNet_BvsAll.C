@@ -226,7 +226,7 @@ void draw_rocs_particleNet_BvsAll()
     jet_info->SetTextSize(text_size-4);
     jet_info->SetTextAlign(12);
     jet_info->DrawLatex(0.2, 0.86, "anti-k_{T}, R=0.4 jets");
-    jet_info->DrawLatex(0.2, 0.8, "|#eta^{jet}| < 2, 80 < p_{T}^{jet} < 140 GeV");
+    jet_info->DrawLatex(0.2, 0.8, "|#eta^{jet}| < 2, 80 < p_{T}^{jet} < 140 (GeV/c)");
     jet_info->Draw();
 
     c_roc->Draw();
