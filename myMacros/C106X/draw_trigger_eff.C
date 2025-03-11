@@ -67,7 +67,7 @@ void draw_trigger_eff()
     h40and60and80and100->Add(h_low);
     h40and60and80and100->Add(h_lower_withPrescale); 
     h40and60and80and100->GetXaxis()->SetTitleOffset(1.2);
-    h40and60and80and100->GetXaxis()->SetTitle("p_{T}^{leading jet}");
+    h40and60and80and100->GetXaxis()->SetTitle("p_{T}^{leading jet} (GeV/c)");
     h40and60and80and100->GetYaxis()->SetTitleOffset(1.7);
     h40and60and80and100->GetYaxis()->SetTitle("Number of events");
 
@@ -94,7 +94,7 @@ void draw_trigger_eff()
     h30and40and60and80and100->Add(h_low_w30);
     h30and40and60and80and100->Add(h_lower_w30_withPrescale);
     h30and40and60and80and100->GetXaxis()->SetTitleOffset(1.2);
-    h30and40and60and80and100->GetXaxis()->SetTitle("p_{T}^{leading jet}");
+    h30and40and60and80and100->GetXaxis()->SetTitle("p_{T}^{leading jet} (GeV/c)");
     h30and40and60and80and100->GetYaxis()->SetTitleOffset(1.7);
     h30and40and60and80and100->GetYaxis()->SetTitle("Number of events");
     h30and40and60and80and100->SetLineColorAlpha(kBlack, 1.0);
@@ -119,7 +119,7 @@ void draw_trigger_eff()
 
     TH1D *h_eff = (TH1D *) h40and60and80and100->Clone("h_eff");
     h_eff->Divide(h30and40and60and80and100);
-    h_eff->GetXaxis()->SetTitle("p_{T}^{leading jet}");
+    h_eff->GetXaxis()->SetTitle("p_{T}^{leading jet} (GeV/c)");
     h_eff->GetYaxis()->SetTitle("Trigger efficiency");
     h_eff->SetLineWidth(3);
     h_eff->SetLineColor(cmsBlue);
@@ -169,7 +169,7 @@ void draw_trigger_eff()
     c_40and60and80and100->Draw();
     h40and60and80and100_stack->GetXaxis()->SetRangeUser(30,300);
     // c_40and60and80and100->Print("plots_an/jtpt_spectrum_pf40to100.png");
-    c_40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf40to100.png");
+    // c_40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf40to100.png");
     c_40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf40to100.pdf");
 
     TCanvas *c_30and40and60and80and100 = new TCanvas("c_30and40and60and80and100", "Combination 30, 40, 60, 80 and 100", 700, 600);
@@ -196,7 +196,7 @@ void draw_trigger_eff()
     c_30and40and60and80and100->Draw();
     h30and40and60and80and100_stack->GetXaxis()->SetRangeUser(30,300);
     // c_30and40and60and80and100->Print("plots_an/jtpt_spectrum_pf30to100.png");
-    c_30and40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf30to100.png");
+    // c_30and40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf30to100.png");
     c_30and40and60and80and100->Print("plots_thesis/jtpt_spectrum_pf30to100.pdf");
 
     TCanvas *c_eff = new TCanvas("c_eff", "Trigger efficiency of PFJet60", 700, 600);
@@ -217,8 +217,10 @@ void draw_trigger_eff()
     line->Draw();
     // c_eff->SetGridy();
     drawHeader();
+    jet_info->DrawLatex(0.9, 0.56, "anti-k_{T}, R=0.4 inclusive jets");
+    jet_info->DrawLatex(0.9, 0.5, "|#eta^{jet}| < 2");
     c_eff->Draw();
     // c_eff->Print("plots_an/pfjet40_efficiency.png");
-    c_eff->Print("plots_thesis/pfjet40_efficiency.png");
+    // c_eff->Print("plots_thesis/pfjet40_efficiency.png");
     c_eff->Print("plots_thesis/pfjet40_efficiency.pdf");
 }
