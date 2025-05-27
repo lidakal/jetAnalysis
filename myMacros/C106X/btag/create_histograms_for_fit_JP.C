@@ -1,10 +1,11 @@
-void create_histograms_for_fit_JP(TString sample="bjet", TString label="aggrTMVA_inclusive", bool tagged=true)
+#include "../binning.h"
+
+void create_histograms_for_fit_JP(TString sample="bjet_PF40", TString label="aggrTMVA_inclusive")
 {
     TString fin_name = "/data_CMS/cms/kalipoliti/compact_trees/" + sample + "_" + label + "_tree.root";
-    label += (tagged ? "_tagged" : "");
-    // label += (tagged ? "_deepJetT" : "");
     TString fout_name = "histos/" + sample + "_" + label + "_histograms_for_fit_JP.root";
 
+    std::cout << "fin: " << fin_name << std::endl;
     TFile *fin = new TFile(fin_name);
 
     std::vector<TString> tree_names; 
@@ -15,84 +16,38 @@ void create_histograms_for_fit_JP(TString sample="bjet", TString label="aggrTMVA
         hist_names = {"h_data"};
     } else {
         mc = true;
-        tree_names = {"tree_sig", "tree_bkg_bb", "tree_bkg_c", "tree_bkg_l"};
-        hist_names = {"h_b", "h_bb", "h_c", "h_l"};
+        tree_names = {"tree_sig", "tree_bkg_bb", "tree_bkg_cc", "tree_bkg_singlec", "tree_bkg_l"};
+        hist_names = {"h_b", "h_bb", "h_cc", "h_c", "h_l"};
     }
 
     Double_t jtpt;
     Double_t jtptCh;
     Double_t logrg;
+    Double_t logkt;
     Double_t zg;
     Double_t mb;
     Double_t bpt;
-    Double_t weight;
+
     Double_t jer_sf_nom;
+
     Double_t discr_pfJP;
     Double_t discr_particleNet_BvsAll;
     Double_t discr_b;
     Double_t discr_bb;
     Double_t discr_lepb;
-    // TTree will be defined in the loop
+
+    Double_t weight;
+    Double_t pthat;
 
     Double_t jtpt_gen;
     Double_t jtptCh_gen;
     Double_t logrg_gen;
+    Double_t logkt_gen;
     Double_t zg_gen;
     Double_t mb_gen;
     Double_t bpt_gen;
 
-    // jet pt bins : no underflow or overflow
-    const Int_t z1binsVectorSize = 4;
-    Int_t z1bins = z1binsVectorSize - 1;
-    Double_t z1binsVector[z1binsVectorSize] = {80., 
-                                               100., 
-                                               120.,
-                                               140.
-                                               };
-    Double_t z1min = z1binsVector[0];
-    Double_t z1max = z1binsVector[z1bins];
-
-    // ln(0.4/rg) bins : 1st bin untagged (unphysical), last bin overflow
-    const Int_t x1binsVectorSize = 9;
-    Int_t x1bins = x1binsVectorSize - 1;
-    Double_t x1binsVector[x1binsVectorSize] = {-1.2, 
-                                               0., 
-                                               0.3,
-                                               0.6,
-                                               0.9,
-                                               1.2,
-                                               1.6,
-                                               2.1,
-                                               2.5
-                                               };
-    double x1max = x1binsVector[x1bins];
-
-    // zg bins : 1st bin untagged (unphysical)
-    const Int_t x3binsVectorSize = 8;
-    Int_t x3bins = x3binsVectorSize - 1;
-    Double_t x3binsVector[x3binsVectorSize] = {-0.1, 
-                                               0.1, 
-                                               0.15,
-                                               0.2,
-                                               0.25,
-                                               0.3,
-                                               0.4,
-                                               0.5};
-    Double_t x3min = x3binsVector[0];
-    Double_t x3max = x3binsVector[x3bins];
-
-    // bpt/jtptCh bins :
-    const Int_t x2binsVectorSize = 7;
-    Int_t x2bins = x2binsVectorSize - 1;
-    Double_t x2binsVector[x2binsVectorSize] = {0., 
-                                               0.35,
-                                               0.55,
-                                               0.7,
-                                               0.8,
-                                               0.9,
-                                               1.};
-    Double_t x2min = x2binsVector[0];
-    Double_t x2max = x2binsVector[x2bins];
+    // TTree will be defined in the loop
 
     // pfJP bins: last bin overflow
     const Int_t y1binsVectorSize = 61;
@@ -103,13 +58,27 @@ void create_histograms_for_fit_JP(TString sample="bjet", TString label="aggrTMVA
     // y1binsVector[1] = 0;
     y1binsVector[0] = 0.;
     y1binsVector[1] = y1step;
-    // double y1step = (tagged) ? 0.1 : 0.05;
     
     for (size_t i=2; i<y1binsVectorSize; i++) {
         y1binsVector[i] = y1binsVector[i-1] + y1step;
     }
     Double_t y1min = y1binsVector[0];
     Double_t y1max = y1binsVector[y1bins];
+
+    const Int_t y2binsVectorSize = 71;
+    int y2bins = y2binsVectorSize - 1;
+    Double_t y2binsVector[y2binsVectorSize];
+    double y2step = 0.035;
+    // y2binsVector[0] = -y2step;
+    // y2binsVector[1] = 0;
+    y2binsVector[0] = 0.;
+    y2binsVector[1] = y2step;
+    
+    for (size_t i=2; i<y2binsVectorSize; i++) {
+        y2binsVector[i] = y2binsVector[i-1] + y2step;
+    }
+    Double_t y2min = y2binsVector[0];
+    Double_t y2max = y2binsVector[y2bins];
 
     std::cout << "Creating file " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "recreate");
@@ -129,7 +98,7 @@ void create_histograms_for_fit_JP(TString sample="bjet", TString label="aggrTMVA
         tree->SetBranchAddress("discr_b", &discr_b);
         tree->SetBranchAddress("discr_bb", &discr_bb);
         tree->SetBranchAddress("discr_lepb", &discr_lepb);
-        tree->SetBranchAddress("weight", &weight);
+
         tree->SetBranchAddress("jer_sf_nom", &jer_sf_nom);
 
         tree->SetBranchAddress("jtpt_gen", &jtpt_gen);
@@ -138,116 +107,119 @@ void create_histograms_for_fit_JP(TString sample="bjet", TString label="aggrTMVA
         tree->SetBranchAddress("zg_gen", &zg_gen);
         tree->SetBranchAddress("bpt_gen", &bpt_gen);
 
-        TH3D *h_rg_training = new TH3D(hist_name + "_rg_training", "x=rg, y=pfJP, z=jtpt", x1bins, x1binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_rg_testing = new TH3D(hist_name + "_rg_testing", "x=rg, y=pfJP, z=jtpt", x1bins, x1binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_zg_training = new TH3D(hist_name + "_zg_training", "x=zg, y=pfJP, z=jtpt", x3bins, x3binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_zg_testing = new TH3D(hist_name + "_zg_testing", "x=zg, y=pfJP, z=jtpt", x3bins, x3binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_zpt_training = new TH3D(hist_name + "_zpt_training", "x=zpt, y=pfJP, z=jtpt", x2bins, x2binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_zpt_testing = new TH3D(hist_name + "_zpt_testing", "x=zpt, y=pfJP, z=jtpt", x2bins, x2binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
+        tree->SetBranchAddress("weight", &weight);
+        tree->SetBranchAddress("pthat", &pthat);
 
-        TH3D *h_rg_training_gen = new TH3D(hist_name + "_rg_training_gen", "x=rg, y=pfJP, z=jtpt", x1bins, x1binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_rg_testing_gen = new TH3D(hist_name + "_rg_testing_gen", "x=rg, y=pfJP, z=jtpt", x1bins, x1binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_zg_training_gen = new TH3D(hist_name + "_zg_training_gen", "x=zg, y=pfJP, z=jtpt", x3bins, x3binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_zg_testing_gen = new TH3D(hist_name + "_zg_testing_gen", "x=zg, y=pfJP, z=jtpt", x3bins, x3binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_zpt_training_gen = new TH3D(hist_name + "_zpt_training_gen", "x=zpt, y=pfJP, z=jtpt", x2bins, x2binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
-        TH3D *h_zpt_testing_gen = new TH3D(hist_name + "_zpt_testing_gen", "x=zpt, y=pfJP, z=jtpt", x2bins, x2binsVector, y1bins, y1binsVector, z1bins, z1binsVector);
+        TH3D *h_rg = new TH3D(hist_name + "_rg", "x=rg, y=pfJP, z=jtpt", logrg_bins, logrg_binsVector, y1bins, y1binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_rg_tagged = new TH3D(hist_name + "_rg_tagged", "x=rg, y=pfJP, z=jtpt", logrg_bins, logrg_binsVector, y2bins, y2binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_zg = new TH3D(hist_name + "_zg", "x=zg, y=pfJP, z=jtpt", zg_bins, zg_binsVector, y1bins, y1binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_zg_tagged = new TH3D(hist_name + "_zg_tagged", "x=zg, y=pfJP, z=jtpt", zg_bins, zg_binsVector, y2bins, y2binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_zpt = new TH3D(hist_name + "_zpt", "x=zpt, y=pfJP, z=jtpt", zpt_bins, zpt_binsVector, y1bins, y1binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_zpt_tagged = new TH3D(hist_name + "_zpt_tagged", "x=zpt, y=pfJP, z=jtpt", zpt_bins, zpt_binsVector, y2bins, y2binsVector, jtpt_bins, jtpt_binsVector);
 
-        for (auto h : {h_rg_training, h_rg_testing,
-                       h_zpt_training, h_zpt_testing}) {
-                        h->Sumw2();
-                       }
-
-        if (!mc) {
-            h_rg_training->SetName(hist_name + "_rg");
-            h_zpt_training->SetName(hist_name + "_zpt");
-            h_zg_training->SetName(hist_name + "_zg");
-        }
+        // mc only
+        TH3D *h_rg_gen = new TH3D(hist_name + "_rg_gen", "x=rg, y=pfJP, z=jtpt", logrg_bins, logrg_binsVector, y1bins, y1binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_rg_tagged_gen = new TH3D(hist_name + "_rg_tagged_gen", "x=rg, y=pfJP, z=jtpt", logrg_bins, logrg_binsVector, y2bins, y2binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_zg_gen = new TH3D(hist_name + "_zg_gen", "x=zg, y=pfJP, z=jtpt", zg_bins, zg_binsVector, y1bins, y1binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_zg_tagged_gen = new TH3D(hist_name + "_zg_tagged_gen", "x=zg, y=pfJP, z=jtpt", zg_bins, zg_binsVector, y2bins, y2binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_zpt_gen = new TH3D(hist_name + "_zpt_gen", "x=zpt, y=pfJP, z=jtpt", zpt_bins, zpt_binsVector, y1bins, y1binsVector, jtpt_bins, jtpt_binsVector);
+        TH3D *h_zpt_tagged_gen = new TH3D(hist_name + "_zpt_tagged_gen", "x=zpt, y=pfJP, z=jtpt", zpt_bins, zpt_binsVector, y2bins, y2binsVector, jtpt_bins, jtpt_binsVector);
 
         Long64_t nentries = tree->GetEntries();
         for (Long64_t ient = 0; ient < nentries; ient++) {
             tree->GetEntry(ient);
 
-            // if (ient>1000) break;
+            // if (ient>10) break;
 
-            if (tagged && discr_particleNet_BvsAll<0.99) continue;
-            // if (tagged && (discr_b+discr_bb+discr_lepb)<0.55) continue;
+            if (mc && skipMC(jtpt, jtpt_gen, pthat)) continue; // skip large weight events in MC 
+            // weight = 1; // FOR YIELD STUDIES
+
+            bool passTag = (discr_particleNet_BvsAll>0.99);
 
             if (!mc) jer_sf_nom = 1;
             jtpt = jtpt * jer_sf_nom;
 
-            // Check for logrg 
-            if (std::abs(logrg - (-0.2)) > 1e-3 && logrg < 0.) continue;
-            if (logrg>=x1max) logrg = x1max - 1e-4; // overflow
-            if (logrg_gen>=x1max) logrg_gen = x1max - 1e-4; // overflow
+            // Checks for logrg 
+            if (logrg < 0. && logrg > -900.) continue; // rg>0.4 -> skip for now
+            if (logrg < -900.) logrg = -0.2; // SD-untagged bin range
+            if (logkt < 0. && logkt > -900.) logrg = -0.2; // kt<1 -> SD-untagged bin range
+            if (logrg >= 2.5) logrg = 2.499; // overflow bin range
+            if (logrg_gen < 0. && logrg_gen>-900) logrg_gen = -900; // rg_gen>0.4 -> out of range but not SD-untagged
+            if (logrg_gen < -900.) logrg_gen = -0.2; // SD-untagged bin range
+            if (logkt_gen < 0. && logkt_gen > -900.) logrg_gen = -0.2; // kt_gen<1 -> SD-untagged bin range
+            if (logrg_gen >= 2.5) logrg_gen = 2.499; // overflow bin range
 
-            // Check for jtptCh
+            // Checks for zg
+            if (zg < -900.) zg = 0.; // SD-untagged bin range
+            if (logkt < 0. && logkt > -900.) zg = 0.; // kt<1 -> SD-untagged bin range
+            if (zg >= 0.5) zg = 0.499; // zg=0.5 included in last bin
+            if (zg_gen < -900.) zg_gen = 0.; // SD-untagged bin range
+            if (logkt_gen < 0. && logkt_gen > -900.) zg_gen = 0.; // kt<1 -> SD-untagged bin range
+            if (zg_gen >= 0.5) zg_gen = 0.499; // zg=0.5 included in last bin
+
+            // Checks for zpt
             if (std::abs(jtptCh) < 1e-4) continue;
-
-            // Check for zg
-            if (std::abs(zg-0.5)<1e-4) zg = 0.499; // fix max value
-            if (std::abs(zg_gen-0.5)<1e-4) zg_gen = 0.499; // fix max value
+            double zpt = -1.;
+            if (jtptCh > 0) zpt = bpt / jtptCh;
+            if (zpt>=1.) zpt = 0.999; // zpt=1 included in last bin
+            double zpt_gen = -1.;
+            if (jtptCh_gen > 0) zpt_gen = bpt_gen / jtptCh_gen;
+            if (zpt_gen>=1.) zpt_gen = 0.999; // zpt_gen=1 included in last bin
 
             // Check jtpt
-            if (jtpt<z1min || jtpt>=z1max) continue;
+            if (jtpt<jtpt_min || jtpt>=jtpt_max) continue;
 
             // Check for JP
+            Double_t discr_pfJP_tagged = discr_pfJP;
+
             if (discr_pfJP>=y1max) discr_pfJP = y1max - 1e-4; // overflow
             // if (!(discr_pfJP>0)) discr_pfJP = y1min + 1e-4; // JP-untagged
             if (!(discr_pfJP>0)) discr_pfJP = -1.;
 
-            double zpt = -1.;
-            if (jtptCh > 0) zpt = bpt / jtptCh;
-            if (std::abs(zpt-1)<1e-3) zpt = 0.999; // fix max value
-
-            double zpt_gen = -1.;
-            if (jtptCh_gen > 0) zpt_gen = bpt_gen / jtptCh_gen;
-            if (std::abs(zpt_gen-1)<1e-3) zpt_gen = 0.999; // fix max value
+            if (discr_pfJP_tagged>=y2max) discr_pfJP_tagged = y2max - 1e-4; // overflow
+            if (!(discr_pfJP_tagged>0)) discr_pfJP_tagged = -1.;
             
-            if (mc) {
-                if (weight > 0.01) continue;
-                if (ient > (nentries / 2)) {
-                    // templates
-                    h_rg_training->Fill(logrg, discr_pfJP, jtpt, weight);
-                    h_zpt_training->Fill(zpt, discr_pfJP, jtpt, weight);
-                    h_zg_training->Fill(zg, discr_pfJP, jtpt, weight);
+            h_rg->Fill(logrg, discr_pfJP, jtpt, weight);
+            h_zpt->Fill(zpt, discr_pfJP, jtpt, weight);
+            h_zg->Fill(zg, discr_pfJP, jtpt, weight);
 
-                    h_rg_training_gen->Fill(logrg_gen, discr_pfJP, jtpt_gen, weight);
-                    h_zpt_training_gen->Fill(zpt_gen, discr_pfJP, jtpt_gen, weight);
-                    h_zg_training_gen->Fill(zg_gen, discr_pfJP, jtpt_gen, weight);
-                }
-                else {
-                    // pseudo data
-                    // weight = 1.; // debug
-                    h_rg_testing->Fill(logrg, discr_pfJP, jtpt, weight);
-                    h_zpt_testing->Fill(zpt, discr_pfJP, jtpt, weight);   
-                    h_zg_testing->Fill(zg, discr_pfJP, jtpt, weight);   
+            if (passTag) {
+                h_rg_tagged->Fill(logrg, discr_pfJP_tagged, jtpt, weight);
+                h_zpt_tagged->Fill(zpt, discr_pfJP_tagged, jtpt, weight);   
+                h_zg_tagged->Fill(zg, discr_pfJP_tagged, jtpt, weight);   
+            }
 
-                    h_rg_testing_gen->Fill(logrg_gen, discr_pfJP, jtpt_gen, weight);
-                    h_zpt_testing_gen->Fill(zpt_gen, discr_pfJP, jtpt_gen, weight);   
-                    h_zg_testing_gen->Fill(zg_gen, discr_pfJP, jtpt_gen, weight);                    
-                }
-            } else {
-                h_rg_training->Fill(logrg, discr_pfJP, jtpt, weight);
-                h_zpt_training->Fill(zpt, discr_pfJP, jtpt, weight);
-                h_zg_training->Fill(zg, discr_pfJP, jtpt, weight);
+            if (mc) {       
+                // std::cout << "hi" << std::endl;
+        
+                h_rg_gen->Fill(logrg_gen, discr_pfJP, jtpt_gen, weight);
+                h_zpt_gen->Fill(zpt_gen, discr_pfJP, jtpt_gen, weight);
+                h_zg_gen->Fill(zg_gen, discr_pfJP, jtpt_gen, weight);
+            
+                if (passTag) {
+                    h_rg_tagged_gen->Fill(logrg_gen, discr_pfJP_tagged, jtpt_gen, weight);
+                    h_zpt_tagged_gen->Fill(zpt_gen, discr_pfJP_tagged, jtpt_gen, weight);   
+                    h_zg_tagged_gen->Fill(zg_gen, discr_pfJP_tagged, jtpt_gen, weight);              
+                }      
             }
         } // tree entry loop
         fout->cd();
-        h_rg_training->Write();
-        h_zpt_training->Write();
-        h_zg_training->Write();
+        h_rg->Write();
+        h_zpt->Write();
+        h_zg->Write();
+
+        h_rg_tagged->Write();
+        h_zpt_tagged->Write();
+        h_zg_tagged->Write();
+
         if (mc) {
-            h_rg_testing->Write();
-            h_zpt_testing->Write();
-            h_zg_testing->Write();
+            h_rg_gen->Write();
+            h_zpt_gen->Write();
+            h_zg_gen->Write();
 
-            h_rg_training_gen->Write();
-            h_zpt_training_gen->Write();
-            h_zg_training_gen->Write();
-
-            h_rg_testing_gen->Write();
-            h_zpt_testing_gen->Write();
-            h_zg_testing_gen->Write();
+            h_rg_tagged_gen->Write();
+            h_zpt_tagged_gen->Write();
+            h_zg_tagged_gen->Write();
         }
     } // tree loop
     fout->Close();
