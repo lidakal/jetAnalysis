@@ -5,6 +5,7 @@ void fit_JP(TString observable="rg")
 
     // TString fin_name = "histos/data_" + label + "_histograms_for_fit_JP.root";
     TString fin_name = "histos/data_PF40to100_" + label + "_histograms_for_fit_JP.root";
+    // TString fin_name = "histos/HighEGJet_Mu5_AK4PFJet30_" + label + "_histograms_for_fit_JP.root";
     std::cout << "fin: " << fin_name << std::endl;
     TString fout_name = "histos/" + observable + "_fit_result_JP_" + label + ".root";
 
@@ -16,6 +17,7 @@ void fit_JP(TString observable="rg")
     // Load dijet histograms
     // TFile *fin_dijet = new TFile("histos/dijet_calo60_" + label + "_histograms_for_fit_JP.root");
     TFile *fin_dijet = new TFile("histos/dijet_PF40_" + label + "_histograms_for_fit_JP.root");
+    // TFile *fin_dijet = new TFile("histos/dijet_Mu5_" + label + "_histograms_for_fit_JP.root");
     TH3D *h_dijet_b = (TH3D *) fin_dijet->Get("h_b_"+observable)->Clone("h_dijet_b");
     TH3D *h_dijet_b_tagged = (TH3D *) fin_dijet->Get("h_b_"+observable+"_tagged")->Clone("h_dijet_b_tagged");
     TH3D *h_dijet_bb = (TH3D *) fin_dijet->Get("h_bb_"+observable)->Clone("h_dijet_bb");
@@ -39,67 +41,78 @@ void fit_JP(TString observable="rg")
     // Load bjet histograms
     // TFile *fin_bjet = new TFile("histos/bjet_calo60_" + label + "_histograms_for_fit_JP.root");
     TFile *fin_bjet = new TFile("histos/bjet_PF40_" + label + "_histograms_for_fit_JP.root");
+    // TFile *fin_bjet = new TFile("histos/bjet_Mu5_" + label + "_histograms_for_fit_JP.root");
     TH3D *h_bjet_b = (TH3D *) fin_bjet->Get("h_b_"+observable)->Clone("h_bjet_b");
     TH3D *h_bjet_b_tagged = (TH3D *) fin_bjet->Get("h_b_"+observable+"_tagged")->Clone("h_bjet_b_tagged");
     TH3D *h_bjet_bb = (TH3D *) fin_bjet->Get("h_bb_"+observable)->Clone("h_bjet_bb");
     TH3D *h_bjet_bb_tagged = (TH3D *) fin_bjet->Get("h_bb_"+observable+"_tagged")->Clone("h_bjet_bb_tagged");
+    
     // muon jets modification
-    // TH3D *h_bjet_c = (TH3D *) fin_bjet->Get("h_c_"+observable)->Clone("h_bjet_c");
-    // TH3D *h_bjet_c_tagged = (TH3D *) fin_bjet->Get("h_c_"+observable+"_tagged")->Clone("h_bjet_c_tagged");
-    // TH3D *h_bjet_cc = (TH3D *) fin_bjet->Get("h_cc_"+observable)->Clone("h_bjet_cc");
-    // TH3D *h_bjet_cc_tagged = (TH3D *) fin_bjet->Get("h_cc_"+observable+"_tagged")->Clone("h_bjet_cc_tagged");
+    // TFile *fin_mujet = new TFile("histos/mujet_Mu5_" + label + "_histograms_for_fit_JP.root");
+    // TH3D *h_mujet_b = (TH3D *) fin_mujet->Get("h_b_"+observable)->Clone("h_mujet_b");
+    // TH3D *h_mujet_b_tagged = (TH3D *) fin_mujet->Get("h_b_"+observable+"_tagged")->Clone("h_mujet_b_tagged");
+    // TH3D *h_mujet_bb = (TH3D *) fin_mujet->Get("h_bb_"+observable)->Clone("h_mujet_bb");
+    // TH3D *h_mujet_bb_tagged = (TH3D *) fin_mujet->Get("h_bb_"+observable+"_tagged")->Clone("h_mujet_bb_tagged");
+    // TH3D *h_mujet_c = (TH3D *) fin_mujet->Get("h_c_"+observable)->Clone("h_mujet_c");
+    // TH3D *h_mujet_c_tagged = (TH3D *) fin_mujet->Get("h_c_"+observable+"_tagged")->Clone("h_mujet_c_tagged");
+    // TH3D *h_mujet_cc = (TH3D *) fin_mujet->Get("h_cc_"+observable)->Clone("h_mujet_cc");
+    // TH3D *h_mujet_cc_tagged = (TH3D *) fin_mujet->Get("h_cc_"+observable+"_tagged")->Clone("h_mujet_cc_tagged");
 
 
     // Create the templates 
-    double gsp_frac = 1.; // 1.5 for gsp up +50%, 0.5 for gsp down -50%
+    double gsp_frac = 1.0; // 1.5 for gsp up +50%, 0.5 for gsp down -50%
     std::cout << "GSP fraction/nom = " << gsp_frac << std::endl;
 
     TH3D *h_bbb = (TH3D *) h_dijet_b->Clone("h_bbb");
     h_bbb->Add(h_dijet_bb, gsp_frac); 
     h_bbb->Add(h_bjet_b);
-    h_bbb->Add(h_bjet_bb, gsp_frac);  
+    h_bbb->Add(h_bjet_bb, gsp_frac); 
+    // mujet modification
+    // h_bbb->Add(h_mujet_b);
+    // h_bbb->Add(h_mujet_bb, gsp_frac);
+    
     TH3D *h_ccc = (TH3D *) h_dijet_c->Clone("h_ccc");
     h_ccc->Add(h_dijet_cc, gsp_frac);
+    // mujet modification
+    // h_ccc->Add(h_mujet_c);
+    // h_ccc->Add(h_mujet_cc, gsp_frac);
+
     TH3D *h_l = (TH3D *) h_dijet_l->Clone("h_l");
 
     TH3D *h_bbb_tagged = (TH3D *) h_dijet_b_tagged->Clone("h_bbb_tagged");
     h_bbb_tagged->Add(h_dijet_bb_tagged, gsp_frac);
     h_bbb_tagged->Add(h_bjet_b_tagged);
     h_bbb_tagged->Add(h_bjet_bb_tagged, gsp_frac);
+    // mujet modification
+    // h_bbb_tagged->Add(h_mujet_b_tagged);
+    // h_bbb_tagged->Add(h_mujet_bb_tagged, gsp_frac);
+
     TH3D *h_ccc_tagged = (TH3D *) h_dijet_c_tagged->Clone("h_ccc_tagged");
     h_ccc_tagged->Add(h_dijet_cc_tagged, gsp_frac);
+    // mujet modification
+    // h_ccc_tagged->Add(h_mujet_c_tagged);
+    // h_ccc_tagged->Add(h_mujet_cc_tagged, gsp_frac);
+
     TH3D *h_l_tagged = (TH3D *) h_dijet_l_tagged->Clone("h_l_tagged");
 
-    // mujet modification
-    // h_ccc->Add(h_bjet_c);
-    // h_ccc->Add(h_bjet_cc, gsp_frac);
-    // h_ccc_tagged->Add(h_bjet_c_tagged);
-    // h_ccc_tagged->Add(h_bjet_cc_tagged, gsp_frac);
-
-    std::cout << h_bbb->GetName() << std::endl;
-    std::cout << h_bbb_tagged->GetName() << std::endl;
     for (auto h : {
-        h_data,
-        h_bbb,
-        h_ccc, 
-        h_l, 
-        h_dijet_b, h_dijet_bb, h_dijet_c, h_dijet_cc, h_dijet_l
+            h_data, h_bbb, h_ccc, h_l, 
+            h_dijet_b, h_dijet_bb, h_dijet_c, h_dijet_cc, h_dijet_l // for MC fractions
         }) {
         h->RebinY(6);
         h->RebinZ(3);
     }
 
-    for (auto h : {h_data_tagged,
-                   h_bbb_tagged,
-                   h_ccc_tagged,
-                   h_l_tagged,
-                   h_dijet_b_tagged, h_dijet_bb_tagged, h_dijet_c_tagged, h_dijet_cc_tagged, h_dijet_l_tagged
-                   }) {
-        h->RebinY(7);
+    // std::cout << "h_data_tagged->GetNbinsY() = " << h_data_tagged->GetNbinsY() << std::endl;
+    for (auto h : {
+            h_data_tagged, h_bbb_tagged, h_ccc_tagged, h_l_tagged,
+            h_dijet_b_tagged, h_dijet_bb_tagged, h_dijet_c_tagged, h_dijet_cc_tagged, h_dijet_l_tagged
+        }) {
+        // if (observable!="zg") h->RebinY(14); 
+        // else h->RebinY(7);
+        // h->RebinY(7);
         h->RebinZ(3);
     }
-    std::cout << h_bbb->GetNbinsY() << std::endl;
-    std::cout << h_bbb_tagged->GetNbinsY() << std::endl;
 
     //------------ Calculate fractions in MC
     TH3D *h_dijet_bbb = (TH3D *) h_dijet_b->Clone("h_dijet_bbb");
@@ -316,6 +329,15 @@ void fit_JP(TString observable="rg")
             TH1D *h_dijet_cc_tagged_1d = (TH1D *) h_dijet_cc_tagged->ProjectionY(Form("h_dijet_cc_tagged_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
             TH1D *h_dijet_l_tagged_1d = (TH1D *) h_dijet_l_tagged->ProjectionY(Form("h_dijet_l_tagged_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
 
+            for (auto h : {
+                    h_data_tagged_1d, h_bbb_tagged_1d, h_ccc_tagged_1d, h_l_tagged_1d,
+                    h_dijet_b_tagged_1d, h_dijet_bb_tagged_1d, h_dijet_c_tagged_1d, h_dijet_cc_tagged_1d, h_dijet_l_tagged_1d
+                }) {
+                if (observable=="rg"&&ibin_x==nbins_x) h->Rebin(2);    
+                else if (observable=="zpt"&&ibin_x>3) h->Rebin(5);   
+                else h->Rebin(7);   
+            }
+            
             // Double_t int0, int1, int2, int3, total;
             int0 = h_dijet_b_tagged_1d->Integral()+h_dijet_bb_tagged_1d->Integral();
             int1 = h_dijet_c_tagged_1d->Integral()+h_dijet_cc_tagged_1d->Integral();
@@ -434,6 +456,7 @@ void fit_JP(TString observable="rg")
         h->Write();
     }
     for (auto h : {h_bbb_tagged, h_ccc_tagged, h_l_tagged, h_data_tagged}) {
+        h->RebinY(7);
         h->Write();
     }
 

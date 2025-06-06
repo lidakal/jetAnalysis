@@ -59,7 +59,7 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
     auto overflow_txt = overflow->AddText("overflow");
     overflow_txt->SetTextAngle(90);
     overflow_txt->SetTextSize(20);
-    if (observable=="rg") overflow->Draw();
+    // if (observable=="rg") overflow->Draw();
 
     // Loop over jet pt+observable bins
     int nbins_x = h_bbb->GetNbinsX();
@@ -141,6 +141,12 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
         h_l_f_mc_1d->Draw("hist same");
         h_ccc_f_mc_1d->Draw("hist same");
         h_bbb_f_mc_1d->Draw("hist same");
+
+        std::cout << "h_bbb_f->GetBinContent(8,1) = " << h_bbb_f->GetBinContent(8,1) << std::endl;
+        std::cout << "h_bbb_f->GetBinError(8,1) = " << h_bbb_f->GetBinError(8,1) << std::endl;
+
+        std::cout << "h_bbb_f_1d->GetBinContent(8) = " << h_bbb_f_1d->GetBinContent(8) << std::endl;
+        std::cout << "h_bbb_f_1d->GetBinError(8) = " << h_bbb_f_1d->GetBinError(8) << std::endl;
 
         h_l_f_1d->Draw("pe1 same");
         h_ccc_f_1d->Draw("pe1 same");
@@ -277,6 +283,10 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             // double c_f = h_ccc_f_mc->GetBinContent(ibin_x, ibin_pt);
             // double l_f = h_l_f_mc->GetBinContent(ibin_x, ibin_pt);
 
+            // std::cout << "\tbbb_f = " << bbb_f << std::endl;
+            // std::cout << "\tc_f = " << c_f << std::endl;
+            // std::cout << "\tl_f = " << l_f << std::endl;
+
             // Normalize + multiply by fraction + stack 
             double ndata = h_data_1d->Integral(1, nbins_jp);
             THStack *h_fit = new THStack(Form("h_fit_%d_%d", ibin_pt, ibin_x), "");
@@ -363,14 +373,16 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             double h=current_pad->GetHNDC();
             double xtext=0.25, ytext=0.25; // out of x,y=0.3
             // std::cout << "current_pad->GetLeftMargin()=" << current_pad->GetLeftMargin() << std::endl;
-            if (observable!="zpt") {
-                if (ibin_x!=1) {
-                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), Form("%.2f^{} <^{} %s < %.2f", x_min, xlabel.Data(), x_max));
-                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(0.85*ytext/h), "k_{T} > 1 GeV/c");
-                } else {
+            if (observable!="zpt") { 
+                if (ibin_x==1) {
                     bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), "SD-untagged");
                     bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(0.85*ytext/h), "or k_{T} < 1 GeV/c");
-
+                } else if (ibin_x==nbins_x&&observable=="rg") {
+                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), Form("%.2f^{} <^{} %s", x_min, xlabel.Data()));
+                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(0.85*ytext/h), "k_{T} > 1 GeV/c");
+                } else {
+                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), Form("%.2f^{} <^{} %s < %.2f", x_min, xlabel.Data(), x_max));
+                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(0.85*ytext/h), "k_{T} > 1 GeV/c");
                 }
             } else {
                 bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), Form("%.2f^{} <^{} %s < %.2f", x_min, xlabel.Data(), x_max));
