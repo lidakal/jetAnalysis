@@ -175,8 +175,6 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             if (tagged) jet_info->DrawLatex(0.17, 0.61, "anti-k_{T}, R = 0.4 b-tagged jets");
             else jet_info->DrawLatex(0.17, 0.55, "anti-k_{T}, R = 0.4 inclusive jets");
             jet_info->DrawLatex(0.17, 0.49, "80 < p_{T}^{jet,reco} < 140 GeV/c, |#eta^{jet}| < 2");
-            jet_info->DrawLatex(0.17, 0.43, "Soft drop (charged particles)");
-            jet_info->DrawLatex(0.17, 0.37, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
 
             TLatex *jet_info_v2 = new TLatex;
             jet_info_v2->SetNDC();
@@ -193,8 +191,8 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             if (tagged) jet_info->DrawLatex(0.9, 0.75, "anti-k_{T}, R = 0.4 b-tagged jets");
             else jet_info->DrawLatex(0.9, 0.75, "anti-k_{T}, R = 0.4 inclusive jets");
             jet_info->DrawLatex(0.9, 0.69, "80 < p_{T}^{jet,reco} < 140 GeV/c, |#eta^{jet}| < 2");
-            jet_info->DrawLatex(0.9, 0.63, "Soft drop (charged particles)");
-            jet_info->DrawLatex(0.9, 0.57, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+            if (observable!="zpt") jet_info->DrawLatex(0.9, 0.63, "Soft drop (charged particles)");
+            if (observable!="zpt") jet_info->DrawLatex(0.9, 0.57, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
 
             jet_info->DrawLatex(0.69, 0.46, "guds");
             jet_info->DrawLatex(0.69, 0.4, "c");
