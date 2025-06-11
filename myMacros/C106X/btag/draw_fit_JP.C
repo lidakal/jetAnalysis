@@ -429,7 +429,7 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
                 axis2->Draw();
                 leg_jp->Draw();
             } else if (observable=="zpt"&&ibin_x==1) {
-                std::cout << "Drawing axis for zg" << std::endl;
+                std::cout << "Drawing axis for zpt" << std::endl;
                 pad11->cd();
                 pad11->Range(-0.25,0.,0.935,1);
                 axis1->Draw();

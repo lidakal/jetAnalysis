@@ -91,6 +91,7 @@ void create_histograms_for_fit_JP(TString sample="bjet_PF40", TString label="agg
         tree->SetBranchAddress("jtpt", &jtpt);
         tree->SetBranchAddress("jtptCh", &jtptCh);
         tree->SetBranchAddress("logrg", &logrg);
+        tree->SetBranchAddress("logkt", &logkt);
         tree->SetBranchAddress("zg", &zg);
         tree->SetBranchAddress("bpt", &bpt);
         tree->SetBranchAddress("discr_pfJP", &discr_pfJP);
@@ -104,6 +105,7 @@ void create_histograms_for_fit_JP(TString sample="bjet_PF40", TString label="agg
         tree->SetBranchAddress("jtpt_gen", &jtpt_gen);
         tree->SetBranchAddress("jtptCh_gen", &jtptCh_gen);
         tree->SetBranchAddress("logrg_gen", &logrg_gen);
+        tree->SetBranchAddress("logkt_gen", &logkt_gen);
         tree->SetBranchAddress("zg_gen", &zg_gen);
         tree->SetBranchAddress("bpt_gen", &bpt_gen);
 
@@ -129,6 +131,8 @@ void create_histograms_for_fit_JP(TString sample="bjet_PF40", TString label="agg
         for (Long64_t ient = 0; ient < nentries; ient++) {
             tree->GetEntry(ient);
 
+            // std::cout << "logkt=" << logkt << std::endl;
+            // std::cout << "logkt_gen=" << logkt_gen << std::endl;
             // if (ient>10) break;
 
             if (mc && skipMC(jtpt, jtpt_gen, pthat)) continue; // skip large weight events in MC 
