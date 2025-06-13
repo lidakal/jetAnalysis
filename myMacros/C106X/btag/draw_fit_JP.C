@@ -192,7 +192,7 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             else jet_info->DrawLatex(0.9, 0.75, "anti-k_{T}, R = 0.4 inclusive jets");
             jet_info->DrawLatex(0.9, 0.69, "80 < p_{T}^{jet,reco} < 140 GeV/c, |#eta^{jet}| < 2");
             if (observable!="zpt") jet_info->DrawLatex(0.9, 0.63, "Soft drop (charged particles)");
-            if (observable!="zpt") jet_info->DrawLatex(0.9, 0.57, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+            if (observable!="zpt") jet_info->DrawLatex(0.9, 0.57, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV/c");
 
             jet_info->DrawLatex(0.69, 0.46, "guds");
             jet_info->DrawLatex(0.69, 0.4, "c");
@@ -206,7 +206,7 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             untagged_text->SetTextAlign(22);
             untagged_text->SetTextSize(text_size-4);
             untagged_text->AddText("SD-untagged");
-            untagged_text->AddText("OR k_{T} < 1 GeV");
+            untagged_text->AddText("or k_{T} < 1 GeV/c");
             untagged_text->Draw();
         }
 
@@ -503,30 +503,6 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
         // std::cout << "c_jp->GetWindowHeight()=" << c_jp->GetWindowHeight() << std::endl;
         // c_jp->SetWindowSize(c_jp->GetWindowWidth(),700);
 
-        // c_jp->Print("../plots_thesis/"+observable+"_"+label+"_jp_fits"+tagged_name+".pdf");
+        c_jp->Print("../plots_thesis/"+observable+"_"+label+"_jp_fits"+tagged_name+".pdf");
     } // pt bins    
-
-
-    // Temporary (bins only in pt)
-    // TH1D *h_bbb_f_pt = (TH1D *) h_bbb_f->ProjectionY();
-    // h_bbb_f_pt->GetXaxis()->SetTitle("p_{T}^{jet}");
-    // h_bbb_f_pt->GetYaxis()->SetTitle("b fraction");
-
-
-    // TH1D *h_bbb_f_mc_pt = (TH1D *) h_bbb_f_mc->ProjectionY();
-    // h_bbb_f_mc_pt->SetLineColor(kGreen);
-    // h_bbb_f_mc_pt->SetMarkerColor(kGreen);
-
-    // TCanvas *c_fraction = new TCanvas("c_fraction", "", 1000, 400);
-
-    // TLegend *leg_fraction = new TLegend(0.6, 0.2, 0.9, 0.3);
-    // leg_fraction->SetFillStyle(0);
-    // leg_fraction->AddEntry(h_bbb_f_pt, "data", "pe1");
-    // leg_fraction->AddEntry(h_bbb_f_mc_pt, "mc", "pe1");
-
-    // h_bbb_f_pt->Draw("pe1");
-    // h_bbb_f_mc_pt->Draw("pe1 same");
-    // leg_fraction->Draw();
-
-
 }
