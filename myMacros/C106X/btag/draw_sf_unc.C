@@ -98,8 +98,8 @@ void draw_sf_unc(TString observable="rg")
     h_unc_1d->SetLineColorAlpha(kBlack, 0.);
     h_unc_1d->SetTitle("|SF-1| variation");
 
-    double ymin = 0.95;
-    double ymax = 1.75;
+    double ymin = 0.9;
+    double ymax = 1.9;
     h_sf_nom_1d->GetYaxis()->SetRangeUser(ymin, ymax);
     h_sf_nom_1d->GetXaxis()->SetTitle(xlabel);
     h_sf_nom_1d->GetXaxis()->SetTitleOffset(0.5);
@@ -157,7 +157,7 @@ void draw_sf_unc(TString observable="rg")
     jet_info->DrawLatex(0.9, 0.77, "80 < p_{T}^{jet,reco} < 140 GeV/c, |#eta^{jet}| < 2");
     if (observable!="zpt") {
         jet_info->DrawLatex(0.9, 0.71, "Soft drop (charged particles)");
-        jet_info->DrawLatex(0.9, 0.65, "z_{cut} = 0.1, #beta = 0");
+        jet_info->DrawLatex(0.9, 0.65, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV/c");
     }
 
     if (observable!="zpt") {
@@ -167,7 +167,7 @@ void draw_sf_unc(TString observable="rg")
         untagged_text->SetTextAlign(22);
         untagged_text->SetTextSize(text_size-4);
         untagged_text->AddText("SD-untagged");
-        untagged_text->AddText("OR k_{T} < 1 GeV");
+        untagged_text->AddText("or k_{T} < 1 GeV/c");
         untagged_text->Draw();
     }
 
