@@ -199,6 +199,17 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             jet_info->DrawLatex(0.69, 0.34, "b");
         }
 
+        if (observable!="zpt") {
+            TPaveText *untagged_text = new TPaveText(0.09, 0.02, 0.37, 0.137, "NDC");
+            untagged_text->SetFillColor(0);
+            untagged_text->SetBorderSize(0);
+            untagged_text->SetTextAlign(22);
+            untagged_text->SetTextSize(text_size-4);
+            untagged_text->AddText("SD-untagged");
+            untagged_text->AddText("OR k_{T} < 1 GeV");
+            untagged_text->Draw();
+        }
+
         c_purity->Print("../plots_thesis/"+observable+"_fit_JP_fractions_"+label+tagged_name+".pdf");
 
         // Create canvas + pads for data+fit
@@ -258,8 +269,6 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
 
             double x_min = h_data->GetXaxis()->GetBinLowEdge(ibin_x);
             double x_max = h_data->GetXaxis()->GetBinUpEdge(ibin_x);
-
-            TString header = (observable!="zpt" && ibin_x==1) ? "SD-untagged OR k_{T} < 1 GeV" : Form("%.2f < %s < %.2f", x_min, xlabel.Data(), x_max);
 
             // Make projections 
             TH1D *h_data_1d = (TH1D *) h_data->ProjectionY(Form("h_data_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
@@ -494,7 +503,7 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
         // std::cout << "c_jp->GetWindowHeight()=" << c_jp->GetWindowHeight() << std::endl;
         // c_jp->SetWindowSize(c_jp->GetWindowWidth(),700);
 
-        c_jp->Print("../plots_thesis/"+observable+"_"+label+"_jp_fits"+tagged_name+".pdf");
+        // c_jp->Print("../plots_thesis/"+observable+"_"+label+"_jp_fits"+tagged_name+".pdf");
     } // pt bins    
 
 
