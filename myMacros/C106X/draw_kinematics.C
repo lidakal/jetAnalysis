@@ -199,8 +199,8 @@ void draw_kinematics()
     }
 
     for (auto h : {h_jtpt_data_tagged, h_jteta_data_tagged, h_jtphi_data_tagged}) {
-        h->SetMarkerColor(cmsRed);
-        h->SetLineColor(cmsRed);
+        h->SetMarkerColor(cmsOrange);
+        h->SetLineColor(cmsOrange);
         h->SetMarkerStyle(kOpenSquare);
     }
 
@@ -215,8 +215,8 @@ void draw_kinematics()
 
     for (auto h : {h_jtpt_bjet_tagged, h_jteta_bjet_tagged, h_jtphi_bjet_tagged,
                    h_jtpt_bjet_tagged_ratio, h_jteta_bjet_tagged_ratio, h_jtphi_bjet_tagged_ratio}) {
-        h->SetMarkerColor(cmsRed);
-        h->SetLineColor(cmsRed);
+        h->SetMarkerColor(cmsOrange);
+        h->SetLineColor(cmsOrange);
         h->SetMarkerStyle(1);
         h->SetLineStyle(2);
         h->SetLineWidth(3);
@@ -233,8 +233,8 @@ void draw_kinematics()
 
     for (auto h : {h_jtpt_herwig_bjet_tagged, h_jteta_herwig_bjet_tagged, h_jtphi_herwig_bjet_tagged,
                    h_jtpt_herwig_bjet_tagged_ratio, h_jteta_herwig_bjet_tagged_ratio, h_jtphi_herwig_bjet_tagged_ratio}) {
-        h->SetMarkerColor(cmsRed);
-        h->SetLineColor(cmsRed);
+        h->SetMarkerColor(cmsOrange);
+        h->SetLineColor(cmsOrange);
         h->SetMarkerStyle(1);
         h->SetLineStyle(8);
         h->SetLineWidth(3);
@@ -263,7 +263,7 @@ void draw_kinematics()
     leg_jteta->AddEntry(h_jtpt_herwig_dijet, "HERWIG CH3 inclusive jets", "l");
     leg_jteta->AddEntry(h_jtpt_herwig_bjet_tagged, "HERWIG CH3 b-tagged jets", "l");
 
-    TLegend *leg_jtphi = new TLegend(0.35, 0.1, 0.8, 0.5);
+    TLegend *leg_jtphi = new TLegend(0.35, 0.05, 0.8, 0.45);
     leg_jtphi->SetBorderSize(0);
     leg_jtphi->SetFillStyle(0);
     leg_jtphi->SetMargin(0.15);
@@ -326,7 +326,7 @@ void draw_kinematics()
 
     bottom_pad_jtpt->cd();
 
-    h_jtpt_dijet_ratio->GetXaxis()->SetTitle("p_{T}^{jet} (GeV/c)");
+    h_jtpt_dijet_ratio->GetXaxis()->SetTitle("p_{T}^{jet} GeV/c");
     h_jtpt_dijet_ratio->GetXaxis()->SetTitleOffset(1.);
     h_jtpt_dijet_ratio->GetYaxis()->SetRangeUser(0.9, 1.1);
     h_jtpt_dijet_ratio->GetYaxis()->SetTitle("Ratio to data");
@@ -377,7 +377,7 @@ void draw_kinematics()
     jteta_info->SetTextSize(text_size-4);
     jteta_info->SetTextAlign(12);
     jteta_info->DrawLatex(0.2, 0.8, "anti-k_{T}, R=0.4 jets");
-    jteta_info->DrawLatex(0.2, 0.72, "80 < p_{T}^{jet} < 140 GeV (GeV/c)");
+    jteta_info->DrawLatex(0.2, 0.72, "80 < p_{T}^{jet} < 140 GeV/c");
     jteta_info->Draw();
 
     leg_jteta->Draw();
@@ -421,7 +421,7 @@ void draw_kinematics()
     top_pad_jtphi->cd();
 
     h_jtphi_data->GetYaxis()->SetTitle("1/N dN/d#phi^{jet}");
-    h_jtphi_data->GetYaxis()->SetRangeUser(0, 0.4);
+    h_jtphi_data->GetYaxis()->SetRangeUser(0, 0.45);
     h_jtphi_data->GetXaxis()->SetTitleOffset(20.);
     h_jtphi_data->GetXaxis()->SetLabelOffset(20.);
     h_jtphi_data->Draw("pe1 same");
@@ -436,7 +436,8 @@ void draw_kinematics()
     jtphi_info->SetTextSize(text_size-4);
     jtphi_info->SetTextAlign(12);
     jtphi_info->DrawLatex(0.2, 0.8, "anti-k_{T}, R=0.4 jets");
-    jtphi_info->DrawLatex(0.2, 0.72, "|#eta^{jet}| < 2, 80 < p_{T}^{jet} < 140 (GeV/c)");
+    jtphi_info->DrawLatex(0.2, 0.72, "80 < p_{T}^{jet} < 140 GeV/c");
+    jtphi_info->DrawLatex(0.2, 0.64, "|#eta^{jet}| < 2");
     jtphi_info->Draw();
 
     leg_jtphi->Draw();
