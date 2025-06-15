@@ -2,18 +2,20 @@
 // #include "../draw_utils.h"
 #include "../cms_palette.h"
 
+// Needs /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-centos7-gcc11-opt/setup.sh
+
 void drawHeaderSimulation(void) {
     TLatex *prelim = new TLatex;
     prelim->SetNDC();
     prelim->SetTextSize(28);
-    prelim->SetTextAlign(12);
-    prelim->DrawLatex(0.15, 0.965, "#bf{CMS} #it{Private work}");
+    prelim->SetTextAlign(13);
+    prelim->DrawLatex(0.15, 0.98, "#bf{CMS} #it{Private work}");
 
     TLatex *lumi = new TLatex;
     lumi->SetNDC();
     lumi->SetTextSize(28);
-    lumi->SetTextAlign(32);
-    lumi->DrawLatex(0.95, 0.965, "pp 301^{} pb^{-1} (5.02 TeV)");
+    lumi->SetTextAlign(33);
+    lumi->DrawLatex(0.95, 0.98, "PYTHIA8 (pp 5.02 TeV)");
 }
 
 void draw_rocs_particleNet_BvsAll()
@@ -61,13 +63,13 @@ void draw_rocs_particleNet_BvsAll()
 
     TGraph *bbb_vs_c_particleNet = new TGraph(nbins);
     bbb_vs_c_particleNet->SetMarkerStyle(kFullSquare);
-    bbb_vs_c_particleNet->SetMarkerColor(cmsRed);
+    bbb_vs_c_particleNet->SetMarkerColor(cmsOrange);
     bbb_vs_c_particleNet->SetMarkerSize(1);
     bbb_vs_c_particleNet->SetLineColor(bbb_vs_c_particleNet->GetMarkerColor());
     bbb_vs_c_particleNet->SetLineStyle(kSolid);
     bbb_vs_c_particleNet->SetLineWidth(2);
     rocs->Add(bbb_vs_c_particleNet);
-    leg_roc->AddEntry(bbb_vs_c_particleNet, "B vs C", "pl");
+    leg_roc->AddEntry(bbb_vs_c_particleNet, "b vs c", "pl");
 
     TGraph *bbb_vs_l_particleNet = new TGraph(nbins);
     bbb_vs_l_particleNet->SetMarkerStyle(kFullTriangleUp);
@@ -77,7 +79,7 @@ void draw_rocs_particleNet_BvsAll()
     bbb_vs_l_particleNet->SetLineStyle(kSolid);
     bbb_vs_l_particleNet->SetLineWidth(2);
     rocs->Add(bbb_vs_l_particleNet);
-    leg_roc->AddEntry(bbb_vs_l_particleNet, "B vs Light (guds)", "pl");
+    leg_roc->AddEntry(bbb_vs_l_particleNet, "b vs light (guds)", "pl");
 
     TGraph *bbb_vs_all_particleNet = new TGraph(nbins);
     bbb_vs_all_particleNet->SetMarkerStyle(kFullCircle);
@@ -87,7 +89,7 @@ void draw_rocs_particleNet_BvsAll()
     bbb_vs_all_particleNet->SetLineStyle(kSolid);
     bbb_vs_all_particleNet->SetLineWidth(2);
     rocs->Add(bbb_vs_all_particleNet);
-    leg_roc->AddEntry(bbb_vs_all_particleNet, "B vs All", "pl");
+    leg_roc->AddEntry(bbb_vs_all_particleNet, "b vs all", "pl");
 
     TGraph *bbb_vs_c_deepFlavour = new TGraph(nbins);
     bbb_vs_c_deepFlavour->SetMarkerStyle(kOpenSquare);
@@ -226,7 +228,8 @@ void draw_rocs_particleNet_BvsAll()
     jet_info->SetTextSize(text_size-4);
     jet_info->SetTextAlign(12);
     jet_info->DrawLatex(0.2, 0.86, "anti-k_{T}, R=0.4 jets");
-    jet_info->DrawLatex(0.2, 0.8, "|#eta^{jet}| < 2, 80 < p_{T}^{jet} < 140 (GeV/c)");
+    jet_info->DrawLatex(0.2, 0.8, "80 < p_{T}^{jet} < 140 GeV/c");
+    jet_info->DrawLatex(0.2, 0.74, "|#eta^{jet}| < 2");
     jet_info->Draw();
 
     c_roc->Draw();
