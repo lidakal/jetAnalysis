@@ -1,19 +1,21 @@
 #include "tTree.h"
 #include "hist_utils.h"
+#include "binning.h"
 
 void plot_mb_new()
 {
     // Plot mb templates 
 
-    double pt_min = 100;
-    double pt_max = 120;
+    double pt_min = 80.;
+    double pt_max = 140.;
 
     // ---- Load tree
-    TString sample = "dijet";
+    TString sample = "dijet_PF40";
     TString label = "aggrTMVA_XXT";
     TString fin_name = "/data_CMS/cms/kalipoliti/compact_trees/" + sample + "_" + label + "_tree.root";
     TString fout_name = "./histos/" + sample + "_" + label + "_mb_jer_nom_jec_nom.root"; 
 
+    std::cout << "Reading mc from: " << fin_name << std::endl;
     TFile *fin = new TFile(fin_name);
     TTree *tree_all = (TTree *) fin->Get("tree_all");
 
@@ -22,6 +24,9 @@ void plot_mb_new()
 
     Double_t jtpt;
     tree_all->SetBranchAddress("jtpt", &jtpt);
+
+    Double_t jtpt_gen;
+    tree_all->SetBranchAddress("jtpt_gen", &jtpt_gen);
 
     Int_t nb_gen;
     tree_all->SetBranchAddress("nb_gen", &nb_gen);
@@ -32,6 +37,9 @@ void plot_mb_new()
     Double_t weight;
     tree_all->SetBranchAddress("weight", &weight);
 
+    Double_t pthat;
+    tree_all->SetBranchAddress("pthat", &pthat);
+
     Double_t jer_sf_nom;
     tree_all->SetBranchAddress("jer_sf_nom", &jer_sf_nom);
 
@@ -40,7 +48,7 @@ void plot_mb_new()
     // mb
     Int_t x1bins = 20;
     Float_t x1min = 0.;
-    Float_t x1max = 7.;
+    Float_t x1max = 10.;
 
     TH1D *hSingleB_mb = new TH1D("hSingleB_mb", "x=mb", x1bins, x1min, x1max);
     TH1D *hBB_mb = new TH1D("hBB_mb", "x=mb", x1bins, x1min, x1max);
@@ -51,12 +59,15 @@ void plot_mb_new()
     std::cout << "Creating histograms ..." << std::endl;
     for (Long64_t ient = 0; ient < tree_all->GetEntries(); ient++) {
         // Print progress
-        if (ient % 100000000 == 0) {
+        if (ient % 100000 == 0) {
             std::cout << "ient = " << ient << std::endl;
         }
 
         tree_all->GetEntry(ient);
+        if (skipMC(jtpt, jtpt_gen, pthat)) continue;
         jtpt *= jer_sf_nom;
+
+        if (jtpt<pt_min||jtpt>pt_max) continue;
 
         if (mb>x1max) mb = x1max-0.001;
 
@@ -64,11 +75,11 @@ void plot_mb_new()
             hSingleB_mb->Fill(mb, weight);
         } else if (nb_gen>1) {
             hBB_mb->Fill(mb, weight);
-        } else if (nc_gen>1) {
+        } else if (nc_gen>0) {
             hC_mb->Fill(mb, weight);
         } else {
             hL_mb->Fill(mb, weight);
-        }        
+        }    
     } // entry loop
 
     // Save histograms
