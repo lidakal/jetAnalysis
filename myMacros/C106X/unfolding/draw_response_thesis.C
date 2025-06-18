@@ -2,7 +2,7 @@
 #include "../binning.h"
 #include "../cms_palette.h"
 
-void drawHeader(void) {
+void drawHeader(bool herwig=false) {
     TLatex *prelim = new TLatex;
     prelim->SetNDC();
     prelim->SetTextSize(28);
@@ -13,7 +13,8 @@ void drawHeader(void) {
     lumi->SetNDC();
     lumi->SetTextSize(28);
     lumi->SetTextAlign(33);
-    lumi->DrawLatex(0.85, 0.95, "PYTHIA8 (pp 5.02 TeV)");
+    if (herwig) lumi->DrawLatex(0.85, 0.95, "HERWIG7 (pp 5.02 TeV)");
+    else lumi->DrawLatex(0.85, 0.95, "PYTHIA8 (pp 5.02 TeV)");
 }
 
 void draw_response_thesis(TString observable="rg")
@@ -32,11 +33,13 @@ void draw_response_thesis(TString observable="rg")
     else if (observable=="zg") xlabel = "z_{g}";
     else if (observable=="zpt") xlabel = "z_{b,ch}";
 
-    TString sample = "herwig_official_PF40";
-    TString label = "aggrTMVA_XXT";
+    TString sample = "herwig_dijet_official_PF40";
+    TString label = "aggrTMVA_inclusive";
     TString fin_name = "./histos/" + sample + "_" + label + "_response_jer_nom_jec_nom.root";   
+    bool is_herwig = sample.Contains("herwig");
 
     std::cout << "File in: " << fin_name << std::endl;
+    std::cout << "is_herwig = " << is_herwig << std::endl;
     TFile *fin = new TFile(fin_name);
     TH2D *h_purity;
     TH2D *h_efficiency;
@@ -56,14 +59,21 @@ void draw_response_thesis(TString observable="rg")
         h->SetMarkerSize(800);
     }
 
-    TCanvas *c_purity = new TCanvas("c_purity", "purity", 800, 700);
+    TCanvas *c_purity = new TCanvas("c_purity", "purity", 800, 400);
+    c_purity->SetBottomMargin(0.2);
+    c_purity->SetTopMargin(0.13);
+
     h_purity->GetZaxis()->SetTitle("Reconstruction purity");
-    
+    h_purity->GetXaxis()->SetTitleOffset(1.15);
+    h_purity->GetYaxis()->SetTitleOffset(1.);
+    h_purity->GetZaxis()->SetTitleOffset(0.65);
+
     h_purity->Draw("colz text");
-    drawHeader();
+    h_purity->GetXaxis()->ChangeLabel(1, -1, 0.0, -1, -1, -1, " ");
+    drawHeader(is_herwig);
 
     if (observable!="zpt") {
-        TPaveText *untagged_text = new TPaveText(0.13, 0.02, 0.37, 0.137, "NDC");
+        TPaveText *untagged_text = new TPaveText(0.17, 0.02, 0.375, 0.19, "NDC");
         untagged_text->SetFillColor(0);
         untagged_text->SetBorderSize(0);
         untagged_text->SetTextAlign(22);
@@ -76,14 +86,21 @@ void draw_response_thesis(TString observable="rg")
     c_purity->Draw();
     c_purity->Print("../plots_thesis/"+sample+"_"+label+"_purity_"+observable+".pdf");
 
-    TCanvas *c_efficiency = new TCanvas("c_efficiency", "efficiency", 800, 700);
+    TCanvas *c_efficiency = new TCanvas("c_efficiency", "efficiency", 800, 400);
+    c_efficiency->SetBottomMargin(0.2);
+    c_efficiency->SetTopMargin(0.13);
+
     h_efficiency->GetZaxis()->SetTitle("Reconstruction efficiency");
-    
+    h_efficiency->GetXaxis()->SetTitleOffset(1.15);
+    h_efficiency->GetYaxis()->SetTitleOffset(1.);
+    h_efficiency->GetZaxis()->SetTitleOffset(0.65);
+
     h_efficiency->Draw("colz text");
-    drawHeader();
+    h_efficiency->GetXaxis()->ChangeLabel(1, -1, 0.0, -1, -1, -1, " ");
+    drawHeader(is_herwig);
 
     if (observable!="zpt") {
-        TPaveText *untagged_text = new TPaveText(0.13, 0.02, 0.37, 0.137, "NDC");
+        TPaveText *untagged_text = new TPaveText(0.17, 0.02, 0.375, 0.19, "NDC");
         untagged_text->SetFillColor(0);
         untagged_text->SetBorderSize(0);
         untagged_text->SetTextAlign(22);
@@ -233,7 +250,7 @@ void draw_response_thesis(TString observable="rg")
             text->SetTextAngle(90);
             yptlabel->Draw();
         }
-        drawHeader();
+        drawHeader(is_herwig);
         c_response->Print("../plots_thesis/"+sample+"_"+label+"_response_"+observable+".pdf");
     }
 
@@ -265,8 +282,6 @@ void draw_response_thesis(TString observable="rg")
             hline->SetLineWidth(2);
             hline->Draw();
         }
-        // if (sample.Contains("herwig")) drawHeaderHerwig();
-        // else drawHeaderSimulation();
     }
 
     // Print condition number
