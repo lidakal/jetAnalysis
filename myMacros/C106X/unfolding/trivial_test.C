@@ -1,6 +1,3 @@
-// #include "../../../../RooUnfoldOld/src/RooUnfoldResponse.h"
-// #include "../../../../RooUnfoldOld/src/RooUnfoldBayes.h"
-// #include "../../../../RooUnfoldOld/src/RooUnfoldInvert.h"
 #include "../cms_palette.h"
 
 void drawHeader(void) {
@@ -40,89 +37,79 @@ void trivial_test(TString observable="rg")
     else if (observable=="zpt") ylabel = "1/N dN/dz_{b,ch}";    
 
     // ---- Grab raw histos
-    TString sample = "pythia_PF40";
-    TString label = "aggrTMVA_XXT";
+    TString sample = "dijet_PF40";
+    TString label = "aggrTMVA_inclusive";
     bool is_inclusive = label.Contains("inclusive");
-    TString fname = "./histos/" + sample + "_" + label + "_response_full_jer_nom_jec_nom.root";
+    TString fname = "./histos/" + sample + "_" + label + "_response_jer_nom_jec_nom.root";
     std::cout << "fin: " << fname << std::endl;
     TFile *fin = new TFile(fname);
-    TH2D *h_sig_training_true = (TH2D *) fin->Get("h_sig_training_true_" + observable + "pt");
-    TH2D *h_sig_training_reco = (TH2D *) fin->Get("h_sig_training_reco_" + observable + "pt");
-    if (is_inclusive) {
-        h_sig_training_true = (TH2D *) fin->Get("h_training_true_" + observable + "pt");
-        h_sig_training_reco = (TH2D *) fin->Get("h_training_reco_" + observable + "pt");
-    }
-    RooUnfoldResponse *response = (RooUnfoldResponse *) fin->Get("response_" + observable + "pt");
+    TH2D *h_training_true = (TH2D *) fin->Get("h_full_efficiency_denominator_" + observable + "pt");
+    TH2D *h_training_reco = (TH2D *) fin->Get("h_full_purity_denominator_" + observable + "pt");
+    TH2D *h_training_purity = (TH2D *) fin->Get("h_full_purity_" + observable + "pt");
+    TH2D *h_training_efficiency = (TH2D *) fin->Get("h_full_efficiency_"+observable+"pt");
+    RooUnfoldResponse *response = (RooUnfoldResponse *) fin->Get("response_full_" + observable + "pt");
 
     // trivial test: testing = training
-    TH2D *h_sig_testing_reco = (TH2D *) h_sig_training_reco->Clone("h_testing_reco_trivial");
-    TH2D *h_sig_testing_true = (TH2D *) h_sig_training_true->Clone("h_testing_true_trivial");
+    TH2D *h_testing_reco = (TH2D *) h_training_reco->Clone("h_testing_reco_trivial");
+    TH2D *h_testing_true = (TH2D *) h_training_true->Clone("h_testing_true_trivial");
 
-    // Note: Result =  unfold(raw * purity * signal yield) * 1 / (efficiency)
+    // Note: Result =  unfold(raw * purity) * 1 / (efficiency)
     //       fakes are negligible
 
     // ---- Purity correction 
-    TH2D *h_sig_training_purity = (TH2D *) fin->Get("h_sig_training_purity_" + observable + "pt");
-    if (is_inclusive) {
-        h_sig_training_purity = (TH2D *) fin->Get("h_training_purity_" + observable + "pt");
-    }
-    TH2D *h_sig_testing_reco_purity_corrected = (TH2D *) h_sig_testing_reco->Clone("h_sig_testing_reco_purity_corrected");
-    h_sig_testing_reco_purity_corrected->Multiply(h_sig_training_purity);
+    TH2D *h_testing_reco_purity_corrected = (TH2D *) h_testing_reco->Clone("h_testing_reco_purity_corrected");
+    h_testing_reco_purity_corrected->Multiply(h_training_purity);
 
-    TH2D *h_sig_training_reco_purity_corrected = (TH2D *) h_sig_training_reco->Clone("h_sig_training_reco_purity_corrected");
-    h_sig_training_reco_purity_corrected->Multiply(h_sig_training_purity);
+    TH2D *h_training_reco_purity_corrected = (TH2D *) h_training_reco->Clone("h_training_reco_purity_corrected");
+    h_training_reco_purity_corrected->Multiply(h_training_purity);
 
-    std::cout << "content before unfolding= " << h_sig_testing_reco_purity_corrected->GetBinContent(1,1) << std::endl;
-    std::cout << "error before unfolding= " << h_sig_testing_reco_purity_corrected->GetBinError(1,1) << std::endl;
+    // std::cout << "content before unfolding= " << h_testing_reco_purity_corrected->GetBinContent(1,1) << std::endl;
+    // std::cout << "error before unfolding= " << h_testing_reco_purity_corrected->GetBinError(1,1) << std::endl;
 
     // ---- Unfolding
     RooUnfold::ErrorTreatment errorTreatment = RooUnfold::kCovariance;
     // Int_t niter = 5;
-    // RooUnfoldBayes unfold(response, h_sig_testing_reco, niter);
-    RooUnfoldInvert unfold(response, h_sig_testing_reco_purity_corrected);
+    // RooUnfoldBayes unfold(response, h_testing_reco, niter);
+    RooUnfoldInvert unfold(response, h_testing_reco_purity_corrected);
     // unfold.SetNToys(100000);
     // errorTreatment = RooUnfold::kCovToy;
-    TH2D *h_sig_testing_reco_unfolded = (TH2D *) unfold.Hreco(errorTreatment);
-    TH2D *h_sig_testing_reco_refolded = (TH2D *) response->ApplyToTruth(h_sig_testing_reco_unfolded, "h_sig_testing_reco_refolded"); // to be compared to purity corrected sig_testing
-    std::cout << "content after unfolding= " << h_sig_testing_reco_unfolded->GetBinContent(1,1) << std::endl;
-    std::cout << "error after unfolding= " << h_sig_testing_reco_unfolded->GetBinError(1,1) << std::endl;
+    TH2D *h_testing_reco_unfolded = (TH2D *) unfold.Hreco(errorTreatment);
+    TH2D *h_testing_reco_refolded = (TH2D *) response->ApplyToTruth(h_testing_reco_unfolded, "h_testing_reco_refolded"); // to be compared to purity corrected testing
+    // std::cout << "content after unfolding= " << h_testing_reco_unfolded->GetBinContent(1,1) << std::endl;
+    // std::cout << "error after unfolding= " << h_testing_reco_unfolded->GetBinError(1,1) << std::endl;
     
     // ---- Efficiency correction
-    TH2D *h_sig_training_efficiency = (TH2D *) fin->Get("h_sig_training_efficiency_"+observable+"pt");
-    if (is_inclusive) {
-        h_sig_training_efficiency = (TH2D *) fin->Get("h_training_efficiency_"+observable+"pt");
-    }
-    TH2D *h_sig_testing_reco_efficiency_corrected = (TH2D *) h_sig_testing_reco_unfolded->Clone("h_sig_testing_reco_efficiency_corrected");
-    h_sig_testing_reco_efficiency_corrected->Divide(h_sig_training_efficiency);
+    TH2D *h_testing_reco_efficiency_corrected = (TH2D *) h_testing_reco_unfolded->Clone("h_testing_reco_efficiency_corrected");
+    h_testing_reco_efficiency_corrected->Divide(h_training_efficiency);
 
     // ---- Make projections
     Int_t ibin_pt = 2;
-    Double_t pt_min = h_sig_testing_reco->GetYaxis()->GetBinLowEdge(ibin_pt);
-    Double_t pt_max = h_sig_testing_reco->GetYaxis()->GetBinUpEdge(ibin_pt);
+    Double_t pt_min = h_testing_reco->GetYaxis()->GetBinLowEdge(ibin_pt);
+    Double_t pt_max = h_testing_reco->GetYaxis()->GetBinUpEdge(ibin_pt);
 
-    TH1D *h_sig_testing_reco_1d = (TH1D *) h_sig_testing_reco->ProjectionX("h_sig_testing_reco_1d", ibin_pt, ibin_pt);
-    TH1D *h_sig_testing_true_1d = (TH1D *) h_sig_testing_true->ProjectionX("h_sig_testing_true_1d", ibin_pt, ibin_pt);
-    TH1D *h_sig_testing_reco_purity_corrected_1d = (TH1D *) h_sig_testing_reco_purity_corrected->ProjectionX("h_sig_testing_reco_purity_corrected_1d", ibin_pt, ibin_pt);
-    TH1D *h_sig_testing_reco_unfolded_1d = (TH1D *) h_sig_testing_reco_unfolded->ProjectionX("h_sig_testing_reco_unfolded_1d", ibin_pt, ibin_pt);
-    TH1D *h_sig_testing_reco_refolded_1d = (TH1D *) h_sig_testing_reco_refolded->ProjectionX("h_sig_testing_reco_refolded_1d", ibin_pt, ibin_pt);
-    TH1D *h_sig_testing_reco_efficiency_corrected_1d = (TH1D *) h_sig_testing_reco_efficiency_corrected->ProjectionX("h_sig_testing_reco_efficiency_corrected_1d", ibin_pt, ibin_pt);
-    TH1D *h_sig_training_true_1d = (TH1D *) h_sig_training_true->ProjectionX("h_sig_training_true_1d", ibin_pt, ibin_pt);
-    TH1D *h_sig_training_reco_1d = (TH1D *) h_sig_training_reco->ProjectionX("h_sig_training_reco_1d", ibin_pt, ibin_pt);
-    TH1D *h_sig_training_reco_purity_corrected_1d = (TH1D *) h_sig_training_reco_purity_corrected->ProjectionX("h_sig_training_reco_purity_corrected_1d", ibin_pt, ibin_pt);
+    TH1D *h_testing_reco_1d = (TH1D *) h_testing_reco->ProjectionX("h_testing_reco_1d", ibin_pt, ibin_pt);
+    TH1D *h_testing_true_1d = (TH1D *) h_testing_true->ProjectionX("h_testing_true_1d", ibin_pt, ibin_pt);
+    TH1D *h_testing_reco_purity_corrected_1d = (TH1D *) h_testing_reco_purity_corrected->ProjectionX("h_testing_reco_purity_corrected_1d", ibin_pt, ibin_pt);
+    TH1D *h_testing_reco_unfolded_1d = (TH1D *) h_testing_reco_unfolded->ProjectionX("h_testing_reco_unfolded_1d", ibin_pt, ibin_pt);
+    TH1D *h_testing_reco_refolded_1d = (TH1D *) h_testing_reco_refolded->ProjectionX("h_testing_reco_refolded_1d", ibin_pt, ibin_pt);
+    TH1D *h_testing_reco_efficiency_corrected_1d = (TH1D *) h_testing_reco_efficiency_corrected->ProjectionX("h_testing_reco_efficiency_corrected_1d", ibin_pt, ibin_pt);
+    TH1D *h_training_true_1d = (TH1D *) h_training_true->ProjectionX("h_training_true_1d", ibin_pt, ibin_pt);
+    TH1D *h_training_reco_1d = (TH1D *) h_training_reco->ProjectionX("h_training_reco_1d", ibin_pt, ibin_pt);
+    TH1D *h_training_reco_purity_corrected_1d = (TH1D *) h_training_reco_purity_corrected->ProjectionX("h_training_reco_purity_corrected_1d", ibin_pt, ibin_pt);
 
     // ---- Normalize
-    Int_t nbins = h_sig_testing_reco_1d->GetNbinsX();
+    Int_t nbins = h_testing_reco_1d->GetNbinsX();
     Int_t ibin_min = 1; 
     Int_t ibin_max = nbins; 
-    double x_min = h_sig_testing_reco_1d->GetXaxis()->GetBinLowEdge(ibin_min);
-    double rg_max = h_sig_testing_reco_1d->GetXaxis()->GetBinUpEdge(ibin_max);
-    for (auto h : {h_sig_testing_reco_1d, h_sig_testing_true_1d,
-                   h_sig_testing_reco_purity_corrected_1d, 
-                   h_sig_testing_reco_unfolded_1d,
-                   h_sig_testing_reco_refolded_1d,
-                   h_sig_testing_reco_efficiency_corrected_1d,
-                   h_sig_training_true_1d, h_sig_training_reco_1d,
-                   h_sig_training_reco_purity_corrected_1d}) {
+    double x_min = h_testing_reco_1d->GetXaxis()->GetBinLowEdge(ibin_min);
+    double rg_max = h_testing_reco_1d->GetXaxis()->GetBinUpEdge(ibin_max);
+    for (auto h : {h_testing_reco_1d, h_testing_true_1d,
+                   h_testing_reco_purity_corrected_1d, 
+                   h_testing_reco_unfolded_1d,
+                   h_testing_reco_refolded_1d,
+                   h_testing_reco_efficiency_corrected_1d,
+                   h_training_true_1d, h_training_reco_1d,
+                   h_training_reco_purity_corrected_1d}) {
                     h->GetXaxis()->SetRange(ibin_min, ibin_max);
                     h->Scale(1/h->Integral(), "width");
                    }
@@ -131,38 +118,38 @@ void trivial_test(TString observable="rg")
     // ---- Format histos
 
     // pseudo data 
-    h_sig_testing_reco_purity_corrected_1d->SetMarkerColor(cmsBlue);
-    h_sig_testing_reco_purity_corrected_1d->SetLineColor(cmsBlue);
-    h_sig_testing_reco_purity_corrected_1d->SetMarkerStyle(kFullTriangleUp);
-    h_sig_testing_reco_purity_corrected_1d->SetMarkerSize(2);
+    h_testing_reco_purity_corrected_1d->SetMarkerColor(cmsBlue);
+    h_testing_reco_purity_corrected_1d->SetLineColor(cmsBlue);
+    h_testing_reco_purity_corrected_1d->SetMarkerStyle(kFullTriangleUp);
+    h_testing_reco_purity_corrected_1d->SetMarkerSize(2);
 
-    h_sig_testing_true_1d->SetMarkerColor(cmsViolet);
-    h_sig_testing_true_1d->SetLineColor(cmsViolet);
-    h_sig_testing_true_1d->SetMarkerStyle(kFullTriangleDown);
-    h_sig_testing_true_1d->SetMarkerSize(2);
+    h_testing_true_1d->SetMarkerColor(cmsViolet);
+    h_testing_true_1d->SetLineColor(cmsViolet);
+    h_testing_true_1d->SetMarkerStyle(kFullTriangleDown);
+    h_testing_true_1d->SetMarkerSize(2);
 
-    h_sig_testing_reco_efficiency_corrected_1d->SetMarkerColor(kBlack);
-    h_sig_testing_reco_efficiency_corrected_1d->SetLineColor(kBlack);
-    h_sig_testing_reco_efficiency_corrected_1d->SetMarkerStyle(kFullCrossX);
-    h_sig_testing_reco_efficiency_corrected_1d->SetMarkerSize(2);
+    h_testing_reco_efficiency_corrected_1d->SetMarkerColor(kBlack);
+    h_testing_reco_efficiency_corrected_1d->SetLineColor(kBlack);
+    h_testing_reco_efficiency_corrected_1d->SetMarkerStyle(kFullCrossX);
+    h_testing_reco_efficiency_corrected_1d->SetMarkerSize(2);
 
-    h_sig_testing_reco_refolded_1d->SetMarkerColor(kBlue);
-    h_sig_testing_reco_refolded_1d->SetMarkerColor(kBlue);
-    h_sig_testing_reco_refolded_1d->SetMarkerStyle(kFullCross);
-    h_sig_testing_reco_refolded_1d->SetMarkerSize(1);
+    h_testing_reco_refolded_1d->SetMarkerColor(kBlue);
+    h_testing_reco_refolded_1d->SetMarkerColor(kBlue);
+    h_testing_reco_refolded_1d->SetMarkerStyle(kFullCross);
+    h_testing_reco_refolded_1d->SetMarkerSize(1);
 
     // simulation
-    h_sig_training_reco_1d->SetMarkerColor(kRed);
-    h_sig_training_reco_1d->SetLineColor(kRed);
-    h_sig_training_reco_1d->SetMarkerStyle(kFullTriangleUp);
-    h_sig_training_reco_1d->SetMarkerSize(1);
-    // h_sig_training_reco_1d->SetLineWidth(0);
+    h_training_reco_1d->SetMarkerColor(kRed);
+    h_training_reco_1d->SetLineColor(kRed);
+    h_training_reco_1d->SetMarkerStyle(kFullTriangleUp);
+    h_training_reco_1d->SetMarkerSize(1);
+    // h_training_reco_1d->SetLineWidth(0);
 
-    h_sig_training_true_1d->SetMarkerColor(kRed);
-    h_sig_training_true_1d->SetLineColor(kRed);
-    h_sig_training_true_1d->SetMarkerStyle(kOpenTriangleUp);
-    h_sig_training_true_1d->SetMarkerSize(1);
-    // h_sig_training_true_1d->SetLineWidth(0);
+    h_training_true_1d->SetMarkerColor(kRed);
+    h_training_true_1d->SetLineColor(kRed);
+    h_training_true_1d->SetMarkerStyle(kOpenTriangleUp);
+    h_training_true_1d->SetMarkerSize(1);
+    // h_training_true_1d->SetLineWidth(0);
 
     // legend
     TLegend *leg = new TLegend(0.67, 0.2, 0.9, 0.5);
@@ -171,19 +158,19 @@ void trivial_test(TString observable="rg")
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     leg->SetMargin(0.15);
-    leg->AddEntry(h_sig_testing_reco_purity_corrected_1d, "Detector level", "pe1");
-    leg->AddEntry(h_sig_testing_true_1d, "Particle level", "pe1");
-    // leg->AddEntry(h_sig_training_reco_1d, "Detector level simulation", "pe1");
-    // leg->AddEntry(h_sig_training_true_1d, "Particle level simulation", "pe1");  
-    leg->AddEntry(h_sig_testing_reco_efficiency_corrected_1d, "Unfolded", "pe1");
-    // leg->AddEntry(h_sig_testing_reco_refolded_1d, "Refolded pseudo data", "p");
+    leg->AddEntry(h_testing_reco_purity_corrected_1d, "Detector level", "pe1");
+    leg->AddEntry(h_testing_true_1d, "Particle level", "pe1");
+    // leg->AddEntry(h_training_reco_1d, "Detector level simulation", "pe1");
+    // leg->AddEntry(h_training_true_1d, "Particle level simulation", "pe1");  
+    leg->AddEntry(h_testing_reco_efficiency_corrected_1d, "Unfolded", "pe1");
+    // leg->AddEntry(h_testing_reco_refolded_1d, "Refolded pseudo data", "p");
 
     // ------- RATIO PLOTS
-        TH1D *h_refolded_smeared_ratio = (TH1D *) h_sig_testing_reco_refolded_1d->Clone("h_refolded_smeared_ratio");
-    h_refolded_smeared_ratio->Divide(h_sig_training_reco_purity_corrected_1d);
+        TH1D *h_refolded_smeared_ratio = (TH1D *) h_testing_reco_refolded_1d->Clone("h_refolded_smeared_ratio");
+    h_refolded_smeared_ratio->Divide(h_training_reco_purity_corrected_1d);
 
-    TH1D *h_efficiency_corrected_true_ratio = (TH1D *) h_sig_testing_reco_efficiency_corrected_1d->Clone("h_efficiency_corrected_true_ratio");
-    h_efficiency_corrected_true_ratio->Divide(h_sig_training_true_1d);
+    TH1D *h_efficiency_corrected_true_ratio = (TH1D *) h_testing_reco_efficiency_corrected_1d->Clone("h_efficiency_corrected_true_ratio");
+    h_efficiency_corrected_true_ratio->Divide(h_training_true_1d);
 
     TLine *line = new TLine(x_min, 1., rg_max, 1.);
     line->SetLineWidth(2.); 
@@ -212,20 +199,20 @@ void trivial_test(TString observable="rg")
     bottom_pad->SetBottomMargin(0.35);
 
     top_pad->cd();
-    h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetTitle(ylabel);
-    h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetTitleSize(text_size);
-    h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetLabelSize(text_size-4);
-    h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetTitleOffset(1.3);
-    if (!is_inclusive&&observable=="rg") h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 0.8);
-    else if (is_inclusive&&observable=="rg") h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 0.9);
-    else if (!is_inclusive&&observable=="zg") h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 5.);
-    else if (is_inclusive&&observable=="zg") h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 5.);
-    else if (observable=="zpt") h_sig_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 4.5);
-    h_sig_testing_reco_purity_corrected_1d->GetXaxis()->SetLabelOffset(10.); // kick it out of existence
-    h_sig_testing_reco_purity_corrected_1d->GetXaxis()->SetTitleOffset(10.); // kick it out of existence
-    h_sig_testing_reco_purity_corrected_1d->Draw("pe1");
-    h_sig_testing_true_1d->Draw("pe1 same");
-    h_sig_testing_reco_efficiency_corrected_1d->Draw("pe1 same");
+    h_testing_reco_purity_corrected_1d->GetYaxis()->SetTitle(ylabel);
+    h_testing_reco_purity_corrected_1d->GetYaxis()->SetTitleSize(text_size);
+    h_testing_reco_purity_corrected_1d->GetYaxis()->SetLabelSize(text_size-4);
+    h_testing_reco_purity_corrected_1d->GetYaxis()->SetTitleOffset(1.3);
+    if (!is_inclusive&&observable=="rg") h_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 0.8);
+    else if (is_inclusive&&observable=="rg") h_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 0.9);
+    else if (!is_inclusive&&observable=="zg") h_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 5.);
+    else if (is_inclusive&&observable=="zg") h_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 5.);
+    else if (observable=="zpt") h_testing_reco_purity_corrected_1d->GetYaxis()->SetRangeUser(0., 4.5);
+    h_testing_reco_purity_corrected_1d->GetXaxis()->SetLabelOffset(10.); // kick it out of existence
+    h_testing_reco_purity_corrected_1d->GetXaxis()->SetTitleOffset(10.); // kick it out of existence
+    h_testing_reco_purity_corrected_1d->Draw("pe1");
+    h_testing_true_1d->Draw("pe1 same");
+    h_testing_reco_efficiency_corrected_1d->Draw("pe1 same");
     leg->Draw();
     drawHeader();
     // Jets text
@@ -260,7 +247,7 @@ void trivial_test(TString observable="rg")
     h_efficiency_corrected_true_ratio->GetYaxis()->SetRangeUser(0.5, 1.5);
     h_efficiency_corrected_true_ratio->GetYaxis()->SetNdivisions(-4);
 
-    // h_sig_testing_true_1d->Draw("pe1 same");
+    // h_testing_true_1d->Draw("pe1 same");
     h_efficiency_corrected_true_ratio->Draw("pe1");
     // line->Draw();
     // h_efficiency_corrected_true_ratio->Draw("pe1 same");
