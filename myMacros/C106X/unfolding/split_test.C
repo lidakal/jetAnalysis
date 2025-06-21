@@ -49,8 +49,8 @@ void split_test(TString observable="rg")
     TH2D *h_half1_efficiency_denominator = (TH2D *) fin->Get("h_half1_efficiency_denominator_" + observable + "pt");
     TH2D *h_half1_purity_denominator = (TH2D *) fin->Get("h_half1_purity_denominator_" + observable + "pt");
     RooUnfoldResponse *response = (RooUnfoldResponse *) fin->Get("response_" + observable + "pt_half0");
-    TH2D *h_purity = (TH2D *) fin->Get("h_half1_purity_" + observable + "pt");
-    TH2D *h_efficiency = (TH2D *) fin->Get("h_half1_efficiency_"+observable+"pt");
+    TH2D *h_purity = (TH2D *) fin->Get("h_half0_purity_" + observable + "pt");
+    TH2D *h_efficiency = (TH2D *) fin->Get("h_half0_efficiency_"+observable+"pt");
 
     // Note: Result =  unfold(raw * purity * signal yield) * 1 / (efficiency)
     //       fakes are negligible
@@ -61,9 +61,9 @@ void split_test(TString observable="rg")
 
     // ---- Unfolding
     RooUnfold::ErrorTreatment errorTreatment = RooUnfold::kCovariance;
-    Int_t niter = 5;
-    RooUnfoldBayes unfold(response, h_half1_purity_denominator, niter);
-    // RooUnfoldInvert unfold(response, h_purity_corrected);
+    // Int_t niter = 5;
+    // RooUnfoldBayes unfold(response, h_half1_purity_denominator, niter);
+    RooUnfoldInvert unfold(response, h_purity_corrected);
     TH2D *h_unfolded = (TH2D *) unfold.Hreco(errorTreatment);
     TH2D *h_refolded = (TH2D *) response->ApplyToTruth(h_unfolded, "h_refolded"); 
     // ---- Efficiency correction
