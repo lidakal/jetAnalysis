@@ -37,8 +37,8 @@ void trivial_test(TString observable="rg")
     else if (observable=="zpt") ylabel = "1/N dN/dz_{b,ch}";    
 
     // ---- Grab raw histos
-    TString sample = "dijet_PF40";
-    TString label = "aggrTMVA_inclusive";
+    TString sample = "pythia_PF40";
+    TString label = "aggrTMVA_XXT";
     bool is_inclusive = label.Contains("inclusive");
     TString fname = "./histos/" + sample + "_" + label + "_response_jer_nom_jec_nom.root";
     std::cout << "fin: " << fname << std::endl;
@@ -244,14 +244,23 @@ void trivial_test(TString observable="rg")
     h_efficiency_corrected_true_ratio->GetYaxis()->SetTitleSize(text_size);
     h_efficiency_corrected_true_ratio->GetYaxis()->SetLabelSize(text_size-4);
     h_efficiency_corrected_true_ratio->GetYaxis()->SetTitleOffset(1.4);
-    h_efficiency_corrected_true_ratio->GetYaxis()->SetRangeUser(0.5, 1.5);
+    if (is_inclusive) h_efficiency_corrected_true_ratio->GetYaxis()->SetRangeUser(0.9, 1.1);
+    else h_efficiency_corrected_true_ratio->GetYaxis()->SetRangeUser(0.5, 1.5);
     h_efficiency_corrected_true_ratio->GetYaxis()->SetNdivisions(-4);
 
-    // h_testing_true_1d->Draw("pe1 same");
     h_efficiency_corrected_true_ratio->Draw("pe1");
-    // line->Draw();
-    // h_efficiency_corrected_true_ratio->Draw("pe1 same");
 
+    if (observable!="zpt"&&ibin_min==1) {
+        TPaveText *untagged_text = new TPaveText(0.17, 0.02, 0.375, 0.325, "NDC");
+        untagged_text->SetFillColor(0);
+        untagged_text->SetBorderSize(0);
+        untagged_text->SetTextAlign(22);
+        untagged_text->SetTextSize(text_size-4);
+        untagged_text->AddText("SD-untagged");
+        untagged_text->AddText("or k_{T} < 1 GeV/c");
+        untagged_text->Draw();
+        h_efficiency_corrected_true_ratio->GetXaxis()->ChangeLabel(1, -1, 0.0, -1, -1, -1, " ");
+    }
 
 
     c_trivial->cd();
