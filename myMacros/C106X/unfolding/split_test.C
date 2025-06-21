@@ -1,51 +1,57 @@
-// #include "../../../../RooUnfoldOld/src/RooUnfoldResponse.h"
-// #include "../../../../RooUnfoldOld/src/RooUnfoldBayes.h"
-// #include "../../../../RooUnfoldOld/src/RooUnfoldInvert.h"
-#include "../draw_utils.h"
+#include "../cms_palette.h"
+
+void drawHeader(void) {
+    TLatex *prelim = new TLatex;
+    prelim->SetNDC();
+    prelim->SetTextSize(28);
+    prelim->SetTextAlign(13);
+    prelim->DrawLatex(0.15, 0.98, "#bf{CMS} #it{Private work}");
+
+    TLatex *lumi = new TLatex;
+    lumi->SetNDC();
+    lumi->SetTextSize(28);
+    lumi->SetTextAlign(33);
+    lumi->DrawLatex(0.95, 0.98, "PYTHIA8 (pp 5.02 TeV)");
+}
 
 void split_test(TString observable="rg")
 {
-    // Dummy test: apply the unfolding to the MC used to fill the matrix
-    //             result should be 1
+    // Split test: fill response w/ half MC, test on other half
+
+    // Setup plot
+    Float_t text_size = 28.;
+    gStyle->SetTextSize(text_size);
+    gStyle->SetLegendTextSize(text_size-4);
+    gStyle->SetLabelSize(text_size-4, "XYZ");
+    gStyle->SetTitleSize(text_size, "XYZ");
+    gStyle->SetErrorX(0.5);
 
     TString xlabel;
     if (observable=="rg") xlabel = "ln(R/R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
-    else if (observable=="zpt") xlabel = "z^{ch}";
-    TString ylabel = "1/N dN/d" + xlabel;
-
-    // ---- Setup 
-    gSystem->Load("libRooUnfold.so");
-    gStyle->SetErrorX(0.5);
-
-    Double_t ptMin = 100.;
-    Double_t ptMax = 120.;
-
-    Float_t text_size = 20.;
-    gStyle->SetTextSize(text_size);
-    gStyle->SetLegendTextSize(text_size);
-    gStyle->SetLabelSize(text_size, "XYZ");
-    gStyle->SetTitleSize(text_size, "XYZ");
+    else if (observable=="zpt") xlabel = "z_{b,ch}";
+    TString ylabel;
+    if (observable=="rg") ylabel = "1/N dN/dln(R/R_{g})";
+    else if (observable=="zg") ylabel = "1/N dN/dz_{g}";
+    else if (observable=="zpt") ylabel = "1/N dN/dz_{b,ch}";    
 
     // ---- Grab raw histos
-    TString sample = "dijet_PF40";
-    TString label = "aggrTMVA_inclusive";
+    TString sample = "pythia_PF40";
+    TString label = "aggrTMVA_XXT";
     TString fname = "./histos/" + sample + "_" + label + "_response_jer_nom_jec_nom.root";
     std::cout << "File in : " << fname << std::endl;
-    bool inclusive = sample.Contains("dijet");
+    bool is_inclusive = label.Contains("inclusive");
 
-    // response, purity, efficiency from half0
-    // pseudo data from half1
+    // half0: response, purity, efficiency
+    // half1: pseudo data
 
     TFile *fin = new TFile(fname);
-    TH2D *h_half0_efficiency_denominator = (TH2D *) fin->Get("h_half0_efficiency_denominator_" + observable + "pt");
-    TH2D *h_half0_purity_denominator = (TH2D *) fin->Get("h_half0_purity_denominator_" + observable + "pt");
     TH2D *h_half1_efficiency_denominator = (TH2D *) fin->Get("h_half1_efficiency_denominator_" + observable + "pt");
     TH2D *h_half1_purity_denominator = (TH2D *) fin->Get("h_half1_purity_denominator_" + observable + "pt");
     RooUnfoldResponse *response = (RooUnfoldResponse *) fin->Get("response_" + observable + "pt_half0");
-    TH2D *h_purity = (TH2D *) fin->Get("h_half0_purity_" + observable + "pt");
-    TH2D *h_efficiency = (TH2D *) fin->Get("h_half0_efficiency_"+observable+"pt");
-    
+    TH2D *h_purity = (TH2D *) fin->Get("h_half1_purity_" + observable + "pt");
+    TH2D *h_efficiency = (TH2D *) fin->Get("h_half1_efficiency_"+observable+"pt");
+
     // Note: Result =  unfold(raw * purity * signal yield) * 1 / (efficiency)
     //       fakes are negligible
 
@@ -53,14 +59,11 @@ void split_test(TString observable="rg")
     TH2D *h_purity_corrected = (TH2D *) h_half1_purity_denominator->Clone("h_purity_corrected");
     h_purity_corrected->Multiply(h_purity);
 
-    // TH2D *h_half0_purity_denominator_purity_corrected = (TH2D *) h_half0_purity_denominator->Clone("h_half0_purity_denominator_purity_corrected");
-    // h_half0_purity_denominator_purity_corrected->Multiply(h_sig_training_purity);
-
     // ---- Unfolding
     RooUnfold::ErrorTreatment errorTreatment = RooUnfold::kCovariance;
-    // Int_t niter = 1;
-    // RooUnfoldBayes unfold(response, h_half1_purity_denominator, niter);
-    RooUnfoldInvert unfold(response, h_purity_corrected);
+    Int_t niter = 5;
+    RooUnfoldBayes unfold(response, h_half1_purity_denominator, niter);
+    // RooUnfoldInvert unfold(response, h_purity_corrected);
     TH2D *h_unfolded = (TH2D *) unfold.Hreco(errorTreatment);
     TH2D *h_refolded = (TH2D *) response->ApplyToTruth(h_unfolded, "h_refolded"); 
     // ---- Efficiency correction
@@ -68,21 +71,16 @@ void split_test(TString observable="rg")
     h_efficiency_corrected->Divide(h_efficiency);
 
     // ---- Make projections
-    Int_t iptmin = h_half1_purity_denominator->GetYaxis()->FindBin(ptMin);
-    Int_t iptmax = h_half1_purity_denominator->GetYaxis()->FindBin(ptMax) - 1;
-    Double_t ptMin_real = h_half1_purity_denominator->GetYaxis()->GetBinLowEdge(iptmin);
-    Double_t ptMax_real = h_half1_purity_denominator->GetYaxis()->GetBinUpEdge(iptmax);
+    Int_t ibin_pt = 2;
+    Double_t pt_min = h_half1_purity_denominator->GetYaxis()->GetBinLowEdge(ibin_pt);
+    Double_t pt_max = h_half1_purity_denominator->GetYaxis()->GetBinUpEdge(ibin_pt);
 
-    TH1D *h_half1_purity_denominator_1d = (TH1D *) h_half1_purity_denominator->ProjectionX("h_half1_purity_denominator_1d", iptmin, iptmax);
-    TH1D *h_half1_efficiency_denominator_1d = (TH1D *) h_half1_efficiency_denominator->ProjectionX("h_half1_efficiency_denominator_1d", iptmin, iptmax);
-    TH1D *h_purity_corrected_1d = (TH1D *) h_purity_corrected->ProjectionX("h_purity_corrected_1d", iptmin, iptmax);
-    TH1D *h_unfolded_1d = (TH1D *) h_unfolded->ProjectionX("h_unfolded_1d", iptmin, iptmax);
-    TH1D *h_refolded_1d = (TH1D *) h_refolded->ProjectionX("h_refolded_1d", iptmin, iptmax);
-    TH1D *h_efficiency_corrected_1d = (TH1D *) h_efficiency_corrected->ProjectionX("h_efficiency_corrected_1d", iptmin, iptmax);
-
-    // TH1D *h_half0_efficiency_denominator_1d = (TH1D *) h_half0_efficiency_denominator->ProjectionX("h_half0_efficiency_denominator_1d", iptmin, iptmax);
-    // TH1D *h_half0_purity_denominator_1d = (TH1D *) h_half0_purity_denominator->ProjectionX("h_half0_purity_denominator_1d", iptmin, iptmax);
-    // TH1D *h_half0_purity_denominator_purity_corrected_1d = (TH1D *) h_half0_purity_denominator_purity_corrected->ProjectionX("h_half0_purity_denominator_purity_corrected_1d", iptmin, iptmax);
+    TH1D *h_half1_purity_denominator_1d = (TH1D *) h_half1_purity_denominator->ProjectionX("h_half1_purity_denominator_1d", ibin_pt, ibin_pt);
+    TH1D *h_half1_efficiency_denominator_1d = (TH1D *) h_half1_efficiency_denominator->ProjectionX("h_half1_efficiency_denominator_1d", ibin_pt, ibin_pt);
+    // TH1D *h_purity_corrected_1d = (TH1D *) h_purity_corrected->ProjectionX("h_purity_corrected_1d", ibin_pt, ibin_pt);
+    // TH1D *h_unfolded_1d = (TH1D *) h_unfolded->ProjectionX("h_unfolded_1d", ibin_pt, ibin_pt);
+    // TH1D *h_refolded_1d = (TH1D *) h_refolded->ProjectionX("h_refolded_1d", ibin_pt, ibin_pt);
+    TH1D *h_efficiency_corrected_1d = (TH1D *) h_efficiency_corrected->ProjectionX("h_efficiency_corrected_1d", ibin_pt, ibin_pt);
 
     // ---- Normalize
     Int_t nbins = h_half1_purity_denominator_1d->GetNbinsX();
@@ -93,74 +91,47 @@ void split_test(TString observable="rg")
     double rg_max = h_half1_purity_denominator_1d->GetXaxis()->GetBinUpEdge(ibin_max);
     for (auto h : {
                    h_half1_purity_denominator_1d, h_half1_efficiency_denominator_1d,
-                   h_purity_corrected_1d, 
-                   h_unfolded_1d,
-                   h_refolded_1d,
+                //    h_purity_corrected_1d, 
+                //    h_unfolded_1d,
+                //    h_refolded_1d,
                    h_efficiency_corrected_1d,
                   //  h_half0_efficiency_denominator_1d, h_half0_purity_denominator_1d,
                   //  h_half0_purity_denominator_purity_corrected_1d,
                   }) {
                     h->GetXaxis()->SetRange(ibin_min, ibin_max);
                     h->Scale(1/h->Integral(), "width");
-                    h->Sumw2();
                    }
 
 
     // ---- Format histos
-    TLegend *leg = new TLegend(0.5, 0.45, 0.8, 0.75);
+
+    // pseudo data
+    h_half1_purity_denominator_1d->SetMarkerColor(cmsBlue);
+    h_half1_purity_denominator_1d->SetLineColor(cmsBlue);
+    h_half1_purity_denominator_1d->SetMarkerStyle(kFullTriangleUp);
+    h_half1_purity_denominator_1d->SetMarkerSize(2);
+
+    h_half1_efficiency_denominator_1d->SetMarkerColor(cmsViolet);
+    h_half1_efficiency_denominator_1d->SetLineColor(cmsViolet);
+    h_half1_efficiency_denominator_1d->SetMarkerStyle(kFullTriangleDown);
+    h_half1_efficiency_denominator_1d->SetMarkerSize(2);
+    
+    h_efficiency_corrected_1d->SetMarkerColor(kBlack);
+    h_efficiency_corrected_1d->SetLineColor(kBlack);
+    h_efficiency_corrected_1d->SetMarkerStyle(kFullCrossX);
+    h_efficiency_corrected_1d->SetMarkerSize(2);
+
+    // legend
+    TLegend *leg = new TLegend(0.67, 0.2, 0.9, 0.5);
+    if (is_inclusive) leg = new TLegend(0.18, 0.59, 0.41, 0.89);
+    if (observable=="zpt") leg = new TLegend(0.2, 0.2, 0.43, 0.5);
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     leg->SetMargin(0.15);
-    leg->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", ptMin_real, ptMax_real));
-
-    h_half1_purity_denominator_1d->SetMarkerColor(kRed);
-    h_half1_purity_denominator_1d->SetLineColor(kRed);
-    h_half1_purity_denominator_1d->SetMarkerStyle(kFullTriangleUp);
-    h_half1_purity_denominator_1d->SetMarkerSize(1);
-    // h_half1_purity_denominator_1d->SetLineWidth(0);
-    h_half1_purity_denominator_1d->GetYaxis()->SetTitle(ylabel);
-    leg->AddEntry(h_half1_purity_denominator_1d, "Detector level pseudo-data", "pe1");
-    if (!inclusive) h_half1_purity_denominator_1d->GetYaxis()->SetRangeUser(-0.05, 0.7);
-    else h_half1_purity_denominator_1d->GetYaxis()->SetRangeUser(0., 0.5);
-
-    h_half1_efficiency_denominator_1d->SetMarkerColor(kBlue);
-    h_half1_efficiency_denominator_1d->SetLineColor(kBlue);
-    h_half1_efficiency_denominator_1d->SetMarkerStyle(kFullTriangleDown);
-    h_half1_efficiency_denominator_1d->SetMarkerSize(1);
-    // h_half1_efficiency_denominator_1d->SetLineWidth(0);
-    leg->AddEntry(h_half1_efficiency_denominator_1d, "Particle level pseudo-data", "pe1");
-
-    // h_half0_purity_denominator_1d->SetMarkerColor(kRed);
-    // h_half0_purity_denominator_1d->SetLineColor(kRed);
-    // h_half0_purity_denominator_1d->SetMarkerStyle(kFullTriangleUp);
-    // h_half0_purity_denominator_1d->SetMarkerSize(1);
-    // // h_half0_purity_denominator_1d->SetLineWidth(0);
-    // hStack->Add(h_half0_purity_denominator_1d, "pe1");
-    // leg->AddEntry(h_half0_purity_denominator_1d, "Detector level MC", "pe1");
-
-    // h_half0_efficiency_denominator_1d->SetMarkerColor(kRed);
-    // h_half0_efficiency_denominator_1d->SetLineColor(kRed);
-    // h_half0_efficiency_denominator_1d->SetMarkerStyle(kOpenTriangleUp);
-    // h_half0_efficiency_denominator_1d->SetMarkerSize(1);
-    // // h_half0_efficiency_denominator_1d->SetLineWidth(0);
-    // hStack->Add(h_half0_efficiency_denominator_1d, "pe1");
-    // leg->AddEntry(h_half0_efficiency_denominator_1d, "Particle level MC", "pe1");    
-
-    h_efficiency_corrected_1d->SetMarkerColor(kBlack);
-    h_efficiency_corrected_1d->SetLineColor(kBlack);
-    h_efficiency_corrected_1d->SetMarkerStyle(kFullCircle);
-    h_efficiency_corrected_1d->SetMarkerSize(1);
-    // h_efficiency_corrected_1d->SetLineWidth(0);
-    leg->AddEntry(h_efficiency_corrected_1d, "Unfolded pseudo data", "pe1");
-
-    // h_half1_purity_denominator_refolded_1d->SetMarkerColor(kBlue);
-    // h_half1_purity_denominator_refolded_1d->SetLineColor(kBlue);
-    // h_half1_purity_denominator_refolded_1d->SetMarkerStyle(kFullCross);
-    // h_half1_purity_denominator_refolded_1d->SetMarkerSize(1);
-    // // h_half1_purity_denominator_refolded_1d->SetLineWidth(0g);
-    // hStack->Add(h_half1_purity_denominator_refolded_1d, "pe1");
-    // leg->AddEntry(h_half1_purity_denominator_refolded_1d, "Refolded pseudo data", "pe1");
-
+    leg->AddEntry(h_half1_purity_denominator_1d, "Detector level", "pe1");
+    leg->AddEntry(h_half1_efficiency_denominator_1d, "Particle level", "pe1");
+    leg->AddEntry(h_efficiency_corrected_1d, "Unfolded", "pe1");
+    
     // ------- RATIO PLOTS
 
     // THStack *hStack_ratio = new THStack("hStack_ratio", "");
@@ -185,51 +156,90 @@ void split_test(TString observable="rg")
 
     TH1D *h_true_ratio = (TH1D *) h_efficiency_corrected_1d->Clone("h_true_ratio");
     h_true_ratio->Divide(h_half1_efficiency_denominator_1d);
-    h_true_ratio->GetYaxis()->SetTitle("Unfolded / true");
-    h_true_ratio->GetXaxis()->SetTitle(xlabel);
-    if (!inclusive) h_true_ratio->GetYaxis()->SetRangeUser(0., 2.);
-    else h_true_ratio->GetYaxis()->SetRangeUser(0.93, 1.05);
-    h_true_ratio->GetXaxis()->SetTitleOffset(3.);
     
     // ---- Draw canvas
+    TCanvas *c_split = new TCanvas("c_split", "", 700, 600);
+    TPad *top_pad = new TPad("top_pad", "", 0., 0.33, 1., 1.);
+    TPad *bottom_pad = new TPad("top_pad", "", 0., 0., 1., 0.33);
 
-    TCanvas *c_split = new TCanvas("c_split", "", 800, 600);
-    TPad *pad1 = new TPad("pad1", "", 0., 0., 1., 0.3);
-    TPad *pad2 = new TPad("pad2", "", 0., 0.3, 1., 1.);
+    top_pad->SetLeftMargin(0.15);
+    top_pad->SetRightMargin(0.05);
+    top_pad->SetTopMargin(0.09);
+    top_pad->SetBottomMargin(0.03);
+    bottom_pad->SetLeftMargin(0.15);
+    bottom_pad->SetRightMargin(0.05);
+    bottom_pad->SetTopMargin(0.04);
+    bottom_pad->SetBottomMargin(0.35);
 
-    pad1->SetTopMargin(0.01);
-    pad1->SetBottomMargin(0.3);
-    pad2->SetBottomMargin(0.01);
-
-    pad1->cd();
-    h_true_ratio->Draw("pe1 same");
-
-    pad2->cd();
+    top_pad->cd();
+    h_half1_purity_denominator_1d->GetYaxis()->SetTitle(ylabel);
+    h_half1_purity_denominator_1d->GetYaxis()->SetTitleSize(text_size);
+    h_half1_purity_denominator_1d->GetYaxis()->SetLabelSize(text_size-4);
+    h_half1_purity_denominator_1d->GetYaxis()->SetTitleOffset(1.3);
+    if (!is_inclusive&&observable=="rg") h_half1_purity_denominator_1d->GetYaxis()->SetRangeUser(0., 0.8);
+    else if (is_inclusive&&observable=="rg") h_half1_purity_denominator_1d->GetYaxis()->SetRangeUser(0., 0.9);
+    else if (!is_inclusive&&observable=="zg") h_half1_purity_denominator_1d->GetYaxis()->SetRangeUser(0., 5.);
+    else if (is_inclusive&&observable=="zg") h_half1_purity_denominator_1d->GetYaxis()->SetRangeUser(0., 5.);
+    else if (observable=="zpt") h_half1_purity_denominator_1d->GetYaxis()->SetRangeUser(0., 4.5);
+    h_half1_purity_denominator_1d->GetXaxis()->SetLabelOffset(10.); // kick it out of existence
+    h_half1_purity_denominator_1d->GetXaxis()->SetTitleOffset(10.); // kick it out of existence
     h_half1_purity_denominator_1d->Draw("pe1");
     h_half1_efficiency_denominator_1d->Draw("pe1 same");
     h_efficiency_corrected_1d->Draw("pe1 same");
-
     leg->Draw();
-    // TLatex *test_info_text = new TLatex;
-    // test_info_text->SetNDC();
-    // test_info_text->SetTextSize(text_size);
-    // test_info_text->DrawLatex(0.6, 0.8, "SPLIT TEST");
-    // test_info_text->Draw();
-    TLatex *test_info_text = new TLatex;
-    test_info_text->SetNDC();
-    // test_info_text->SetTextSize(text_size);
-    test_info_text->DrawLatex(0.2, 0.2, "SPLIT TEST");
-    test_info_text->DrawLatex(0.2, 0.15, sample.Contains("herwig") ? "herwig nominal" : "pythia nominal");
-    test_info_text->DrawLatex(0.2, 0.1, inclusive ? "inclusive jets" : "b jets");
-    test_info_text->Draw();
-    if (sample.Contains("herwig")) drawHeaderHerwig();
-    else drawHeaderSimulation();
+    drawHeader();
+    // Jets text
+    if (observable!="zpt") {
+        TLatex *jet_info = new TLatex;
+        jet_info->SetNDC();
+        jet_info->SetTextSize(text_size-4);
+        jet_info->SetTextAlign(32);
+        if (is_inclusive) jet_info->DrawLatex(0.9, 0.83, "anti-k_{T}, R = 0.4 inclusive jets"); 
+        else jet_info->DrawLatex(0.9, 0.83, "anti-k_{T}, R = 0.4 b-tagged b jets");
+        jet_info->DrawLatex(0.9, 0.75, Form("%.0f < p_{T}^{jet} < %.0f GeV/c, |#eta^{jet}| < 2", pt_min, pt_max));
+        jet_info->DrawLatex(0.9, 0.67, "Soft drop (charged particles)");
+        jet_info->DrawLatex(0.9, 0.59, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV/c");
+    } else {
+        TLatex *jet_info = new TLatex;
+        jet_info->SetNDC();
+        jet_info->SetTextSize(text_size-4);
+        jet_info->SetTextAlign(12);
+        jet_info->DrawLatex(0.2, 0.83, "anti-k_{T}, R = 0.4 b-tagged b jets");
+        jet_info->DrawLatex(0.2, 0.75, Form("%.0f < p_{T}^{jet} < %.0f GeV/c, |#eta^{jet}| < 2", pt_min, pt_max));
+    }
+
+    bottom_pad->cd();
+    h_true_ratio->GetXaxis()->SetTitle(xlabel);
+    h_true_ratio->GetXaxis()->SetTitleSize(text_size);
+    h_true_ratio->GetXaxis()->SetLabelSize(text_size-4);
+    h_true_ratio->GetXaxis()->SetTitleOffset(3.);
+    h_true_ratio->GetYaxis()->SetTitle("#splitline{Ratio to}{particle level}");
+    h_true_ratio->GetYaxis()->SetTitleSize(text_size);
+    h_true_ratio->GetYaxis()->SetLabelSize(text_size-4);
+    h_true_ratio->GetYaxis()->SetTitleOffset(1.4);
+    if (is_inclusive) h_true_ratio->GetYaxis()->SetRangeUser(0.8, 1.2);
+    else h_true_ratio->GetYaxis()->SetRangeUser(0.5, 1.5);
+    h_true_ratio->GetYaxis()->SetNdivisions(-4);
+    h_true_ratio->Draw("pe1 same");
+
+    if (observable!="zpt"&&ibin_min==1) {
+        TPaveText *untagged_text = new TPaveText(0.17, 0.02, 0.375, 0.325, "NDC");
+        untagged_text->SetFillColor(0);
+        untagged_text->SetBorderSize(0);
+        untagged_text->SetTextAlign(22);
+        untagged_text->SetTextSize(text_size-4);
+        untagged_text->AddText("SD-untagged");
+        untagged_text->AddText("or k_{T} < 1 GeV/c");
+        untagged_text->Draw();
+        h_true_ratio->GetXaxis()->ChangeLabel(1, -1, 0.0, -1, -1, -1, " ");
+    }
+
 
     c_split->cd();
-    pad1->Draw();
-    pad2->Draw();
+    top_pad->Draw();
+    bottom_pad->Draw();
 
     // c_split->Draw();    
-    // c_split->Print("plots_an/"+sample+"_"+label+"_split_test_"+observable+".png");
+    c_split->Print("../plots_thesis/"+sample+"_"+label+"_split_test_"+observable+".pdf");
     
 }
