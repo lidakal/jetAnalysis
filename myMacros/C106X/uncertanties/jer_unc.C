@@ -33,8 +33,8 @@ void jer_unc(TString observable="rg")
     else if (observable=="zg") ylabel = "1/N dN/dz_{g}";
     else if (observable=="zpt") ylabel = "1/N dN/dz_{b,ch}";
 
-    TString sample = "dijet_PF40";
-    TString label = "aggrTMVA_inclusive";
+    TString sample = "pythia_PF40";
+    TString label = "aggrTMVA_XXT";
     bool is_inclusive = label.Contains("inclusive");
 
     TString suffix = (is_inclusive) ? "" : "_withSF";
@@ -199,5 +199,18 @@ void jer_unc(TString observable="rg")
     c_unc->Draw();
     c_unc->Print("../plots_thesis/"+sample+"_"+label+"_jer_unc_"+observable+".pdf");
 
-    
+    // Save histograms 
+    TString suffix_out = (is_inclusive) ? "inclusive" : "XXT";
+    TString fout_name = "histos/" + observable + "_jer_unc_" + suffix_out + ".root";
+    TFile *fout = new TFile(fout_name, "RECREATE");
+    h_nom_1d->Write("h_nom_1d");
+    h_up_1d->Write("h_up_1d");
+    h_down_1d->Write("h_down_1d");
+    h_unc_up->Write("h_unc_up");
+    h_unc_down->Write("h_unc_down");
+    h_unc_up_rel->Write("h_unc_up_rel");
+    h_unc_down_rel->Write("h_unc_down_rel");
+    h_unc_rel_sym_up->Write("h_unc_rel_sym_up");
+    h_unc_rel_sym_down->Write("h_unc_rel_sym_down");
+    fout->Close();
 }
