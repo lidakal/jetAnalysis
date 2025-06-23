@@ -1,180 +1,108 @@
-#include "../hist_utils.h"
+#include "../cms_palette.h"
 
-void draw_fractions(TString observable = "rg")
+void draw_fractions(TString observable="rg")
 {
-    // Setup 
-    Float_t text_size = 20.;
+    gStyle->SetErrorX(0.5);
+    gStyle->SetCanvasPreferGL(kTRUE);
+
+    TString xlabel;
+    if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
+    else if (observable=="zg") xlabel = "z_{g}";
+    else if (observable=="zpt") xlabel = "z_{b,ch} #equiv p_{T}^{b,ch}/^{}p_{T}^{jet,ch}";
+
+    // Setup plot
+    Float_t text_size = 28.;
     gStyle->SetTextSize(text_size);
-    gStyle->SetLegendTextSize(text_size);
-    gStyle->SetLabelSize(text_size, "XYZ");
+    gStyle->SetLegendTextSize(text_size-4);
+    gStyle->SetLabelSize(text_size-4, "XYZ");
     gStyle->SetTitleSize(text_size, "XYZ");
 
-    // Load histograms
-    TString option = "_glued";
-    TString sample = "aggrTMVA_XXT";
-    TString label_in = "data";
-    label_in += "_" + sample;
-    TString method = "RooFit";
-    TString fin_name = "histos/fitted_parameters_" + method + "_" + label_in + "_" + observable + option + ".root";
-    std::cout << "fin = " << fin_name << std::endl;
-    TFile *fin = new TFile(fin_name);
 
-    // Load true fractions based on pseudo data
-    TH2D *h_sig_fraction_true_training = (TH2D *) fin->Get("h_sig_fraction_true_training");
-    TH2D *h_bkg_bb_fraction_true_training = (TH2D *) fin->Get("h_bkg_bb_fraction_true_training");
-    TH2D *h_bkg_rest_fraction_true_training = (TH2D *) fin->Get("h_bkg_rest_fraction_true_training");
+    TString fin_nom_name = "histos/fitted_parameters_RooFit_data_aggrTMVA_XXT_"+observable+"_glued_jer_nom_jec_nom.root";
+    TString fin_herwig_name = "histos/fitted_parameters_RooFit_data_herwig_aggrTMVA_XXT_"+observable+"_glued_jer_nom_jec_nom.root";
 
-    // Load fractions estimated from data
-    TH2D *h_sig_fraction = (TH2D *) fin->Get("h_sig_fraction");
-    TH2D *h_bkg_bb_fraction = (TH2D *) fin->Get("h_bkg_bb_fraction");
-    TH2D *h_bkg_rest_fraction = (TH2D *) fin->Get("h_bkg_rest_fraction");
+    TFile *fin_nom = new TFile(fin_nom_name);
+    TH2D *h_nom = (TH2D *) fin_nom->Get("h_sig_fraction")->Clone("h_nom");
+    TFile *fin_herwig = new TFile(fin_herwig_name);
+    TH2D *h_herwig = (TH2D *) fin_herwig->Get("h_sig_fraction")->Clone("h_herwig");
 
-    Int_t nbins_x = h_sig_fraction->GetNbinsX();
-    Int_t nbins_pt = h_sig_fraction->GetNbinsZ();
 
-    TCanvas *c_fraction = new TCanvas("c_fraction", "", 1600, 800);
-    // c_fraction->Divide(3, 1, 0.0001, 0.0001);
-    TPad *pad11 = new TPad("pad11", "", 0., 0., 0.33, 0.35);
-    TPad *pad12 = new TPad("pad12", "", 0.33, 0., 0.66, 0.35);
-    TPad *pad13 = new TPad("pad13", "", 0.66, 0., 0.99, 0.35);
-    TPad *pad21 = new TPad("pad21", "", 0., 0.35, 0.33, 1.);
-    TPad *pad22 = new TPad("pad22", "", 0.33, 0.35, 0.66, 1.);
-    TPad *pad23 = new TPad("pad23", "", 0.66, 0.35, 0.99, 1.);
+    // Make projections
+    int ibin_pt = 2;
+    Double_t pt_min = h_nom->GetYaxis()->GetBinLowEdge(ibin_pt);
+    Double_t pt_max = h_nom->GetYaxis()->GetBinUpEdge(ibin_pt);
+    TH1D *h_nom_1d = (TH1D *) h_nom->ProjectionX("h_nom_1d", ibin_pt, ibin_pt);
+    TH1D *h_herwig_1d = (TH1D *) h_herwig->ProjectionX("h_herwig_1d", ibin_pt, ibin_pt);
 
-    std::vector<TPad *> bottom_pads = {pad11, pad12, pad13};
-    std::vector<TPad *> top_pads = {pad21, pad22, pad23};
+    // Format histograms
+    h_nom_1d->SetMarkerStyle(kFullTriangleUp);
+    h_nom_1d->SetMarkerColor(cmsBlue);
+    h_nom_1d->SetLineColor(cmsBlue);
+    h_nom_1d->SetMarkerSize(2);
 
-    for (Int_t ibin_pt = 1; ibin_pt <= 3; ibin_pt++) {
-        // if (ibin_pt != 2) continue;
-        TString xlabel;
-        if (observable=="rg") xlabel = "ln(#frac{0.4}{R_{g}})";
-        else if (observable=="zg") xlabel = "z_{g}";
-        else if (observable=="zpt") xlabel = "z";
+    h_herwig_1d->SetMarkerStyle(kFullTriangleDown);
+    h_herwig_1d->SetMarkerColor(cmsViolet);
+    h_herwig_1d->SetLineColor(cmsViolet);
+    h_herwig_1d->SetMarkerSize(2);
 
-        Double_t pt_min = h_sig_fraction->GetYaxis()->GetBinLowEdge(ibin_pt);
-        Double_t pt_max = h_sig_fraction->GetYaxis()->GetBinUpEdge(ibin_pt);
+    // Legend
+    TLegend *leg = new TLegend(0.15, 0.45, 0.6, 0.55);
+    // if (observable=="zpt") leg = new TLegend(0.45, 0.5, 0.9, 0.65);
+    leg->SetMargin(0.3);
+    leg->SetFillStyle(0);
+    leg->AddEntry(h_nom_1d, "Templates from PYTHIA8", "pe1");
+    leg->AddEntry(h_herwig_1d, "Templates from HERWIG7", "pe1");
 
-        // Make projections 
-        TH1D *h_sig_fraction_true_per_pt = (TH1D *) h_sig_fraction_true_training->ProjectionX(Form("h_sig_fraction_true_per_pt_%d", ibin_pt), ibin_pt, ibin_pt);
-        TH1D *h_sig_fraction_per_pt = (TH1D *) h_sig_fraction->ProjectionX(Form("h_sig_fraction_per_pt_%d", ibin_pt), ibin_pt, ibin_pt);
+    TCanvas *c_fit = new TCanvas("c_fit", "", 700, 600);
+    c_fit->SetRightMargin(0.05);
+    c_fit->SetLeftMargin(0.12);
 
-        TH1D *h_bkg_bb_fraction_true_per_pt = (TH1D *) h_bkg_bb_fraction_true_training->ProjectionX(Form("h_bkg_bb_fraction_true_per_pt_%d", ibin_pt), ibin_pt, ibin_pt);
-        TH1D *h_bkg_bb_fraction_per_pt = (TH1D *) h_bkg_bb_fraction->ProjectionX(Form("h_bkg_bb_fraction_per_pt_%d", ibin_pt), ibin_pt, ibin_pt);
+    h_nom_1d->GetYaxis()->SetRangeUser(0., 1.);
+    h_nom_1d->GetXaxis()->SetTitle(xlabel);
+    h_nom_1d->GetXaxis()->SetTitleOffset(0.5);
+    h_nom_1d->GetYaxis()->SetTitle("Single-b jet fraction");
+    h_nom_1d->GetYaxis()->SetTitleOffset(1.2);
+    h_nom_1d->GetXaxis()->SetTitle(xlabel);
+    h_nom_1d->GetXaxis()->SetTitleOffset(1.2);
 
-        TH1D *h_bkg_rest_fraction_true_per_pt = (TH1D *) h_bkg_rest_fraction_true_training->ProjectionX(Form("h_bkg_rest_fraction_true_per_pt_%d", ibin_pt), ibin_pt, ibin_pt);
-        TH1D *h_bkg_rest_fraction_per_pt = (TH1D *) h_bkg_rest_fraction->ProjectionX(Form("h_bkg_rest_fraction_per_pt_%d", ibin_pt), ibin_pt, ibin_pt);
+    h_nom_1d->Draw("pe1");
+    h_herwig_1d->Draw("pe1 same");
+    leg->Draw();
 
-        THStack *h_fractions = new THStack(Form("h_fractions_%d", ibin_pt), "");
-        h_fractions->SetTitle("; " + xlabel + "; fraction");
+    TLatex *prelim = new TLatex;
+    prelim->SetNDC();
+    prelim->SetTextSize(28);
+    prelim->SetTextAlign(12);
+    prelim->DrawLatex(0.12, 0.93, "#bf{CMS} #it{Private work}");
 
-        TLegend *leg_fractions = new TLegend(0.25, 0.38, 0.65, 0.63);
-        leg_fractions->SetFillStyle(0);
-        leg_fractions->SetBorderSize(0);
-        leg_fractions->SetMargin(0.15);
-        leg_fractions->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f", pt_min, pt_max));
-        leg_fractions->SetNColumns(2);
+    TLatex *lumi = new TLatex;
+    lumi->SetNDC();
+    lumi->SetTextSize(28);
+    lumi->SetTextAlign(32);
+    lumi->DrawLatex(0.95, 0.93, "pp 301^{} pb^{-1} (5.02 TeV)");
 
-        h_sig_fraction_per_pt->SetMarkerStyle(kFullCircle);
-        h_sig_fraction_per_pt->SetMarkerSize(1);
-        h_sig_fraction_per_pt->SetMarkerColor(kBlack);
-        h_fractions->Add(h_sig_fraction_per_pt, "pe1");
-        leg_fractions->AddEntry(h_sig_fraction_per_pt, TString("signal fraction"), "pe1");
+    // Jets text
+    TLatex *jet_info = new TLatex;
+    jet_info->SetNDC();
+    jet_info->SetTextSize(text_size-4);
+    jet_info->SetTextAlign(32);
+    jet_info->DrawLatex(0.9, 0.38, "anti-k_{T}, R = 0.4 b-tagged jets");
+    jet_info->DrawLatex(0.9, 0.32, Form("%.0f < p_{T}^{jet,reco} < %.0f GeV/c, |#eta^{jet}| < 2", pt_min, pt_max));
+    if (observable!="zpt") {
+        jet_info->DrawLatex(0.9, 0.26, "Soft drop (charged particles)");
+        jet_info->DrawLatex(0.9, 0.2, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV/c");
+    }
 
-        h_sig_fraction_true_per_pt->SetLineStyle(kDashed);
-        h_sig_fraction_true_per_pt->SetLineWidth(1);
-        h_sig_fraction_true_per_pt->SetLineColor(kBlack);
-        h_sig_fraction_true_per_pt->SetMarkerStyle(1);
-        h_fractions->Add(h_sig_fraction_true_per_pt, "hist e1");
-        leg_fractions->AddEntry(h_sig_fraction_true_per_pt, "true", "l");
+    if (observable!="zpt") {
+        TPaveText *untagged_text = new TPaveText(0.09, 0.02, 0.37, 0.137, "NDC");
+        untagged_text->SetFillColor(0);
+        untagged_text->SetBorderSize(0);
+        untagged_text->SetTextAlign(22);
+        untagged_text->SetTextSize(text_size-4);
+        untagged_text->AddText("SD-untagged");
+        untagged_text->AddText("or k_{T} < 1 GeV/c");
+        untagged_text->Draw();
+    }
 
-        h_bkg_bb_fraction_per_pt->SetMarkerStyle(kFullTriangleUp);
-        h_bkg_bb_fraction_per_pt->SetMarkerSize(1);
-        h_bkg_bb_fraction_per_pt->SetMarkerColor(kBlue);
-        h_bkg_bb_fraction_per_pt->SetLineColor(kBlue);
-        h_fractions->Add(h_bkg_bb_fraction_per_pt, "pe1");
-        leg_fractions->AddEntry(h_bkg_bb_fraction_per_pt, TString("bb fraction"), "pe1");
-
-        h_bkg_bb_fraction_true_per_pt->SetLineStyle(kDashed);
-        h_bkg_bb_fraction_true_per_pt->SetLineWidth(1);
-        h_bkg_bb_fraction_true_per_pt->SetLineColor(kBlue);
-        h_bkg_bb_fraction_true_per_pt->SetMarkerStyle(1);
-        h_fractions->Add(h_bkg_bb_fraction_true_per_pt, "hist e1");
-        leg_fractions->AddEntry(h_bkg_bb_fraction_true_per_pt, "true", "l");
-
-        h_bkg_rest_fraction_per_pt->SetMarkerStyle(kFullCross);
-        h_bkg_rest_fraction_per_pt->SetMarkerSize(1);
-        h_bkg_rest_fraction_per_pt->SetMarkerColor(kGreen);
-        h_bkg_rest_fraction_per_pt->SetLineColor(kGreen);
-        h_fractions->Add(h_bkg_rest_fraction_per_pt, "pe1");
-        leg_fractions->AddEntry(h_bkg_rest_fraction_per_pt, TString("light+c fraction"), "pe1");
-
-        h_bkg_rest_fraction_true_per_pt->SetLineStyle(kDashed);
-        h_bkg_rest_fraction_true_per_pt->SetLineWidth(1);
-        h_bkg_rest_fraction_true_per_pt->SetLineColor(kGreen);
-        h_bkg_rest_fraction_true_per_pt->SetMarkerStyle(1);
-        h_fractions->Add(h_bkg_rest_fraction_true_per_pt, "hist e1");
-        leg_fractions->AddEntry(h_bkg_rest_fraction_true_per_pt, "true", "l");
-
-        top_pads[ibin_pt-1]->SetBottomMargin(0.01);
-        top_pads[ibin_pt-1]->SetRightMargin(0.05);
-        top_pads[ibin_pt-1]->SetLeftMargin(0.2);
-        // top_pads[ibin_pt-1]->SetLogy();
-        top_pads[ibin_pt-1]->cd();
-        h_fractions->Draw("nostack");
-        leg_fractions->Draw();
-
-        // Draw ratio 
-        THStack *h_fraction_ratio = new THStack("h_fraction_ratio", "");
-        h_fraction_ratio->SetTitle("; " + xlabel + "; fit/true");
-
-        TH1D *h_sig_fraction_ratio = (TH1D *) h_sig_fraction_per_pt->Clone(Form("h_fraction_ratio_%d", ibin_pt));
-        h_sig_fraction_ratio->Divide(h_sig_fraction_true_per_pt);
-        h_sig_fraction_ratio->GetXaxis()->SetTitleOffset(2.5);
-        h_sig_fraction_ratio->GetYaxis()->SetNdivisions(6);
-        h_fraction_ratio->Add(h_sig_fraction_ratio, "pe1");
-
-        TH1D *h_bkg_bb_fraction_ratio = (TH1D *) h_bkg_bb_fraction_per_pt->Clone(Form("h_fraction_ratio_%d", ibin_pt));
-        h_bkg_bb_fraction_ratio->Divide(h_bkg_bb_fraction_true_per_pt);
-        h_bkg_bb_fraction_ratio->GetXaxis()->SetTitleOffset(2.5);
-        h_bkg_bb_fraction_ratio->GetYaxis()->SetNdivisions(6);
-        h_fraction_ratio->Add(h_bkg_bb_fraction_ratio, "pe1");
-
-        TH1D *h_bkg_rest_fraction_ratio = (TH1D *) h_bkg_rest_fraction_per_pt->Clone(Form("h_fraction_ratio_%d", ibin_pt));
-        h_bkg_rest_fraction_ratio->Divide(h_bkg_rest_fraction_true_per_pt);
-        h_bkg_rest_fraction_ratio->GetXaxis()->SetTitleOffset(2.5);
-        h_bkg_rest_fraction_ratio->GetYaxis()->SetNdivisions(6);
-        h_fraction_ratio->Add(h_bkg_rest_fraction_ratio, "pe1");
-
-        bottom_pads[ibin_pt-1]->SetTopMargin(0.01);
-        bottom_pads[ibin_pt-1]->SetBottomMargin(0.35);
-        bottom_pads[ibin_pt-1]->SetRightMargin(0.05);
-        bottom_pads[ibin_pt-1]->SetLeftMargin(0.2);
-        bottom_pads[ibin_pt-1]->cd();
-        h_fraction_ratio->Draw("nostack");
-
-        TLine *line = new TLine(h_sig_fraction_per_pt->GetXaxis()->GetBinLowEdge(1), 1., h_sig_fraction_per_pt->GetXaxis()->GetBinUpEdge(h_sig_fraction_per_pt->GetNbinsX()), 1);
-        line->SetLineStyle(kDashed);
-        line->SetLineColor(kGray);
-        line->Draw();
-
-        c_fraction->cd();
-        top_pads[ibin_pt-1]->Draw();
-        bottom_pads[ibin_pt-1]->Draw();
-
-        h_fraction_ratio->GetXaxis()->SetTitleOffset(3.);
-        c_fraction->Update();
-    } // pt loop
-    // Make decorations
-    TPaveText *info_top_left = new TPaveText(-0.4, 0.865, 0.85, 0.94, "nb ndc");
-    info_top_left->SetTextSize(text_size);
-    info_top_left->SetFillStyle(0);
-    info_top_left->SetLineWidth(0);
-    info_top_left->AddText("#bf{CMS} #it{Internal Simulation}");
-
-    TPaveText *info_top_right = new TPaveText(0.2, 0.87, 1.6, 0.95, "nb ndc");
-    info_top_right->SetTextSize(text_size);
-    info_top_right->SetFillStyle(0);
-    info_top_right->SetLineWidth(0);
-    info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
-        
+    c_fit->Print("../plots_thesis/"+observable+"_fraction_comparison.pdf");
 }
