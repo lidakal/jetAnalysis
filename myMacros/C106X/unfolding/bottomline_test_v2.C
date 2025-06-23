@@ -17,7 +17,7 @@ void drawHeader(void) {
 void bottomline_test_v2(TString observable="rg", TString jer_opt="nom", TString jec_opt="nom")
 {    
     // ---------------- Options for b    -------------------
-    bool withSF = false;
+    bool withSF = true;
     bool sfDown = false;
     bool sfUp = false;
 
@@ -27,22 +27,22 @@ void bottomline_test_v2(TString observable="rg", TString jer_opt="nom", TString 
     TString suffix_in = "_jer_" + jer_opt + "_jec_" + jec_opt;
 
     TString sample_data = "data_PF40to100";
-    TString label_data = "aggrTMVA_inclusive";
+    TString label_data = "aggrTMVA_XXT";
 
     bool unfoldBayes = false;
     bool purityPythia = true;
     bool responsePythia = true;
     bool efficiencyPythia = true;
     bool btagEfficiencyPythia = true;
-    bool applyBtagEfficiency = false;
+    bool applyBtagEfficiency = true;
 
-    TString pythia_unfolding = "dijet_PF40";
-    TString herwig_unfolding = "herwig_dijet_official_PF40";
+    TString pythia_unfolding = "pythia_PF40";
+    TString herwig_unfolding = "herwig_official_PF40";
 
-    TString sample_truth = "dijet_PF40"; // sample used for comparing to truth
-    TString label_truth = "aggrTMVA_inclusive";
-    TString sample_unfolding = "dijet_PF40"; // sample used for unfolding
-    TString label_unfolding = "aggrTMVA_inclusive";
+    TString sample_truth = "pythia_PF40"; // sample used for comparing to truth
+    TString label_truth = "aggrTMVA_XXT";
+    TString sample_unfolding = "pythia_PF40"; // sample used for unfolding
+    TString label_unfolding = "aggrTMVA_XXT";
 
     bool inclusive = sample_unfolding.Contains("dijet");
     if (inclusive) withSF = false;
@@ -133,10 +133,12 @@ void bottomline_test_v2(TString observable="rg", TString jer_opt="nom", TString 
                 TFile *fin_sf_unc = new TFile("../btag/histos/aggrTMVA_inclusive_"+observable+"_sf_unc.root");
                 if (sfUp) {
                     TH2D *h_sf_unc = (TH2D *) fin_sf_unc->Get("h_sf_unc_up_3bins");
+                    std::cout << "sf_unc=" << h_sf_unc->GetBinContent(1,1) << std::endl;
                     h_sf->Add(h_sf_unc);
                 } else if (sfDown) {
                     TH2D *h_sf_unc = (TH2D *) fin_sf_unc->Get("h_sf_unc_down_3bins");
-                    h_sf->Add(h_sf_unc, -1.);
+                    std::cout << "sf_unc=" << h_sf_unc->GetBinContent(1,1) << std::endl;
+                    h_sf->Add(h_sf_unc);
                 }
             }  
             h_data_after_fit->Divide(h_sf);
@@ -542,7 +544,7 @@ void bottomline_test_v2(TString observable="rg", TString jer_opt="nom", TString 
         top_pad->Draw();
         bottom_pad->Draw();
         c_unfold->Draw();
-        c_unfold->Print("../plots_thesis/"+sample_unfolding+"_"+label_unfolding+"_bottomline_test_"+observable+".pdf");
+        // c_unfold->Print("../plots_thesis/"+sample_unfolding+"_"+label_unfolding+"_bottomline_test_"+observable+".pdf");
     }
 
     // // ---- Covariance after unfolding
