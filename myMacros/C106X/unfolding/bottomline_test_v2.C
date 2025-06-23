@@ -604,26 +604,31 @@ void bottomline_test_v2(TString observable="rg", TString jer_opt="nom", TString 
     h_mc_reco->Write();
 
     // // JACK-KNIFE RESAMPLING FOR MC STAT UNC
-    // for (int i=0; i<10; i++) {
-    //     std::cout << "JK resampling i=" << i << std::endl;
-    //     TH2D *h_purity_jk = (TH2D *) fin_response_unfolding->Get("h"+TString(Form("%d",i))+"_purity_"+observable+"pt");
-    //     TH2D *h_efficiency_jk = (TH2D *) fin_response_unfolding->Get("h"+TString(Form("%d",i))+"_efficiency_"+observable+"pt");
-    //     RooUnfoldResponse *response_jk = (RooUnfoldResponse *) fin_response_unfolding->Get("response"+TString(Form("%d",i))+"_"+observable+"pt");
+    TFile *fin_response_unfolding;
+    if (purityPythia)
+        fin_response_unfolding = fin_pythia_unfolding;
+    else 
+        fin_response_unfolding = fin_herwig_unfolding;
+    for (int i=0; i<10; i++) {
+        std::cout << "JK resampling i=" << i << std::endl;
+        TH2D *h_purity_jk = (TH2D *) fin_response_unfolding->Get("h"+TString(Form("%d",i))+"_purity_"+observable+"pt");
+        TH2D *h_efficiency_jk = (TH2D *) fin_response_unfolding->Get("h"+TString(Form("%d",i))+"_efficiency_"+observable+"pt");
+        RooUnfoldResponse *response_jk = (RooUnfoldResponse *) fin_response_unfolding->Get("response"+TString(Form("%d",i))+"_"+observable+"pt");
  
-    //     TH2D *h_purity_corrected_jk = (TH2D *) h_data_after_fit->Clone(Form("h_purity_corrected_jk_%d",i));
-    //     h_purity_corrected_jk->Multiply(h_data_after_fit, h_purity_jk);
+        TH2D *h_purity_corrected_jk = (TH2D *) h_data_after_fit->Clone(Form("h_purity_corrected_jk_%d",i));
+        h_purity_corrected_jk->Multiply(h_data_after_fit, h_purity_jk);
 
-    //     RooUnfoldInvert unfold_jk(response_jk, h_purity_corrected_jk);
-    //     TH2D *h_unfolded_jk = (TH2D *) unfold_jk.Hreco(errorTreatment);
+        RooUnfoldInvert unfold_jk(response_jk, h_purity_corrected_jk);
+        TH2D *h_unfolded_jk = (TH2D *) unfold_jk.Hreco(errorTreatment);
 
-    //     TH2D *h_efficiency_corrected_jk = (TH2D *) h_unfolded_jk->Clone(Form("h_efficiency_corrected_jk_%d",i));
-    //     h_efficiency_corrected_jk->Divide(h_unfolded_jk, h_efficiency_jk);
+        TH2D *h_efficiency_corrected_jk = (TH2D *) h_unfolded_jk->Clone(Form("h_efficiency_corrected_jk_%d",i));
+        h_efficiency_corrected_jk->Divide(h_unfolded_jk, h_efficiency_jk);
 
-    //     TH2D *h_fully_corrected = (TH2D *) h_efficiency_corrected_jk->Clone(Form("h_fully_corrected_jk_%d",i));
-    //     if (!inclusive) h_fully_corrected->Divide(h_efficiency_corrected_jk, h_eff_withSF);
+        TH2D *h_fully_corrected = (TH2D *) h_efficiency_corrected_jk->Clone(Form("h_fully_corrected_jk_%d",i));
+        if (!inclusive) h_fully_corrected->Divide(h_efficiency_corrected_jk, h_eff);
 
-    //     h_fully_corrected->Write();
-    // }
+        h_fully_corrected->Write();
+    }
 
     fout->Close();
     delete fout;
