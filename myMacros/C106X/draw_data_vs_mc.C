@@ -5,7 +5,7 @@ void draw_data_vs_mc(TString observable="rg")
 {
     // RUN WITH ROOT 6.30 from /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-centos7-gcc11-opt/setup.sh
 
-    bool inclusive = true;
+    bool inclusive = false;
     TString pythia_sample = inclusive ? "dijet_PF40" : "pythia_PF40";
     TString herwig_sample = inclusive ? "herwig_dijet_official_PF40" : "herwig_official_PF40";
     TString label = inclusive ? "aggrTMVA_inclusive" : "aggrTMVA_XXT";
@@ -155,7 +155,7 @@ void draw_data_vs_mc(TString observable="rg")
         h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
         h->Scale(1/h->Integral(ibin_x_min, ibin_x_max), "width");
         if (observable=="zg") {
-            h->GetYaxis()->SetRangeUser(0, 5.5);
+            h->GetYaxis()->SetRangeUser(0, 6.);
             if (inclusive) h->GetYaxis()->SetRangeUser(0, 4.5);
         } else if (observable=="rg") {
             h->GetYaxis()->SetRangeUser(0, 1.25);
@@ -450,5 +450,5 @@ void draw_data_vs_mc(TString observable="rg")
 
     c_result->Draw();
     c_result->Print("plots_an/"+label+"_data_vs_mc_"+observable+".pdf");
-    c_result->Print("plots_an/"+label+"_data_vs_mc_"+observable+".png");
+    c_result->Print("plots_thesis/"+label+"_data_vs_mc_"+observable+".pdf");
 }
