@@ -1,51 +1,66 @@
 void ratio_unc(TString observable="rg")
 {
     TFile *fin_jer_XXT = new TFile("histos/"+observable+"_jer_unc_XXT.root");
-    TH1D *h_jer_XXT = (TH1D *) fin_jer_XXT->Get("h_unc_rel_2")->Clone("h_jer_XXT");
+    TH1D *h_jer_XXT = (TH1D *) fin_jer_XXT->Get("h_unc_rel_sym_up")->Clone("h_jer_XXT");
 
     TFile *fin_jec_XXT = new TFile("histos/"+observable+"_jec_unc_src_XXT.root");
-    TH1D *h_jec_noflav_XXT = (TH1D *) fin_jec_XXT->Get("h_total_unc_rel_sym_noflav_2")->Clone("h_jec_noflav_XXT");
-    TH1D *h_jec_flav_XXT = (TH1D *) fin_jec_XXT->Get("h_flav_unc_rel_sym_2")->Clone("h_jec_flav_XXT");
+    TH1D *h_jec_noflav_XXT = (TH1D *) fin_jec_XXT->Get("h_total_unc_rel_sym_up_noflav")->Clone("h_jec_noflav_XXT");
+    TH1D *h_jec_flav_XXT = (TH1D *) fin_jec_XXT->Get("h_flavor_unc_rel_sym_up")->Clone("h_jec_flav_XXT");
 
-    TFile *fin_trk_inef_XXT = new TFile("histos/"+observable+"_trk_inef_XXT.root");
-    TH1D *h_trk_inef_XXT = (TH1D *) fin_trk_inef_XXT->Get("h_unc_rel_2")->Clone("h_trk_inef_XXT");
+    TFile *fin_trk_inef_XXT = new TFile("histos/"+observable+"_trk_inef_unc_XXT.root");
+    TH1D *h_trk_inef_XXT = (TH1D *) fin_trk_inef_XXT->Get("h_unc_rel_sym_up")->Clone("h_trk_inef_XXT");
 
     TFile *fin_model_XXT = new TFile("histos/"+observable+"_model_unc_XXT.root");
-    TH1D *h_model_XXT = (TH1D *) fin_model_XXT->Get("h_unc_rel_2")->Clone("h_model_XXT");
+    TH1D *h_model_XXT = (TH1D *) fin_model_XXT->Get("h_unc_rel_sym_up")->Clone("h_model_XXT");
 
     TFile *fin_stat_XXT = new TFile("histos/"+observable+"_stat_unc_XXT.root");
-    TH1D *h_stat_XXT = (TH1D *) fin_stat_XXT->Get("h_stat_unc_rel_2")->Clone("h_stat_XXT");
+    TH1D *h_stat_XXT = (TH1D *) fin_stat_XXT->Get("h_unc_rel_sym_up")->Clone("h_stat_XXT");
 
     TFile *fin_mc_stat_XXT = new TFile("histos/"+observable+"_mc_stat_unc_XXT.root");
-    TH1D *h_mc_stat_XXT = (TH1D *) fin_mc_stat_XXT->Get("h_mc_stat_unc_up_rel_2")->Clone("h_mc_stat_XXT");
+    TH1D *h_mc_stat_XXT = (TH1D *) fin_mc_stat_XXT->Get("h_unc_rel_sym_up")->Clone("h_mc_stat_XXT");
 
     TFile *fin_model_fit_XXT = new TFile("histos/"+observable+"_model_fit_unc_XXT.root");
-    TH1D *h_model_fit_XXT = (TH1D *) fin_model_fit_XXT->Get("h_unc_rel_2")->Clone("h_model_fit_XXT");
+    TH1D *h_model_fit_XXT = (TH1D *) fin_model_fit_XXT->Get("h_unc_rel_sym_up")->Clone("h_model_fit_XXT");
 
-    TFile *fin_btag_XXT = new TFile("histos/"+observable+"_btag_bias.root");
-    TH1D *h_btag_XXT = (TH1D *) fin_btag_XXT->Get("h_unc_rel_2")->Clone("h_btag_XXT");
+    TFile *fin_btag_XXT = new TFile("histos/"+observable+"_sf_unc_XXT.root");
+    TH1D *h_btag_XXT = (TH1D *) fin_btag_XXT->Get("h_unc_rel_sym_up")->Clone("h_btag_XXT");
 
-    TFile *fin_cl_frac_XXT = new TFile("histos/"+observable+"_cl_frac_unc_XXT.root");
-    TH1D *h_cl_frac_XXT = (TH1D *) fin_cl_frac_XXT->Get("h_unc_rel_2")->Clone("h_cl_frac_XXT");
+    TFile *fin_cl_frac_XXT = new TFile("histos/"+observable+"_cl_frac_XXT.root");
+    TH1D *h_cl_frac_XXT = (TH1D *) fin_cl_frac_XXT->Get("h_unc_rel_sym_up")->Clone("h_cl_frac_XXT");
+
+    TFile *fin_pythia_var_XXT = new TFile("histos/"+observable+"_pythia_var_XXT.root");
+    TH1D *h_pythia_var_XXT = (TH1D *) fin_pythia_var_XXT->Get("h_total_unc_rel_sym_up")->Clone("h_pythia_var_XXT");
 
     TFile *fin_jer_inclusive = new TFile("histos/"+observable+"_jer_unc_inclusive.root");
-    TH1D *h_jer_inclusive = (TH1D *) fin_jer_inclusive->Get("h_unc_rel_2")->Clone("h_jer_inclusive");
+    TH1D *h_jer_inclusive = (TH1D *) fin_jer_inclusive->Get("h_unc_rel_sym_up")->Clone("h_jer_inclusive");
 
     TFile *fin_jec_inclusive = new TFile("histos/"+observable+"_jec_unc_src_inclusive.root");
-    TH1D *h_jec_noflav_inclusive = (TH1D *) fin_jec_inclusive->Get("h_total_unc_rel_sym_noflav_2")->Clone("h_jec_noflav_inclusive");
-    TH1D *h_jec_flav_inclusive = (TH1D *) fin_jec_inclusive->Get("h_flav_unc_rel_sym_2")->Clone("h_jec_flav_inclusive");
+    TH1D *h_jec_noflav_inclusive = (TH1D *) fin_jec_inclusive->Get("h_total_unc_rel_sym_up_noflav")->Clone("h_jec_noflav_inclusive");
+    TH1D *h_jec_flav_inclusive = (TH1D *) fin_jec_inclusive->Get("h_flavor_unc_rel_sym_up")->Clone("h_jec_flav_inclusive");
 
-    TFile *fin_trk_inef_inclusive = new TFile("histos/"+observable+"_trk_inef_inclusive.root");
-    TH1D *h_trk_inef_inclusive = (TH1D *) fin_trk_inef_inclusive->Get("h_unc_rel_2")->Clone("h_trk_inef_inclusive");
+    TFile *fin_trk_inef_inclusive = new TFile("histos/"+observable+"_trk_inef_unc_inclusive.root");
+    TH1D *h_trk_inef_inclusive = (TH1D *) fin_trk_inef_inclusive->Get("h_unc_rel_sym_up")->Clone("h_trk_inef_inclusive");
 
     TFile *fin_model_inclusive = new TFile("histos/"+observable+"_model_unc_inclusive.root");
-    TH1D *h_model_inclusive = (TH1D *) fin_model_inclusive->Get("h_unc_rel_2")->Clone("h_model_inclusive");
+    TH1D *h_model_inclusive = (TH1D *) fin_model_inclusive->Get("h_unc_rel_sym_up")->Clone("h_model_inclusive");
+    // alternative evaluation of model unc
+    // TH1D *h_model_inclusive = (TH1D *) fin_model_inclusive->Get("h_model_unc_herwigSum_rel")->Clone("h_model_inclusive");
+    // average neighboring bins at pinching point (inclusive rg bin=5)
+    if (observable=="rg") {
+        std::cout << "before: " << h_model_inclusive->GetBinContent(5) << std::endl;
+        double avg = (std::abs(h_model_inclusive->GetBinContent(4))+std::abs(h_model_inclusive->GetBinContent(6))) / 2.;
+        h_model_inclusive->SetBinContent(5, avg);
+        std::cout << "after: " << h_model_inclusive->GetBinContent(5) << std::endl;
+    }
 
     TFile *fin_stat_inclusive = new TFile("histos/"+observable+"_stat_unc_inclusive.root");
-    TH1D *h_stat_inclusive = (TH1D *) fin_stat_inclusive->Get("h_stat_unc_rel_2")->Clone("h_stat_inclusive");
+    TH1D *h_stat_inclusive = (TH1D *) fin_stat_inclusive->Get("h_unc_rel_sym_up")->Clone("h_stat_inclusive");
 
     TFile *fin_mc_stat_inclusive = new TFile("histos/"+observable+"_mc_stat_unc_inclusive.root");
-    TH1D *h_mc_stat_inclusive = (TH1D *) fin_mc_stat_inclusive->Get("h_mc_stat_unc_up_rel_2")->Clone("h_mc_stat_inclusive");
+    TH1D *h_mc_stat_inclusive = (TH1D *) fin_mc_stat_inclusive->Get("h_unc_rel_sym_up")->Clone("h_mc_stat_inclusive");
+
+    TFile *fin_pythia_var_inclusive = new TFile("histos/"+observable+"_pythia_var_inclusive.root");
+    TH1D *h_pythia_var_inclusive = (TH1D *) fin_pythia_var_inclusive->Get("h_total_unc_rel_sym_up")->Clone("h_pythia_var_inclusive");
 
     int nbins_x = h_jer_XXT->GetNbinsX();
     int ibin_x_min = 2;
@@ -73,7 +88,12 @@ void ratio_unc(TString observable="rg")
         // model = correlated
         double model_XXT = h_model_XXT->GetBinContent(ibin_x);
         double model_inclusive = h_model_inclusive->GetBinContent(ibin_x);
-        double model_ratio2 = (model_XXT*model_XXT)+(model_inclusive*model_inclusive)-(2*model_XXT*model_inclusive); 
+        double model_ratio2 = (model_XXT*model_XXT)+(model_inclusive*model_inclusive)-(2*model_XXT*model_inclusive);
+
+        // model = correlated
+        double pythia_var_XXT = h_pythia_var_XXT->GetBinContent(ibin_x);
+        double pythia_var_inclusive = h_pythia_var_inclusive->GetBinContent(ibin_x);
+        double pythia_var_ratio2 = (pythia_var_XXT*pythia_var_XXT)+(pythia_var_inclusive*pythia_var_inclusive)-(2*pythia_var_XXT*pythia_var_inclusive); 
 
         // jec_flav = uncorrelated
         double jec_flav_XXT = h_jec_flav_XXT->GetBinContent(ibin_x);
@@ -97,7 +117,7 @@ void ratio_unc(TString observable="rg")
         double cl_frac_XXT = h_cl_frac_XXT->GetBinContent(ibin_x);
         double cl_frac_ratio2 = (cl_frac_XXT*cl_frac_XXT); 
 
-        double ratio2 = jer_ratio2 + jec_noflav_ratio2 + trk_inef_ratio2 + model_ratio2 
+        double ratio2 = jer_ratio2 + jec_noflav_ratio2 + trk_inef_ratio2 + model_ratio2 + pythia_var_ratio2
                         + jec_flav_ratio2 + mc_stat_ratio2 
                         + model_fit_ratio2 + btag_ratio2 + cl_frac_ratio2;
 
