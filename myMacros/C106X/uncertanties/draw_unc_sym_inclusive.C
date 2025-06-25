@@ -17,15 +17,13 @@ void draw_unc_sym_inclusive(TString observable="rg")
     gStyle->SetLabelSize(text_size, "XYZ");
     gStyle->SetTitleSize(text_size, "XYZ");
 
+    TFile *fin_stat_unc = new TFile("histos/"+observable+"_stat_unc_inclusive.root");
     TFile *fin_jer = new TFile("histos/"+observable+"_jer_unc_inclusive.root");
     TFile *fin_jec = new TFile("histos/"+observable+"_jec_unc_src_inclusive.root");
-    TFile *fin_trk_inef = new TFile("histos/"+observable+"_trk_inef_inclusive.root");
+    TFile *fin_trk_inef = new TFile("histos/"+observable+"_trk_inef_unc_inclusive.root");
     TFile *fin_model_unc = new TFile("histos/"+observable+"_model_unc_inclusive.root");
-    TFile *fin_stat_unc = new TFile("histos/"+observable+"_stat_unc_inclusive.root");
     TFile *fin_mc_stat_unc = new TFile("histos/"+observable+"_mc_stat_unc_inclusive.root");
     TFile *fin_pythia_var = new TFile("histos/"+observable+"_pythia_var_inclusive.root");
-
-    int nbins_pt = 3;
     
     TCanvas *c_unc = new TCanvas("c_unc", "", 1400,600);
     c_unc->SetRightMargin(0.03);
@@ -38,7 +36,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
 
     int ibin_pt = 2;
 
-    TH1D *h_stat_unc_rel = (TH1D *) fin_stat_unc->Get(Form("h_stat_unc_rel_%d", ibin_pt))->Clone(Form("h_stat_unc_rel_%d", ibin_pt));
+    TH1D *h_stat_unc_rel = (TH1D *) fin_stat_unc->Get("h_unc_rel_sym_up")->Clone("h_stat_unc");
     h_stat_unc_rel->SetLineColor(kBlack);
     h_stat_unc_rel->SetFillStyle(3244);
     h_stat_unc_rel->SetFillColorAlpha(kBlack, 0.5);
@@ -48,31 +46,31 @@ void draw_unc_sym_inclusive(TString observable="rg")
     h_stat_unc_rel->SetLineWidth(3);
     h_stat_unc_rel->SetLineStyle(1);
 
-    TH1D *h_jer_up_rel = (TH1D *) fin_jer->Get(Form("h_unc_rel_%d", ibin_pt))->Clone(Form("h_jer_up_rel_%d", ibin_pt));
+    TH1D *h_jer_up_rel = (TH1D *) fin_jer->Get("h_unc_rel_sym_up")->Clone("h_jer_unc");
     h_jer_up_rel->SetMarkerStyle(kFullTriangleUp);
     h_jer_up_rel->SetLineColor(cmsBlue);
     h_jer_up_rel->SetLineWidth(3);
     h_jer_up_rel->SetLineStyle(2);
 
-    TH1D *h_jec_up_rel = (TH1D *) fin_jec->Get(Form("h_total_unc_rel_sym_%d", ibin_pt))->Clone(Form("h_jec_up_rel_%d", ibin_pt));
+    TH1D *h_jec_up_rel = (TH1D *) fin_jec->Get("h_total_unc_rel_sym_up")->Clone("h_jec_unc");
     h_jec_up_rel->SetLineColor(cmsViolet);
     h_jec_up_rel->SetMarkerStyle(kFullTriangleDown);
     h_jec_up_rel->SetLineWidth(3);
     h_jec_up_rel->SetLineStyle(3);
 
-    TH1D *h_mc_stat_unc_up_rel = (TH1D *) fin_mc_stat_unc->Get(Form("h_mc_stat_unc_up_rel_%d", ibin_pt))->Clone(Form("h_mc_stat_unc_up_rel_%d", ibin_pt));
+    TH1D *h_mc_stat_unc_up_rel = (TH1D *) fin_mc_stat_unc->Get("h_unc_rel_sym_up")->Clone("h_mc_stat_unc");
     h_mc_stat_unc_up_rel->SetFillStyle(3154);
     h_mc_stat_unc_up_rel->SetFillColorAlpha(kBlack,1.);
     h_mc_stat_unc_up_rel->SetLineColorAlpha(kBlack,0.);
     h_mc_stat_unc_up_rel->SetMarkerColorAlpha(kBlack,0.);
 
-    TH1D *h_trk_inef_up_rel = (TH1D *) fin_trk_inef->Get(Form("h_inef_unc_rel_%d", ibin_pt))->Clone(Form("h_trk_inef_up_rel_%d", ibin_pt));
+    TH1D *h_trk_inef_up_rel = (TH1D *) fin_trk_inef->Get("h_unc_rel_sym_up")->Clone("h_trk_inef_unc");
     h_trk_inef_up_rel->SetLineColor(cmsLightBlue);
     h_trk_inef_up_rel->SetMarkerStyle(kFullCrossX);
     h_trk_inef_up_rel->SetLineWidth(3);
     h_trk_inef_up_rel->SetLineStyle(4);    
 
-    TH1D *h_model_unc_rel = (TH1D *) fin_model_unc->Get(Form("h_model_unc_rel_%d", ibin_pt))->Clone(Form("h_model_unc_rel_%d", ibin_pt));
+    TH1D *h_model_unc_rel = (TH1D *) fin_model_unc->Get("h_unc_rel_sym_up")->Clone("h_model_unc");
     // alternative model unc (independent variations)
     // TH1D *h_model_unc_rel = (TH1D *) fin_model_unc->Get("h_model_unc_herwigSum_rel")->Clone(Form("h_model_unc_rel_%d", ibin_pt));
     h_model_unc_rel->SetLineColor(cmsYellow);
@@ -80,12 +78,14 @@ void draw_unc_sym_inclusive(TString observable="rg")
     h_model_unc_rel->SetLineWidth(3);
     h_model_unc_rel->SetLineStyle(5);
     // average neighboring bins at pinching point (rg bin=5)
-    std::cout << "before: " << h_model_unc_rel->GetBinContent(5) << std::endl;
-    double avg = (std::abs(h_model_unc_rel->GetBinContent(4))+std::abs(h_model_unc_rel->GetBinContent(6))) / 2.;
-    h_model_unc_rel->SetBinContent(5, avg);
-    std::cout << "after: " << h_model_unc_rel->GetBinContent(5) << std::endl;
+    if (observable=="rg") {
+        std::cout << "before: " << h_model_unc_rel->GetBinContent(5) << std::endl;
+        double avg = (std::abs(h_model_unc_rel->GetBinContent(4))+std::abs(h_model_unc_rel->GetBinContent(6))) / 2.;
+        h_model_unc_rel->SetBinContent(5, avg);
+        std::cout << "after: " << h_model_unc_rel->GetBinContent(5) << std::endl;
+    }
 
-    TH1D *h_pythia_var_up_rel = (TH1D *) fin_pythia_var->Get(Form("h_total_unc_rel_sym_%d", ibin_pt))->Clone(Form("h_pythia_var_up_rel_%d", ibin_pt));
+    TH1D *h_pythia_var_up_rel = (TH1D *) fin_pythia_var->Get("h_total_unc_rel_sym_up")->Clone("h_pythia_var_unc");
     h_pythia_var_up_rel->SetLineColor(cmsRed);
     h_pythia_var_up_rel->SetMarkerStyle(kFullCross);
     h_pythia_var_up_rel->SetLineWidth(3);
@@ -265,13 +265,13 @@ void draw_unc_sym_inclusive(TString observable="rg")
     //     jet_info->SetNDC();
     //     jet_info->SetTextSize(20);
     //     jet_info->DrawLatex(0.2, 0.33, "anti-k_{T}, R=0.4 single b jets");
-    //     jet_info->DrawLatex(0.2, 0.28, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    //     jet_info->DrawLatex(0.2, 0.28, "100 < p_{T}^{jet} < 120 GeV/c, |#eta^{jet}| < 2");
     //     jet_info->DrawLatex(0.2, 0.23, "Soft drop (charged particles)");
-    //     jet_info->DrawLatex(0.2, 0.18, "z_{cut}=0.1, #beta=0, k_{T} > 1 GeV");
+    //     jet_info->DrawLatex(0.2, 0.18, "z_{cut}=0.1, #beta=0, k_{T} > 1 GeV/c");
     //     jet_info->Draw();
     // } else {
     //     jet_info->DrawLatex(0.2, 0.81, "anti-k_{T}, R=0.4 single b jets");
-    //     jet_info->DrawLatex(0.2, 0.76, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    //     jet_info->DrawLatex(0.2, 0.76, "100 < p_{T}^{jet} < 120 GeV/c, |#eta^{jet}| < 2");
     // }
 
     // top, 1 col 
@@ -281,15 +281,15 @@ void draw_unc_sym_inclusive(TString observable="rg")
     // if (observable=="rg") {
         jet_info->SetTextAlign(12);
         jet_info->DrawLatex(0.12, 0.8, "anti-k_{T}, R = 0.4 inclusive jets");
-        jet_info->DrawLatex(0.12, 0.74, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+        jet_info->DrawLatex(0.12, 0.74, "100 < p_{T}^{jet} < 120 GeV/c, |#eta^{jet}| < 2");
         jet_info->DrawLatex(0.12, 0.68, "Soft drop (charged particles)");
-        jet_info->DrawLatex(0.12, 0.62, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+        jet_info->DrawLatex(0.12, 0.62, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV/c");
     // } else {
     //     jet_info->SetTextAlign(10);
     //     jet_info->DrawLatex(0.53, 0.8, "anti-k_{T}, R=0.4 inclusive jets");
-    //     jet_info->DrawLatex(0.53, 0.74, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    //     jet_info->DrawLatex(0.53, 0.74, "100 < p_{T}^{jet} < 120 GeV/c, |#eta^{jet}| < 2");
     //     jet_info->DrawLatex(0.53, 0.68, "Soft drop (charged particles)");
-    //     jet_info->DrawLatex(0.53, 0.62, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV");
+    //     jet_info->DrawLatex(0.53, 0.62, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV/c");
     // }
 
 
@@ -302,13 +302,13 @@ void draw_unc_sym_inclusive(TString observable="rg")
     //     jet_info->SetNDC();
     //     jet_info->SetTextSize(20);
     //     jet_info->DrawLatex(0.2, 0.24, "anti-k_{T}, R=0.4 inclusive jets");
-    //     jet_info->DrawLatex(0.2, 0.19, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    //     jet_info->DrawLatex(0.2, 0.19, "100 < p_{T}^{jet} < 120 GeV/c, |#eta^{jet}| < 2");
     //     jet_info->DrawLatex(0.55, 0.24, "Charged soft drop");
-    //     jet_info->DrawLatex(0.55, 0.19, "z_{cut}=0.1, #beta=0, k_{T} > 1 GeV");
+    //     jet_info->DrawLatex(0.55, 0.19, "z_{cut}=0.1, #beta=0, k_{T} > 1 GeV/c");
     //     jet_info->Draw();
     // } else {
     //     jet_info->DrawLatex(0.2, 0.81, "anti-k_{T}, R=0.4 inclusive jets");
-    //     jet_info->DrawLatex(0.2, 0.76, "100 < p_{T}^{jet} < 120 GeV, |#eta^{jet}| < 2");
+    //     jet_info->DrawLatex(0.2, 0.76, "100 < p_{T}^{jet} < 120 GeV/c, |#eta^{jet}| < 2");
     // }
 
     if (observable=="rg") {
@@ -331,5 +331,5 @@ void draw_unc_sym_inclusive(TString observable="rg")
     c_unc->Draw();
     // c_unc->SetLogy();
     c_unc->Print("plots_an/total_unc_incl_"+observable+".pdf");
-    c_unc->Print("plots_an/total_unc_incl_"+observable+".png");
+    c_unc->Print("../plots_thesis/total_unc_incl_"+observable+".pdf");
 }
