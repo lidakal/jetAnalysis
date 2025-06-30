@@ -1,5 +1,18 @@
-#include "../draw_utils.h"
 #include "../cms_palette.h"
+
+void drawHeader(void) {
+    TLatex *prelim = new TLatex;
+    prelim->SetNDC();
+    prelim->SetTextSize(32);
+    prelim->SetTextAlign(12);
+    prelim->DrawLatex(0.13, 0.97, "#bf{CMS}");
+
+    TLatex *lumi = new TLatex;
+    lumi->SetNDC();
+    lumi->SetTextSize(32);
+    lumi->SetTextAlign(32);
+    lumi->DrawLatex(0.98, 0.97, "pp 301^{} pb^{-1} (5.02 TeV)");
+}
 
 void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString jec_opt="nom")
 {
@@ -125,7 +138,7 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     h_data_mb->SetMarkerSize(1);
     double labelOffset = h_data_mb->GetXaxis()->GetLabelOffset();
     h_data_mb->GetXaxis()->SetLabelOffset(10.);
-    h_data_mb->GetYaxis()->SetTitleOffset(1.7);
+    h_data_mb->GetYaxis()->SetTitleOffset(1.2);
     h_data_mb->GetYaxis()->SetTitle("Entries / 1000");
     h_data_mb->Scale(1/1000.);
 
@@ -194,8 +207,8 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     // leg_mb->SetHeader(Form("b tagged jets, k_{T} > 1 GeV"));
 
     leg_mb->AddEntry(h_data_mb, "Data", "pe1");
-    leg_mb->AddEntry(h_sig_mb, "Single b", "f");
-    leg_mb->AddEntry(h_bkg_bb_mb, "Double b", "f");
+    leg_mb->AddEntry(h_bkg_bb_mb, "Double-b", "f");
+    leg_mb->AddEntry(h_sig_mb, "Single-b", "f");
     leg_mb->AddEntry(h_bkg_rest_mb, "Light+c", "f");
 
     TH1D *h_ratio = (TH1D *) h_data_mb->Clone(Form("h_ratio_%d_%d", ibin_pt, ibin_x));
@@ -236,9 +249,9 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
 	h_data_mb->GetYaxis()->SetTickLength(sizeTick/tickScaleYT);
 
     double ymax = std::max({h_data_mb->GetMaximum(), h_fit_mb->GetMaximum()});
-    // ymax = ymax * 1.25;
-    ymax = ymax * 1.6;
-    ymax = 7.;
+    if (observable=="rg") ymax = 7.;
+    else if (observable=="zg") ymax = 13.;
+    else if (observable=="zpt") ymax = 30.;
     h_data_mb->GetYaxis()->SetRangeUser(0.0001,ymax);
 
     pad1->cd();
@@ -256,7 +269,7 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     jet_info->SetTextAlign(11);
     jet_info->DrawLatex(0.17, 0.87, "anti_{}-_{}k_{T} R = 0.4");
     jet_info->DrawLatex(0.17, 0.8, "b-tagged jets");
-    jet_info->DrawLatex(0.17, 0.73, "100 <^{}_{} p_{T,reco}^{jet} < 120 GeV");
+    jet_info->DrawLatex(0.17, 0.73, "100 <^{}_{} p_{T,reco}^{jet} < 120 GeV/c");
     jet_info->DrawLatex(0.17, 0.66, "|#eta^{jet}| < 2");
 
     TLatex *jet_info2 = new TLatex;
@@ -264,7 +277,7 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     jet_info2->SetTextSize(text_size);
     jet_info2->SetTextAlign(31);
     jet_info2->DrawLatex(0.95, 0.87, range_text);
-    if (observable!="zpt") jet_info2->DrawLatex(0.95, 0.8, "k_{T} > 1 GeV");
+    if (observable!="zpt") jet_info2->DrawLatex(0.95, 0.8, "k_{T} > 1 GeV/c");
 
     // Plot ratio
     pad2->cd();
@@ -273,9 +286,9 @@ void draw_fit_in1bin(TString observable = "rg", TString jer_opt="nom", TString j
     line->SetLineStyle(kDashed);
 
     h_ratio->GetXaxis()->SetLabelOffset(labelOffset);
-    h_ratio->GetXaxis()->SetTitle("m_{b,ch} (GeV)");
+    h_ratio->GetXaxis()->SetTitle("m_{b,ch} (GeV/c^{2})");
     h_ratio->GetYaxis()->SetTitle("Data / fit");
-    h_ratio->GetXaxis()->SetTitleOffset(3.5);
+    h_ratio->GetXaxis()->SetTitleOffset(1.);
     h_ratio->GetYaxis()->SetTitleOffset(h_data_mb->GetYaxis()->GetTitleOffset());
     h_ratio->GetYaxis()->SetNdivisions(505);
     h_ratio->GetYaxis()->SetRangeUser(0.65,1.35);
