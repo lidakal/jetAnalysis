@@ -31,13 +31,13 @@ void draw_aggr_vs_not(TString observable="rg")
     if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
-    TString fin_aggr_name = "./histos/bjet_aggrTMVA_newJP_substructure.root"; 
+    TString fin_aggr_name = "./histos/bjet_aggrTMVA_fixedMassBug_substructure.root"; 
     std::cout << "fin aggr: " << fin_aggr_name << std::endl;
     TFile *fin_aggr = new TFile(fin_aggr_name);
     TH2F *hSingleBtag_reco_aggr = (TH2F *) fin_aggr->Get("hSingleBtag_"+observable)->Clone("hSingleBtag_reco_aggr");
     TH2F *hSingleBtag_gen_aggr = (TH2F *) fin_aggr->Get("hSingleBtag_"+observable+"_gen")->Clone("hSingleBtag_gen_aggr");
 
-    TString fin_noAggr_name = "./histos/bjet_noAggr_withPNET_substructure.root"; 
+    TString fin_noAggr_name = "./histos/bjet_aggrGenNoReco_fixedMassBug_substructure.root"; 
     std::cout << "fin no aggr: " << fin_noAggr_name << std::endl;
     TFile *fin_noAggr = new TFile(fin_noAggr_name);
     TH2F *hSingleBtag_reco_noAggr = (TH2F *) fin_noAggr->Get("hSingleBtag_"+observable)->Clone("hSingleBtag_reco_noAggr");
@@ -108,5 +108,6 @@ void draw_aggr_vs_not(TString observable="rg")
 
     c_aggr_vs_noAggr->Print("plots_an/"+observable+"_aggr_vs_not.png");
     c_aggr_vs_noAggr->Print("plots_an/"+observable+"_aggr_vs_not.pdf");
+    c_aggr_vs_noAggr->Print("plots_thesis/"+observable+"_aggr_vs_not.pdf");
 
 }
