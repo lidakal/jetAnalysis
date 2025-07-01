@@ -31,7 +31,7 @@ void draw_substructure(TString observable="rg")
     if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
-    TString label = "aggrTMVA_fixedMassBug";
+    TString label = "aggrGenNoReco_fixedMassBug";
     TString sample = "bjet";
     TString fin_name = "./histos/" + sample + "_" + label + "_substructure.root"; 
     std::cout << "fin: " << fin_name << std::endl;
@@ -158,7 +158,17 @@ void draw_substructure(TString observable="rg")
     else bdecay2 = "not clustered on both levels";
     jet_info3->DrawLatex(0.78, 0.2, bdecay2);
 
-    draw_info();
+    TLatex *prelim = new TLatex;
+    prelim->SetNDC();
+    prelim->SetTextSize(26);
+    prelim->SetTextAlign(12);
+    prelim->DrawLatex(0.12, 0.96, "#bf{CMS} #it{Simulation Supplementary}");
+
+    TLatex *lumi = new TLatex;
+    lumi->SetNDC();
+    lumi->SetTextSize(26);
+    lumi->SetTextAlign(32);
+    lumi->DrawLatex(0.82, 0.96, "PYTHIA8 CP5 (pp 5.02 TeV)");
 
     c_SingleBtag_reco_vs_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.pdf");
     c_SingleBtag_reco_vs_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.png");
