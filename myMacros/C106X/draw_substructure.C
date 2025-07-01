@@ -5,22 +5,22 @@ void draw_info()
 {
     TLatex *prelim = new TLatex;
     prelim->SetNDC();
-    prelim->SetTextSize(28);
+    prelim->SetTextSize(32);
     prelim->SetTextAlign(12);
     prelim->DrawLatex(0.12, 0.96, "#bf{CMS} #it{Simulation}");
 
     TLatex *lumi = new TLatex;
     lumi->SetNDC();
-    lumi->SetTextSize(28);
+    lumi->SetTextSize(32);
     lumi->SetTextAlign(32);
-    lumi->DrawLatex(0.84, 0.96, "PYTHIA8 CP5 (pp 5.02 TeV)");
+    lumi->DrawLatex(0.82, 0.96, "PYTHIA8 CP5 (pp 5.02 TeV)");
 }
 
 void draw_substructure(TString observable="rg")
 {
     // Run with ROOT 6.30, take PDFs
 
-    Float_t text_size = 28.;
+    Float_t text_size = 32.;
     gStyle->SetTextSize(text_size);
     gStyle->SetLegendTextSize(text_size);
     gStyle->SetLabelSize(text_size, "XYZ");
@@ -31,7 +31,7 @@ void draw_substructure(TString observable="rg")
     if (observable=="rg") xlabel = "ln(R^{}/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
 
-    TString label = "noAggr_withPNET";
+    TString label = "aggrTMVA_fixedMassBug";
     TString sample = "bjet";
     TString fin_name = "./histos/" + sample + "_" + label + "_substructure.root"; 
     std::cout << "fin: " << fin_name << std::endl;
@@ -41,9 +41,9 @@ void draw_substructure(TString observable="rg")
     TH2F *hSingleB_gen = (TH2F *) fin->Get("hSingleB_"+observable+"_gen");
     hSingleB_gen->Scale(1/hSingleB_gen->Integral());
     hSingleB_gen->GetXaxis()->SetTitle(xlabel);
-    hSingleB_gen->GetXaxis()->SetTitleOffset(1.2);
+    hSingleB_gen->GetXaxis()->SetTitleOffset(1.1);
     hSingleB_gen->GetYaxis()->SetTitle("ln(k_{T}/GeV)");
-    hSingleB_gen->GetYaxis()->SetTitleOffset(1.8);
+    hSingleB_gen->GetYaxis()->SetTitleOffset(1.2);
     hSingleB_gen->GetZaxis()->SetTitle("Normalized per 2-prong jet");
     hSingleB_gen->GetZaxis()->SetTitleOffset(1.95);
     hSingleB_gen->GetZaxis()->SetRangeUser(0., 0.03);
@@ -51,7 +51,7 @@ void draw_substructure(TString observable="rg")
 
     TCanvas *c_SingleB_gen = new TCanvas("c_SingleB_gen", "Truth level lund plane no tag", 1000, 700);
     c_SingleB_gen->SetRightMargin(0.16);
-    c_SingleB_gen->SetLeftMargin(0.12);
+    c_SingleB_gen->SetLeftMargin(0.1);
     c_SingleB_gen->SetTopMargin(0.07);
     c_SingleB_gen->SetBottomMargin(0.12);
     hSingleB_gen->Draw("colz");
@@ -93,8 +93,8 @@ void draw_substructure(TString observable="rg")
     // }
 
 
-    c_SingleB_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_vs_kt.pdf");
-    c_SingleB_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_vs_kt.png");
+    // c_SingleB_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_vs_kt.pdf");
+    // c_SingleB_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_vs_kt.png");
 
     // Draw gen vs reco 
     TH2F *hSingleBtag_reco_vs_gen = (TH2F *) fin->Get("hSingleBtag_"+observable+"_reco_vs_gen");
@@ -108,10 +108,11 @@ void draw_substructure(TString observable="rg")
         }
     }
     hSingleBtag_reco_vs_gen->GetXaxis()->SetTitle("Detector level^{} "+xlabel);
+    hSingleBtag_reco_vs_gen->GetXaxis()->SetTitleOffset(1.2);
     hSingleBtag_reco_vs_gen->GetYaxis()->SetTitle("Particle level^{} "+xlabel);
-    hSingleBtag_reco_vs_gen->GetYaxis()->SetTitleOffset(1.5);
+    hSingleBtag_reco_vs_gen->GetYaxis()->SetTitleOffset(1.4);
     hSingleBtag_reco_vs_gen->GetZaxis()->SetTitle("Migration probability");
-    hSingleBtag_reco_vs_gen->GetZaxis()->SetTitleOffset(1.3);
+    hSingleBtag_reco_vs_gen->GetZaxis()->SetTitleOffset(1.25);
     hSingleBtag_reco_vs_gen->GetZaxis()->SetRangeUser(0.,1.);
     hSingleBtag_reco_vs_gen->GetXaxis()->SetRangeUser(0.,3.);
     hSingleBtag_reco_vs_gen->GetYaxis()->SetRangeUser(0.,3.);
@@ -159,7 +160,8 @@ void draw_substructure(TString observable="rg")
 
     draw_info();
 
-    // c_SingleBtag_reco_vs_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.pdf");
-    // c_SingleBtag_reco_vs_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.png");
+    c_SingleBtag_reco_vs_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.pdf");
+    c_SingleBtag_reco_vs_gen->Print("plots_an/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.png");
+    c_SingleBtag_reco_vs_gen->Print("plots_thesis/"+sample+"_"+label+"_"+observable+"_reco_vs_gen.pdf");
     
 }
