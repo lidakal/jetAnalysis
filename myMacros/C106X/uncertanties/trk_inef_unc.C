@@ -33,9 +33,9 @@ void trk_inef_unc(TString observable="rg")
     else if (observable=="zg") ylabel = "1/N dN/dz_{g}";
     else if (observable=="zpt") ylabel = "1/N dN/dz_{b,ch}";
 
-    TString sample1 = "pythia_PF40";
-    TString sample2 = "pythia_0_03_trk_inef_PF40";
-    TString label = "aggrTMVA_XXT";
+    TString sample1 = "dijet_PF40";
+    TString sample2 = "dijet_0_03_trk_inef_PF40";
+    TString label = "aggrTMVA_inclusive";
     bool is_inclusive = label.Contains("inclusive");
 
     TString suffix = (is_inclusive) ? "" : "_withSF";
@@ -185,6 +185,7 @@ void trk_inef_unc(TString observable="rg")
     // Save histograms 
     TString suffix_out = (is_inclusive) ? "inclusive" : "XXT";
     TString fout_name = "histos/" + observable + "_trk_inef_unc_" + suffix_out + ".root";
+    std::cout << "fout: " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "RECREATE");
     h_nom_1d->Write("h_nom_1d");
     h_up_1d->Write("h_up_1d");

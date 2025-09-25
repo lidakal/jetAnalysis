@@ -42,7 +42,7 @@ void draw_unc_sym_inclusive(TString observable="rg")
     h_stat_unc_rel->SetFillColorAlpha(kBlack, 0.5);
     h_stat_unc_rel->SetMarkerStyle(1);
     h_stat_unc_rel->GetYaxis()->SetTitle("Relative uncertainty");
-    h_stat_unc_rel->GetYaxis()->SetTitleOffset(2.);
+    h_stat_unc_rel->GetYaxis()->SetTitleOffset(0.8);
     h_stat_unc_rel->SetLineWidth(3);
     h_stat_unc_rel->SetLineStyle(1);
 
@@ -158,6 +158,11 @@ void draw_unc_sym_inclusive(TString observable="rg")
     TH1D *h_total_unc_down = (TH1D *) h_total_unc_up->Clone(Form("h_total_unc_down_%d", ibin_pt));
     h_total_unc_down->Scale(-1.);
     h_total_unc_down->Write();
+
+    // Write also all unc histos separately
+    for (auto h : all_histos) {
+        h->Write();         
+    }
 
 
     //-------------------- LEGENDS -----------

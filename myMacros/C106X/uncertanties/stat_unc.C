@@ -52,10 +52,14 @@ void stat_unc(TString observable="rg")
     if (observable!="zpt") ibin_x_min = 2;
     if (observable=="rg") ibin_x_max = nbins_x - 1;
 
+    std::cout << "stat rel unc before norm: " << h_nom_1d->GetBinError(1)/h_nom_1d->GetBinContent(1) << std::endl;
+
     for (auto h : {h_nom_1d}) {
         h->GetXaxis()->SetRange(ibin_x_min, ibin_x_max);
         h->Scale(1/h->Integral(), "width");
     }
+
+    std::cout << "stat rel unc after norm: " << h_nom_1d->GetBinError(1)/h_nom_1d->GetBinContent(1) << std::endl;
 
     // Format histograms
     h_nom_1d->SetMarkerStyle(kFullCrossX);
@@ -168,6 +172,7 @@ void stat_unc(TString observable="rg")
     // Save histograms 
     TString suffix_out = (is_inclusive) ? "inclusive" : "XXT";
     TString fout_name = "histos/" + observable + "_stat_unc_" + suffix_out + ".root";
+    std::cout << "fout: " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "RECREATE");
     h_nom_1d->Write("h_nom_1d");
     h_unc_up->Write("h_unc_up");

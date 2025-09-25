@@ -213,13 +213,19 @@ void jec_unc_src(TString observable="rg")
 
     TH1D *h_total_unc_rel_sym_up = (TH1D *) h_nom_1d->Clone("h_total_unc_rel_sym");
     h_total_unc_rel_sym_up->Reset();
+    TH1D *h_total_unc_rel_sym_up_noflav = (TH1D *) h_total_unc_rel_sym_up->Clone("h_total_unc_rel_sym_noflav");
     for (int ibin_x=ibin_x_min; ibin_x<=ibin_x_max; ibin_x++) {
         double sum2_sym = 0.;
+        double sum2_sym_noflav = 0.;
         for (int i=0; i<nsrc; i++) {
+            TString srcname = srcnames[i];
             double unc_rel_sym = histos_unc_rel_sym_up[i]->GetBinContent(ibin_x);
             sum2_sym += unc_rel_sym*unc_rel_sym;
+            if (srcname.Contains("Flavor")) continue; // skip flavor sources
+            sum2_sym_noflav += unc_rel_sym*unc_rel_sym;
         }
         h_total_unc_rel_sym_up->SetBinContent(ibin_x, std::sqrt(sum2_sym));
+        h_total_unc_rel_sym_up_noflav->SetBinContent(ibin_x, std::sqrt(sum2_sym_noflav));
     }
     h_total_unc_rel_sym_up->SetFillColor(kGray);
     h_total_unc_rel_sym_up->SetFillStyle(1001);
@@ -323,6 +329,7 @@ void jec_unc_src(TString observable="rg")
 
     h_nom_1d->Write("h_nom_1d");
     for (int i=0; i<nsrc; i++) {
+        TString srcname = srcnames[i];
         histos_up_1d[i]->Write(Form("h%d_up_1d", i));
         histos_down_1d[i]->Write(Form("h%d_down_1d", i));
         histos_unc_up[i]->Write(Form("h%d_unc_up", i));
@@ -331,7 +338,10 @@ void jec_unc_src(TString observable="rg")
         histos_unc_down_rel[i]->Write(Form("h%d_unc_down_rel", i));
         histos_unc_rel_sym_up[i]->Write(Form("h%d_unc_rel_sym_up", i));
         histos_unc_rel_sym_down[i]->Write(Form("h%d_unc_rel_sym_down", i));
+
+        if (srcname.Contains("Flavor")) histos_unc_rel_sym_up[i]->Write("h_flavor_unc_rel_sym_up");
     }
     h_total_unc_rel_sym_up->Write("h_total_unc_rel_sym_up");
     h_total_unc_rel_sym_down->Write("h_total_unc_rel_sym_down");
+    h_total_unc_rel_sym_up_noflav->Write("h_total_unc_rel_sym_up_noflav");
 }

@@ -337,6 +337,7 @@ void mc_stat_unc(TString observable="rg")
     // Save histograms 
     TString suffix_out = (is_inclusive) ? "inclusive" : "XXT";
     TString fout_name = "histos/" + observable + "_mc_stat_unc_" + suffix_out + ".root";
+    std::cout << "fout: " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "RECREATE");
     h_nom_1d->Write("h_nom_1d");
     for (int i=0; i<10; i++) {

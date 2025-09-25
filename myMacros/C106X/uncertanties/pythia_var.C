@@ -45,8 +45,8 @@ void pythia_var(TString observable="rg")
     else if (observable=="zg") ylabel = "1/N dN/dz_{g}";
     else if (observable=="zpt") ylabel = "1/N dN/dz_{b,ch}";
 
-    TString sample = "pythia_PF40";
-    TString label = "aggrTMVA_XXT";
+    TString sample = "dijet_PF40";
+    TString label = "aggrTMVA_inclusive";
     bool is_inclusive = label.Contains("inclusive");
     TString suffix = (is_inclusive) ? "" : "_withSF";
 
@@ -151,7 +151,7 @@ void pythia_var(TString observable="rg")
         histos_unc_rel_sym_down.push_back(h_unc_rel_sym_down);
     }
 
-    TH1D *h_total_unc_rel_sym_up = (TH1D *) h_nom_1d->Clone("h_total_unc_rel_sym_up_%d");
+    TH1D *h_total_unc_rel_sym_up = (TH1D *) h_nom_1d->Clone("h_total_unc_rel_sym_up");
     h_total_unc_rel_sym_up->Reset();
 
     for (int ibin_x=ibin_x_min; ibin_x<=ibin_x_max; ibin_x++) {
@@ -167,7 +167,7 @@ void pythia_var(TString observable="rg")
     h_total_unc_rel_sym_up->SetFillStyle(1001);
     h_total_unc_rel_sym_up->SetLineColor(kGray);
 
-    TH1D *h_total_unc_rel_sym_down = (TH1D *) h_total_unc_rel_sym_up->Clone("h_unc_rel_sym_down");
+    TH1D *h_total_unc_rel_sym_down = (TH1D *) h_total_unc_rel_sym_up->Clone("h_total_unc_rel_sym_down");
     h_total_unc_rel_sym_down->Scale(-1.);
 
     // Legend 
@@ -285,13 +285,25 @@ void pythia_var(TString observable="rg")
     
 
     // Write to file
-    // TString fout_name = "./histos/"+observable+"_pythia_var_XXT.root";
-    // std::cout << "fout: " << fout_name << std::endl;
-    // TFile *fout = new TFile(fout_name, "recreate");
+    TString suffix_out = (is_inclusive) ? "inclusive" : "XXT";
+    TString fout_name = "./histos/"+observable+"_pythia_var_"+suffix_out+".root";
+    std::cout << "fout: " << fout_name << std::endl;
+    TFile *fout = new TFile(fout_name, "recreate");
 
-    // h_total_unc_rel_sym->Write();
-    // h_total_unc_rel_nosym_up->Write();
-    // h_total_unc_rel_nosym_down->Write();
+    h_nom_1d->Write("h_nom_1d");
+    for (int i=0; i<nsrc; i++) {
+        TString src = sources[i];
+        histos_var_up_1d[i]->Write(Form("h_%sup_1d", src.Data()));
+        histos_var_down_1d[i]->Write(Form("h_%sdown_1d", src.Data()));
+        histos_unc_up[i]->Write(Form("h_%s_unc_up", src.Data()));
+        histos_unc_down[i]->Write(Form("h_%s_unc_down", src.Data()));
+        histos_unc_up_rel[i]->Write(Form("h_%s_unc_up_rel", src.Data()));
+        histos_unc_down_rel[i]->Write(Form("h_%s_unc_down_rel", src.Data()));
+        histos_unc_rel_sym_up[i]->Write(Form("h_%s_unc_rel_sym_up", src.Data()));
+        histos_unc_rel_sym_down[i]->Write(Form("h_%s_unc_rel_sym_down", src.Data()));
+    }
+    h_total_unc_rel_sym_up->Write();
+    h_total_unc_rel_sym_down->Write();
 
     
 }

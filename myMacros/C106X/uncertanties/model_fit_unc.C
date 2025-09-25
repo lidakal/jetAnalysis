@@ -176,6 +176,7 @@ void model_fit_unc(TString observable="rg")
 
     // Save histograms 
     TString fout_name = "histos/" + observable + "_model_fit_unc_XXT.root";
+    std::cout << "fout: " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "RECREATE");
     h_nom_1d->Write("h_nom_1d");
     h_up_1d->Write("h_up_1d");
