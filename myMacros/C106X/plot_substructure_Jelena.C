@@ -50,6 +50,8 @@ void plot_substructure_Jelena()
     TH3D *h_rg_kt_jtpt = new TH3D("h_rg_kt_jtpt", "h_rg_kt_jtpt", x1bins, x1min, x1max, x2bins, x2min, x2max, zbins, zmin, zmax);
     TH3D *h_zg_kt_jtpt = new TH3D("h_zg_kt_jtpt", "h_zg_kt_jtpt", x3bins, x3min, x3max, x2bins, x2min, x2max, zbins, zmin, zmax);
 
+    Long64_t nsingle = 0;
+    Double_t nsingle_w = 0;
     for (Long64_t ient=0; ient<t->GetEntries(); ient++)
     {
         // if (ient > 10) break;
@@ -61,19 +63,30 @@ void plot_substructure_Jelena()
             Float_t zg = jt_z_SD[ijet];
             Float_t pt = jtpt[ijet];
 
+            if (kt<=0&&pt>80&&pt<140) {
+                nsingle++;
+                nsingle_w += weight;
+            }
+
             if (rg<=0) continue; // skip 1-prong jets
             if (kt<=0) continue; // skip 1-prong jets
             if (zg<=0) continue; // skip 1-prong jets
+            if (pt<80||pt>140) continue; // skip outside of pt range
 
             Float_t logrg = std::log(0.4 / jt_rg_SD[ijet]);
             Float_t logkt = std::log(jt_ktg_SD[ijet]);
+
+            if (zg>=0.5) zg = 0.499; // to fit in the last bin
 
             h_rg_kt_jtpt->Fill(logrg, logkt, pt, weight);
             h_zg_kt_jtpt->Fill(zg, logkt, pt, weight);
         }
     }
 
-    TFile *fout = new TFile("histos/substructure_Jelena.root", "RECREATE");
+    std::cout << "nsingle = " << nsingle << std::endl;
+    std::cout << "nsingle_w = " << nsingle_w << std::endl;
+
+    TFile *fout = new TFile("histos/substructure_Jelena_1.root", "RECREATE");
     h_rg_kt_jtpt->Write();
     h_zg_kt_jtpt->Write();
     fout->Close();
