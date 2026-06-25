@@ -1,7 +1,7 @@
 #include "../cms_palette.h"
 
 
-void draw_fit_JP(TString observable="rg", bool tagged=false) 
+void draw_templates(TString observable="rg", bool tagged=false) 
 {
     TString label = "aggrTMVA_inclusive";
     // label += (tagged ? "_tagged" : "");
@@ -38,13 +38,6 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
     TH2D *h_c_f = (TH2D *) fin->Get("h_ccc_f"+tagged_name);
     TH2D *h_l_f = (TH2D *) fin->Get("h_l_f"+tagged_name); 
 
-    std::cout << h_data->GetNbinsY() << std::endl;
-
-    for (auto h : {h_data, h_bbb, h_c, h_l}) {
-        // h->RebinX(h->GetNbinsX()); // rebin only in x
-        // if (tagged) h->RebinY(14);
-    }
-
     TH2D *h_bbb_f_mc = (TH2D *) fin->Get("h_bbb_f_mc"+tagged_name);
     TH2D *h_ccc_f_mc = (TH2D *) fin->Get("h_ccc_f_mc"+tagged_name);
     TH2D *h_l_f_mc = (TH2D *) fin->Get("h_l_f_mc"+tagged_name);
@@ -72,146 +65,6 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
         double pt_min = h_data->GetZaxis()->GetBinLowEdge(ibin_pt);
         double pt_max = h_data->GetZaxis()->GetBinUpEdge(ibin_pt);
 
-        // Draw fbincl + purity from mc
-        TCanvas *c_purity = new TCanvas("c_purity", "", 700, 600);
-        c_purity->SetRightMargin(0.05);
-        c_purity->SetLeftMargin(0.12);
-
-        TH1D *h_bbb_f_1d = (TH1D *) h_bbb_f->ProjectionX(Form("h_bbb_f_1d_%d", ibin_pt), ibin_pt, ibin_pt);
-        h_bbb_f_1d->SetMarkerStyle(kFullCrossX);
-        h_bbb_f_1d->SetMarkerSize(2);
-        h_bbb_f_1d->SetMarkerColor(cmsOrange);
-        h_bbb_f_1d->SetLineColor(cmsOrange);
-
-        TH1D *h_bbb_f_mc_1d = (TH1D *) h_bbb_f_mc->ProjectionX(Form("h_bbb_f_mc_1d_%d", ibin_pt), ibin_pt, ibin_pt);
-        h_bbb_f_mc_1d->SetLineColorAlpha(cmsOrange,0.5);
-        h_bbb_f_mc_1d->SetLineWidth(4);
-
-        TH1D *h_ccc_f_1d = (TH1D *) h_c_f->ProjectionX(Form("h_ccc_f_1d_%d", ibin_pt), ibin_pt, ibin_pt);
-        h_ccc_f_1d->SetMarkerStyle(kFullTriangleDown);
-        h_ccc_f_1d->SetMarkerSize(2);
-        h_ccc_f_1d->SetMarkerColor(cmsBlue);
-        h_ccc_f_1d->SetLineColor(cmsBlue);
-
-        TH1D *h_ccc_f_mc_1d = (TH1D *) h_ccc_f_mc->ProjectionX(Form("h_ccc_f_mc_1d_%d", ibin_pt), ibin_pt, ibin_pt);
-        h_ccc_f_mc_1d->SetLineColorAlpha(cmsBlue,0.5);
-        h_ccc_f_mc_1d->SetLineWidth(4);
-
-        TH1D *h_l_f_1d = (TH1D *) h_l_f->ProjectionX(Form("h_l_f_1d_%d", ibin_pt), ibin_pt, ibin_pt);
-        h_l_f_1d->SetMarkerStyle(kFullTriangleUp);
-        h_l_f_1d->SetMarkerSize(2);
-        h_l_f_1d->SetMarkerColor(cmsViolet);
-        h_l_f_1d->SetLineColor(cmsViolet);
-
-
-        TH1D *h_l_f_mc_1d = (TH1D *) h_l_f_mc->ProjectionX(Form("h_l_f_mc_1d_%d", ibin_pt), ibin_pt, ibin_pt);
-        h_l_f_mc_1d->SetLineColorAlpha(cmsViolet,0.5);
-        h_l_f_mc_1d->SetLineWidth(4);
-
-        double ymin = std::min({h_bbb_f_1d->GetMinimum(), h_bbb_f_mc_1d->GetMinimum()});
-        double ymax = std::max({h_bbb_f_1d->GetMaximum(), h_bbb_f_mc_1d->GetMaximum()});
-
-        ymin *= 0.9;
-        ymax *= 1.1;
-
-        ymin = -0.05;
-        ymax = 1.05;
-
-        h_l_f_mc_1d->GetYaxis()->SetRangeUser(ymin, ymax);
-        h_l_f_mc_1d->GetYaxis()->SetTitle("Fraction");
-        h_l_f_mc_1d->GetYaxis()->SetTitleOffset(1.2);
-        h_l_f_mc_1d->GetXaxis()->SetTitle(xlabel);
-        h_l_f_mc_1d->GetXaxis()->SetTitleOffset(1.2);
-
-        TLegend *leg_purity = new TLegend(0.7, 0.3, 0.9, 0.55);
-        if (observable=="zpt"&&!tagged) leg_purity = new TLegend(0.65, 0.6, 0.85, 0.85);
-        leg_purity->SetFillStyle(0);
-        // leg_purity->SetBorderSize(1);
-        leg_purity->SetNColumns(2);
-        leg_purity->SetMargin(0.7);
-        leg_purity->SetHeader("Data    MC");
-
-        leg_purity->AddEntry(h_l_f_1d, " ", "pe1");
-        leg_purity->AddEntry(h_l_f_mc_1d, " ", "l");
-        leg_purity->AddEntry(h_ccc_f_1d, " ", "pe1");
-        leg_purity->AddEntry(h_ccc_f_mc_1d, " ", "l");
-        leg_purity->AddEntry(h_bbb_f_1d, " ", "pe1");
-        leg_purity->AddEntry(h_bbb_f_mc_1d, " ", "l");
-
-        h_l_f_mc_1d->Draw("hist same");
-        h_ccc_f_mc_1d->Draw("hist same");
-        h_bbb_f_mc_1d->Draw("hist same");
-
-        std::cout << "h_bbb_f->GetBinContent(8,1) = " << h_bbb_f->GetBinContent(8,1) << std::endl;
-        std::cout << "h_bbb_f->GetBinError(8,1) = " << h_bbb_f->GetBinError(8,1) << std::endl;
-
-        std::cout << "h_bbb_f_1d->GetBinContent(8) = " << h_bbb_f_1d->GetBinContent(8) << std::endl;
-        std::cout << "h_bbb_f_1d->GetBinError(8) = " << h_bbb_f_1d->GetBinError(8) << std::endl;
-
-        h_l_f_1d->Draw("pe1 same");
-        h_ccc_f_1d->Draw("pe1 same");
-        h_bbb_f_1d->Draw("pe1 same");
-
-        TLatex *prelim_pur = new TLatex;
-        prelim_pur->SetNDC();
-        prelim_pur->SetTextSize(28);
-        prelim_pur->SetTextAlign(12);
-        prelim_pur->DrawLatex(0.12, 0.93, "#bf{CMS} #it{Private work}");
-
-        TLatex *lumi_pur = new TLatex;
-        lumi_pur->SetNDC();
-        lumi_pur->SetTextSize(28);
-        lumi_pur->SetTextAlign(32);
-        lumi_pur->DrawLatex(0.95, 0.93, "pp 301^{} pb^{-1} (5.02 TeV)");
-
-        leg_purity->Draw();
-
-        // Jets text
-        if (observable=="zpt"&&!tagged) {
-            TLatex *jet_info = new TLatex;
-            jet_info->SetNDC();
-            jet_info->SetTextSize(text_size-4);
-            jet_info->SetTextAlign(12);
-            if (tagged) jet_info->DrawLatex(0.17, 0.61, "anti-k_{T}, R = 0.4 b-tagged jets");
-            else jet_info->DrawLatex(0.17, 0.55, "anti-k_{T}, R = 0.4 inclusive jets");
-            jet_info->DrawLatex(0.17, 0.49, "80 < p_{T}^{jet,reco} < 140 GeV/c, |#eta^{jet}| < 2");
-
-            TLatex *jet_info_v2 = new TLatex;
-            jet_info_v2->SetNDC();
-            jet_info_v2->SetTextSize(text_size-4);
-            jet_info_v2->SetTextAlign(32);
-            jet_info_v2->DrawLatex(0.65, 0.76, "guds");
-            jet_info_v2->DrawLatex(0.65, 0.7, "c");
-            jet_info_v2->DrawLatex(0.65, 0.64, "b");
-        } else {
-            TLatex *jet_info = new TLatex;
-            jet_info->SetNDC();
-            jet_info->SetTextSize(text_size-4);
-            jet_info->SetTextAlign(32);
-            if (tagged) jet_info->DrawLatex(0.9, 0.75, "anti-k_{T}, R = 0.4 b-tagged jets");
-            else jet_info->DrawLatex(0.9, 0.75, "anti-k_{T}, R = 0.4 inclusive jets");
-            jet_info->DrawLatex(0.9, 0.69, "80 < p_{T}^{jet,reco} < 140 GeV/c, |#eta^{jet}| < 2");
-            if (observable!="zpt") jet_info->DrawLatex(0.9, 0.63, "Soft drop (charged particles)");
-            if (observable!="zpt") jet_info->DrawLatex(0.9, 0.57, "z_{cut} = 0.1, #beta = 0, k_{T} > 1 GeV/c");
-
-            jet_info->DrawLatex(0.69, 0.46, "guds");
-            jet_info->DrawLatex(0.69, 0.4, "c");
-            jet_info->DrawLatex(0.69, 0.34, "b");
-        }
-
-        if (observable!="zpt") {
-            TPaveText *untagged_text = new TPaveText(0.09, 0.02, 0.37, 0.137, "NDC");
-            untagged_text->SetFillColor(0);
-            untagged_text->SetBorderSize(0);
-            untagged_text->SetTextAlign(22);
-            untagged_text->SetTextSize(text_size-4);
-            untagged_text->AddText("SD-untagged");
-            untagged_text->AddText("or k_{T} < 1 GeV/c");
-            untagged_text->Draw();
-        }
-
-        // c_purity->Print("../plots_thesis/"+observable+"_fit_JP_fractions_"+label+tagged_name+".pdf");
-
         // Create canvas + pads for data+fit
         TCanvas *c_jp = new TCanvas(Form("c_jp_%d", ibin_pt), "", 1200, 1000);
 
@@ -220,7 +73,7 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
         double x1=xl+x, x2=x1+x;
 
         double y=0.3;
-        double yb=0.1, yt=1-(3*y)-yb;
+        double yb=0.06, yt=1-(3*y)-yb;
         double y1=yb+y, y2=y1+y;
 
         double gapx=0.0045, gapy=0.0045;
@@ -270,6 +123,8 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             double x_min = h_data->GetXaxis()->GetBinLowEdge(ibin_x);
             double x_max = h_data->GetXaxis()->GetBinUpEdge(ibin_x);
 
+            TString header = (observable!="zpt" && ibin_x==1) ? "SD-untagged OR k_{T} < 1 GeV" : Form("%.2f < %s < %.2f", x_min, xlabel.Data(), x_max);
+
             // Make projections 
             TH1D *h_data_1d = (TH1D *) h_data->ProjectionY(Form("h_data_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
             TH1D *h_bbb_1d = (TH1D *) h_bbb->ProjectionY(Form("h_bbb_1d_%d_%d", ibin_pt, ibin_x), ibin_x, ibin_x, ibin_pt, ibin_pt);
@@ -278,21 +133,25 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
 
             for (auto h : {h_data_1d, h_bbb_1d, h_c_1d, h_l_1d}) {
                 h->GetXaxis()->SetRange(1, h->GetNbinsX());
+                h->RebinX(2);
             }
             // Get fractions
-            double bbb_f = h_bbb_f->GetBinContent(ibin_x, ibin_pt);
-            double c_f = h_c_f->GetBinContent(ibin_x, ibin_pt);
-            double l_f = h_l_f->GetBinContent(ibin_x, ibin_pt);
+            // double bbb_f = h_bbb_f->GetBinContent(ibin_x, ibin_pt);
+            // double c_f = h_c_f->GetBinContent(ibin_x, ibin_pt);
+            // double l_f = h_l_f->GetBinContent(ibin_x, ibin_pt);
             // std::cout << h_c_1d->Integral() << std::endl;
 
             // debug
-            // double bbb_f = h_bbb_f_mc->GetBinContent(ibin_x, ibin_pt);
-            // double c_f = h_ccc_f_mc->GetBinContent(ibin_x, ibin_pt);
-            // double l_f = h_l_f_mc->GetBinContent(ibin_x, ibin_pt);
+            double bbb_f = h_bbb_f_mc->GetBinContent(ibin_x, ibin_pt);
+            double c_f = h_ccc_f_mc->GetBinContent(ibin_x, ibin_pt);
+            double l_f = h_l_f_mc->GetBinContent(ibin_x, ibin_pt);
+            bbb_f = 1.0;
+            c_f = 1.0;
+            l_f = 1.0;
 
-            // std::cout << "\tbbb_f = " << bbb_f << std::endl;
-            // std::cout << "\tc_f = " << c_f << std::endl;
-            // std::cout << "\tl_f = " << l_f << std::endl;
+            std::cout << "\tbbb_f = " << bbb_f << std::endl;
+            std::cout << "\tc_f = " << c_f << std::endl;
+            std::cout << "\tl_f = " << l_f << std::endl;
 
             // Normalize + multiply by fraction + stack 
             double ndata = h_data_1d->Integral(1, nbins_jp);
@@ -371,24 +230,23 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
             if (tagged) h_data_1d->GetYaxis()->SetRangeUser(2e-1,2e9);
             else h_data_1d->GetYaxis()->SetRangeUser(1e3,2e8);
             h_data_1d->Draw("pe1");
-            h_fit->Draw("same");
+            h_fit->Draw("same nostack");
             h_data_1d->Draw("pe1 same");
             gr_err->Draw("e2 same");
+            // leg_jp->Draw();            
 
             double w=current_pad->GetWNDC(); 
             double h=current_pad->GetHNDC();
             double xtext=0.25, ytext=0.25; // out of x,y=0.3
             // std::cout << "current_pad->GetLeftMargin()=" << current_pad->GetLeftMargin() << std::endl;
-            if (observable!="zpt") { 
-                if (ibin_x==1) {
-                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), "SD-untagged");
-                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(0.85*ytext/h), "or k_{T} < 1 GeV/c");
-                } else if (ibin_x==nbins_x&&observable=="rg") {
-                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), Form("%.2f^{} <^{} %s", x_min, xlabel.Data()));
-                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(0.85*ytext/h), "k_{T} > 1 GeV/c");
-                } else {
+            if (observable!="zpt") {
+                if (ibin_x!=1) {
                     bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), Form("%.2f^{} <^{} %s < %.2f", x_min, xlabel.Data(), x_max));
                     bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(0.85*ytext/h), "k_{T} > 1 GeV/c");
+                } else {
+                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), "SD-untagged");
+                    bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(0.85*ytext/h), "or k_{T} < 1 GeV/c");
+
                 }
             } else {
                 bin_info->DrawLatex(current_pad->GetLeftMargin()+(xtext/w), current_pad->GetBottomMargin()+(ytext/h), Form("%.2f^{} <^{} %s < %.2f", x_min, xlabel.Data(), x_max));
@@ -437,7 +295,7 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
                 axis2->Draw();
                 leg_jp->Draw();
             } else if (observable=="zpt"&&ibin_x==1) {
-                std::cout << "Drawing axis for zpt" << std::endl;
+                std::cout << "Drawing axis for zg" << std::endl;
                 pad11->cd();
                 pad11->Range(-0.25,0.,0.935,1);
                 axis1->Draw();
@@ -502,6 +360,5 @@ void draw_fit_JP(TString observable="rg", bool tagged=false)
         // std::cout << "c_jp->GetWindowHeight()=" << c_jp->GetWindowHeight() << std::endl;
         // c_jp->SetWindowSize(c_jp->GetWindowWidth(),700);
 
-        // c_jp->Print(".../plots_thesis/"+observable+"_"+label+"_jp_fits"+tagged_name+".pdf");
     } // pt bins    
 }

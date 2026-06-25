@@ -1,9 +1,9 @@
 #include "../myPalette.h"
 
-void draw_b_vs_all()
+void draw_b_vs_cl()
 {
     // ---- Settings
-    float ptMin = 80.;
+    float ptMin = 60.;
     float ptMax = 140.;
 
     Float_t text_size = 26.;
@@ -14,6 +14,8 @@ void draw_b_vs_all()
 
     // ---- Grab histos
     TFile *fmini = new TFile("./histos/mini_discr.root");
+    TH2F *hB_discr_mini = (TH2F *) fmini->Get("hB_discr");
+    hB_discr_mini->SetName("hB_discr_mini");
     TH2F *hSingleB_discr_mini = (TH2F *) fmini->Get("hSingleB_discr");
     hSingleB_discr_mini->SetName("hSingleB_discr_mini");
     TH2F *hBB_discr_mini = (TH2F *) fmini->Get("hBB_discr");
@@ -24,6 +26,8 @@ void draw_b_vs_all()
     hC_discr_mini->SetName("hC_discr_mini");
 
     TFile *faod = new TFile("./histos/aod_discr.root");
+    TH2F *hB_discr_aod = (TH2F *) faod->Get("hB_discr");
+    hB_discr_aod->SetName("hB_discr_aod");
     TH2F *hSingleB_discr_aod = (TH2F *) faod->Get("hSingleB_discr");
     hSingleB_discr_aod->SetName("hSingleB_discr_aod");
     TH2F *hBB_discr_aod = (TH2F *) faod->Get("hBB_discr");
@@ -34,10 +38,10 @@ void draw_b_vs_all()
     hC_discr_aod->SetName("hC_discr_aod");
 
     // ---- Calculate roc
-    Int_t iymin = hSingleB_discr_mini->GetYaxis()->FindBin(ptMin);
-    Int_t iymax = hSingleB_discr_mini->GetYaxis()->FindBin(ptMax) - 1;
+    Int_t iymin = hB_discr_mini->GetYaxis()->FindBin(ptMin);
+    Int_t iymax = hB_discr_mini->GetYaxis()->FindBin(ptMax) - 1;
 
-    int nbins = hSingleB_discr_mini->GetNbinsX();
+    int nbins = hB_discr_mini->GetNbinsX();
 
     TLegend *leg_roc = new TLegend(0.6, 0.2, 1., 0.45);
     leg_roc->SetHeader(Form("%.0f < p_{T}^{jet} < %.0f (GeV)", ptMin, ptMax));
@@ -51,15 +55,6 @@ void draw_b_vs_all()
     rocs->GetYaxis()->SetTitleOffset(0.01);
 
     // Add mini ROCs
-    TGraph *b_vs_bb_mini = new TGraph(nbins);
-    b_vs_bb_mini->SetMarkerStyle(kFullCircle);
-    b_vs_bb_mini->SetMarkerColor(mykBlue);
-    b_vs_bb_mini->SetMarkerSize(2);
-    b_vs_bb_mini->SetLineColor(b_vs_bb_mini->GetMarkerColor());
-    b_vs_bb_mini->SetLineStyle(1);
-    rocs->Add(b_vs_bb_mini);
-    leg_roc->AddEntry(b_vs_bb_mini, "b vs bb, mini", "pl");
-
     TGraph *b_vs_c_mini = new TGraph(nbins);
     b_vs_c_mini->SetMarkerStyle(kFullDiamond);
     b_vs_c_mini->SetMarkerColor(mykGreen);
@@ -79,23 +74,14 @@ void draw_b_vs_all()
     leg_roc->AddEntry(b_vs_l_mini, "b vs guds, mini", "pl");
 
     // Add aod ROCs
-    TGraph *b_vs_bb_aod = new TGraph(nbins);
-    b_vs_bb_aod->SetMarkerStyle(kOpenCircle);
-    b_vs_bb_aod->SetMarkerColor(mykBlue);
-    b_vs_bb_aod->SetMarkerSize(2);
-    b_vs_bb_aod->SetLineColor(b_vs_bb_aod->GetMarkerColor());
-    b_vs_bb_aod->SetLineStyle(kDashed);
-    // rocs->Add(b_vs_bb_aod);
-    // leg_roc->AddEntry(b_vs_bb_aod, "b vs bb, aod", "pl");
-
     TGraph *b_vs_c_aod = new TGraph(nbins);
     b_vs_c_aod->SetMarkerStyle(kOpenDiamond);
     b_vs_c_aod->SetMarkerColor(mykGreen);
     b_vs_c_aod->SetMarkerSize(3);
     b_vs_c_aod->SetLineColor(b_vs_c_aod->GetMarkerColor());
     b_vs_c_aod->SetLineStyle(kDashed);
-    // rocs->Add(b_vs_c_aod);
-    // leg_roc->AddEntry(b_vs_c_aod, "b vs c, aod", "pl");
+    rocs->Add(b_vs_c_aod);
+    leg_roc->AddEntry(b_vs_c_aod, "b vs c, aod", "pl");
 
     TGraph *b_vs_l_aod = new TGraph(nbins);
     b_vs_l_aod->SetMarkerStyle(kOpenStar);
@@ -103,46 +89,80 @@ void draw_b_vs_all()
     b_vs_l_aod->SetMarkerSize(3);
     b_vs_l_aod->SetLineColor(b_vs_l_aod->GetMarkerColor());
     b_vs_l_aod->SetLineStyle(kDashed);
-    // rocs->Add(b_vs_l_aod);
-    // leg_roc->AddEntry(b_vs_l_aod, "b vs guds, aod", "pl");
+    rocs->Add(b_vs_l_aod);
+    leg_roc->AddEntry(b_vs_l_aod, "b vs guds, aod", "pl");
 
     // calculate ROCs
     for (int ibin = 1; ibin <= nbins; ibin++) {
-        double eff_mini = hSingleB_discr_mini->Integral(ibin, nbins, iymin, iymax) / hSingleB_discr_mini->Integral(0, -1, iymin, iymax);
-        double bbmis_mini = hBB_discr_mini->Integral(ibin, nbins, iymin, iymax) / hBB_discr_mini->Integral(0, -1, iymin, iymax);
-        double cmis_mini = hC_discr_mini->Integral(ibin, nbins, iymin, iymax) / hC_discr_mini->Integral(0, -1, iymin, iymax);
-        double lmis_mini = hL_discr_mini->Integral(ibin, nbins, iymin, iymax) / hL_discr_mini->Integral(0, -1, iymin, iymax);
-        double pur_mini = hSingleB_discr_mini->Integral(ibin, nbins, iymin, iymax) / (hSingleB_discr_mini->Integral(ibin, nbins, iymin, iymax) + hBB_discr_mini->Integral(ibin, nbins, iymin, iymax) + hC_discr_mini->Integral(ibin, nbins, iymin, iymax) + hL_discr_mini->Integral(ibin, nbins, iymin, iymax));
+        double ball_mini = hB_discr_mini->Integral(1, nbins, iymin, iymax);
+        double call_mini = hC_discr_mini->Integral(1, nbins, iymin, iymax);
+        double lall_mini = hL_discr_mini->Integral(1, nbins, iymin, iymax);
+        double singleball_mini = hSingleB_discr_mini->Integral(1, nbins, iymin, iymax);
+        double bball_mini = hBB_discr_mini->Integral(1, nbins, iymin, iymax);
 
-        b_vs_bb_mini->SetPoint(ibin - 1, eff_mini, bbmis_mini);
-        b_vs_c_mini->SetPoint(ibin - 1, eff_mini, cmis_mini);
-        b_vs_l_mini->SetPoint(ibin - 1, eff_mini, lmis_mini);
+        double bpass_mini = hB_discr_mini->Integral(ibin, nbins, iymin, iymax);
+        double cpass_mini = hC_discr_mini->Integral(ibin, nbins, iymin, iymax);
+        double lpass_mini = hL_discr_mini->Integral(ibin, nbins, iymin, iymax);
+        double singlebpass_mini = hSingleB_discr_mini->Integral(ibin, nbins, iymin, iymax);
+        double bbpass_mini = hBB_discr_mini->Integral(ibin, nbins, iymin, iymax);
 
-        double eff_aod = hSingleB_discr_aod->Integral(ibin, nbins, iymin, iymax) / hSingleB_discr_aod->Integral(0, -1, iymin, iymax);
-        double bbmis_aod = hBB_discr_aod->Integral(ibin, nbins, iymin, iymax) / hBB_discr_aod->Integral(0, -1, iymin, iymax);
-        double cmis_aod = hC_discr_aod->Integral(ibin, nbins, iymin, iymax) / hC_discr_aod->Integral(0, -1, iymin, iymax);
-        double lmis_aod = hL_discr_aod->Integral(ibin, nbins, iymin, iymax) / hL_discr_aod->Integral(0, -1, iymin, iymax);
+        double beff_mini = bpass_mini / ball_mini;
+        double cmis_mini = cpass_mini / call_mini;
+        double lmis_mini = lpass_mini / lall_mini;
+        double singlebeff_mini = singlebpass_mini / singleball_mini;
+        double bbeff_mini = bbpass_mini / bball_mini;
+        double bpur_mini = bpass_mini / (bpass_mini + cpass_mini + lpass_mini);
+        double cpur_mini = cpass_mini / (bpass_mini + cpass_mini + lpass_mini);
+        double lpur_mini = lpass_mini / (bpass_mini + cpass_mini + lpass_mini);
+        double singlebpur_mini = singlebpass_mini / (bpass_mini + cpass_mini + lpass_mini);
+        double bbpur_mini = bbpass_mini / (bpass_mini + cpass_mini + lpass_mini);
+        
 
-        b_vs_bb_aod->SetPoint(ibin - 1, eff_aod, bbmis_aod);
-        b_vs_c_aod->SetPoint(ibin - 1, eff_aod, cmis_aod);
-        b_vs_l_aod->SetPoint(ibin - 1, eff_aod, lmis_aod);
+        b_vs_c_mini->SetPoint(ibin - 1, beff_mini, cmis_mini);
+        b_vs_l_mini->SetPoint(ibin - 1, beff_mini, lmis_mini);
 
-        if (ibin==15) {
-            std::cout << "For b+lepb > " << hSingleB_discr_mini->GetXaxis()->GetBinLowEdge(ibin) << "\n" << std::endl;
+        double ball_aod = hB_discr_aod->Integral(1, nbins, iymin, iymax);
+        double call_aod = hC_discr_aod->Integral(1, nbins, iymin, iymax);
+        double lall_aod = hL_discr_aod->Integral(1, nbins, iymin, iymax);
+
+        double bpass_aod = hB_discr_aod->Integral(ibin, nbins, iymin, iymax);
+        double cpass_aod = hC_discr_aod->Integral(ibin, nbins, iymin, iymax);
+        double lpass_aod = hL_discr_aod->Integral(ibin, nbins, iymin, iymax);
+
+        double beff_aod = bpass_aod / ball_aod;
+        double cmis_aod = cpass_aod / call_aod;
+        double lmis_aod = lpass_aod / lall_aod;
+        double bpur_aod = bpass_aod / (bpass_aod + cpass_aod + lpass_aod);
+        double cpur_aod = cpass_aod / (bpass_aod + cpass_aod + lpass_aod);
+        double lpur_aod = lpass_aod / (bpass_aod + cpass_aod + lpass_aod);
+
+
+        b_vs_c_aod->SetPoint(ibin - 1, beff_aod, cmis_aod);
+        b_vs_l_aod->SetPoint(ibin - 1, beff_aod, lmis_aod);
+
+        if (ibin==19) {
+            std::cout << "For b+lepb+bb > " << hB_discr_mini->GetXaxis()->GetBinLowEdge(ibin) << "\n" << std::endl;
             
             std::cout << "\nmini:" << std::endl;
-            std::cout << "b eff = " << eff_mini
-                      << "\nbb mis = " << bbmis_mini
+            std::cout << "b eff = " << beff_mini
+                      << "\nsingle b eff = " << singlebeff_mini
+                      << "\nbb eff = " << bbeff_mini
                       << "\nc mis = " << cmis_mini
                       << "\nl mis = " << lmis_mini
-                      << "\nb pur = " << pur_mini
+                      << "\nb pur = " << bpur_mini
+                      << "\nc pur = " << cpur_mini
+                      << "\nl pur = " << lpur_mini
+                      << "\nsingle b pur = " << singlebpur_mini
+                      << "\nbb pur = " << bbpur_mini
                       << std::endl;
 
             std::cout << "\nAOD:" << std::endl;
-            std::cout << "b eff = " << eff_aod
-                      << "\nbb mis = " << bbmis_aod
+            std::cout << "b eff = " << beff_aod
                       << "\nc mis = " << cmis_aod
                       << "\nl mis = " << lmis_aod
+                      << "\nb pur = " << bpur_aod
+                      << "\nc pur = " << cpur_aod
+                      << "\nl pur = " << lpur_aod
                       << std::endl;
         }
     }
@@ -160,7 +180,7 @@ void draw_b_vs_all()
     info_top_right->SetLineWidth(0);
     info_top_right->AddText("PYTHIA8 #sqrt{s} = 5.02 TeV #it{pp}");
 
-    TLine *line = new TLine(0.7, 1.99e-5, 0.7, 1.99);
+    TLine *line = new TLine(0.9, 1.99e-5, 0.9, 1.99);
     line->SetLineColor(kGray);
     line->SetLineStyle(kDashed);
 
@@ -168,12 +188,12 @@ void draw_b_vs_all()
     c_roc->SetLogy();
     rocs->Draw("pla");
     leg_roc->Draw();
-    // info_top_left->Draw();
-    // info_top_right->Draw();
+    info_top_left->Draw();
+    info_top_right->Draw();
     line->Draw();
     c_roc->Draw();
 
-    c_roc->Print("./plots/b_vs_all_roc.png");
+    c_roc->Print("./plots/b_vs_cl_roc.png");
     
 
 

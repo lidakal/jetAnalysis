@@ -1,0 +1,23 @@
+# root -l 'plot_bias.C("nom","nom")'
+# root -l 'plot_bias.C("up","nom")'
+# root -l 'plot_bias.C("down","nom")'
+# root -l 'plot_bias.C("nom","up")'
+# root -l 'plot_bias.C("nom","down")'
+
+root -l 'calculate_correction.C("rg","nom","nom")'
+# root -l 'calculate_correction.C("rg","up","nom")'
+# root -l 'calculate_correction.C("rg","down","nom")'
+# root -l 'calculate_correction.C("rg","nom","up")'
+# root -l 'calculate_correction.C("rg","nom","down")'
+
+root -l 'calculate_correction.C("zg","nom","nom")'
+# root -l 'calculate_correction.C("zg","up","nom")'
+# root -l 'calculate_correction.C("zg","down","nom")'
+# root -l 'calculate_correction.C("zg","nom","up")'
+# root -l 'calculate_correction.C("zg","nom","down")'
+
+root -l 'calculate_correction.C("zpt","nom","nom")'
+# root -l 'calculate_correction.C("zpt","up","nom")'
+# root -l 'calculate_correction.C("zpt","down","nom")'
+# root -l 'calculate_correction.C("zpt","nom","up")'
+# root -l 'calculate_correction.C("zpt","nom","down")'

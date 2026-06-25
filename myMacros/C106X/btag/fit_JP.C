@@ -60,7 +60,7 @@ void fit_JP(TString observable="rg")
 
 
     // Create the templates 
-    double gsp_frac = 1.0; // 1.5 for gsp up +50%, 0.5 for gsp down -50%
+    double gsp_frac = 1.; // 1.5 for gsp up +50%, 0.5 for gsp down -50%
     std::cout << "GSP fraction/nom = " << gsp_frac << std::endl;
 
     TH3D *h_bbb = (TH3D *) h_dijet_b->Clone("h_bbb");
@@ -333,9 +333,16 @@ void fit_JP(TString observable="rg")
                     h_data_tagged_1d, h_bbb_tagged_1d, h_ccc_tagged_1d, h_l_tagged_1d,
                     h_dijet_b_tagged_1d, h_dijet_bb_tagged_1d, h_dijet_c_tagged_1d, h_dijet_cc_tagged_1d, h_dijet_l_tagged_1d
                 }) {
-                if (observable=="rg"&&ibin_x==nbins_x) h->Rebin(2);    
-                else if (observable=="zpt"&&ibin_x>3) h->Rebin(5);   
-                else h->Rebin(7);   
+                if (observable=="rg"&&ibin_x==6) h->Rebin(5); // inclusive   
+                else if (observable=="zg"&&ibin_x==1) h->Rebin(10);
+                else if (observable=="zg"&&ibin_x==3) h->Rebin(2);
+                else if (observable=="zg") h->Rebin(5);
+                else if (observable=="zpt"&&ibin_x==3) h->Rebin(7);   
+                else if (observable=="zpt"&&ibin_x==5) h->Rebin(5);
+                // else if (observable=="zpt"&&ibin_x==2) h->Rebin(14); // for muon jets
+                else if (observable=="zpt") h->Rebin(7);      
+                // else h->Rebin(14);  
+                // h->Rebin(2); // possible values: 2, 5, 7, 10, 14, 35
             }
             
             // Double_t int0, int1, int2, int3, total;

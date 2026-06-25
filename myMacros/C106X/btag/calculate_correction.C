@@ -3,7 +3,7 @@
 void calculate_correction(TString observable="rg", TString jer_opt="nom", TString jec_opt="nom")
 {  
     TString xlabel;
-    if (observable=="rg") xlabel = "ln(R/R_{g})";
+    if (observable=="rg") xlabel = "ln(R/^{}R_{g})";
     else if (observable=="zg") xlabel = "z_{g}";
     else if (observable=="zpt") xlabel = "z";
 
@@ -14,20 +14,18 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
 
     bool sfDown = false;
     bool sfUp = false;
+    suffix += "_withSF";
+    if (sfUp) suffix += "Up";
+    if (sfDown) suffix += "Down";
+
 
     // Load histograms
-    TFile *fin_inclusive = new TFile("histos/"+sample+"_"+label+"_inclusive_histograms"+suffix+".root");
-    TH2D *h_inclusive = (TH2D *) fin_inclusive->Get("h_"+observable+"pt_gen")->Clone("h_inclusive");
-
-    // XXT is a subset of inclusive
-    TFile *fin_btag = new TFile("histos/"+sample+"_"+label+"_XXT_histograms"+suffix+".root"); 
-    TH2D *h_btag = (TH2D *) fin_btag->Get("h_"+observable+"pt_gen")->Clone("h_btag");
-
-    TString suffix_withSF = suffix + "_withSF";
-    if (sfUp) suffix_withSF += "Up";
-    if (sfDown) suffix_withSF += "Down";
-    TFile *fin_btag_withSF = new TFile("histos/"+sample+"_"+label+"_XXT_histograms"+suffix_withSF+".root"); 
-    TH2D *h_btag_withSF = (TH2D *) fin_btag_withSF->Get("h_"+observable+"pt_gen")->Clone("h_btag_withSF");
+    TString fin_name = "histos/"+sample+"_"+label+"_inclusive_histograms"+suffix+".root";
+    std::cout << "fin: " << fin_name << std::endl;
+    TFile *fin = new TFile(fin_name);
+    TH2D *h_inclusive = (TH2D *) fin->Get("h_"+observable+"pt_gen");
+    TH2D *h_btag = (TH2D *) fin->Get("h_"+observable+"pt_gen_tagged");
+    TH2D *h_btag_withSF = (TH2D *) fin->Get("h_"+observable+"pt_gen_tagged_withSF");
 
     // Create efficiency histograms 
     TH2D *h_eff = (TH2D *) h_btag->Clone("h_eff");
@@ -37,7 +35,7 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
     h_eff_withSF->Divide(h_btag_withSF, h_inclusive, 1., 1., "b");
 
     // Draw the efficiencies
-    int ibin_pt = 2;
+    int ibin_pt = 1;
     double pt_min = h_eff_withSF->GetYaxis()->GetBinLowEdge(ibin_pt);
     double pt_max = h_eff_withSF->GetYaxis()->GetBinUpEdge(ibin_pt);
     TString header = Form("%.0f < p_{T}^{jet} < %.0f", pt_min, pt_max);
@@ -58,9 +56,9 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
 
     TCanvas *c_eff = new TCanvas("c_eff", "", 800, 600);
     h_eff_1d->Draw("pe1");
-    h_eff_withSF_1d->Draw("pe1 same");
-    auto leg_eff = c_eff->BuildLegend();
-    leg_eff->SetHeader(header);
+    // h_eff_withSF_1d->Draw("pe1 same");
+    // auto leg_eff = c_eff->BuildLegend();
+    // leg_eff->SetHeader(header);
     drawHeaderSimulation();
     c_eff->Draw();
     c_eff->Print("plots_an/btag_eff_gen_"+observable+".png");
@@ -74,7 +72,7 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
     h_sf_reco_1d->SetMarkerColor(kRed);
     h_sf_reco_1d->GetXaxis()->SetTitle(xlabel);
     h_sf_reco_1d->GetYaxis()->SetTitle("b tagging efficiency scale factor");
-    h_sf_reco_1d->SetMinimum(0.85);
+    h_sf_reco_1d->SetMinimum(0.9);
     h_sf_reco_1d->SetMaximum(1.5);
 
     TH2D *h_sf_gen = (TH2D *) h_eff_withSF->Clone("h_sf_gen");
@@ -102,31 +100,31 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
     TH1D *h_inclusive_1d = (TH1D *) h_inclusive->ProjectionX("h_inclusive_1d", ibin_pt, ibin_pt);
     h_inclusive_1d->SetMarkerColor(kBlack);
     h_inclusive_1d->SetLineColor(kBlack);
-    h_inclusive_1d->GetXaxis()->SetTitle(observable);
-    h_inclusive_1d->GetYaxis()->SetTitle("1/N dN/d"+observable);
-    h_inclusive_1d->SetTitle("not tagged");
+    h_inclusive_1d->GetXaxis()->SetTitle(xlabel);
+    h_inclusive_1d->GetYaxis()->SetTitle("1/N dN/d"+xlabel);
+    h_inclusive_1d->SetTitle("all b jets");
     h_inclusive_1d->Scale(1/h_inclusive_1d->Integral(), "width");
 
     TH1D *h_btag_1d = (TH1D *) h_btag->ProjectionX("h_btag_1d", ibin_pt, ibin_pt);
     h_btag_1d->SetMarkerColor(kRed);
     h_btag_1d->SetLineColor(kRed);
-    h_btag_1d->GetXaxis()->SetTitle(observable);
-    h_btag_1d->GetYaxis()->SetTitle("1/N dN/d"+observable);
-    h_btag_1d->SetTitle("tagged");
+    h_btag_1d->GetXaxis()->SetTitle(xlabel);
+    h_btag_1d->GetYaxis()->SetTitle("1/N dN/d"+xlabel);
+    h_btag_1d->SetTitle("tagged b jets");
     h_btag_1d->Scale(1/h_btag_1d->Integral(), "width");
 
     TH1D *h_btag_withSF_1d = (TH1D *) h_btag_withSF->ProjectionX("h_btag_withSF_1d", ibin_pt, ibin_pt);
     h_btag_withSF_1d->SetMarkerColor(kBlue);
     h_btag_withSF_1d->SetLineColor(kBlue);
-    h_btag_withSF_1d->GetXaxis()->SetTitle(observable);
-    h_btag_withSF_1d->GetYaxis()->SetTitle("1/N dN/d"+observable);
+    h_btag_withSF_1d->GetXaxis()->SetTitle(xlabel);
+    h_btag_withSF_1d->GetYaxis()->SetTitle("1/N dN/d"+xlabel);
     h_btag_withSF_1d->SetTitle("tagged with SF");
     h_btag_withSF_1d->Scale(1/h_btag_withSF_1d->Integral(), "width");
 
     TCanvas *c_bias = new TCanvas("c_bias","",800,600);
     h_inclusive_1d->Draw("pe1");
     h_btag_1d->Draw("pe1 same");
-    h_btag_withSF_1d->Draw("pe1 same");
+    // h_btag_withSF_1d->Draw("pe1 same");
     c_bias->BuildLegend();
 
     // TH1D *h_correction_1d = (TH1D *) h_correction->ProjectionX("h_correction_1d", ibin_pt, ibin_pt);
@@ -155,7 +153,7 @@ void calculate_correction(TString observable="rg", TString jer_opt="nom", TStrin
     // c_corr->BuildLegend();
     
 
-    TString fout_name = "./histos/"+sample+"_"+label+"_XXT_" + observable + "_efficiency"+suffix_withSF+".root";
+    TString fout_name = "./histos/"+sample+"_"+label+"_XXT_" + observable + "_efficiency"+suffix+".root";
     std::cout << "fout : " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "recreate");
 

@@ -1,5 +1,5 @@
 #include "../draw_utils.h"
-
+#include "../binning.h"
 void calc_sf(TString observable="rg") 
 {
     gStyle->SetPaintTextFormat(".3f"); 
@@ -10,23 +10,19 @@ void calc_sf(TString observable="rg")
     else if (observable=="zg") xlabel = "z_{g}";
     else if (observable=="zpt") xlabel = "z^{ch} #equiv p_{T}^{B,ch}/p_{T}^{jet,ch}";
 
-    TString sample = "dijet";
     TString label = "aggrTMVA_inclusive";
 
-    TString fin_incl_name = "histos/" + observable + "_fit_result_JP_" + label + ".root";
-    std::cout << "fin: " << fin_incl_name << std::endl;
-    TFile *fin_incl = new TFile(fin_incl_name);
-    TH3D *h_data_incl = (TH3D *) fin_incl->Get("h_data")->Clone("h_data_incl");
-    TH3D *h_bbb_incl = (TH3D *) fin_incl->Get("h_bbb")->Clone("h_bbb_incl");
-    TH2D *h_bbb_f_incl = (TH2D *) fin_incl->Get("h_bbb_f")->Clone("h_bbb_f_incl");
+    TString fin_name = "histos/" + observable + "_fit_result_JP_" + label + ".root";
+    std::cout << "fin: " << fin_name << std::endl;
+    TFile *fin = new TFile(fin_name);
 
-    TString fin_tag_name = "histos/" + observable + "_fit_result_JP_" + label + "_tagged.root";
-    std::cout << "fin: " << fin_tag_name << std::endl;
-    TFile *fin_tag = new TFile(fin_tag_name);
-    TH3D *h_data_tag = (TH3D *) fin_tag->Get("h_data")->Clone("h_data_tag");
-    TH3D *h_bbb_tag = (TH3D *) fin_tag->Get("h_bbb")->Clone("h_bbb_tag");
-    TH2D *h_bbb_f_tag = (TH2D *) fin_tag->Get("h_bbb_f")->Clone("h_bbb_f_tag");
-    TH2D *h_bbb_f_mc = (TH2D *) fin_tag->Get("h_bbb_f_mc")->Clone("h_bbb_f_mc");
+    TH3D *h_data_incl = (TH3D *) fin->Get("h_data")->Clone("h_data_inclusive");
+    TH3D *h_bbb_incl = (TH3D *) fin->Get("h_bbb")->Clone("h_bbb_inclusive");
+    TH2D *h_bbb_f_incl = (TH2D *) fin->Get("h_bbb_f")->Clone("h_bbb_f_inclusive");
+
+    TH3D *h_data_tag = (TH3D *) fin->Get("h_data_tagged")->Clone("h_data_tag");
+    TH3D *h_bbb_tag = (TH3D *) fin->Get("h_bbb_tagged")->Clone("h_bbb_tagged");
+    TH2D *h_bbb_f_tag = (TH2D *) fin->Get("h_bbb_f_tagged")->Clone("h_bbb_f_tagged");
 
     // Make 2D projections of data / MC -> easier for error propagation
     for (auto h : {
@@ -89,12 +85,13 @@ void calc_sf(TString observable="rg")
 
     TCanvas *c_sf_per_pt = new TCanvas("c_sf_per_pt", "", 800, 600);
     TLegend *leg_sf_per_pt = new TLegend(0.15, 0.7, 0.5, 0.9);
+    if (observable=="zpt") leg_sf_per_pt = new TLegend(0.15, 0.4, 0.5, 0.5);
     leg_sf_per_pt->SetFillStyle(0.);
 
     // relative uncertainties 
     std::vector<double> unc;
     for (int ibin_pt = 1; ibin_pt <= nbins_pt; ibin_pt++) {
-        // if (ibin_pt!=2) continue;
+        // if (ibin_pt!=1) continue;
         double pt_min = h_data_incl->GetZaxis()->GetBinLowEdge(ibin_pt);
         double pt_max = h_data_incl->GetZaxis()->GetBinUpEdge(ibin_pt);
         for (int ibin_x = 1; ibin_x <= nbins_x; ibin_x++) {
@@ -152,13 +149,15 @@ void calc_sf(TString observable="rg")
         h_eff_sf_1d->SetMarkerColor(ibin_pt);
         h_eff_sf_1d->SetLineColor(ibin_pt);
         h_eff_sf_1d->SetLineWidth(1);
-        h_eff_sf_1d->SetMinimum(0.9);
-        if (observable=="rg") h_eff_sf_1d->SetMaximum(1.5);
+        h_eff_sf_1d->SetMinimum(0.95);
+        if (observable=="rg") h_eff_sf_1d->SetMaximum(1.3);
         else if (observable=="zg") h_eff_sf_1d->SetMaximum(1.5);
-        else h_eff_sf_1d->SetMaximum(2.);
+        else h_eff_sf_1d->SetMaximum(1.5);
         h_eff_sf_1d->GetYaxis()->SetTitle("SF_{b} #equiv #epsilon_{b}^{data} / #epsilon_{b}^{MC}");
         leg_sf_per_pt->AddEntry(h_eff_sf_1d, Form("%.0f < p_{T}^{jet} < %.0f", pt_min, pt_max), "pe1");
         h_eff_sf_1d->Draw("pe1 same");
+
+        std::cout << h_eff_sf_1d->GetBinContent(1) << std::endl;
     }
 
     c_sf_per_pt->cd();
@@ -174,7 +173,7 @@ void calc_sf(TString observable="rg")
     // jet_info->Draw();
 
     c_sf_per_pt->Draw();
-    c_sf_per_pt->Print("plots_an/"+sample+"_"+label+"_sfs_"+observable+".png");
+    // c_sf_per_pt->Print("plots_an/"+label+"_sfs_"+observable+".png");
 
     double x1 = 2.1;
     double x2 = 2.5;
@@ -194,14 +193,14 @@ void calc_sf(TString observable="rg")
     // TCanvas *c_tag_ratio = new TCanvas("c_tag_ratio", "ntag/nincl", 800, 600);
     // h_tag_ratio->Draw("colz text");
 
-    TCanvas *c_bbb_eff = new TCanvas("c_bbb_eff", "b+bb efficiency data", 800, 600);
-    h_bbb_eff->Draw("colz text");
+    // TCanvas *c_bbb_eff = new TCanvas("c_bbb_eff", "b+bb efficiency data", 800, 600);
+    // h_bbb_eff->Draw("colz text");
 
-    TCanvas *c_bbb_eff_mc = new TCanvas("c_bbb_eff_mc", "b+bb efficiency mc", 800, 600);
-    h_bbb_eff_mc->Draw("colz text");
+    // TCanvas *c_bbb_eff_mc = new TCanvas("c_bbb_eff_mc", "b+bb efficiency mc", 800, 600);
+    // h_bbb_eff_mc->Draw("colz text");
 
-    TCanvas *c_eff_sf = new TCanvas("c_eff_sf", "sf (eff data/eff mc)", 800, 600);
-    h_eff_sf->Draw("colz texte");
+    // TCanvas *c_eff_sf = new TCanvas("c_eff_sf", "sf (eff data/eff mc)", 800, 600);
+    // h_eff_sf->Draw("colz texte");
     // TH1D *h_eff_sf_pt = (TH1D *) h_eff_sf->ProjectionY();
     // h_eff_sf_pt->GetYaxis()->SetTitle("SF");
     // h_eff_sf_pt->Draw("pe1");
@@ -219,9 +218,36 @@ void calc_sf(TString observable="rg")
     }
 
     TString fout_name = "histos/" + label + "_" + observable + "_sfs.root";
+    std::cout << "fout: " << fout_name << std::endl;
     TFile *fout = new TFile(fout_name, "recreate");
 
     h_eff_sf->Write();
+
+    int nbins = 0;
+    double *vbins;
+    if (observable=="rg") {
+        nbins=logrg_bins;
+        vbins = logrg_binsVector;
+    }
+    if (observable=="zg") {
+        nbins=zg_bins;
+        vbins = zg_binsVector;
+    }
+    if (observable=="zpt") {
+        nbins=zpt_bins;
+        vbins = zpt_binsVector;
+    }
+    TH2D *h_eff_sf_3bins = new TH2D("h_eff_sf_3bins", "", nbins, vbins, jtpt_bins, jtpt_binsVector);
+    for (int ix=1; ix<=h_eff_sf_3bins->GetNbinsX();ix++) {
+        for (int iy=1; iy<=h_eff_sf_3bins->GetNbinsX();iy++) {
+            double sf= 0;
+            if (h_eff_sf->GetNbinsY()==1) sf = h_eff_sf->GetBinContent(ix, 1);
+            else sf = h_eff_sf->GetBinContent(ix, iy);
+            h_eff_sf_3bins->SetBinContent(ix,iy,sf);
+            h_eff_sf_3bins->SetBinError(ix,iy,0.);
+        }
+    }
+    h_eff_sf_3bins->Write();
 
     fout->Close();
 

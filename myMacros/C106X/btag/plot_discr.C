@@ -2,10 +2,10 @@
 
 void plot_discr()
 {
-    TString fin = "/data_CMS/cms/kalipoliti/aod/qcdMC/chargedSJ/merged_HiForestAOD.root";
-    // TString fin = "/data_CMS/cms/kalipoliti/qcdMC/dijet/aggrTMVA_withHLT_v2/merged_HiForestMiniAOD.root";
-    // TString fin = "/data_CMS/cms/kalipoliti/qcdMC/bjet/aggrTMVA_withHLT/merged_HiForestMiniAOD.root";
-    TString label = "aod";
+    // TString fin = "/data_CMS/cms/kalipoliti/aod/qcdMC/chargedSJ/merged_HiForestAOD.root";
+    // TString fin = "/data_CMS/cms/kalipoliti/qcdMC/dijet/aggrTMVA_new_jtBpt/merged_HiForestMiniAOD.root";
+    TString fin = "/data_CMS/cms/kalipoliti/qcdMC/bjet/aggrTMVA_new_jtBpt/merged_HiForestMiniAOD.root";
+    TString label = "mini";
     tTree t = tTree(fin);
 
     std::vector<TString> activeBranches_t = {"nref", 
@@ -14,7 +14,6 @@ void plot_discr()
                                              "discr_deepFlavour_b", "discr_deepFlavour_bb", "discr_deepFlavour_lepb",
                                              "jtDiscDeepFlavourB", "jtDiscDeepFlavourBB", "jtDiscDeepFlavourLEPB",
                                              "weight",
-                                             "HLT_HIAK4CaloJet60_v1"
                                              };
                                              
     t.SetBranchStatus("*", 0);
@@ -58,8 +57,6 @@ void plot_discr()
             std::cout << "ient = " << ient << std::endl;
         }
 
-        if (label == "mini" && t.HLT_HIAK4CaloJet60_v1 != 1) continue;
-
         // debug: test efficiency with cut on weight
         if (weight > 0.2) continue;
 
@@ -77,23 +74,29 @@ void plot_discr()
                 discr_b_vs_bb = t.discr_deepFlavour_b[ijet] + t.discr_deepFlavour_lepb[ijet];
             } 
 
+            double discr = discr_b;
+            double wp = 0.7;
+
+            double pt_min = 60.;
+            double pt_max = 140.;
+
             Int_t jtNbHad = t.jtNbHad[ijet];
             Int_t jtNcHad = t.jtNcHad[ijet];
             Float_t jtpt = t.jtpt[ijet];
 
             if (jtNbHad > 0) {
-                // hB_discr->Fill(discr_b, jtpt, weight);
+                hB_discr->Fill(discr, jtpt, weight);
                 if (jtNbHad == 1) {
-                    hSingleB_discr->Fill(discr_b_vs_bb, jtpt, weight);
-                    if (jtpt>=60 && jtpt < 140) sumWeight += weight;
-                    if (discr_b_vs_bb >= 0.7 && jtpt>=60 && jtpt < 140) sumWeightBtag += weight;
+                    hSingleB_discr->Fill(discr, jtpt, weight);
+                    if (jtpt>=pt_min && jtpt < pt_max) sumWeight += weight;
+                    if (discr >= wp && jtpt>=pt_min && jtpt < pt_max) sumWeightBtag += weight;
                 } else {
-                    hBB_discr->Fill(discr_b_vs_bb, jtpt, weight);
+                    hBB_discr->Fill(discr, jtpt, weight);
                 }
             } else if (jtNcHad > 0) {
-                hC_discr->Fill(discr_b_vs_bb, jtpt, weight);
+                hC_discr->Fill(discr, jtpt, weight);
             } else {
-                hL_discr->Fill(discr_b_vs_bb, jtpt, weight);
+                hL_discr->Fill(discr, jtpt, weight);
             }       
         } // end jet loop
     } // end entry loop
@@ -103,7 +106,7 @@ void plot_discr()
     TString outName = "./histos/" + label + "_discr.root";
     TFile *fout = new TFile(outName, "recreate");
     for (auto h : {
-                //    hB_discr, 
+                   hB_discr, 
                    hSingleB_discr, 
                    hBB_discr,
                    hL_discr,
